@@ -1,11 +1,11 @@
-package sase.pattern.condition.iteration;
+package pattern.condition.iteration;
 
 import java.util.List;
 
-import sase.base.AggregatedEvent;
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.condition.base.DoubleEventCondition;
+import base.AggregatedEvent;
+import base.Event;
+import base.EventType;
+import pattern.condition.base.DoubleEventCondition;
 
 public abstract class IteratedEventExternalCondition extends DoubleEventCondition {
 	

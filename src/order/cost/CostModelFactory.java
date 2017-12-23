@@ -1,8 +1,8 @@
-package sase.order.cost;
+package order.cost;
 
 import java.util.List;
 
-import sase.base.EventType;
+import base.EventType;
 
 public class CostModelFactory {
 

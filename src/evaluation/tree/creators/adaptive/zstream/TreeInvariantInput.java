@@ -1,9 +1,9 @@
-package sase.evaluation.tree.creators.adaptive.zstream;
+package evaluation.tree.creators.adaptive.zstream;
 
 
-import sase.adaptive.monitoring.invariant.InvariantInput;
-import sase.base.EventType;
-import sase.pattern.condition.base.CNFCondition;
+import adaptive.monitoring.invariant.InvariantInput;
+import base.EventType;
+import pattern.condition.base.CNFCondition;
 
 public class TreeInvariantInput extends InvariantInput {
 

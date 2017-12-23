@@ -1,11 +1,11 @@
-package sase.evaluation.nfa.lazy.elements;
+package evaluation.nfa.lazy.elements;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.pattern.CompositePattern;
-import sase.pattern.Pattern;
+import base.EventType;
+import pattern.CompositePattern;
+import pattern.Pattern;
 
 public class EvaluationOrder {
 	private final List<EventType> fullEvaluationOrder;

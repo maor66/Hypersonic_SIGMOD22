@@ -1,10 +1,10 @@
-package sase.pattern.condition.iteration.eager;
+package pattern.condition.iteration.eager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.Event;
-import sase.pattern.condition.base.DoubleEventCondition;
+import base.Event;
+import pattern.condition.base.DoubleEventCondition;
 
 public class IteratedIncrementalDoubleEventCondition extends IteratedIncrementalCondition {
 	

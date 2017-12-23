@@ -1,11 +1,11 @@
-package sase.evaluation.tree.elements;
+package evaluation.tree.elements;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.pattern.condition.base.CNFCondition;
+import base.EventType;
+import pattern.condition.base.AtomicCondition;
+import pattern.condition.base.CNFCondition;
 
 public class LeafNode extends Node {
 	

@@ -1,25 +1,25 @@
-package sase.evaluation.tree;
+package evaluation.tree;
 
 import java.util.List;
 import java.util.Queue;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.evaluation.EvaluationPlan;
-import sase.evaluation.IEvaluationMechanism;
-import sase.evaluation.IEvaluationMechanismInfo;
-import sase.evaluation.common.Match;
-import sase.evaluation.common.State;
-import sase.evaluation.tree.elements.LeafNode;
-import sase.evaluation.tree.elements.Node;
-import sase.evaluation.tree.elements.TreeInstance;
-import sase.evaluation.tree.elements.TreeInstanceStorage;
-import sase.pattern.Pattern;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
+import base.Event;
+import base.EventType;
+import evaluation.EvaluationPlan;
+import evaluation.IEvaluationMechanism;
+import evaluation.IEvaluationMechanismInfo;
+import evaluation.common.Match;
+import evaluation.common.State;
+import evaluation.tree.elements.LeafNode;
+import evaluation.tree.elements.Node;
+import evaluation.tree.elements.TreeInstance;
+import evaluation.tree.elements.TreeInstanceStorage;
+import pattern.Pattern;
+import pattern.condition.base.AtomicCondition;
+import simulator.Environment;
+import statistics.Statistics;
 
 public class TreeEvaluationMechanism implements IEvaluationMechanism, IEvaluationMechanismInfo {
 	

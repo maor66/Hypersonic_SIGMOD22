@@ -1,9 +1,9 @@
-package sase.user.stocks.converters;
+package user.stocks.converters;
 
-import sase.base.EventType;
-import sase.input.EventTypesConverter;
-import sase.specification.SimulationSpecification;
-import sase.user.stocks.StockEventTypesManager;
+import base.EventType;
+import input.EventTypesConverter;
+import specification.SimulationSpecification;
+import user.stocks.StockEventTypesManager;
 
 public class StocksByIndustryEventTypesConverter extends EventTypesConverter {
 

@@ -1,15 +1,15 @@
-package sase.evaluation.nfa.lazy;
+package evaluation.nfa.lazy;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.evaluation.EvaluationMechanismTypes;
-import sase.evaluation.EvaluationPlan;
-import sase.evaluation.nfa.eager.elements.NFAState;
-import sase.pattern.CompositePattern;
-import sase.pattern.Pattern;
-import sase.pattern.Pattern.PatternOperatorType;
+import base.EventType;
+import evaluation.EvaluationMechanismTypes;
+import evaluation.EvaluationPlan;
+import evaluation.nfa.eager.elements.NFAState;
+import pattern.CompositePattern;
+import pattern.Pattern;
+import pattern.Pattern.PatternOperatorType;
 
 public class LazyMultiChainNFA extends LazyChainNFA {
 

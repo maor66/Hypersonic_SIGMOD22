@@ -1,13 +1,13 @@
-package sase.user.stocks.specification;
+package user.stocks.specification;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.pattern.EventTypesManager;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.specification.ConditionSpecification;
-import sase.user.stocks.condition.StockDeltaOrderingCondition;
+import base.EventType;
+import pattern.EventTypesManager;
+import pattern.condition.base.AtomicCondition;
+import specification.ConditionSpecification;
+import user.stocks.condition.StockDeltaOrderingCondition;
 
 public class StockDeltaOrderingConditionSpecification extends ConditionSpecification {
 

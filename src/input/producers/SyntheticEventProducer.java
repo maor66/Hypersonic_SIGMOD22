@@ -1,22 +1,22 @@
-package sase.input.producers;
+package input.producers;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.input.EventProducer;
-import sase.pattern.Pattern;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.pattern.condition.base.CNFCondition;
-import sase.simulator.Environment;
-import sase.specification.InputSpecification;
-import sase.specification.SimulationSpecification;
-import sase.statistics.Statistics;
-import sase.statistics.StatisticsManager;
-import sase.user.synthetic.SyntheticCondition;
+import base.Event;
+import base.EventType;
+import input.EventProducer;
+import pattern.Pattern;
+import pattern.condition.base.AtomicCondition;
+import pattern.condition.base.CNFCondition;
+import simulator.Environment;
+import specification.InputSpecification;
+import specification.SimulationSpecification;
+import statistics.Statistics;
+import statistics.StatisticsManager;
+import user.synthetic.SyntheticCondition;
 
 public class SyntheticEventProducer extends EventProducer implements ISyntheticSelectivityProvider {
 	

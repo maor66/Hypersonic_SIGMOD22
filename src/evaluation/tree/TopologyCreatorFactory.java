@@ -1,9 +1,9 @@
-package sase.evaluation.tree;
+package evaluation.tree;
 
-import sase.evaluation.tree.creators.OrderedZStreamTreeTopologyCreator;
-import sase.evaluation.tree.creators.SelingerTreeTopologyCreator;
-import sase.evaluation.tree.creators.ZStreamTreeTopologyCreator;
-import sase.evaluation.tree.creators.adaptive.zstream.AdaptiveZStreamTreeTopologyCreator;
+import evaluation.tree.creators.OrderedZStreamTreeTopologyCreator;
+import evaluation.tree.creators.SelingerTreeTopologyCreator;
+import evaluation.tree.creators.ZStreamTreeTopologyCreator;
+import evaluation.tree.creators.adaptive.zstream.AdaptiveZStreamTreeTopologyCreator;
 
 public class TopologyCreatorFactory {
 

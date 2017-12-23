@@ -1,9 +1,9 @@
-package sase.pattern;
+package pattern;
 
 import java.util.List;
 
-import sase.base.EventType;
-import sase.pattern.condition.Condition;
+import base.EventType;
+import pattern.condition.Condition;
 
 public class SimplePattern extends Pattern {
 

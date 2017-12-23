@@ -1,4 +1,4 @@
-package sase.input;
+package input;
 
 public enum EventProducerTypes {
 	SYNTHETIC,

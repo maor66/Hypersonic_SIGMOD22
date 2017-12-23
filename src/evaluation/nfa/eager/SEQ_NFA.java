@@ -1,16 +1,16 @@
-package sase.evaluation.nfa.eager;
+package evaluation.nfa.eager;
 
 import java.util.List;
 
-import sase.base.EventType;
-import sase.evaluation.common.State;
-import sase.evaluation.nfa.NFA;
-import sase.evaluation.nfa.eager.elements.NFAState;
-import sase.evaluation.nfa.eager.elements.Transition;
-import sase.pattern.Pattern;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.pattern.condition.base.CNFCondition;
-import sase.pattern.condition.time.PairTemporalOrderCondition;
+import base.EventType;
+import evaluation.common.State;
+import evaluation.nfa.NFA;
+import evaluation.nfa.eager.elements.NFAState;
+import evaluation.nfa.eager.elements.Transition;
+import pattern.Pattern;
+import pattern.condition.base.AtomicCondition;
+import pattern.condition.base.CNFCondition;
+import pattern.condition.time.PairTemporalOrderCondition;
 
 public class SEQ_NFA extends NFA {
 

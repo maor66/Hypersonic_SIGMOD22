@@ -1,8 +1,8 @@
-package sase.evaluation.nfa.eager;
+package evaluation.nfa.eager;
 
-import sase.evaluation.nfa.eager.elements.NFAState;
-import sase.pattern.Pattern;
-import sase.pattern.Pattern.PatternOperatorType;
+import evaluation.nfa.eager.elements.NFAState;
+import pattern.Pattern;
+import pattern.Pattern.PatternOperatorType;
 
 public class OR_AND_SEQ_NFA extends AND_SEQ_NFA {
 

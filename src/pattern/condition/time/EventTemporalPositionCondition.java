@@ -1,11 +1,11 @@
-package sase.pattern.condition.time;
+package pattern.condition.time;
 
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.EventTypesManager;
-import sase.pattern.condition.base.AtomicCondition;
+import base.Event;
+import base.EventType;
+import pattern.EventTypesManager;
+import pattern.condition.base.AtomicCondition;
 
 public class EventTemporalPositionCondition extends AtomicCondition {
 

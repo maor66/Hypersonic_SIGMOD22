@@ -1,4 +1,4 @@
-package sase.statistics;
+package statistics;
 
 public class Statistics {
 

@@ -1,7 +1,7 @@
-package sase.user.stocks.condition;
+package user.stocks.condition;
 
-import sase.pattern.condition.iteration.AggregatedExternalCondition;
-import sase.user.stocks.AverageStocksVectorAggregator;
+import pattern.condition.iteration.AggregatedExternalCondition;
+import user.stocks.AverageStocksVectorAggregator;
 
 public class StockAverageCorrelationCondition extends AggregatedExternalCondition {
 

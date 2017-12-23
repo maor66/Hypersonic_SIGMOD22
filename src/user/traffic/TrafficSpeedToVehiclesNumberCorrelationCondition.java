@@ -1,8 +1,8 @@
-package sase.user.traffic;
+package user.traffic;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.condition.base.DoubleEventCondition;
+import base.Event;
+import base.EventType;
+import pattern.condition.base.DoubleEventCondition;
 
 public class TrafficSpeedToVehiclesNumberCorrelationCondition extends DoubleEventCondition {
 

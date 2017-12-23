@@ -1,11 +1,11 @@
-package sase.order.cost;
+package order.cost;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.config.EventRateConfig;
-import sase.pattern.Pattern;
+import base.EventType;
+import config.EventRateConfig;
+import pattern.Pattern;
 
 public class ThroughputLatencyCostModel extends ThroughputCostModel implements ICostModel {
 	
@@ -39,7 +39,7 @@ public class ThroughputLatencyCostModel extends ThroughputCostModel implements I
 		if (indexOfLastType == -1 || throughputToLatencyRatio == 0) {
 			return costByThroughputModel;//no latency penalty here
 		}
-		Double latencyFromLastEventInstanceMatching = indexOfLastType == 0 ? 0 :
+		Double latencyFromLastEventInstanceMatching = indexOfLastType == 0 ? 0.0 :
 													  costsOfLastOrderStates.get(order.get(indexOfLastType - 1));
 		List<EventType> delayedProcessedEventTypes;
 		if (indexOfLastType == order.size() - 1) {

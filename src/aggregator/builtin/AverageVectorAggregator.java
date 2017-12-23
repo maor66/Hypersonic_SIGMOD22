@@ -1,6 +1,6 @@
-package sase.aggregator.builtin;
+package aggregator.builtin;
 
-import sase.aggregator.VectorAggregator;
+import aggregator.VectorAggregator;
 
 public class AverageVectorAggregator extends VectorAggregator {
 

@@ -1,8 +1,8 @@
-package sase.adaptive.monitoring;
+package adaptive.monitoring;
 
-import sase.adaptive.monitoring.invariant.InvariantAdaptationNecessityDetector;
-import sase.adaptive.monitoring.invariant.compare.InvariantComparerType;
-import sase.pattern.Pattern;
+import adaptive.monitoring.invariant.InvariantAdaptationNecessityDetector;
+import adaptive.monitoring.invariant.compare.InvariantComparerType;
+import pattern.Pattern;
 
 public class AdaptationNecessityDetectorFactory {
 

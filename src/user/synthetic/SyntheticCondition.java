@@ -1,11 +1,11 @@
-package sase.user.synthetic;
+package user.synthetic;
 
 import java.util.Random;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.input.producers.ISyntheticSelectivityProvider;
-import sase.pattern.condition.base.DoubleEventCondition;
+import base.Event;
+import base.EventType;
+import input.producers.ISyntheticSelectivityProvider;
+import pattern.condition.base.DoubleEventCondition;
 
 public class SyntheticCondition extends DoubleEventCondition {
 

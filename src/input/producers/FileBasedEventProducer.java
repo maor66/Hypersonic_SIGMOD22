@@ -1,8 +1,8 @@
-package sase.input.producers;
+package input.producers;
 
-import sase.config.MainConfig;
-import sase.input.EventProducer;
-import sase.specification.SimulationSpecification;
+import config.MainConfig;
+import input.EventProducer;
+import specification.SimulationSpecification;
 
 public class FileBasedEventProducer extends EventProducer {
 	

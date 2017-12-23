@@ -1,4 +1,4 @@
-package sase.evaluation.nfa.lazy.elements;
+package evaluation.nfa.lazy.elements;
 
 public enum LazyTransitionType {
 	REGULAR,

@@ -1,9 +1,9 @@
-package sase.base;
+package base;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.aggregator.VectorAggregator;
+import aggregator.VectorAggregator;
 
 public class AggregatedEvent extends Event {
 

@@ -1,10 +1,10 @@
-package sase.adaptive.estimation;
+package adaptive.estimation;
 
 import java.util.HashMap;
-import sase.evaluation.IEvaluationMechanismInfo;
-import sase.evaluation.common.State;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.simulator.Environment;
+import evaluation.IEvaluationMechanismInfo;
+import evaluation.common.State;
+import pattern.condition.base.AtomicCondition;
+import simulator.Environment;
 
 public class SlidingWindowSelectivityEstimator {
 

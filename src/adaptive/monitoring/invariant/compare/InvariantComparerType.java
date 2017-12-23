@@ -1,4 +1,4 @@
-package sase.adaptive.monitoring.invariant.compare;
+package adaptive.monitoring.invariant.compare;
 
 public enum InvariantComparerType {
 	NONE,

@@ -1,14 +1,14 @@
-package sase.order.algorithm;
+package order.algorithm;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.order.IOrderingAlgorithm;
-import sase.order.cost.ICostModel;
-import sase.pattern.CompositePattern;
-import sase.pattern.Pattern;
-import sase.pattern.Pattern.PatternOperatorType;
+import base.EventType;
+import order.IOrderingAlgorithm;
+import order.cost.ICostModel;
+import pattern.CompositePattern;
+import pattern.Pattern;
+import pattern.Pattern.PatternOperatorType;
 
 public abstract class GreedyOrderingAlgorithm implements IOrderingAlgorithm {
 

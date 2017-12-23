@@ -1,14 +1,14 @@
-package sase.order.algorithm;
+package order.algorithm;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.config.EventRateConfig;
-import sase.order.IOrderingAlgorithm;
-import sase.order.cost.ICostModel;
-import sase.pattern.CompositePattern;
-import sase.pattern.condition.base.CNFCondition;
+import base.EventType;
+import config.EventRateConfig;
+import order.IOrderingAlgorithm;
+import order.cost.ICostModel;
+import pattern.CompositePattern;
+import pattern.condition.base.CNFCondition;
 
 public class GreedySelectivityOrderingAlgorithm extends GreedyOrderingAlgorithm implements IOrderingAlgorithm {
 

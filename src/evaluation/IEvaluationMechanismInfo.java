@@ -1,7 +1,7 @@
-package sase.evaluation;
+package evaluation;
 
-import sase.evaluation.common.State;
-import sase.pattern.condition.base.AtomicCondition;
+import evaluation.common.State;
+import pattern.condition.base.AtomicCondition;
 
 public interface IEvaluationMechanismInfo {
 

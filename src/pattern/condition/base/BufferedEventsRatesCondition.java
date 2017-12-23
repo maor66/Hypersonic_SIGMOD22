@@ -1,11 +1,11 @@
-package sase.pattern.condition.base;
+package pattern.condition.base;
 
 import java.util.HashMap;
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.evaluation.nfa.NFA;
+import base.Event;
+import base.EventType;
+import evaluation.nfa.NFA;
 
 /**
  * Represents a special condition, operating on a built-in primitive event reporting the status of

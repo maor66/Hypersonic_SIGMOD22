@@ -1,9 +1,9 @@
-package sase.specification;
+package specification;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.pattern.creation.PatternTypes;
+import pattern.creation.PatternTypes;
 
 public class PatternSpecification {
 	

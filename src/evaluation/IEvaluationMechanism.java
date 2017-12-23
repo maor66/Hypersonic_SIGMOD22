@@ -1,10 +1,10 @@
-package sase.evaluation;
+package evaluation;
 
 import java.util.List;
 
-import sase.base.Event;
-import sase.evaluation.common.Match;
-import sase.pattern.Pattern;
+import base.Event;
+import evaluation.common.Match;
+import pattern.Pattern;
 
 public interface IEvaluationMechanism {
 

@@ -1,4 +1,4 @@
-package sase.adaptive.estimation;
+package adaptive.estimation;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,13 +1,13 @@
-package sase.pattern.condition.iteration;
+package pattern.condition.iteration;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.aggregator.VectorAggregator;
-import sase.base.AggregatedEvent;
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.condition.Condition;
+import aggregator.VectorAggregator;
+import base.AggregatedEvent;
+import base.Event;
+import base.EventType;
+import pattern.condition.Condition;
 
 public class AggregatedExternalCondition extends IteratedEventExternalCondition {
 

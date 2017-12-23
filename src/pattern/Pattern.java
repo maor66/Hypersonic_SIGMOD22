@@ -1,11 +1,11 @@
-package sase.pattern;
+package pattern;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.pattern.condition.Condition;
-import sase.pattern.condition.base.CNFCondition;
+import base.EventType;
+import pattern.condition.Condition;
+import pattern.condition.base.CNFCondition;
 
 /**
  * This class represents a single pattern whose instances the user is willing to detect.

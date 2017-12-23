@@ -1,4 +1,4 @@
-package sase.base;
+package base;
 
 public class Attribute {
 

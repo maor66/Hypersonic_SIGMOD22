@@ -1,6 +1,6 @@
-package sase.evaluation.tree.creators;
+package evaluation.tree.creators;
 
-import sase.evaluation.tree.elements.Node;
+import evaluation.tree.elements.Node;
 
 public class CostAwareTree {
 	public Node root;

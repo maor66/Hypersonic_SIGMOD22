@@ -1,9 +1,9 @@
-package sase.pattern.condition.iteration;
+package pattern.condition.iteration;
 
-import sase.base.AggregatedEvent;
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.condition.base.SingleEventCondition;
+import base.AggregatedEvent;
+import base.Event;
+import base.EventType;
+import pattern.condition.base.SingleEventCondition;
 
 public abstract class IteratedEventInternalCondition extends SingleEventCondition {
 

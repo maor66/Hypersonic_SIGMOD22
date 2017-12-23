@@ -1,4 +1,4 @@
-package sase.specification;
+package specification;
 
 public class InputSpecification {
 

@@ -1,9 +1,9 @@
-package sase.user.trams;
+package user.trams;
 
-import sase.specification.SimulationSpecification;
-import sase.base.EventType;
-import sase.config.MainConfig;
-import sase.input.EventTypesConverter;
+import specification.SimulationSpecification;
+import base.EventType;
+import config.MainConfig;
+import input.EventTypesConverter;
 
 public class TramCongestionEventTypesConverter extends EventTypesConverter {
 

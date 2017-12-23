@@ -1,4 +1,4 @@
-package sase.specification.creators;
+package specification.creators;
 
 public enum SpecificationCreatorTypes {
 	NONE,

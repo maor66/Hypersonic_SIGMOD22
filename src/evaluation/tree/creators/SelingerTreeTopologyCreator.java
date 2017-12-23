@@ -1,18 +1,18 @@
-package sase.evaluation.tree.creators;
+package evaluation.tree.creators;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.evaluation.tree.ITreeCostModel;
-import sase.evaluation.tree.ITreeTopologyCreator;
-import sase.evaluation.tree.elements.InternalNode;
-import sase.evaluation.tree.elements.LeafNode;
-import sase.evaluation.tree.elements.Node;
-import sase.order.algorithm.DynamicOrderingAlgorithm;
-import sase.pattern.Pattern;
-import sase.pattern.condition.base.CNFCondition;
+import base.EventType;
+import evaluation.tree.ITreeCostModel;
+import evaluation.tree.ITreeTopologyCreator;
+import evaluation.tree.elements.InternalNode;
+import evaluation.tree.elements.LeafNode;
+import evaluation.tree.elements.Node;
+import order.algorithm.DynamicOrderingAlgorithm;
+import pattern.Pattern;
+import pattern.condition.base.CNFCondition;
 
 public class SelingerTreeTopologyCreator extends DynamicOrderingAlgorithm implements ITreeTopologyCreator {
 

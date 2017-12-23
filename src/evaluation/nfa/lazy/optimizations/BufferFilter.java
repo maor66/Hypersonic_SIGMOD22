@@ -1,16 +1,16 @@
-package sase.evaluation.nfa.lazy.optimizations;
+package evaluation.nfa.lazy.optimizations;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.evaluation.nfa.lazy.elements.LazyInstance;
-import sase.pattern.condition.Condition;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.pattern.condition.base.CNFCondition;
-import sase.pattern.condition.iteration.lazy.IteratedFilterCondition;
+import base.Event;
+import base.EventType;
+import evaluation.nfa.lazy.elements.LazyInstance;
+import pattern.condition.Condition;
+import pattern.condition.base.AtomicCondition;
+import pattern.condition.base.CNFCondition;
+import pattern.condition.iteration.lazy.IteratedFilterCondition;
 
 public class BufferFilter extends BufferPreprocessor {
 	
@@ -59,7 +59,7 @@ public class BufferFilter extends BufferPreprocessor {
 			}
 		}
 		if (isLastPreprocessor) {
-			return BufferPreprocessor.createAggregatedEventsFromBufferedEvents(filteredEvents);
+			return createAggregatedEventsFromBufferedEvents(filteredEvents);
 		}
 		else {
 			return filteredEvents;

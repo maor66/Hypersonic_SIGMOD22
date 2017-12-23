@@ -1,25 +1,25 @@
-package sase.evaluation.tree.creators.adaptive.zstream;
+package evaluation.tree.creators.adaptive.zstream;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import sase.adaptive.estimation.SlidingWindowEventArrivalRateEstimator;
-import sase.adaptive.monitoring.invariant.Invariant;
-import sase.adaptive.monitoring.invariant.InvariantAdaptationNecessityDetector;
-import sase.adaptive.monitoring.invariant.compare.InvariantComparer.ComparisonType;
-import sase.base.EventType;
-import sase.evaluation.tree.ITreeCostModel;
-import sase.evaluation.tree.ITreeTopologyCreator;
-import sase.evaluation.tree.cost.ThroughputTreeCostModel;
-import sase.evaluation.tree.creators.ZStreamTreeTopologyCreator;
-import sase.evaluation.tree.elements.InternalNode;
-import sase.evaluation.tree.elements.LeafNode;
-import sase.evaluation.tree.elements.Node;
-import sase.pattern.Pattern;
-import sase.pattern.condition.base.CNFCondition;
-import sase.simulator.Environment;
+import adaptive.estimation.SlidingWindowEventArrivalRateEstimator;
+import adaptive.monitoring.invariant.Invariant;
+import adaptive.monitoring.invariant.InvariantAdaptationNecessityDetector;
+import adaptive.monitoring.invariant.compare.InvariantComparer.ComparisonType;
+import base.EventType;
+import evaluation.tree.ITreeCostModel;
+import evaluation.tree.ITreeTopologyCreator;
+import evaluation.tree.cost.ThroughputTreeCostModel;
+import evaluation.tree.creators.ZStreamTreeTopologyCreator;
+import evaluation.tree.elements.InternalNode;
+import evaluation.tree.elements.LeafNode;
+import evaluation.tree.elements.Node;
+import pattern.Pattern;
+import pattern.condition.base.CNFCondition;
+import simulator.Environment;
 
 public class AdaptiveZStreamTreeTopologyCreator implements ITreeTopologyCreator {
 	

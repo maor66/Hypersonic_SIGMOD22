@@ -1,4 +1,4 @@
-package sase.pattern.creation;
+package pattern.creation;
 
 public enum PatternTypes {
 	OLD_SEQUENCE_STOCK_CORRELATION,

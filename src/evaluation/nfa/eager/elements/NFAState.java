@@ -1,10 +1,10 @@
-package sase.evaluation.nfa.eager.elements;
+package evaluation.nfa.eager.elements;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.config.MainConfig;
-import sase.evaluation.common.State;
+import config.MainConfig;
+import evaluation.common.State;
 
 public class NFAState extends State {
 	

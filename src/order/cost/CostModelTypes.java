@@ -1,4 +1,4 @@
-package sase.order.cost;
+package order.cost;
 
 public enum CostModelTypes {
 	NONE,

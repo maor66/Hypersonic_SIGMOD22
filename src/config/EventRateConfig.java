@@ -1,9 +1,9 @@
-package sase.config;
+package config;
 
 import java.util.HashMap;
 
-import sase.user.stocks.StockEventTypesManager;
-import sase.user.trams.TramEventTypesManager;
+import user.stocks.StockEventTypesManager;
+import user.trams.TramEventTypesManager;
 
 public class EventRateConfig {
 

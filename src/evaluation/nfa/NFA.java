@@ -1,29 +1,29 @@
-package sase.evaluation.nfa;
+package evaluation.nfa;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import sase.base.Attribute;
-import sase.base.Datatype;
-import sase.base.Event;
-import sase.base.EventType;
-import sase.config.MainConfig;
-import sase.evaluation.IEvaluationMechanism;
-import sase.evaluation.IEvaluationMechanismInfo;
-import sase.evaluation.common.Match;
-import sase.evaluation.common.State;
-import sase.evaluation.nfa.eager.elements.Instance;
-import sase.evaluation.nfa.eager.elements.InstanceStorage;
-import sase.evaluation.nfa.eager.elements.NFAState;
-import sase.evaluation.nfa.eager.elements.Transition;
-import sase.pattern.CompositePattern;
-import sase.pattern.Pattern;
-import sase.pattern.condition.Condition;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.pattern.condition.base.CNFCondition;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
+import base.Attribute;
+import base.Datatype;
+import base.Event;
+import base.EventType;
+import config.MainConfig;
+import evaluation.IEvaluationMechanism;
+import evaluation.IEvaluationMechanismInfo;
+import evaluation.common.Match;
+import evaluation.common.State;
+import evaluation.nfa.eager.elements.Instance;
+import evaluation.nfa.eager.elements.InstanceStorage;
+import evaluation.nfa.eager.elements.NFAState;
+import evaluation.nfa.eager.elements.Transition;
+import pattern.CompositePattern;
+import pattern.Pattern;
+import pattern.condition.Condition;
+import pattern.condition.base.AtomicCondition;
+import pattern.condition.base.CNFCondition;
+import simulator.Environment;
+import statistics.Statistics;
 
 public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismInfo {
 

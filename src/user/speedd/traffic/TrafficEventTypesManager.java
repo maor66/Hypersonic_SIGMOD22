@@ -1,14 +1,14 @@
-package sase.user.speedd.traffic;
+package user.speedd.traffic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import sase.base.Attribute;
-import sase.base.Datatype;
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.EventTypesManager;
+import base.Attribute;
+import base.Datatype;
+import base.Event;
+import base.EventType;
+import pattern.EventTypesManager;
 
 public class TrafficEventTypesManager extends EventTypesManager {
 

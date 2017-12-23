@@ -1,4 +1,4 @@
-package sase.input.producers;
+package input.producers;
 
 import java.io.BufferedReader;
 import java.io.File;

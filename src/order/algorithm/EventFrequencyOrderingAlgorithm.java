@@ -1,15 +1,15 @@
-package sase.order.algorithm;
+package order.algorithm;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.config.EventRateConfig;
-import sase.order.IOrderingAlgorithm;
-import sase.order.cost.ICostModel;
-import sase.pattern.Pattern;
+import base.EventType;
+import config.EventRateConfig;
+import order.IOrderingAlgorithm;
+import order.cost.ICostModel;
+import pattern.Pattern;
 
 public class EventFrequencyOrderingAlgorithm implements IOrderingAlgorithm {
 	

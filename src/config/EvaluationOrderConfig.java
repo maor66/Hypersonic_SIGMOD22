@@ -1,9 +1,9 @@
-package sase.config;
+package config;
 
-import sase.user.speedd.fraud.CreditCardFraudEventTypesManager;
-import sase.user.speedd.traffic.TrafficEventTypesManager;
-import sase.user.stocks.StockEventTypesManager;
-import sase.user.trams.TramEventTypesManager;
+import user.speedd.fraud.CreditCardFraudEventTypesManager;
+import user.speedd.traffic.TrafficEventTypesManager;
+import user.stocks.StockEventTypesManager;
+import user.trams.TramEventTypesManager;
 
 public class EvaluationOrderConfig {
 	

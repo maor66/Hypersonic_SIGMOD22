@@ -1,8 +1,8 @@
-package sase.user.speedd.fraud;
+package user.speedd.fraud;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.condition.base.DoubleEventCondition;
+import base.Event;
+import base.EventType;
+import pattern.condition.base.DoubleEventCondition;
 
 public class SameCreditCardIDCondition extends DoubleEventCondition {
 

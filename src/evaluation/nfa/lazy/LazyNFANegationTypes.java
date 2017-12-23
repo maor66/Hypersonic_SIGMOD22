@@ -1,4 +1,4 @@
-package sase.evaluation.nfa.lazy;
+package evaluation.nfa.lazy;
 
 public enum LazyNFANegationTypes {
 	NONE,

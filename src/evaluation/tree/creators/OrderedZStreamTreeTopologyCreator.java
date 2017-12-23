@@ -1,21 +1,21 @@
-package sase.evaluation.tree.creators;
+package evaluation.tree.creators;
 
 import java.util.List;
 
-import sase.base.EventType;
-import sase.evaluation.tree.ITreeCostModel;
-import sase.evaluation.tree.ITreeTopologyCreator;
-import sase.evaluation.tree.cost.ThroughputLatencyTreeCostModel;
-import sase.evaluation.tree.cost.ThroughputTreeCostModel;
-import sase.evaluation.tree.elements.Node;
-import sase.order.IOrderingAlgorithm;
-import sase.order.OrderingAlgorithmFactory;
-import sase.order.OrderingAlgorithmTypes;
-import sase.order.cost.ICostModel;
-import sase.order.cost.ThroughputCostModel;
-import sase.order.cost.ThroughputLatencyCostModel;
-import sase.pattern.Pattern;
-import sase.pattern.condition.base.CNFCondition;
+import base.EventType;
+import evaluation.tree.ITreeCostModel;
+import evaluation.tree.ITreeTopologyCreator;
+import evaluation.tree.cost.ThroughputLatencyTreeCostModel;
+import evaluation.tree.cost.ThroughputTreeCostModel;
+import evaluation.tree.elements.Node;
+import order.IOrderingAlgorithm;
+import order.OrderingAlgorithmFactory;
+import order.OrderingAlgorithmTypes;
+import order.cost.ICostModel;
+import order.cost.ThroughputCostModel;
+import order.cost.ThroughputLatencyCostModel;
+import pattern.Pattern;
+import pattern.condition.base.CNFCondition;
 
 public class OrderedZStreamTreeTopologyCreator extends ZStreamTreeTopologyCreator implements ITreeTopologyCreator {
 

@@ -1,4 +1,4 @@
-package sase.aggregator;
+package aggregator;
 
 import java.util.List;
 

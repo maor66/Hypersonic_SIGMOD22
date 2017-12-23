@@ -1,11 +1,11 @@
-package sase.statistics;
+package statistics;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import sase.config.MainConfig;
+import config.MainConfig;
 
 public class StatisticsManager {
 

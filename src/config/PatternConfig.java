@@ -1,12 +1,12 @@
-package sase.config;
+package config;
 
-import sase.pattern.creation.PatternTypes;
-import sase.specification.ConditionSpecification;
-import sase.specification.PatternSpecification;
-import sase.user.stocks.StockEventTypesManager;
-import sase.user.stocks.specification.StockDeltaOrderingConditionSpecification;
-import sase.user.synthetic.SyntheticConditionSpecification;
-import sase.user.traffic.TrafficSpeedToVehiclesNumberCorrelationConditionSpecification;
+import pattern.creation.PatternTypes;
+import specification.ConditionSpecification;
+import specification.PatternSpecification;
+import user.stocks.StockEventTypesManager;
+import user.stocks.specification.StockDeltaOrderingConditionSpecification;
+import user.synthetic.SyntheticConditionSpecification;
+import user.traffic.TrafficSpeedToVehiclesNumberCorrelationConditionSpecification;
 
 public class PatternConfig {
 	

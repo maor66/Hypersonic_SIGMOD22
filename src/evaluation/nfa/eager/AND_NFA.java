@@ -1,14 +1,14 @@
-package sase.evaluation.nfa.eager;
+package evaluation.nfa.eager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.evaluation.nfa.NFA;
-import sase.evaluation.nfa.eager.elements.NFAState;
-import sase.evaluation.nfa.eager.elements.Transition;
-import sase.pattern.Pattern;
-import sase.pattern.condition.base.CNFCondition;
+import base.EventType;
+import evaluation.nfa.NFA;
+import evaluation.nfa.eager.elements.NFAState;
+import evaluation.nfa.eager.elements.Transition;
+import pattern.Pattern;
+import pattern.condition.base.CNFCondition;
 
 public class AND_NFA extends NFA {
 

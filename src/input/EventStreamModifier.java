@@ -1,14 +1,14 @@
-package sase.input;
+package input;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.pattern.EventTypesManager;
-import sase.base.Event;
-import sase.base.EventType;
-import sase.config.MainConfig;
+import pattern.EventTypesManager;
+import base.Event;
+import base.EventType;
+import config.MainConfig;
 
 public class EventStreamModifier {
 	

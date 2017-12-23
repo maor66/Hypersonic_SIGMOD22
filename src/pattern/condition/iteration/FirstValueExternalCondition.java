@@ -1,10 +1,10 @@
-package sase.pattern.condition.iteration;
+package pattern.condition.iteration;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.Event;
-import sase.pattern.condition.base.DoubleEventCondition;
+import base.Event;
+import pattern.condition.base.DoubleEventCondition;
 
 public class FirstValueExternalCondition extends IteratedEventExternalCondition {
 

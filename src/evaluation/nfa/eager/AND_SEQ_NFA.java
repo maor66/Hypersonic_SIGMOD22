@@ -1,27 +1,27 @@
-package sase.evaluation.nfa.eager;
+package evaluation.nfa.eager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.evaluation.common.Match;
-import sase.evaluation.nfa.eager.elements.Instance;
-import sase.evaluation.nfa.eager.elements.NFAState;
-import sase.evaluation.nfa.eager.elements.Transition;
-import sase.evaluation.nfa.lazy.elements.EfficientInputBuffer;
-import sase.pattern.CompositePattern;
-import sase.pattern.Pattern;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.pattern.condition.base.CNFCondition;
-import sase.pattern.condition.base.TrivialCondition;
-import sase.pattern.condition.iteration.eager.IteratedIncrementalCondition;
-import sase.pattern.condition.iteration.eager.IterationTriggerCondition;
-import sase.pattern.condition.time.PairTemporalOrderCondition;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
+import base.Event;
+import base.EventType;
+import evaluation.common.Match;
+import evaluation.nfa.eager.elements.Instance;
+import evaluation.nfa.eager.elements.NFAState;
+import evaluation.nfa.eager.elements.Transition;
+import evaluation.nfa.lazy.elements.EfficientInputBuffer;
+import pattern.CompositePattern;
+import pattern.Pattern;
+import pattern.condition.base.AtomicCondition;
+import pattern.condition.base.CNFCondition;
+import pattern.condition.base.TrivialCondition;
+import pattern.condition.iteration.eager.IteratedIncrementalCondition;
+import pattern.condition.iteration.eager.IterationTriggerCondition;
+import pattern.condition.time.PairTemporalOrderCondition;
+import simulator.Environment;
+import statistics.Statistics;
 
 public class AND_SEQ_NFA extends AND_NFA {
 

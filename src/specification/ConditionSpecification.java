@@ -1,8 +1,8 @@
-package sase.specification;
+package specification;
 
 import java.util.List;
 
-import sase.pattern.condition.base.AtomicCondition;
+import pattern.condition.base.AtomicCondition;
 
 public abstract class ConditionSpecification {
 	

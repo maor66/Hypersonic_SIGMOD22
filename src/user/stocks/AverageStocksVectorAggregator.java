@@ -1,9 +1,9 @@
-package sase.user.stocks;
+package user.stocks;
 
 import java.util.List;
 
-import sase.aggregator.builtin.AverageVectorAggregator;
-import sase.base.Event;
+import aggregator.builtin.AverageVectorAggregator;
+import base.Event;
 
 public class AverageStocksVectorAggregator extends AverageVectorAggregator {
 

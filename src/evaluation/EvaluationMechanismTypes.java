@@ -1,4 +1,4 @@
-package sase.evaluation;
+package evaluation;
 
 public enum EvaluationMechanismTypes {
 	EAGER,

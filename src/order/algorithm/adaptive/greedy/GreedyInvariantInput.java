@@ -1,8 +1,8 @@
-package sase.order.algorithm.adaptive.greedy;
+package order.algorithm.adaptive.greedy;
 
-import sase.adaptive.monitoring.invariant.InvariantInput;
-import sase.base.EventType;
-import sase.pattern.condition.base.CNFCondition;
+import adaptive.monitoring.invariant.InvariantInput;
+import base.EventType;
+import pattern.condition.base.CNFCondition;
 
 public class GreedyInvariantInput extends InvariantInput {
 

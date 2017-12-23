@@ -1,8 +1,8 @@
-package sase.pattern.condition.base;
+package pattern.condition.base;
 
 import java.util.List;
 
-import sase.base.Event;
+import base.Event;
 
 /**
  * Represents an empty condition which is always satisfied.

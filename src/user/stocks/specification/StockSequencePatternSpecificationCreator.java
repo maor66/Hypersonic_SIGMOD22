@@ -1,20 +1,20 @@
-package sase.user.stocks.specification;
+package user.stocks.specification;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import sase.base.EventType;
-import sase.config.SimulationConfig;
-import sase.order.algorithm.DynamicOrderingAlgorithm;
-import sase.pattern.EventTypesManager;
-import sase.pattern.creation.PatternTypes;
-import sase.specification.ConditionSpecification;
-import sase.specification.PatternSpecification;
-import sase.specification.SimulationSpecification;
-import sase.specification.creators.ISimulationSpecificationCreator;
-import sase.user.stocks.StockEventTypesManager;
+import base.EventType;
+import config.SimulationConfig;
+import order.algorithm.DynamicOrderingAlgorithm;
+import pattern.EventTypesManager;
+import pattern.creation.PatternTypes;
+import specification.ConditionSpecification;
+import specification.PatternSpecification;
+import specification.SimulationSpecification;
+import specification.creators.ISimulationSpecificationCreator;
+import user.stocks.StockEventTypesManager;
 
 public class StockSequencePatternSpecificationCreator implements ISimulationSpecificationCreator {
 	

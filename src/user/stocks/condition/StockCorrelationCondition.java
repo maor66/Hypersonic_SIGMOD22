@@ -1,11 +1,11 @@
-package sase.user.stocks.condition;
+package user.stocks.condition;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.condition.base.DoubleEventCondition;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
-import sase.user.stocks.StockEventTypesManager;
+import base.Event;
+import base.EventType;
+import pattern.condition.base.DoubleEventCondition;
+import simulator.Environment;
+import statistics.Statistics;
+import user.stocks.StockEventTypesManager;
 
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 

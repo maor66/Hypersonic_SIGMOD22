@@ -1,8 +1,8 @@
-package sase.user.stocks.condition;
+package user.stocks.condition;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.condition.base.SingleEventCondition;
+import base.Event;
+import base.EventType;
+import pattern.condition.base.SingleEventCondition;
 
 /**
  * Represents a condition verifying that price range of a given stock event doesn't exceed a given value.

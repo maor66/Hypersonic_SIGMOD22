@@ -1,6 +1,6 @@
-package sase.specification.creators;
+package specification.creators;
 
-import sase.specification.SimulationSpecification;
+import specification.SimulationSpecification;
 
 public interface ISimulationSpecificationCreator {
 

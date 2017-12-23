@@ -1,4 +1,4 @@
-package sase.order;
+package order;
 
 public enum OrderingAlgorithmTypes {
 	TRIVIAL,

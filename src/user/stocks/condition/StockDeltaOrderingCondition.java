@@ -1,9 +1,9 @@
-package sase.user.stocks.condition;
+package user.stocks.condition;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.condition.base.DoubleEventCondition;
-import sase.user.stocks.StockEventTypesManager;
+import base.Event;
+import base.EventType;
+import pattern.condition.base.DoubleEventCondition;
+import user.stocks.StockEventTypesManager;
 
 public class StockDeltaOrderingCondition extends DoubleEventCondition {
 

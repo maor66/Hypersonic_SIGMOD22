@@ -1,14 +1,14 @@
-package sase.pattern.condition.iteration.eager;
+package pattern.condition.iteration.eager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import sase.base.Event;
-import sase.pattern.condition.base.DoubleEventCondition;
-import sase.pattern.condition.iteration.IteratedEventExternalCondition;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
+import base.Event;
+import pattern.condition.base.DoubleEventCondition;
+import pattern.condition.iteration.IteratedEventExternalCondition;
+import simulator.Environment;
+import statistics.Statistics;
 
 public class IterationTriggerCondition extends IteratedEventExternalCondition {
 

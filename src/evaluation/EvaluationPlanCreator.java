@@ -1,21 +1,21 @@
-package sase.evaluation;
+package evaluation;
 
 import java.util.List;
 
-import sase.base.EventType;
-import sase.evaluation.tree.ITreeCostModel;
-import sase.evaluation.tree.ITreeTopologyCreator;
-import sase.evaluation.tree.TopologyCreatorFactory;
-import sase.evaluation.tree.TreeCostModelFactory;
-import sase.evaluation.tree.elements.Node;
-import sase.order.IOrderingAlgorithm;
-import sase.order.OrderingAlgorithmFactory;
-import sase.order.cost.CostModelFactory;
-import sase.order.cost.ICostModel;
-import sase.pattern.EventTypesManager;
-import sase.pattern.Pattern;
-import sase.pattern.condition.base.CNFCondition;
-import sase.specification.EvaluationSpecification;
+import base.EventType;
+import evaluation.tree.ITreeCostModel;
+import evaluation.tree.ITreeTopologyCreator;
+import evaluation.tree.TopologyCreatorFactory;
+import evaluation.tree.TreeCostModelFactory;
+import evaluation.tree.elements.Node;
+import order.IOrderingAlgorithm;
+import order.OrderingAlgorithmFactory;
+import order.cost.CostModelFactory;
+import order.cost.ICostModel;
+import pattern.EventTypesManager;
+import pattern.Pattern;
+import pattern.condition.base.CNFCondition;
+import specification.EvaluationSpecification;
 
 public class EvaluationPlanCreator {
 

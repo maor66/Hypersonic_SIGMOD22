@@ -1,9 +1,9 @@
-package sase.order.cost;
+package order.cost;
 
 import java.util.List;
 
-import sase.base.EventType;
-import sase.pattern.Pattern;
+import base.EventType;
+import pattern.Pattern;
 
 public interface ICostModel {
 

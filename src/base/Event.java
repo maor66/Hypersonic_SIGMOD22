@@ -1,11 +1,17 @@
-package sase.base;
+package base;
 
-import sase.pattern.EventTypesManager;
+import pattern.EventTypesManager;
 
 public class Event {
 	
 	private static final int signatureSize = 2;
-	
+
+	public Event(Event event) {
+		this.type = event.type;
+		this.systemTimestamp = event.systemTimestamp;
+		this.payload = event.payload.clone();
+	}
+
 	public static Object[] getEventSignature(Object[] eventPayload) {
 		Object[] result = new Object[signatureSize];
 		for (int i = 0; i < signatureSize; ++i) {
@@ -78,5 +84,7 @@ public class Event {
 		}
 		return result;
 	}
+
+	//TODO: create a clone method
 
 }

@@ -1,10 +1,10 @@
-package sase.pattern.condition.iteration.lazy;
+package pattern.condition.iteration.lazy;
 
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.condition.iteration.IteratedEventExternalCondition;
+import base.Event;
+import base.EventType;
+import pattern.condition.iteration.IteratedEventExternalCondition;
 
 public abstract class IteratedFilterCondition extends IteratedEventExternalCondition {
 

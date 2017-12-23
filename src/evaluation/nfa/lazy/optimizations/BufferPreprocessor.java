@@ -1,13 +1,13 @@
-package sase.evaluation.nfa.lazy.optimizations;
+package evaluation.nfa.lazy.optimizations;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.AggregatedEvent;
-import sase.base.Event;
-import sase.evaluation.nfa.lazy.elements.LazyInstance;
-import sase.pattern.condition.Condition;
-import sase.pattern.condition.base.CNFCondition;
+import base.AggregatedEvent;
+import base.Event;
+import evaluation.nfa.lazy.elements.LazyInstance;
+import pattern.condition.Condition;
+import pattern.condition.base.CNFCondition;
 
 public abstract class BufferPreprocessor {
 	

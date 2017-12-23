@@ -1,17 +1,17 @@
-package sase.order;
+package order;
 
 import java.util.List;
 
-import sase.base.EventType;
-import sase.order.algorithm.DynamicOrderingAlgorithm;
-import sase.order.algorithm.EventFrequencyOrderingAlgorithm;
-import sase.order.algorithm.FixedOrderingAlgorithm;
-import sase.order.algorithm.GreedyCostModelOrderingAlgorithm;
-import sase.order.algorithm.GreedySelectivityOrderingAlgorithm;
-import sase.order.algorithm.IterativeImprovementOrderingAlgorithm;
-import sase.order.algorithm.RandomOrderingAlgorithm;
-import sase.order.algorithm.TrivialOrderingAlgorithm;
-import sase.order.algorithm.adaptive.greedy.GreedyAdaptiveOrderingAlgorithm;
+import base.EventType;
+import order.algorithm.DynamicOrderingAlgorithm;
+import order.algorithm.EventFrequencyOrderingAlgorithm;
+import order.algorithm.FixedOrderingAlgorithm;
+import order.algorithm.GreedyCostModelOrderingAlgorithm;
+import order.algorithm.GreedySelectivityOrderingAlgorithm;
+import order.algorithm.IterativeImprovementOrderingAlgorithm;
+import order.algorithm.RandomOrderingAlgorithm;
+import order.algorithm.TrivialOrderingAlgorithm;
+import order.algorithm.adaptive.greedy.GreedyAdaptiveOrderingAlgorithm;
 
 public class OrderingAlgorithmFactory {
 

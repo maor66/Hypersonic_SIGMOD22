@@ -1,9 +1,9 @@
-package sase.simulator;
+package simulator;
 
 import java.util.HashMap;
 
-import sase.base.Event;
-import sase.pattern.condition.base.AtomicCondition;
+import base.Event;
+import pattern.condition.base.AtomicCondition;
 
 //TODO: for now, only two-operand predicates will be supported!
 public class PredicateResultsCache {

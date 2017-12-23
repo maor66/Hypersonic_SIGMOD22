@@ -1,8 +1,8 @@
-package sase.user.trams;
+package user.trams;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.condition.base.DoubleEventCondition;
+import base.Event;
+import base.EventType;
+import pattern.condition.base.DoubleEventCondition;
 
 import java.util.Arrays;
 import java.util.HashSet;

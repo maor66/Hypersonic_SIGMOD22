@@ -1,8 +1,8 @@
-package sase.user.stocks.condition;
+package user.stocks.condition;
 
-import sase.base.EventType;
-import sase.pattern.condition.iteration.lazy.GroupByAttributeCondition;
-import sase.user.stocks.StockEventTypesManager;
+import base.EventType;
+import pattern.condition.iteration.lazy.GroupByAttributeCondition;
+import user.stocks.StockEventTypesManager;
 
 public class StockSameCompanyCondition extends GroupByAttributeCondition {
 

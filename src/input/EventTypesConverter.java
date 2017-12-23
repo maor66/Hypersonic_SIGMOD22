@@ -1,8 +1,8 @@
-package sase.input;
+package input;
 
-import sase.base.EventType;
-import sase.specification.PatternSpecification;
-import sase.specification.SimulationSpecification;
+import base.EventType;
+import specification.PatternSpecification;
+import specification.SimulationSpecification;
 
 public abstract class EventTypesConverter {
 	

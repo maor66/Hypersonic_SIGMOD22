@@ -1,15 +1,15 @@
-package sase.evaluation.nfa.lazy.optimizations;
+package evaluation.nfa.lazy.optimizations;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import sase.base.Event;
-import sase.evaluation.nfa.lazy.elements.LazyInstance;
-import sase.pattern.condition.Condition;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.pattern.condition.base.CNFCondition;
-import sase.pattern.condition.iteration.lazy.GroupByAttributeCondition;
+import base.Event;
+import evaluation.nfa.lazy.elements.LazyInstance;
+import pattern.condition.Condition;
+import pattern.condition.base.AtomicCondition;
+import pattern.condition.base.CNFCondition;
+import pattern.condition.iteration.lazy.GroupByAttributeCondition;
 
 public class BufferGrouper extends BufferPreprocessor {
 	
@@ -46,7 +46,7 @@ public class BufferGrouper extends BufferPreprocessor {
 		List<Event> groupedEvents = new ArrayList<Event>();
 		for (List<Event> listOfEvents : eventsByAttributeValue.values()) {
 			List<Event> listToAdd = isLastPreprocessor ? 
-					BufferPreprocessor.createAggregatedEventsFromBufferedEvents(listOfEvents) : listOfEvents;
+					createAggregatedEventsFromBufferedEvents(listOfEvents) : listOfEvents;
 			groupedEvents.addAll(listToAdd);
 		}
 		return groupedEvents;

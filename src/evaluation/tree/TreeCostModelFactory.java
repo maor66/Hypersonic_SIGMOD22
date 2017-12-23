@@ -1,10 +1,10 @@
-package sase.evaluation.tree;
+package evaluation.tree;
 
 import java.util.List;
 
-import sase.base.EventType;
-import sase.evaluation.tree.cost.ThroughputLatencyTreeCostModel;
-import sase.evaluation.tree.cost.ThroughputTreeCostModel;
+import base.EventType;
+import evaluation.tree.cost.ThroughputLatencyTreeCostModel;
+import evaluation.tree.cost.ThroughputTreeCostModel;
 
 public class TreeCostModelFactory {
 

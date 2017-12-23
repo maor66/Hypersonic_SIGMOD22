@@ -1,14 +1,14 @@
-package sase.specification.creators;
+package specification.creators;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.config.SimulationConfig;
-import sase.specification.AdaptationSpecification;
-import sase.specification.EvaluationSpecification;
-import sase.specification.InputSpecification;
-import sase.specification.PatternSpecification;
-import sase.specification.SimulationSpecification;
+import config.SimulationConfig;
+import specification.AdaptationSpecification;
+import specification.EvaluationSpecification;
+import specification.InputSpecification;
+import specification.PatternSpecification;
+import specification.SimulationSpecification;
 
 public class CrossProductSimulationSpecificationCreator implements ISimulationSpecificationCreator {
 

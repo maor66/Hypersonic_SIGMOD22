@@ -1,18 +1,18 @@
-package sase.simulator;
+package simulator;
 
 import java.io.IOException;
 
-import sase.adaptive.estimation.SlidingWindowEventArrivalRateEstimator;
-import sase.adaptive.estimation.SlidingWindowSelectivityEstimator;
-import sase.adaptive.monitoring.AdaptationNecessityDetector;
-import sase.adaptive.monitoring.AdaptationNecessityDetectorFactory;
-import sase.config.MainConfig;
-import sase.evaluation.EvaluationPlanCreator;
-import sase.evaluation.IEvaluationMechanismInfo;
-import sase.pattern.Pattern;
-import sase.specification.AdaptationSpecification;
-import sase.specification.SimulationSpecification;
-import sase.statistics.StatisticsManager;
+import adaptive.estimation.SlidingWindowEventArrivalRateEstimator;
+import adaptive.estimation.SlidingWindowSelectivityEstimator;
+import adaptive.monitoring.AdaptationNecessityDetector;
+import adaptive.monitoring.AdaptationNecessityDetectorFactory;
+import config.MainConfig;
+import evaluation.EvaluationPlanCreator;
+import evaluation.IEvaluationMechanismInfo;
+import pattern.Pattern;
+import specification.AdaptationSpecification;
+import specification.SimulationSpecification;
+import statistics.StatisticsManager;
 
 public class Environment {
 

@@ -1,14 +1,14 @@
-package sase.evaluation.tree.elements;
+package evaluation.tree.elements;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.config.MainConfig;
-import sase.input.EventTypesConverterTypes;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.pattern.condition.base.CNFCondition;
-import sase.pattern.condition.time.PairTemporalOrderCondition;
+import base.EventType;
+import config.MainConfig;
+import input.EventTypesConverterTypes;
+import pattern.condition.base.AtomicCondition;
+import pattern.condition.base.CNFCondition;
+import pattern.condition.time.PairTemporalOrderCondition;
 
 public class InternalNode extends Node {
 

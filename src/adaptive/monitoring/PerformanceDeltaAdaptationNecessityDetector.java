@@ -1,8 +1,8 @@
-package sase.adaptive.monitoring;
+package adaptive.monitoring;
 
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
-import sase.statistics.StatisticsManager;
+import simulator.Environment;
+import statistics.Statistics;
+import statistics.StatisticsManager;
 
 public class PerformanceDeltaAdaptationNecessityDetector extends AdaptationNecessityDetector {
 

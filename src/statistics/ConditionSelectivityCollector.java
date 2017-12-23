@@ -1,4 +1,4 @@
-package sase.statistics;
+package statistics;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -7,7 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
-import sase.config.MainConfig;
+import config.MainConfig;
 
 public class ConditionSelectivityCollector {
 	

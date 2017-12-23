@@ -1,6 +1,6 @@
-package sase.pattern.creation;
+package pattern.creation;
 
-import sase.pattern.Pattern;
+import pattern.Pattern;
 
 public abstract class PatternCreator {
 

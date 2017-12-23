@@ -1,4 +1,4 @@
-package sase.input;
+package input;
 
 public enum EventTypesConverterTypes {
 	STOCK_BY_INDUSTRY_MEGA_LARGE_COMPANY,

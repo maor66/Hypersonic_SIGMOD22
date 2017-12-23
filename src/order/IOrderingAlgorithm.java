@@ -1,10 +1,10 @@
-package sase.order;
+package order;
 
 import java.util.List;
 
-import sase.base.EventType;
-import sase.order.cost.ICostModel;
-import sase.pattern.Pattern;
+import base.EventType;
+import order.cost.ICostModel;
+import pattern.Pattern;
 
 public interface IOrderingAlgorithm {
 

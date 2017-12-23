@@ -1,7 +1,7 @@
-package sase.specification;
+package specification;
 
-import sase.adaptive.monitoring.AdaptationNecessityDetectorTypes;
-import sase.adaptive.monitoring.invariant.compare.InvariantComparerType;
+import adaptive.monitoring.AdaptationNecessityDetectorTypes;
+import adaptive.monitoring.invariant.compare.InvariantComparerType;
 
 public class AdaptationSpecification {
 	

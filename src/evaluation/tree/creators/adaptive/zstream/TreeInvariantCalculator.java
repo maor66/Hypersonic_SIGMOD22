@@ -1,9 +1,9 @@
-package sase.evaluation.tree.creators.adaptive.zstream;
+package evaluation.tree.creators.adaptive.zstream;
 
-import sase.adaptive.estimation.SlidingWindowEventArrivalRateEstimator;
-import sase.adaptive.monitoring.invariant.IInvariantCalculator;
-import sase.adaptive.monitoring.invariant.InvariantInput;
-import sase.simulator.Environment;
+import adaptive.estimation.SlidingWindowEventArrivalRateEstimator;
+import adaptive.monitoring.invariant.IInvariantCalculator;
+import adaptive.monitoring.invariant.InvariantInput;
+import simulator.Environment;
 
 //TODO:I'm so sorry for the completely unjustified code duplication in this class..
 public class TreeInvariantCalculator implements IInvariantCalculator {

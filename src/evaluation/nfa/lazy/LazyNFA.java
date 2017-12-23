@@ -1,28 +1,29 @@
-package sase.evaluation.nfa.lazy;
+package evaluation.nfa.lazy;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
-import sase.base.AggregatedEvent;
-import sase.base.Event;
-import sase.base.EventType;
-import sase.evaluation.common.Match;
-import sase.evaluation.nfa.NFA;
-import sase.evaluation.nfa.eager.elements.Instance;
-import sase.evaluation.nfa.eager.elements.NFAState;
-import sase.evaluation.nfa.eager.elements.Transition;
-import sase.evaluation.nfa.lazy.elements.EfficientInputBuffer;
-import sase.evaluation.nfa.lazy.elements.LazyInstance;
-import sase.evaluation.nfa.lazy.elements.LazyTransition;
-import sase.evaluation.nfa.lazy.elements.LazyTransitionType;
-import sase.evaluation.nfa.lazy.optimizations.BufferPreprocessor;
-import sase.pattern.Pattern;
-import sase.pattern.condition.Condition;
-import sase.pattern.condition.base.TrivialCondition;
-import sase.pattern.condition.time.EventTemporalPositionCondition;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
+import base.AggregatedEvent;
+import base.Event;
+import base.EventType;
+import evaluation.common.Match;
+import evaluation.nfa.NFA;
+import evaluation.nfa.eager.elements.Instance;
+import evaluation.nfa.eager.elements.NFAState;
+import evaluation.nfa.eager.elements.Transition;
+import evaluation.nfa.lazy.elements.EfficientInputBuffer;
+import evaluation.nfa.lazy.elements.LazyInstance;
+import evaluation.nfa.lazy.elements.LazyTransition;
+import evaluation.nfa.lazy.elements.LazyTransitionType;
+import evaluation.nfa.lazy.optimizations.BufferPreprocessor;
+import pattern.Pattern;
+import pattern.condition.Condition;
+import pattern.condition.base.TrivialCondition;
+import pattern.condition.time.EventTemporalPositionCondition;
+import simulator.Environment;
+import statistics.Statistics;
 
 public abstract class LazyNFA extends NFA {
 
@@ -89,13 +90,27 @@ public abstract class LazyNFA extends NFA {
 		if (instancesToCheck == null) {
 			return null;
 		}
-		if (shouldActivateUnboundedIterativeMode()) {
-			performInstanceLoopWithUnboundedIterativeEvents(event, instancesToCheck, instancesToAdd, 
-					   										instancesToRemove, matches);
-		}
-		else {
-			performRegularInstanceLoop(event, instancesToCheck, instancesToAdd, instancesToRemove, matches);
-		}
+
+		//Parallelism:
+        ForkJoinPool forkJoinPool = new ForkJoinPool(4);
+		RecursiveNFArun recursiveNFArun = new RecursiveNFArun(this, new Event(event), instances.getInstancesForEvent(event, canStartInstance)
+                , new ArrayList<Instance>(), new ArrayList<Instance>(),  new LinkedList<Match>());
+		NFArunResult result = forkJoinPool.invoke(recursiveNFArun);
+
+
+
+        instancesToAdd = result.instancesToAdd;
+        instancesToRemove = result.instancesToRemove;
+        matches = result.matches;
+/*
+        if (shouldActivateUnboundedIterativeMode()) {
+            performInstanceLoopWithUnboundedIterativeEvents(event, instancesToCheck, instancesToAdd,
+                    instancesToRemove, matches);
+        }
+        else {
+            performRegularInstanceLoop(event, instancesToCheck, instancesToAdd, instancesToRemove, matches);
+        }
+*/
 		for (Instance instance : instances.getInstancesInAcceptingState()) {
 			checkInstanceForMatch(instance, matches, instancesToRemove);
 		}
@@ -111,9 +126,9 @@ public abstract class LazyNFA extends NFA {
 		return matches.size() > 0 ? matches : null;
 	}
 	
-	private void performRegularInstanceLoop(Event event, List<List<Instance>> instancesToCheck,
-											List<Instance> instancesToAdd, List<Instance> instancesToRemove,
-											List<Match> matches) {
+	public void performRegularInstanceLoop(Event event, List<List<Instance>> instancesToCheck,
+                                           List<Instance> instancesToAdd, List<Instance> instancesToRemove,
+                                           List<Match> matches) {
 		for (List<Instance> instanceList : instancesToCheck) {
 			List<Instance> instancesToRelocate = new ArrayList<Instance>();
 			NFAState currentState = instanceList.get(0).getCurrentState();
@@ -135,11 +150,11 @@ public abstract class LazyNFA extends NFA {
 		
 	}
 	
-	private void performInstanceLoopWithUnboundedIterativeEvents(Event event,
-																 List<List<Instance>> instancesToCheck,
-																 List<Instance> instancesToAdd, 
-																 List<Instance> instancesToRemove,
-																 List<Match> matches) {
+	public void performInstanceLoopWithUnboundedIterativeEvents(Event event,
+                                                                List<List<Instance>> instancesToCheck,
+                                                                List<Instance> instancesToAdd,
+                                                                List<Instance> instancesToRemove,
+                                                                List<Match> matches) {
 		
 		for (List<Instance> instanceList : instancesToCheck) {
 			for (Instance instance : instanceList) {

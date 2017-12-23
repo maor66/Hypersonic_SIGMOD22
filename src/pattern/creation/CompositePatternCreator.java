@@ -1,18 +1,18 @@
-package sase.pattern.creation;
+package pattern.creation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.pattern.CompositePattern;
-import sase.pattern.EventTypesManager;
-import sase.pattern.Pattern;
-import sase.pattern.UnaryPattern;
-import sase.pattern.Pattern.PatternOperatorType;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.pattern.condition.base.CNFCondition;
-import sase.specification.ConditionSpecification;
+import base.EventType;
+import pattern.CompositePattern;
+import pattern.EventTypesManager;
+import pattern.Pattern;
+import pattern.UnaryPattern;
+import pattern.Pattern.PatternOperatorType;
+import pattern.condition.base.AtomicCondition;
+import pattern.condition.base.CNFCondition;
+import specification.ConditionSpecification;
 
 public class CompositePatternCreator extends PatternCreator {
 

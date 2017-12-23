@@ -1,15 +1,15 @@
-package sase.evaluation.nfa.eager.elements;
+package evaluation.nfa.eager.elements;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.evaluation.nfa.NFA;
-import sase.evaluation.nfa.lazy.LazyNFA;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
+import base.Event;
+import base.EventType;
+import evaluation.nfa.NFA;
+import evaluation.nfa.lazy.LazyNFA;
+import simulator.Environment;
+import statistics.Statistics;
 
 
 public class InstanceStorage {

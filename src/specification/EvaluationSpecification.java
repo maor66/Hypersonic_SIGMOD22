@@ -1,12 +1,12 @@
-package sase.specification;
+package specification;
 
-import sase.evaluation.EvaluationMechanismTypes;
-import sase.evaluation.nfa.lazy.LazyNFANegationTypes;
-import sase.evaluation.tree.TopologyCreatorTypes;
-import sase.evaluation.tree.TreeCostModelTypes;
-import sase.order.OrderingAlgorithmTypes;
-import sase.order.cost.CostModelTypes;
-import sase.pattern.EventTypesManager;
+import evaluation.EvaluationMechanismTypes;
+import evaluation.nfa.lazy.LazyNFANegationTypes;
+import evaluation.tree.TopologyCreatorTypes;
+import evaluation.tree.TreeCostModelTypes;
+import order.OrderingAlgorithmTypes;
+import order.cost.CostModelTypes;
+import pattern.EventTypesManager;
 
 public class EvaluationSpecification {
 

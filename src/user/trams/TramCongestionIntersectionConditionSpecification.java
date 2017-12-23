@@ -1,11 +1,11 @@
-package sase.user.trams;
+package user.trams;
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.pattern.EventTypesManager;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.specification.ConditionSpecification;
+import base.EventType;
+import pattern.EventTypesManager;
+import pattern.condition.base.AtomicCondition;
+import specification.ConditionSpecification;
 
 public class TramCongestionIntersectionConditionSpecification extends ConditionSpecification {
 

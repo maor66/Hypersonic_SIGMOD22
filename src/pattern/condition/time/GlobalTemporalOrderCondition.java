@@ -1,11 +1,11 @@
-package sase.pattern.condition.time;
+package pattern.condition.time;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.pattern.condition.base.CNFCondition;
+import base.EventType;
+import pattern.condition.base.AtomicCondition;
+import pattern.condition.base.CNFCondition;
 
 public class GlobalTemporalOrderCondition extends CNFCondition {
 

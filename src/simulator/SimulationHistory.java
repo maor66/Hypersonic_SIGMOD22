@@ -1,8 +1,8 @@
-package sase.simulator;
+package simulator;
 
 import java.util.HashMap;
 
-import sase.statistics.StatisticsManager;
+import statistics.StatisticsManager;
 
 public class SimulationHistory {
 

@@ -1,8 +1,8 @@
-package sase.adaptive.monitoring;
+package adaptive.monitoring;
 
-import sase.evaluation.EvaluationPlan;
-import sase.pattern.Pattern;
-import sase.simulator.Environment;
+import evaluation.EvaluationPlan;
+import pattern.Pattern;
+import simulator.Environment;
 
 public class PlanCreatorBasedAdaptationNecessityDetector extends AdaptationNecessityDetector {
 

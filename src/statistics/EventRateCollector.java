@@ -1,10 +1,10 @@
-package sase.statistics;
+package statistics;
 
 import java.util.HashMap;
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
+import base.Event;
+import base.EventType;
 
 public class EventRateCollector {
 

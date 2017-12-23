@@ -1,15 +1,15 @@
-package sase.pattern.creation;
+package pattern.creation;
 
-import sase.pattern.EventTypesManager;
-import sase.pattern.Pattern;
-import sase.specification.InputSpecification;
-import sase.specification.PatternSpecification;
-import sase.user.speedd.fraud.CreditCardFraudEventTypesManager;
-import sase.user.speedd.traffic.TrafficEventTypesManager;
-import sase.user.stocks.StockEventTypesManager;
-import sase.user.synthetic.SyntheticEventTypesManager;
-import sase.user.traffic.AarhusTrafficEventTypesManager;
-import sase.user.trams.TramEventTypesManager;
+import pattern.EventTypesManager;
+import pattern.Pattern;
+import specification.InputSpecification;
+import specification.PatternSpecification;
+import user.speedd.fraud.CreditCardFraudEventTypesManager;
+import user.speedd.traffic.TrafficEventTypesManager;
+import user.stocks.StockEventTypesManager;
+import user.synthetic.SyntheticEventTypesManager;
+import user.traffic.AarhusTrafficEventTypesManager;
+import user.trams.TramEventTypesManager;
 
 /**
  * This class is responsible for pattern creation.

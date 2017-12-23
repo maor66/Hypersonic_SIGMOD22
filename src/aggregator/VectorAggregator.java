@@ -1,10 +1,10 @@
-package sase.aggregator;
+package aggregator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
+import simulator.Environment;
+import statistics.Statistics;
 
 public class VectorAggregator {
 

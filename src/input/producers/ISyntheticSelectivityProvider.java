@@ -1,6 +1,6 @@
-package sase.input.producers;
+package input.producers;
 
-import sase.base.Event;
+import base.Event;
 
 public interface ISyntheticSelectivityProvider {
 

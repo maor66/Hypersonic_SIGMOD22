@@ -1,12 +1,12 @@
-package sase.order.algorithm;
+package order.algorithm;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.order.IOrderingAlgorithm;
-import sase.order.cost.ICostModel;
-import sase.pattern.Pattern;
+import base.EventType;
+import order.IOrderingAlgorithm;
+import order.cost.ICostModel;
+import pattern.Pattern;
 
 public class TrivialOrderingAlgorithm implements IOrderingAlgorithm {
 

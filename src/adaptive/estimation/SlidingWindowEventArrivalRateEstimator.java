@@ -1,12 +1,12 @@
-package sase.adaptive.estimation;
+package adaptive.estimation;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.config.EventRateConfig;
-import sase.config.MainConfig;
-import sase.pattern.EventTypesManager;
+import base.EventType;
+import config.EventRateConfig;
+import config.MainConfig;
+import pattern.EventTypesManager;
 
 public class SlidingWindowEventArrivalRateEstimator {
 

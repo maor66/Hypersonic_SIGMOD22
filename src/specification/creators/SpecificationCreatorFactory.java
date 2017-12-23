@@ -1,7 +1,7 @@
-package sase.specification.creators;
+package specification.creators;
 
-import sase.config.SimulationConfig;
-import sase.user.stocks.specification.StockSequencePatternSpecificationCreator;
+import config.SimulationConfig;
+import user.stocks.specification.StockSequencePatternSpecificationCreator;
 
 public class SpecificationCreatorFactory {
 

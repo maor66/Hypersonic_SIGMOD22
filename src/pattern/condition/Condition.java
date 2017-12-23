@@ -1,12 +1,12 @@
-package sase.pattern.condition;
+package pattern.condition;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.config.MainConfig;
-import sase.statistics.ConditionSelectivityCollector;
+import base.Event;
+import base.EventType;
+import config.MainConfig;
+import statistics.ConditionSelectivityCollector;
 
 /**
  * Represents a condition to be satisfied by a complex event.

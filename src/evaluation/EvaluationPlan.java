@@ -1,9 +1,9 @@
-package sase.evaluation;
+package evaluation;
 
 import java.util.List;
 
-import sase.base.EventType;
-import sase.evaluation.tree.elements.Node;
+import base.EventType;
+import evaluation.tree.elements.Node;
 
 public class EvaluationPlan {
 

@@ -1,14 +1,14 @@
-package sase.evaluation.nfa.eager.elements;
+package evaluation.nfa.eager.elements;
 
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.evaluation.common.EventBuffer;
-import sase.evaluation.common.Match;
-import sase.evaluation.nfa.NFA;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
+import base.Event;
+import base.EventType;
+import evaluation.common.EventBuffer;
+import evaluation.common.Match;
+import evaluation.nfa.NFA;
+import simulator.Environment;
+import statistics.Statistics;
 
 public class Instance {
 	protected final NFA automaton;

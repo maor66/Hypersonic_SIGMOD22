@@ -1,21 +1,21 @@
-package sase.order.algorithm.adaptive.greedy;
+package order.algorithm.adaptive.greedy;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.adaptive.monitoring.invariant.Invariant;
-import sase.adaptive.monitoring.invariant.InvariantAdaptationNecessityDetector;
-import sase.adaptive.monitoring.invariant.compare.InvariantComparer.ComparisonType;
-import sase.base.EventType;
-import sase.order.IOrderingAlgorithm;
-import sase.order.algorithm.GreedyCostModelOrderingAlgorithm;
-import sase.order.cost.ICostModel;
-import sase.order.cost.ThroughputCostModel;
-import sase.pattern.CompositePattern;
-import sase.pattern.Pattern;
-import sase.pattern.Pattern.PatternOperatorType;
-import sase.pattern.condition.base.CNFCondition;
-import sase.simulator.Environment;
+import adaptive.monitoring.invariant.Invariant;
+import adaptive.monitoring.invariant.InvariantAdaptationNecessityDetector;
+import adaptive.monitoring.invariant.compare.InvariantComparer.ComparisonType;
+import base.EventType;
+import order.IOrderingAlgorithm;
+import order.algorithm.GreedyCostModelOrderingAlgorithm;
+import order.cost.ICostModel;
+import order.cost.ThroughputCostModel;
+import pattern.CompositePattern;
+import pattern.Pattern;
+import pattern.Pattern.PatternOperatorType;
+import pattern.condition.base.CNFCondition;
+import simulator.Environment;
 
 public class GreedyAdaptiveOrderingAlgorithm implements IOrderingAlgorithm {
 

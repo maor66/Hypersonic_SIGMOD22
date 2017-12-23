@@ -1,8 +1,8 @@
-package sase.aggregator.builtin;
+package aggregator.builtin;
 
 import java.util.List;
 
-import sase.aggregator.ScalarAggregator;
+import aggregator.ScalarAggregator;
 
 public class AverageAggregator extends ScalarAggregator {
 

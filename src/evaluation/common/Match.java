@@ -1,8 +1,8 @@
-package sase.evaluation.common;
+package evaluation.common;
 
 import java.util.List;
 
-import sase.base.Event;
+import base.Event;
 
 public class Match {
 	private final List<Event> primitiveEvents;

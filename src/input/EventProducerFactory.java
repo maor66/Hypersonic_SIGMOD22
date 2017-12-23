@@ -1,10 +1,10 @@
-package sase.input;
+package input;
 
-import sase.config.MainConfig;
-import sase.input.producers.FileBasedEventProducer;
-import sase.input.producers.SyntheticEventProducer;
-import sase.pattern.Pattern;
-import sase.specification.SimulationSpecification;
+import config.MainConfig;
+import input.producers.FileBasedEventProducer;
+import input.producers.SyntheticEventProducer;
+import pattern.Pattern;
+import specification.SimulationSpecification;
 
 public class EventProducerFactory {
 

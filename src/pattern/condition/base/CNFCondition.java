@@ -1,11 +1,11 @@
-package sase.pattern.condition.base;
+package pattern.condition.base;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.condition.Condition;
+import base.Event;
+import base.EventType;
+import pattern.condition.Condition;
 
 /**
  * Represents a condition in a format of a CNF formula, containing a conjunction of multiple atomic conditions.

@@ -1,9 +1,9 @@
-package sase.pattern.condition.time;
+package pattern.condition.time;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.EventTypesManager;
-import sase.pattern.condition.base.DoubleEventCondition;
+import base.Event;
+import base.EventType;
+import pattern.EventTypesManager;
+import pattern.condition.base.DoubleEventCondition;
 
 /**
  * Represents a condition enforcing a temporal order on a pair of events.

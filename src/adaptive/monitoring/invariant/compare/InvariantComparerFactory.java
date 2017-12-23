@@ -1,6 +1,6 @@
-package sase.adaptive.monitoring.invariant.compare;
+package adaptive.monitoring.invariant.compare;
 
-import sase.adaptive.monitoring.invariant.compare.InvariantComparer.ComparisonType;
+import adaptive.monitoring.invariant.compare.InvariantComparer.ComparisonType;
 
 public class InvariantComparerFactory {
 

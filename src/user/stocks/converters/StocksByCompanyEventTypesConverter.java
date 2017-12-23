@@ -1,12 +1,12 @@
-package sase.user.stocks.converters;
+package user.stocks.converters;
 
 import java.util.HashMap;
 import java.util.List;
 
-import sase.pattern.EventTypesManager;
-import sase.specification.SimulationSpecification;
-import sase.base.EventType;
-import sase.input.EventTypesConverter;
+import pattern.EventTypesManager;
+import specification.SimulationSpecification;
+import base.EventType;
+import input.EventTypesConverter;
 
 public class StocksByCompanyEventTypesConverter extends EventTypesConverter {
 

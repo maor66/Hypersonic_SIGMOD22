@@ -1,4 +1,4 @@
-package sase.adaptive.monitoring;
+package adaptive.monitoring;
 
 public abstract class AdaptationNecessityDetector {
 

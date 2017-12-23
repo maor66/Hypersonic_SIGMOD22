@@ -1,21 +1,21 @@
-package sase.input;
+package input;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.config.MainConfig;
-import sase.specification.InputSpecification;
-import sase.specification.SimulationSpecification;
-import sase.user.speedd.fraud.CreditCardFraudEventTypesConverter;
-import sase.user.speedd.traffic.TrafficSpeedEventTypesConverter;
-import sase.user.stocks.converters.StocksByCompanyEventTypesConverter;
-import sase.user.stocks.converters.StocksByIndustryEventTypesConverter;
-import sase.user.stocks.converters.StocksByRegionEventTypesConverter;
-import sase.user.synthetic.SyntheticEventTypesConverter;
-import sase.user.traffic.AarhusTrafficEventTypesConverter;
-import sase.user.trams.TramCongestionEventTypesConverter;
+import base.Event;
+import base.EventType;
+import config.MainConfig;
+import specification.InputSpecification;
+import specification.SimulationSpecification;
+import user.speedd.fraud.CreditCardFraudEventTypesConverter;
+import user.speedd.traffic.TrafficSpeedEventTypesConverter;
+import user.stocks.converters.StocksByCompanyEventTypesConverter;
+import user.stocks.converters.StocksByIndustryEventTypesConverter;
+import user.stocks.converters.StocksByRegionEventTypesConverter;
+import user.synthetic.SyntheticEventTypesConverter;
+import user.traffic.AarhusTrafficEventTypesConverter;
+import user.trams.TramCongestionEventTypesConverter;
 
 
 

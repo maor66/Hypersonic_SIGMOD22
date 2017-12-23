@@ -1,20 +1,14 @@
-package sase.config;
+package config;
 
-import sase.specification.AdaptationSpecification;
-import sase.specification.EvaluationSpecification;
-import sase.specification.InputSpecification;
-import sase.specification.PatternSpecification;
-import sase.specification.SimulationSpecification;
-import sase.specification.creators.SpecificationCreatorTypes;
-import sase.adaptive.monitoring.AdaptationNecessityDetectorTypes;
-import sase.adaptive.monitoring.invariant.compare.InvariantComparerType;
-import sase.base.Event; //this dummy import is needed to avoid the annoying 'unused warning suppression' message
-import sase.evaluation.EvaluationMechanismTypes;
-import sase.evaluation.nfa.lazy.LazyNFANegationTypes;
-import sase.evaluation.tree.TopologyCreatorTypes;
-import sase.evaluation.tree.TreeCostModelTypes;
-import sase.order.OrderingAlgorithmTypes;
-import sase.order.cost.CostModelTypes;
+import specification.AdaptationSpecification;
+import specification.EvaluationSpecification;
+import specification.InputSpecification;
+import specification.PatternSpecification;
+import specification.SimulationSpecification;
+import specification.creators.SpecificationCreatorTypes;
+import evaluation.EvaluationMechanismTypes;
+import order.OrderingAlgorithmTypes;
+import order.cost.CostModelTypes;
 
 @SuppressWarnings("unused")
 public class SimulationConfig {
@@ -43,7 +37,7 @@ public class SimulationConfig {
 	/* Individual specification sets for cross-combining. */
 	public static final EvaluationSpecification[] evaluationSpecifications = {
 			new EvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-						CostModelTypes.THROUGHPUT_LATENCY,
+						CostModelTypes.THROUGHPUT,
 						0.0),
 //			new EvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
 //						CostModelTypes.THROUGHPUT_LATENCY,
@@ -59,9 +53,9 @@ public class SimulationConfig {
 //						0.0),
 //			new EvaluationSpecification(TopologyCreatorTypes.SELINGER,
 //										TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
-//			new EvaluationSpecification(TopologyCreatorTypes.ZSTREAM, 
+//			new EvaluationSpecification(TopologyCreatorTypes.ZSTREAM,
 //										TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
-//			new EvaluationSpecification(TopologyCreatorTypes.ORDERED_ZSTREAM, 
+//			new EvaluationSpecification(TopologyCreatorTypes.ORDERED_ZSTREAM,
 //										TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
 			new EvaluationSpecification(EvaluationMechanismTypes.EAGER),
 //			new EvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
@@ -78,7 +72,7 @@ public class SimulationConfig {
 //						100.0),
 //			new EvaluationSpecification(TopologyCreatorTypes.SELINGER,
 //										TreeCostModelTypes.THROUGHPUT_LATENCY, 100.0),
-//			new EvaluationSpecification(TopologyCreatorTypes.ZSTREAM, 
+//			new EvaluationSpecification(TopologyCreatorTypes.ZSTREAM,
 //										TreeCostModelTypes.THROUGHPUT_LATENCY, 100.0),
 //			new EvaluationSpecification(TopologyCreatorTypes.ORDERED_ZSTREAM, 
 //										TreeCostModelTypes.THROUGHPUT_LATENCY, 100.0),

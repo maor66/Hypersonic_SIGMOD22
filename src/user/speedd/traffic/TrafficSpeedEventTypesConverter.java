@@ -1,8 +1,8 @@
-package sase.user.speedd.traffic;
+package user.speedd.traffic;
 
-import sase.base.EventType;
-import sase.input.EventTypesConverter;
-import sase.specification.SimulationSpecification;
+import base.EventType;
+import input.EventTypesConverter;
+import specification.SimulationSpecification;
 
 public class TrafficSpeedEventTypesConverter extends EventTypesConverter {
 

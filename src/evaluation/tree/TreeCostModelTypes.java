@@ -1,4 +1,4 @@
-package sase.evaluation.tree;
+package evaluation.tree;
 
 public enum TreeCostModelTypes {
 	NONE,
