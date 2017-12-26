@@ -8,6 +8,7 @@ import evaluation.nfa.eager.elements.Instance;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RecursiveTask;
 
 import static statistics.Statistics.matches;
@@ -40,7 +41,13 @@ public class RecursiveNFArun extends RecursiveTask<NFArunResult> {
                         instancesToRemove, matches);
             }
             else {
-                lazyNFA.performRegularInstanceLoop(event, instancesToCheck, instancesToAdd, instancesToRemove, matches);
+                try {
+                    lazyNFA.performRegularInstanceLoop(event, instancesToCheck, instancesToAdd, instancesToRemove, matches);
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             return new NFArunResult(instancesToAdd,instancesToRemove,matches);
         }

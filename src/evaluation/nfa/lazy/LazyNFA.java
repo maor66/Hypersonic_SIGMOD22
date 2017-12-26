@@ -3,7 +3,7 @@ package evaluation.nfa.lazy;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.*;
 
 import base.AggregatedEvent;
 import base.Event;
@@ -18,6 +18,7 @@ import evaluation.nfa.lazy.elements.LazyInstance;
 import evaluation.nfa.lazy.elements.LazyTransition;
 import evaluation.nfa.lazy.elements.LazyTransitionType;
 import evaluation.nfa.lazy.optimizations.BufferPreprocessor;
+import javafx.util.Pair;
 import pattern.Pattern;
 import pattern.condition.Condition;
 import pattern.condition.base.TrivialCondition;
@@ -90,7 +91,7 @@ public abstract class LazyNFA extends NFA {
 		if (instancesToCheck == null) {
 			return null;
 		}
-
+/*
 		//Parallelism:
         ForkJoinPool forkJoinPool = new ForkJoinPool(4);
 		RecursiveNFArun recursiveNFArun = new RecursiveNFArun(this, new Event(event), instances.getInstancesForEvent(event, canStartInstance)
@@ -102,15 +103,21 @@ public abstract class LazyNFA extends NFA {
         instancesToAdd = result.instancesToAdd;
         instancesToRemove = result.instancesToRemove;
         matches = result.matches;
-/*
+*/
         if (shouldActivateUnboundedIterativeMode()) {
             performInstanceLoopWithUnboundedIterativeEvents(event, instancesToCheck, instancesToAdd,
                     instancesToRemove, matches);
         }
         else {
-            performRegularInstanceLoop(event, instancesToCheck, instancesToAdd, instancesToRemove, matches);
+            try {
+                performRegularInstanceLoop(event, instancesToCheck, instancesToAdd, instancesToRemove, matches);
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-*/
+
 		for (Instance instance : instances.getInstancesInAcceptingState()) {
 			checkInstanceForMatch(instance, matches, instancesToRemove);
 		}
@@ -128,18 +135,50 @@ public abstract class LazyNFA extends NFA {
 	
 	public void performRegularInstanceLoop(Event event, List<List<Instance>> instancesToCheck,
                                            List<Instance> instancesToAdd, List<Instance> instancesToRemove,
-                                           List<Match> matches) {
+                                           List<Match> matches) throws ExecutionException, InterruptedException {
+	    int i =0;
 		for (List<Instance> instanceList : instancesToCheck) {
 			List<Instance> instancesToRelocate = new ArrayList<Instance>();
 			NFAState currentState = instanceList.get(0).getCurrentState();
-			for (Instance instance : instanceList) {
-				performSingleInstaceLoopIteration(event, instance, instancesToAdd, instancesToRemove, matches);
-				if (currentState != instance.getCurrentState()) {
-					instancesToRelocate.add(instance);
-				}
+            ExecutorService exec = Executors.newFixedThreadPool(4);
+            List<FutureTask<TripletForExecutor>> futureList= new ArrayList<>();
+
+            for (Instance instance : instanceList) {
+                FutureTask<TripletForExecutor> futureTask = new FutureTask<TripletForExecutor>(
+                        () -> {
+                            List<Instance> addList = new ArrayList<>();
+                            List<Instance> removeList = new ArrayList<>();
+                            List<Instance> reclocateInstance = new ArrayList<>();
+                            performSingleInstaceLoopIteration(event, instance, addList, removeList, matches);
+                            if (currentState != instance.getCurrentState()) {
+                                reclocateInstance.add(instance);
+                            }
+                            return new TripletForExecutor(addList, removeList, reclocateInstance);
+                        }
+                );
+                exec.submit(futureTask);
+                futureList.add(futureTask);
+            }
+            /*
+            for (Instance instance : instanceList) {
+                performSingleInstaceLoopIteration(event, instance, instancesToAdd, instancesToRemove, matches);
+                if (currentState != instance.getCurrentState()) {
+                    instancesToRelocate.add(instance);
+                }
+            }
+            */
+            for (FutureTask<TripletForExecutor> futureTask : futureList)
+            {
+                TripletForExecutor triple = futureTask.get();
+                instancesToAdd.addAll(triple.instancesToAdd);
+                instancesToRemove.addAll(triple.instancesToRemove);
+                instancesToRelocate.addAll(triple.reclocateInstance);
+            }
+
+            //System.out.println(( i++)+ ": Add: " + instancesToAdd + " Remove: " + instancesToRemove + " Relocate: " + instancesToRelocate);
+            relocateInstances(instanceList, instancesToRelocate);
+            exec.shutdown();
 			}
-			relocateInstances(instanceList, instancesToRelocate);
-		}
 	}
 	
 	private void relocateInstances(List<Instance> listFromStorage, List<Instance> instancesToRelocate) {
