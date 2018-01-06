@@ -1,9 +1,5 @@
 package simulator;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import adaptive.monitoring.AdaptationNecessityDetector;
 import base.Event;
 import config.MainConfig;
@@ -25,6 +21,10 @@ import statistics.ConditionSelectivityCollector;
 import statistics.EventRateCollector;
 import statistics.Statistics;
 import statistics.StatisticsManager;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Simulator {
 	

@@ -102,8 +102,10 @@ public class StatisticsManager {
 	
 	private void initializeDiscreteStatisticsHashTable() {
 		discreteStatistics = new HashMap<String, Long>();
-		for (String name : Statistics.getDiscreteOrderedNames()) {
-			discreteStatistics.put(name, new Long(0));
+		synchronized (this) {
+			for (String name : Statistics.getDiscreteOrderedNames()) {
+				discreteStatistics.put(name, new Long(0));
+			}
 		}
 	}
 	
@@ -118,7 +120,9 @@ public class StatisticsManager {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
-		discreteStatistics.put(key, discreteStatistics.get(key) + valueToAdd);
+		synchronized (this) {
+			discreteStatistics.put(key, discreteStatistics.get(key) + valueToAdd);
+		}
 	}
 	
 	public void replaceDiscreteStatistic(String key, long valueToPut) {
@@ -140,8 +144,10 @@ public class StatisticsManager {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
-		if (discreteStatistics.get(key) < newValue) {
-			discreteStatistics.put(key, newValue);
+		synchronized (this) {
+			if (discreteStatistics.get(key) < newValue) {
+				discreteStatistics.put(key, newValue);
+			}
 		}
 	}
 	
@@ -158,7 +164,9 @@ public class StatisticsManager {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
-		return discreteStatistics.get(key);
+		synchronized (this) {
+			return discreteStatistics.get(key);
+		}
 	}
 	
 	public void updateFractionalStatistic(String key, double valueToAdd) {
