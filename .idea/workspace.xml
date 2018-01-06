@@ -2,436 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9083fc58-f83f-4b91-b437-1e17b527762b" name="Default" comment="First commit, trying to add parallelism">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/estimation/ExponentialHistogramsCounter$Bucket.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/estimation/ExponentialHistogramsCounter.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/estimation/SlidingWindowEventArrivalRateEstimator$EventRateEstimator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/estimation/SlidingWindowEventArrivalRateEstimator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/estimation/SlidingWindowSelectivityEstimator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/AdaptationNecessityDetector.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/AdaptationNecessityDetectorFactory.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/AdaptationNecessityDetectorTypes.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/PerformanceDeltaAdaptationNecessityDetector.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/PlanCreatorBasedAdaptationNecessityDetector.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/TrivialAdaptationNecessityDetector.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/IInvariantCalculator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/Invariant.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/InvariantAdaptationNecessityDetector.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/InvariantInput.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/compare/InvariantComparer$ComparisonType.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/compare/InvariantComparer.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/compare/InvariantComparerFactory.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/compare/InvariantComparerType.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/compare/MinimalRelativeDistanceInvariantComparer.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/compare/TrivialInvariantComparer.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/aggregator/ScalarAggregator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/aggregator/VectorAggregator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/aggregator/builtin/AverageAggregator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/aggregator/builtin/AverageVectorAggregator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/base/AggregatedEvent.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/base/Attribute.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/base/Datatype.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/base/Event.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/base/EventType.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/ConditionConfig.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/EvaluationOrderConfig.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/EventRateConfig.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/MainConfig.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/PatternConfig.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/SimulationConfig.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/StructureConfig.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/path/LinuxPathConfig.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/path/PathConfig.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/path/WindowsPathConfig.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/EvaluationMechanismFactory.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/EvaluationMechanismTypes.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/EvaluationPlan.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/EvaluationPlanCreator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/IEvaluationMechanism.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/IEvaluationMechanismInfo.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/common/EventBuffer.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/common/Match.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/common/State.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/NFA.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/AND_NFA.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/AND_SEQ_NFA.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/OR_AND_SEQ_NFA.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/SEQ_NFA.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/elements/Instance.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/elements/InstanceStorage.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/elements/NFAState.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/elements/Transition$Action.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/elements/Transition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyChainNFA.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyMultiChainNFA.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFA.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFANegationTypes.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/elements/EfficientInputBuffer$TypeBuffer.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/elements/EfficientInputBuffer.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/elements/EvaluationOrder.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/elements/LazyInstance.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/elements/LazyTransition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/elements/LazyTransitionType.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/optimizations/BufferFilter$Activator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/optimizations/BufferFilter.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/optimizations/BufferGrouper.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/optimizations/BufferPreprocessor.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/ITreeCostModel.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/ITreeTopologyCreator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/TopologyCreatorFactory.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/TopologyCreatorTypes.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/TreeCostModelFactory.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/TreeCostModelTypes.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/TreeEvaluationMechanism.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/cost/ThroughputLatencyTreeCostModel.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/cost/ThroughputTreeCostModel.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/CostAwareTree.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/OrderedZStreamTreeTopologyCreator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/SelingerTreeTopologyCreator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/ZStreamTreeTopologyCreator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/adaptive/zstream/AdaptiveZStreamTreeTopologyCreator$TreeInfo.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/adaptive/zstream/AdaptiveZStreamTreeTopologyCreator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/adaptive/zstream/TreeInvariantCalculator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/adaptive/zstream/TreeInvariantInput.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/elements/InternalNode.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/elements/LeafNode.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/elements/Node.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/elements/TreeInstance.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/elements/TreeInstanceStorage.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/EventProducer.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/EventProducerFactory.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/EventProducerTypes.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/EventStreamModifier.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/EventTypesConverter.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/EventTypesConverterTypes.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/producers/FileBasedEventProducer.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/producers/FileEventStreamReader.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/producers/ISyntheticSelectivityProvider.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/producers/SyntheticEventProducer.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/IOrderingAlgorithm.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/OrderingAlgorithmFactory.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/OrderingAlgorithmTypes.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/DynamicOrderingAlgorithm.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/EventFrequencyOrderingAlgorithm$EventTypeComparator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/EventFrequencyOrderingAlgorithm.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/FixedOrderingAlgorithm.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/GreedyCostModelOrderingAlgorithm.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/GreedyOrderingAlgorithm.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/GreedySelectivityOrderingAlgorithm.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/IterativeImprovementOrderingAlgorithm$State.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/IterativeImprovementOrderingAlgorithm.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/RandomOrderingAlgorithm.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/TrivialOrderingAlgorithm.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/adaptive/greedy/GreedyAdaptiveOrderingAlgorithm.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/adaptive/greedy/GreedyInvariantCalculator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/adaptive/greedy/GreedyInvariantInput.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/cost/CostModelFactory.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/cost/CostModelTypes.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/cost/ICostModel.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/cost/ThroughputCostModel.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/cost/ThroughputLatencyCostModel.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/CompositePattern.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/EventTypesManager.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/Pattern$PatternOperatorType.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/Pattern.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/SimplePattern.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/UnaryPattern.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/Condition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/base/AtomicCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/base/BufferedEventsRatesCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/base/CNFCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/base/DoubleEventCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/base/SingleEventCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/base/TrivialCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/AggregatedExternalCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/FirstValueExternalCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/IteratedEventExternalCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/IteratedEventInternalCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/eager/IteratedIncrementalCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/eager/IteratedIncrementalDoubleEventCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/eager/IterationTriggerCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/lazy/GroupByAttributeCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/lazy/IteratedFilterCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/lazy/IteratedTotalFromIncrementalCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/time/EventTemporalPositionCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/time/GlobalTemporalOrderCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/time/PairTemporalOrderCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/creation/CompositePatternCreator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/creation/PatternCreator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/creation/PatternFactory.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/creation/PatternTypes.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/simulator/Environment.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/simulator/PredicateResultsCache$DoubleEventPredicateCache.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/simulator/PredicateResultsCache.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/simulator/SimulationHistory.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/simulator/Simulator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/AdaptationSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/ConditionSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/EvaluationSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/InputSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/PatternSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/SimulationSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/creators/CrossProductSimulationSpecificationCreator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/creators/ISimulationSpecificationCreator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/creators/SelectivityEstimationSetupCreator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/creators/SpecificationCreatorFactory.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/creators/SpecificationCreatorTypes.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/statistics/ConditionSelectivityCollector$SelectivityCounters.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/statistics/ConditionSelectivityCollector.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/statistics/EventRateCollector.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/statistics/Statistics.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/statistics/StatisticsManager.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/fraud/CreditCardFraudEventTypesConverter.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/fraud/CreditCardFraudEventTypesManager.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/fraud/SameCreditCardIDCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/fraud/SameCreditCardIDConditionSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/traffic/TrafficEventTypesManager.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/traffic/TrafficSameVehicleIDConditionSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/traffic/TrafficSimilarVehicleIDCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/traffic/TrafficSpeedEventTypesConverter.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/AverageStocksVectorAggregator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/StockEventTypesManager.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockAverageCorrelationCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockCorrelationCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockCorrelationIterationTriggerCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockDeltaOrderingCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockFirstValueCmpCondition$ComparisonOperation.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockFirstValueCmpCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockRangeCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockSameCompanyCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockValueCmpIterationTriggerCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/converters/StocksByCompanyEventTypesConverter.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/converters/StocksByIndustryEventTypesConverter.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/converters/StocksByRegionEventTypesConverter.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/specification/IterativeAverageStockCorrelationConditionSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/specification/IterativeValueCmpStockCorrelationConditionSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/specification/StockCorrelationConditionSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/specification/StockDeltaOrderingConditionSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/specification/StockFirstValueCmpConditionSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/specification/StockSequencePatternSpecificationCreator.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/synthetic/SyntheticCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/synthetic/SyntheticConditionSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/synthetic/SyntheticEventTypesConverter.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/synthetic/SyntheticEventTypesManager.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/traffic/AarhusTrafficEventTypesConverter.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/traffic/AarhusTrafficEventTypesManager.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/traffic/TrafficSpeedToVehiclesNumberCorrelationCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/traffic/TrafficSpeedToVehiclesNumberCorrelationConditionSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/trams/TramCongestionEventTypesConverter.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/trams/TramCongestionIntersectionCondition.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/trams/TramCongestionIntersectionConditionSpecification.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/trams/TramEventTypesManager.class" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/LazyCEP2.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/LazyCEP.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/estimation/ExponentialHistogramsCounter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/estimation/SlidingWindowEventArrivalRateEstimator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/estimation/SlidingWindowSelectivityEstimator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/AdaptationNecessityDetector.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/AdaptationNecessityDetectorFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/AdaptationNecessityDetectorTypes.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/PerformanceDeltaAdaptationNecessityDetector.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/PlanCreatorBasedAdaptationNecessityDetector.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/TrivialAdaptationNecessityDetector.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/IInvariantCalculator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/Invariant.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/InvariantAdaptationNecessityDetector.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/InvariantInput.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/compare/InvariantComparer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/compare/InvariantComparerFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/compare/InvariantComparerType.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/compare/MinimalRelativeDistanceInvariantComparer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/adaptive/monitoring/invariant/compare/TrivialInvariantComparer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/aggregator/ScalarAggregator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/aggregator/VectorAggregator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/aggregator/builtin/AverageAggregator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/aggregator/builtin/AverageVectorAggregator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/base/AggregatedEvent.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/base/Attribute.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/base/Datatype.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/base/Event.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/base/EventType.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/ConditionConfig.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/EvaluationOrderConfig.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/EventRateConfig.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/MainConfig.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/PatternConfig.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/SimulationConfig.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/StructureConfig.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/path/LinuxPathConfig.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/path/PathConfig.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/config/path/WindowsPathConfig.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/EvaluationMechanismFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/EvaluationMechanismTypes.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/EvaluationPlan.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/EvaluationPlanCreator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/IEvaluationMechanism.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/IEvaluationMechanismInfo.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/common/EventBuffer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/common/Match.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/common/State.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/NFA.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/AND_NFA.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/AND_SEQ_NFA.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/OR_AND_SEQ_NFA.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/SEQ_NFA.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/elements/Instance.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/elements/InstanceStorage.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/elements/NFAState.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/eager/elements/Transition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyChainNFA.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyMultiChainNFA.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFA.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFANegationTypes.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/NFArunResult.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/RecursiveNFArun.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/elements/EfficientInputBuffer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/elements/EvaluationOrder.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/elements/LazyInstance.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/elements/LazyTransition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/elements/LazyTransitionType.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/optimizations/BufferFilter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/optimizations/BufferGrouper.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/optimizations/BufferPreprocessor.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/ITreeCostModel.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/ITreeTopologyCreator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/TopologyCreatorFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/TopologyCreatorTypes.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/TreeCostModelFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/TreeCostModelTypes.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/TreeEvaluationMechanism.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/cost/ThroughputLatencyTreeCostModel.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/cost/ThroughputTreeCostModel.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/CostAwareTree.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/OrderedZStreamTreeTopologyCreator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/SelingerTreeTopologyCreator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/ZStreamTreeTopologyCreator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/adaptive/zstream/AdaptiveZStreamTreeTopologyCreator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/adaptive/zstream/TreeInvariantCalculator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/creators/adaptive/zstream/TreeInvariantInput.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/elements/InternalNode.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/elements/LeafNode.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/elements/Node.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/elements/TreeInstance.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/evaluation/tree/elements/TreeInstanceStorage.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/EventProducer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/EventProducerFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/EventProducerTypes.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/EventStreamModifier.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/EventTypesConverter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/EventTypesConverterTypes.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/producers/FileBasedEventProducer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/producers/FileEventStreamReader.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/producers/ISyntheticSelectivityProvider.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/input/producers/SyntheticEventProducer.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/IOrderingAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/OrderingAlgorithmFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/OrderingAlgorithmTypes.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/DynamicOrderingAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/EventFrequencyOrderingAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/FixedOrderingAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/GreedyCostModelOrderingAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/GreedyOrderingAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/GreedySelectivityOrderingAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/IterativeImprovementOrderingAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/RandomOrderingAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/TrivialOrderingAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/adaptive/greedy/GreedyAdaptiveOrderingAlgorithm.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/adaptive/greedy/GreedyInvariantCalculator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/algorithm/adaptive/greedy/GreedyInvariantInput.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/cost/CostModelFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/cost/CostModelTypes.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/cost/ICostModel.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/cost/ThroughputCostModel.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/order/cost/ThroughputLatencyCostModel.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/CompositePattern.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/EventTypesManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/Pattern.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/SimplePattern.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/UnaryPattern.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/Condition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/base/AtomicCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/base/BufferedEventsRatesCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/base/CNFCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/base/DoubleEventCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/base/SingleEventCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/base/TrivialCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/AggregatedExternalCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/FirstValueExternalCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/IteratedEventExternalCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/IteratedEventInternalCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/eager/IteratedIncrementalCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/eager/IteratedIncrementalDoubleEventCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/eager/IterationTriggerCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/lazy/GroupByAttributeCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/lazy/IteratedFilterCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/iteration/lazy/IteratedTotalFromIncrementalCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/time/EventTemporalPositionCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/time/GlobalTemporalOrderCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/condition/time/PairTemporalOrderCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/creation/CompositePatternCreator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/creation/PatternCreator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/creation/PatternFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/pattern/creation/PatternTypes.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/simulator/Environment.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/simulator/PredicateResultsCache.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/simulator/SimulationHistory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/simulator/Simulator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/AdaptationSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/ConditionSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/EvaluationSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/InputSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/PatternSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/SimulationSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/creators/CrossProductSimulationSpecificationCreator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/creators/ISimulationSpecificationCreator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/creators/SelectivityEstimationSetupCreator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/creators/SpecificationCreatorFactory.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/specification/creators/SpecificationCreatorTypes.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/statistics/ConditionSelectivityCollector.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/statistics/EventRateCollector.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/statistics/Statistics.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/statistics/StatisticsManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/fraud/CreditCardFraudEventTypesConverter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/fraud/CreditCardFraudEventTypesManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/fraud/SameCreditCardIDCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/fraud/SameCreditCardIDConditionSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/traffic/TrafficEventTypesManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/traffic/TrafficSameVehicleIDConditionSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/traffic/TrafficSimilarVehicleIDCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/speedd/traffic/TrafficSpeedEventTypesConverter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/AverageStocksVectorAggregator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/StockEventTypesManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockAverageCorrelationCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockCorrelationCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockCorrelationIterationTriggerCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockDeltaOrderingCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockFirstValueCmpCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockRangeCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockSameCompanyCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/condition/StockValueCmpIterationTriggerCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/converters/StocksByCompanyEventTypesConverter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/converters/StocksByIndustryEventTypesConverter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/converters/StocksByRegionEventTypesConverter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/specification/IterativeAverageStockCorrelationConditionSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/specification/IterativeValueCmpStockCorrelationConditionSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/specification/StockCorrelationConditionSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/specification/StockDeltaOrderingConditionSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/specification/StockFirstValueCmpConditionSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/stocks/specification/StockSequencePatternSpecificationCreator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/synthetic/SyntheticCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/synthetic/SyntheticConditionSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/synthetic/SyntheticEventTypesConverter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/synthetic/SyntheticEventTypesManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/traffic/AarhusTrafficEventTypesConverter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/traffic/AarhusTrafficEventTypesManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/traffic/TrafficSpeedToVehiclesNumberCorrelationCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/traffic/TrafficSpeedToVehiclesNumberCorrelationConditionSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/trams/TramCongestionEventTypesConverter.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/trams/TramCongestionIntersectionCondition.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/trams/TramCongestionIntersectionConditionSpecification.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/user/trams/TramEventTypesManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFA.java" afterPath="$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFA.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -443,40 +15,56 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="LazyNFA.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFA.java">
+      <file leaf-file-name="StatisticsManager.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/statistics/StatisticsManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6834">
-              <caret line="431" column="0" lean-forward="false" selection-start-line="431" selection-start-column="0" selection-end-line="431" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ArrayList.java" pinned="false" current-in-tab="false">
-        <entry file="jar://C:/Program Files/Java/jdk1.8.0_91/src.zip!/java/util/ArrayList.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="19805">
-              <caret line="1230" column="0" lean-forward="false" selection-start-line="1230" selection-start-column="0" selection-end-line="1230" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RecursiveNFArun.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/evaluation/nfa/lazy/RecursiveNFArun.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="555">
-              <caret line="70" column="14" lean-forward="true" selection-start-line="70" selection-start-column="14" selection-end-line="70" selection-end-column="14" />
+            <state relative-caret-position="2380">
+              <caret line="140" column="95" lean-forward="false" selection-start-line="140" selection-start-column="95" selection-end-line="140" selection-end-column="95" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <marker date="1515240228511" expanded="true" signature="5474:5477" ph="{...}" />
+                <marker date="1515240228511" expanded="true" signature="5550:5772" ph="{...}" />
+                <marker date="1515240228511" expanded="true" signature="5832:6134" ph="{...}" />
+                <marker date="1515240228511" expanded="true" signature="6205:6276" ph="{...}" />
+                <marker date="1515240228511" expanded="true" signature="6335:6781" ph="{...}" />
+                <marker date="1515240228511" expanded="false" signature="6836:6841" ph=" { " />
+                <marker date="1515240228511" expanded="false" signature="6900:6903" ph=" }" />
+                <marker date="1515240228511" expanded="false" signature="6937:6942" ph=" { " />
+                <marker date="1515240228511" expanded="false" signature="6966:6969" ph=" }" />
+                <marker date="1515240228511" expanded="true" signature="7037:8160" ph="{...}" />
+                <marker date="1515240228511" expanded="true" signature="8241:8530" ph="{...}" />
+                <marker date="1515240228511" expanded="true" signature="8621:8783" ph="{...}" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ExponentialHistogramsCounter$Bucket.class" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/adaptive/estimation/ExponentialHistogramsCounter$Bucket.class">
+      <file leaf-file-name="PatternConfig.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/config/PatternConfig.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="7106">
+              <caret line="424" column="64" lean-forward="false" selection-start-line="424" selection-start-column="64" selection-end-line="424" selection-end-column="64" />
+              <folding>
+                <marker date="1515240228456" expanded="true" signature="27754:31966" ph="//..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Statistics.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/statistics/Statistics.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="221">
+              <caret line="13" column="47" lean-forward="false" selection-start-line="13" selection-start-column="31" selection-end-line="13" selection-end-column="47" />
+              <folding>
+                <marker date="1515240069243" expanded="true" signature="2159:2734" ph="{...}" />
+                <marker date="1515240069243" expanded="true" signature="2789:2877" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SimulationHistory.class" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/simulator/SimulationHistory.class">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
               <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -485,21 +73,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="WindowsPathConfig.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/config/path/WindowsPathConfig.java">
+      <file leaf-file-name="Simulator.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/simulator/Simulator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" column="75" lean-forward="false" selection-start-line="7" selection-start-column="75" selection-end-line="7" selection-end-column="75" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NFArunResult.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/evaluation/nfa/lazy/NFArunResult.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+            <state relative-caret-position="663">
+              <caret line="39" column="41" lean-forward="false" selection-start-line="39" selection-start-column="41" selection-end-line="39" selection-end-column="41" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -507,45 +85,81 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Event.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/base/Event.java">
+      <file leaf-file-name="SimulationHistory.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/simulator/SimulationHistory.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="11" column="45" lean-forward="false" selection-start-line="11" selection-start-column="45" selection-end-line="11" selection-end-column="45" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Simulator.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/simulator/Simulator.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3111">
-              <caret line="207" column="0" lean-forward="false" selection-start-line="207" selection-start-column="0" selection-end-line="207" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="InstanceStorage.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/evaluation/nfa/eager/elements/InstanceStorage.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2805">
-              <caret line="178" column="26" lean-forward="false" selection-start-line="178" selection-start-column="26" selection-end-line="178" selection-end-column="26" />
+            <state relative-caret-position="289">
+              <caret line="21" column="16" lean-forward="false" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="16" />
               <folding>
-                <element signature="e#4651#4652#0" expanded="true" />
-                <element signature="e#4717#4718#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NFA.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/evaluation/nfa/NFA.java">
+      <file leaf-file-name="LazyNFA.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFA.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="27" column="22" lean-forward="false" selection-start-line="27" selection-start-column="22" selection-end-line="27" selection-end-column="22" />
+            <state relative-caret-position="153">
+              <caret line="74" column="28" lean-forward="false" selection-start-line="74" selection-start-column="28" selection-end-line="74" selection-end-column="28" />
+              <folding>
+                <marker date="1515240559400" expanded="false" signature="8009:8023" ph="&lt;~&gt;" />
+                <marker date="1515240559400" expanded="false" signature="8527:8541" ph="&lt;~&gt;" />
+                <marker date="1515240559400" expanded="false" signature="10243:10257" ph="&lt;~&gt;" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WindowsPathConfig.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/config/path/WindowsPathConfig.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="153">
+              <caret line="9" column="35" lean-forward="false" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
+              <folding>
+                <marker date="1515240228465" expanded="true" signature="509:630" ph="{...}" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MainConfig.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/config/MainConfig.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="425">
+              <caret line="25" column="42" lean-forward="false" selection-start-line="25" selection-start-column="42" selection-end-line="25" selection-end-column="42" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Environment.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/simulator/Environment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="646">
+              <caret line="50" column="38" lean-forward="false" selection-start-line="50" selection-start-column="38" selection-end-line="50" selection-end-column="38" />
+              <folding>
+                <marker date="1515240069102" expanded="true" signature="684:779" ph="{...}" />
+                <marker date="1515240069102" expanded="true" signature="1268:1272" ph="{}" />
+                <marker date="1515240069102" expanded="true" signature="1356:2939" ph="{...}" />
+                <marker date="1515240069102" expanded="false" signature="2964:2969" ph=" { " />
+                <marker date="1515240069102" expanded="false" signature="2997:3000" ph=" }" />
+                <marker date="1515240069102" expanded="false" signature="3050:3055" ph=" { " />
+                <marker date="1515240069102" expanded="false" signature="3080:3083" ph=" }" />
+                <marker date="1515240069102" expanded="false" signature="3152:3157" ph=" { " />
+                <marker date="1515240069102" expanded="false" signature="3185:3188" ph=" }" />
+                <marker date="1515240069102" expanded="false" signature="3260:3265" ph=" { " />
+                <marker date="1515240069102" expanded="false" signature="3291:3294" ph=" }" />
+                <marker date="1515240069102" expanded="false" signature="3357:3362" ph=" { " />
+                <marker date="1515240069102" expanded="false" signature="3393:3396" ph=" }" />
+                <marker date="1515240069102" expanded="true" signature="3488:3550" ph="{...}" />
+                <marker date="1515240069102" expanded="false" signature="3608:3613" ph=" { " />
+                <marker date="1515240069102" expanded="false" signature="3642:3645" ph=" }" />
+                <marker date="1515240069102" expanded="false" signature="3715:3720" ph=" { " />
+                <marker date="1515240069102" expanded="false" signature="3755:3758" ph=" }" />
+                <marker date="1515240069102" expanded="false" signature="3816:3821" ph=" { " />
+                <marker date="1515240069102" expanded="false" signature="3850:3853" ph=" }" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -590,9 +204,9 @@
         <option value="$PROJECT_DIR$/src/config/PatternConfig.java" />
         <option value="$PROJECT_DIR$/src/evaluation/nfa/lazy/NFArunResult.java" />
         <option value="$PROJECT_DIR$/src/base/Event.java" />
-        <option value="$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFA.java" />
         <option value="$PROJECT_DIR$/src/config/path/WindowsPathConfig.java" />
         <option value="$PROJECT_DIR$/src/evaluation/nfa/lazy/RecursiveNFArun.java" />
+        <option value="$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFA.java" />
       </list>
     </option>
   </component>
@@ -617,50 +231,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="LazyCEP2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="LazyCEP2" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="LazyCEP2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="LazyCEP2" type="462c0819:PsiDirectoryNode" />
-              <item name=".idea" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="LazyCEP2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="LazyCEP2" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="LazyCEP2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="LazyCEP2" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="simulator" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="LazyCEP2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-            </path>
-            <path>
-              <item name="LazyCEP2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="dependencies" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="LazyCEP2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="dependencies" type="462c0819:PsiDirectoryNode" />
-              <item name="opencsv" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane">
         <subPane>
           <expand>
@@ -672,6 +242,51 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="LazyCEP2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LazyCEP2" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="LazyCEP2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LazyCEP2" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="LazyCEP2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LazyCEP2" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="evaluation" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="LazyCEP2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LazyCEP2" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="evaluation" type="462c0819:PsiDirectoryNode" />
+              <item name="nfa" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="LazyCEP2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LazyCEP2" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="evaluation" type="462c0819:PsiDirectoryNode" />
+              <item name="nfa" type="462c0819:PsiDirectoryNode" />
+              <item name="lazy" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="LazyCEP2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="LazyCEP2" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="simulator" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -787,34 +402,50 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="953" y="0" width="974" height="1047" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.126193" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33297643" sideWeight="0.5072917" order="11" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20254506" sideWeight="0.50416666" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18557794" sideWeight="0.49375" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18557794" sideWeight="0.4875" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32979852" sideWeight="0.49270833" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Run with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32979852" sideWeight="0.49375" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.44050103" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="JProfiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20042418" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="Run with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32979852" sideWeight="0.48958334" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21979167" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="JProfiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20042418" sideWeight="0.49375" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20254506" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32131496" sideWeight="0.49583334" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Debug with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33297643" sideWeight="0.5072917" order="11" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32979852" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Dynamic Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.126193" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20254506" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18557794" sideWeight="0.49375" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32979852" sideWeight="0.49270833" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Run with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32979852" sideWeight="0.49375" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.44050103" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="JProfiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20042418" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug with VisualVM" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -858,7 +489,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFA.java</url>
-          <line>429</line>
+          <line>417</line>
           <properties class="evaluation.nfa.lazy.LazyNFA" method="getLastMatches">
             <option name="EMULATED" value="true" />
           </properties>
@@ -866,7 +497,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFA.java</url>
-          <line>431</line>
+          <line>419</line>
           <properties />
           <option name="timeStamp" value="16" />
         </line-breakpoint>
@@ -899,7 +530,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="238">
           <caret line="14" column="0" lean-forward="true" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-          <folding />
+          <folding>
+            <marker date="1515240228465" expanded="true" signature="509:630" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -954,8 +587,30 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/simulator/Environment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="42" column="0" lean-forward="false" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
+        <state relative-caret-position="646">
+          <caret line="50" column="38" lean-forward="false" selection-start-line="50" selection-start-column="38" selection-end-line="50" selection-end-column="38" />
+          <folding>
+            <marker date="1515240069102" expanded="true" signature="684:779" ph="{...}" />
+            <marker date="1515240069102" expanded="true" signature="1268:1272" ph="{}" />
+            <marker date="1515240069102" expanded="true" signature="1356:2939" ph="{...}" />
+            <marker date="1515240069102" expanded="false" signature="2964:2969" ph=" { " />
+            <marker date="1515240069102" expanded="false" signature="2997:3000" ph=" }" />
+            <marker date="1515240069102" expanded="false" signature="3050:3055" ph=" { " />
+            <marker date="1515240069102" expanded="false" signature="3080:3083" ph=" }" />
+            <marker date="1515240069102" expanded="false" signature="3152:3157" ph=" { " />
+            <marker date="1515240069102" expanded="false" signature="3185:3188" ph=" }" />
+            <marker date="1515240069102" expanded="false" signature="3260:3265" ph=" { " />
+            <marker date="1515240069102" expanded="false" signature="3291:3294" ph=" }" />
+            <marker date="1515240069102" expanded="false" signature="3357:3362" ph=" { " />
+            <marker date="1515240069102" expanded="false" signature="3393:3396" ph=" }" />
+            <marker date="1515240069102" expanded="true" signature="3488:3550" ph="{...}" />
+            <marker date="1515240069102" expanded="false" signature="3608:3613" ph=" { " />
+            <marker date="1515240069102" expanded="false" signature="3642:3645" ph=" }" />
+            <marker date="1515240069102" expanded="false" signature="3715:3720" ph=" { " />
+            <marker date="1515240069102" expanded="false" signature="3755:3758" ph=" }" />
+            <marker date="1515240069102" expanded="false" signature="3816:3821" ph=" { " />
+            <marker date="1515240069102" expanded="false" signature="3850:3853" ph=" }" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1003,8 +658,9 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/config/MainConfig.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="9" column="13" lean-forward="false" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+        <state relative-caret-position="425">
+          <caret line="25" column="42" lean-forward="false" selection-start-line="25" selection-start-column="42" selection-end-line="25" selection-end-column="42" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1130,15 +786,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/config/PatternConfig.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="429" column="68" lean-forward="false" selection-start-line="429" selection-start-column="68" selection-end-line="429" selection-end-column="68" />
+        <state relative-caret-position="7106">
+          <caret line="424" column="64" lean-forward="false" selection-start-line="424" selection-start-column="64" selection-end-line="424" selection-end-column="64" />
+          <folding>
+            <marker date="1515240228456" expanded="true" signature="27754:31966" ph="//..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/statistics/StatisticsManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="504">
-          <caret line="119" column="9" lean-forward="false" selection-start-line="119" selection-start-column="9" selection-end-line="119" selection-end-column="9" />
+        <state relative-caret-position="2380">
+          <caret line="140" column="95" lean-forward="false" selection-start-line="140" selection-start-column="95" selection-end-line="140" selection-end-column="95" />
+          <folding>
+            <marker date="1515240228511" expanded="true" signature="5474:5477" ph="{...}" />
+            <marker date="1515240228511" expanded="true" signature="5550:5772" ph="{...}" />
+            <marker date="1515240228511" expanded="true" signature="5832:6134" ph="{...}" />
+            <marker date="1515240228511" expanded="true" signature="6205:6276" ph="{...}" />
+            <marker date="1515240228511" expanded="true" signature="6335:6781" ph="{...}" />
+            <marker date="1515240228511" expanded="false" signature="6836:6841" ph=" { " />
+            <marker date="1515240228511" expanded="false" signature="6900:6903" ph=" }" />
+            <marker date="1515240228511" expanded="false" signature="6937:6942" ph=" { " />
+            <marker date="1515240228511" expanded="false" signature="6966:6969" ph=" }" />
+            <marker date="1515240228511" expanded="true" signature="7037:8160" ph="{...}" />
+            <marker date="1515240228511" expanded="true" signature="8241:8530" ph="{...}" />
+            <marker date="1515240228511" expanded="true" signature="8621:8783" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1182,9 +855,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/simulator/Simulator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3111">
-          <caret line="207" column="0" lean-forward="false" selection-start-line="207" selection-start-column="0" selection-end-line="207" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="663">
+          <caret line="39" column="41" lean-forward="false" selection-start-line="39" selection-start-column="41" selection-end-line="39" selection-end-column="41" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1207,27 +882,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFA.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6834">
-          <caret line="431" column="0" lean-forward="false" selection-start-line="431" selection-start-column="0" selection-end-line="431" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/adaptive/estimation/ExponentialHistogramsCounter$Bucket.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/config/path/WindowsPathConfig.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="75" lean-forward="false" selection-start-line="7" selection-start-column="75" selection-end-line="7" selection-end-column="75" />
-          <folding />
+        <state relative-caret-position="153">
+          <caret line="9" column="35" lean-forward="false" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
+          <folding>
+            <marker date="1515240228465" expanded="true" signature="509:630" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1247,6 +915,18 @@
           <caret line="70" column="14" lean-forward="true" selection-start-line="70" selection-start-column="14" selection-end-line="70" selection-end-column="14" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/evaluation/nfa/lazy/LazyNFA.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="74" column="28" lean-forward="false" selection-start-line="74" selection-start-column="28" selection-end-line="74" selection-end-column="28" />
+          <folding>
+            <marker date="1515240559400" expanded="false" signature="8009:8023" ph="&lt;~&gt;" />
+            <marker date="1515240559400" expanded="false" signature="8527:8541" ph="&lt;~&gt;" />
+            <marker date="1515240559400" expanded="false" signature="10243:10257" ph="&lt;~&gt;" />
           </folding>
         </state>
       </provider>

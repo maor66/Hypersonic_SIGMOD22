@@ -91,18 +91,6 @@ public abstract class LazyNFA extends NFA {
 			return null;
 		}
 
-		//Parallelism:
-        ForkJoinPool forkJoinPool = new ForkJoinPool(4);
-		RecursiveNFArun recursiveNFArun = new RecursiveNFArun(this, new Event(event), instances.getInstancesForEvent(event, canStartInstance)
-                , new ArrayList<Instance>(), new ArrayList<Instance>(),  new LinkedList<Match>());
-		NFArunResult result = forkJoinPool.invoke(recursiveNFArun);
-
-
-
-        instancesToAdd = result.instancesToAdd;
-        instancesToRemove = result.instancesToRemove;
-        matches = result.matches;
-/*
         if (shouldActivateUnboundedIterativeMode()) {
             performInstanceLoopWithUnboundedIterativeEvents(event, instancesToCheck, instancesToAdd,
                     instancesToRemove, matches);
@@ -110,7 +98,7 @@ public abstract class LazyNFA extends NFA {
         else {
             performRegularInstanceLoop(event, instancesToCheck, instancesToAdd, instancesToRemove, matches);
         }
-*/
+
 		for (Instance instance : instances.getInstancesInAcceptingState()) {
 			checkInstanceForMatch(instance, matches, instancesToRemove);
 		}
