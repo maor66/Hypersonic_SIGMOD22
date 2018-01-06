@@ -21,10 +21,10 @@ public class MainConfig {
 	
 	/* Settings for receiving events from the input stream. */
 	public static String[] inputDirsPaths = {
-		//pathConfig.firstInputDirectoryPath,
+		pathConfig.firstInputDirectoryPath,
 	};
 	public static String[] inputFilesPaths = {
-		pathConfig.firstInputFilePath,
+		//pathConfig.firstInputFilePath,
 	};
 	public static final int eventsPerRead = 0;
 	

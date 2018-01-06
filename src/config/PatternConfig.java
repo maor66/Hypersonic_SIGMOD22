@@ -408,7 +408,7 @@ public class PatternConfig {
 	
 	
 	
-	private static final long stockByCompanyPatternTimeWindow = 10;
+	private static final long stockByCompanyPatternTimeWindow = 1000;
 	public static final PatternSpecification[] stockByCompanyPatternSpecifications = {
 		new PatternSpecification("SEQ3", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{ 
