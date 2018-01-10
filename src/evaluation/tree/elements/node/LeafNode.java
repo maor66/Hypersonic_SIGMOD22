@@ -1,4 +1,4 @@
-package sase.evaluation.tree.elements;
+package sase.evaluation.tree.elements.node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,19 +10,25 @@ import sase.pattern.condition.base.CNFCondition;
 public class LeafNode extends Node {
 	
 	private final EventType eventType;
+	private final boolean isIterated;
 
-	public LeafNode(EventType eventType, CNFCondition condition) {
-		super(condition, null);
+	public LeafNode(EventType eventType, CNFCondition condition, boolean isIterated) {
+		super(condition);
 		this.eventType = eventType;
+		this.isIterated = isIterated;
 		completeNodeCreation();
 	}
 	
 	public LeafNode(LeafNode other) {
-		this(other.eventType, other.mainCondition);
+		this(other.eventType, other.mainCondition, other.isIterated);
 	}
 	
 	public EventType getEventType() {
 		return eventType;
+	}
+
+	public boolean isIterated() {
+		return isIterated;
 	}
 
 	@Override

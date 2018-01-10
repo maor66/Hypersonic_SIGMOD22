@@ -5,7 +5,6 @@ import java.util.List;
 
 import sase.base.Event;
 import sase.base.EventType;
-import sase.config.MainConfig;
 import sase.statistics.ConditionSelectivityCollector;
 
 /**
@@ -46,11 +45,7 @@ public abstract class Condition {
 	}
 	
 	protected void setSelectivityByEstimate() {
-		if (selectivity == null && 
-			!MainConfig.isSelectivityMonitoringAllowed && 
-			!MainConfig.conditionSelectivityMeasurementMode) {
-				setSelectivity(ConditionSelectivityCollector.getInstance().getSelectivityEstimate(getConditionKey()));
-		}
+		setSelectivity(ConditionSelectivityCollector.getInstance().getSelectivityEstimate(getConditionKey()));
 	}
 	
 	@Override

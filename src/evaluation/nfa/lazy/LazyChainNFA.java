@@ -3,16 +3,20 @@ package sase.evaluation.nfa.lazy;
 import java.util.ArrayList;
 import java.util.List;
 
+import sase.base.EventSelectionStrategies;
 import sase.base.EventType;
+import sase.config.MainConfig;
 import sase.evaluation.EvaluationPlan;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.lazy.elements.EvaluationOrder;
 import sase.pattern.CompositePattern;
 import sase.pattern.Pattern;
+import sase.pattern.Pattern.PatternOperatorType;
 import sase.pattern.condition.Condition;
 import sase.pattern.condition.base.AtomicCondition;
 import sase.pattern.condition.base.CNFCondition;
+import sase.pattern.condition.contiguity.TotalContiguityCondition;
 import sase.pattern.condition.iteration.eager.IteratedIncrementalCondition;
 import sase.pattern.condition.iteration.lazy.IteratedTotalFromIncrementalCondition;
 import sase.pattern.condition.time.EventTemporalPositionCondition;
@@ -33,6 +37,10 @@ public class LazyChainNFA extends LazyNFA {
 		fullCondition = createFullCondition(pattern);
 		CompositePattern compositePattern = (CompositePattern) pattern;
 		globalTemporalOrderCondition = new GlobalTemporalOrderCondition(compositePattern.extractSequences(false));
+		if (MainConfig.selectionStrategy == EventSelectionStrategies.CONTUGUITY && 
+			pattern.getType() == PatternOperatorType.AND_SEQ) {
+				fullCondition.addAtomicCondition(new TotalContiguityCondition());
+		}
 	}
 	
 	private CNFCondition createFullCondition(Pattern pattern) {

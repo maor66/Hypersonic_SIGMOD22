@@ -6,6 +6,7 @@ import sase.evaluation.nfa.eager.OR_AND_SEQ_NFA;
 import sase.evaluation.nfa.eager.SEQ_NFA;
 import sase.evaluation.nfa.lazy.LazyChainNFA;
 import sase.evaluation.nfa.lazy.LazyMultiChainNFA;
+import sase.evaluation.tree.MultiTreeEvaluationMechanism;
 import sase.evaluation.tree.TreeEvaluationMechanism;
 import sase.pattern.Pattern;
 import sase.simulator.Environment;
@@ -40,7 +41,7 @@ public class EvaluationMechanismFactory {
 					case LAZY_TREE:
 						return null;
 					case TREE:
-						return null;
+						return new TreeEvaluationMechanism(pattern, evaluationPlan);
 					default:
 						return null;
 			}
@@ -53,7 +54,7 @@ public class EvaluationMechanismFactory {
 					case LAZY_TREE:
 						return null;
 					case TREE:
-						return null;
+						return new MultiTreeEvaluationMechanism(pattern, evaluationPlan);
 					default:
 						return null;
 			}
@@ -81,7 +82,7 @@ public class EvaluationMechanismFactory {
 			case NEG:
 			case NOP:
 			default:
-				throw new RuntimeException(String.format("Cannot create NFA for main pattern type %s", 
+				throw new RuntimeException(String.format("Cannot create an evaluation mechanism for main pattern type %s", 
 										   pattern.getType()));
 			}
 	}

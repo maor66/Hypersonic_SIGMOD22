@@ -3,6 +3,7 @@ package sase.evaluation.nfa.eager.elements;
 import java.util.Arrays;
 import java.util.List;
 
+import sase.base.Event;
 import sase.base.EventType;
 import sase.config.MainConfig;
 import sase.pattern.condition.Condition;
@@ -58,6 +59,10 @@ public class Transition {
 	
 	public Condition getCondition() {
 		return condition;
+	}
+	
+	public boolean verifyCondition(List<Event> events) {
+		return condition.verify(events);
 	}
 	
 	public void setSource(NFAState newSource) {

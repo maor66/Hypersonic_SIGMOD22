@@ -1,10 +1,10 @@
-package sase.evaluation.tree.elements;
+package sase.evaluation.tree.elements.node;
 
 import java.util.List;
 
-import sase.base.Event;
 import sase.base.EventType;
 import sase.evaluation.common.State;
+import sase.evaluation.tree.elements.TreeInstance;
 import sase.pattern.condition.base.AtomicCondition;
 import sase.pattern.condition.base.CNFCondition;
 
@@ -13,21 +13,15 @@ public abstract class Node extends State {
 	protected Node parent;
 	protected final CNFCondition mainCondition;
 	protected CNFCondition nodeCondition = null;
-	protected final List<EventType> order;//note that this means that our tree only supports sequences as of now!
 	protected int level;
 
-	public Node(CNFCondition mainCondition, List<EventType> order) {
-		this(null, mainCondition, order);
+	public Node(CNFCondition mainCondition) {
+		this(null, mainCondition);
 	}
 	
-	public Node(Node parent, CNFCondition mainCondition, List<EventType> order) {
+	public Node(Node parent, CNFCondition mainCondition) {
 		setParent(parent);
 		this.mainCondition = mainCondition;
-		this.order = order;
-	}
-	
-	public List<EventType> getOrder() {
-		return order;
 	}
 
 	public Node getParent() {
@@ -51,11 +45,11 @@ public abstract class Node extends State {
 		finalizeNode(null);
 	}
 	
-	public boolean isNodeConditionSatisfied(List<Event> events) {
+	public boolean isNodeConditionSatisfied(TreeInstance treeInstance) {
 		if (nodeCondition == null) {
 			return false;
 		}
-		return nodeCondition.verify(events);
+		return nodeCondition.verify(treeInstance.getEvents());
 	}
 	
 	public Node getPeer() {

@@ -51,17 +51,6 @@ public class StockEventTypesManager extends EventTypesManager {
 		middleEasternCompanyEventTypeName,
 	};
 	
-	public static final String[] companiesByRegionEventTypeNames = new String[] {
-		africanCompanyEventTypeName,
-		asianCompanyEventTypeName,
-		australianCompanyEventTypeName,
-		northAmericanCompanyEventTypeName,
-		centralAmericanCompanyEventTypeName,
-		southAmericanCompanyEventTypeName,
-		europeanCompanyEventTypeName,
-		middleEasternCompanyEventTypeName
-	};
-	
 	//stock patterns by region related types
 	public static EventType africanCompanyEventType;
 	public static EventType asianCompanyEventType;
@@ -73,29 +62,21 @@ public class StockEventTypesManager extends EventTypesManager {
 	public static EventType middleEasternCompanyEventType;
 	
 	
-	//types directly corresponding to specific companies
+	//types directly corresponding to specific large companies
 	public static final String microsoftEventTypeName = "MSFT";
 	public static final String yahooEventTypeName = "YHOO";
 	public static final String googleEventTypeName = "GOOG";
 	public static final String appleEventTypeName = "AAPL";
 	public static final String ciscoEventTypeName = "CSCO";
 	public static final String intelEventTypeName = "INTC";
-	public static final String illuminaEventTypeName = "ILMN";
-	public static final String etradeEventTypeName = "ETFC";
-	public static final String broadcomEventTypeName = "BRCM";
-	public static final String rambusEventTypeName = "RMBS";
 	
-	public static final String[] companiesEventTypeNames = new String[] {
+	public static final String[] largeCompaniesEventTypeNames = new String[] {
 		microsoftEventTypeName,
 		yahooEventTypeName,
 		googleEventTypeName,
 		appleEventTypeName,
 		ciscoEventTypeName,
-		intelEventTypeName,
-		illuminaEventTypeName,
-		etradeEventTypeName,
-		broadcomEventTypeName,
-		rambusEventTypeName
+		intelEventTypeName
 	};
 
 	public static EventType microsoftEventType;
@@ -104,10 +85,54 @@ public class StockEventTypesManager extends EventTypesManager {
 	public static EventType appleEventType;
 	public static EventType ciscoEventType;
 	public static EventType intelEventType;
-	public static EventType illuminaEventType;
-	public static EventType etradeEventType;
-	public static EventType broadcomEventType;
-	public static EventType rambusEventType;
+
+
+	public static final String crosstechEventTypeName = "XTEX";
+	public static final String xtlbioEventTypeName = "XTLB";
+	public static final String quantumEventTypeName = "QTWW";
+	public static final String juniperEventTypeName = "CBRX";
+	public static final String aepindustriesEventTypeName = "AEPI";
+	public static final String reprosEventTypeName = "RPRX";
+	
+	public static final String[] mediumCompaniesEventTypeNames = new String[] {
+		crosstechEventTypeName,
+		xtlbioEventTypeName,
+		quantumEventTypeName,
+		juniperEventTypeName,
+		aepindustriesEventTypeName,
+		reprosEventTypeName,
+	};
+	
+	public static EventType crosstechEventType;
+	public static EventType xtlbioEventType;
+	public static EventType quantumEventType;
+	public static EventType juniperEventType;
+	public static EventType aepindustriesEventType;
+	public static EventType reprosEventType;
+	
+	
+	public static final String townebankEventTypeName = "TOWN";
+	public static final String mindctiEventTypeName = "MNDO";
+	public static final String chelseaEventTypeName = "CHTP";
+	public static final String nymoxEventTypeName = "NYMX";
+	public static final String purecycleEventTypeName = "PCYO";
+	public static final String netlistEventTypeName = "NLST";
+	
+	public static final String[] smallCompaniesEventTypeNames = new String[] {
+		townebankEventTypeName,
+		mindctiEventTypeName,
+		chelseaEventTypeName,
+		nymoxEventTypeName,
+		purecycleEventTypeName,
+		netlistEventTypeName
+	};
+	
+	public static EventType townebankEventType;
+	public static EventType mindctiEventType;
+	public static EventType chelseaEventType;
+	public static EventType nymoxEventType;
+	public static EventType purecycleEventType;
+	public static EventType netlistEventType;
 	
 	public StockEventTypesManager() {
 	}
@@ -135,11 +160,19 @@ public class StockEventTypesManager extends EventTypesManager {
 		result.put(appleEventTypeName, appleEventType);
 		result.put(ciscoEventTypeName, ciscoEventType);
 		result.put(intelEventTypeName, intelEventType);
-		result.put(illuminaEventTypeName, illuminaEventType);
-		result.put(etradeEventTypeName, etradeEventType);
-		result.put(broadcomEventTypeName, broadcomEventType);
-		result.put(rambusEventTypeName, rambusEventType);
-		
+		result.put(crosstechEventTypeName, crosstechEventType);
+		result.put(xtlbioEventTypeName, xtlbioEventType);
+		result.put(quantumEventTypeName, quantumEventType);
+		result.put(juniperEventTypeName, juniperEventType);
+		result.put(aepindustriesEventTypeName, aepindustriesEventType);
+		result.put(reprosEventTypeName, reprosEventType);
+		result.put(townebankEventTypeName, townebankEventType);
+		result.put(mindctiEventTypeName, mindctiEventType);
+		result.put(chelseaEventTypeName, chelseaEventType);
+		result.put(nymoxEventTypeName, nymoxEventType);
+		result.put(purecycleEventTypeName, purecycleEventType);
+		result.put(netlistEventTypeName, netlistEventType);
+				
 		return result;
 	}
 	
@@ -160,7 +193,13 @@ public class StockEventTypesManager extends EventTypesManager {
 		result.put(europeanCompanyEventTypeName, "EU");
 		result.put(middleEasternCompanyEventTypeName, "ME");
 		
-		for (String name : companiesEventTypeNames) {
+		for (String name : largeCompaniesEventTypeNames) {
+			result.put(name, name);
+		}
+		for (String name : mediumCompaniesEventTypeNames) {
+			result.put(name, name);
+		}
+		for (String name : smallCompaniesEventTypeNames) {
 			result.put(name, name);
 		}
 		
@@ -195,10 +234,18 @@ public class StockEventTypesManager extends EventTypesManager {
 		appleEventType = new EventType(appleEventTypeName, attributes);
 		ciscoEventType = new EventType(ciscoEventTypeName, attributes);
 		intelEventType = new EventType(intelEventTypeName, attributes);
-		illuminaEventType = new EventType(illuminaEventTypeName, attributes);
-		etradeEventType = new EventType(etradeEventTypeName, attributes);
-		broadcomEventType = new EventType(broadcomEventTypeName, attributes);
-		rambusEventType = new EventType(rambusEventTypeName, attributes);
+		crosstechEventType = new EventType(crosstechEventTypeName, attributes);
+		xtlbioEventType = new EventType(xtlbioEventTypeName, attributes);
+		quantumEventType = new EventType(quantumEventTypeName, attributes);
+		juniperEventType = new EventType(juniperEventTypeName, attributes);
+		aepindustriesEventType = new EventType(aepindustriesEventTypeName, attributes);
+		reprosEventType = new EventType(reprosEventTypeName, attributes);
+		townebankEventType = new EventType(townebankEventTypeName, attributes);
+		mindctiEventType = new EventType(mindctiEventTypeName, attributes);
+		chelseaEventType = new EventType(chelseaEventTypeName, attributes);
+		nymoxEventType = new EventType(nymoxEventTypeName, attributes);
+		purecycleEventType = new EventType(purecycleEventTypeName, attributes);
+		netlistEventType = new EventType(netlistEventTypeName, attributes);
 	}
 
 	@Override
@@ -253,10 +300,18 @@ public class StockEventTypesManager extends EventTypesManager {
 		result.add(appleEventType);
 		result.add(ciscoEventType);
 		result.add(intelEventType);
-		result.add(illuminaEventType);
-		result.add(etradeEventType);
-		result.add(broadcomEventType);
-		result.add(rambusEventType);
+		result.add(crosstechEventType);
+		result.add(xtlbioEventType);
+		result.add(quantumEventType);
+		result.add(juniperEventType);
+		result.add(aepindustriesEventType);
+		result.add(reprosEventType);
+		result.add(townebankEventType);
+		result.add(mindctiEventType);
+		result.add(chelseaEventType);
+		result.add(nymoxEventType);
+		result.add(purecycleEventType);
+		result.add(netlistEventType);
 		return result;
 	}
 
@@ -269,10 +324,18 @@ public class StockEventTypesManager extends EventTypesManager {
 		result.add(appleEventTypeName);
 		result.add(ciscoEventTypeName);
 		result.add(intelEventTypeName);
-		result.add(illuminaEventTypeName);
-		result.add(etradeEventTypeName);
-		result.add(broadcomEventTypeName);
-		result.add(rambusEventTypeName);
+		result.add(crosstechEventTypeName);
+		result.add(xtlbioEventTypeName);
+		result.add(quantumEventTypeName);
+		result.add(juniperEventTypeName);
+		result.add(aepindustriesEventTypeName);
+		result.add(reprosEventTypeName);
+		result.add(townebankEventTypeName);
+		result.add(mindctiEventTypeName);
+		result.add(chelseaEventTypeName);
+		result.add(nymoxEventTypeName);
+		result.add(purecycleEventTypeName);
+		result.add(netlistEventTypeName);
 		return result;
 	}
 }

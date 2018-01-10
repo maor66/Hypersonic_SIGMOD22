@@ -14,4 +14,5 @@ public interface IEvaluationMechanism {
 	public List<Match> getLastMatches();
 	public long size();
 	public String getStructureSummary();
+	public void removeConflictingInstances(List<Match> matches);
 }

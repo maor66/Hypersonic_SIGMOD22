@@ -14,6 +14,7 @@ public class CompositePattern extends Pattern {
 		List<EventType> eventTypes = new ArrayList<EventType>();
 		for (Pattern pattern : patterns) {
 			for (EventType eventType : pattern.getEventTypes()) {
+				//NOTE: as of now, it means that we do not support the appearance of an event type more than once in a pattern
 				if (!(eventTypes.contains(eventType))) {
 					eventTypes.add(eventType);
 				}
@@ -84,10 +85,18 @@ public class CompositePattern extends Pattern {
 		return sequences;
 	}
 
-	private List<EventType> getEventTypesForUnaryPatternType(PatternOperatorType patternType) {
+	private boolean shouldIncludePattern(PatternOperatorType requiredPatternType, PatternOperatorType actualPatternType) {
+		if (requiredPatternType == actualPatternType) {
+			return true;
+		}
+		return (requiredPatternType == PatternOperatorType.NONE &&
+				UnaryPattern.getUnaryPatternTypes().contains(actualPatternType));
+	}
+	
+	private List<EventType> getEventTypesForPatternType(PatternOperatorType patternType) {
 		List<EventType> result = new ArrayList<EventType>();
 		for (Pattern nestedPattern : nestedPatterns) {
-			if (nestedPattern.getType() == patternType) {
+			if (shouldIncludePattern(patternType, nestedPattern.getType())) {
 				result.add(((UnaryPattern) nestedPattern).getEventType());
 			} else if (nestedPattern.getType() == PatternOperatorType.SEQ) {
 				result.addAll(((CompositePattern) nestedPattern).getNegativeEventTypes());
@@ -97,11 +106,11 @@ public class CompositePattern extends Pattern {
 	}
 
 	public List<EventType> getNegativeEventTypes() {
-		return getEventTypesForUnaryPatternType(PatternOperatorType.NEG);
+		return getEventTypesForPatternType(PatternOperatorType.NEG);
 	}
 
 	public List<EventType> getIterativeEventTypes() {
-		return getEventTypesForUnaryPatternType(PatternOperatorType.ITER);
+		return getEventTypesForPatternType(PatternOperatorType.ITER);
 	}
 	
 	public CompositePattern getSubPattern(List<EventType> eventTypesForSubPattern) {
@@ -121,6 +130,20 @@ public class CompositePattern extends Pattern {
 		}
 		return new CompositePattern(getType(), nestedPatternsForSubPattern, 
 									getSubCondition(eventTypesForSubPattern), getTimeWindow());
+	}
+	
+	public CompositePattern getFilteredSubPattern(List<EventType> eventTypesToExclude) {
+		if (eventTypesToExclude.isEmpty()) {
+			return this;
+		}
+		List<EventType> allEventTypes = getEventTypes();
+		List<EventType> eventTypesForSubPattern = new ArrayList<EventType>();
+		for (EventType eventType : allEventTypes) {
+			if (!eventTypesToExclude.contains(eventType)) {
+				eventTypesForSubPattern.add(eventType);
+			}
+		}
+		return getSubPattern(eventTypesForSubPattern);
 	}
 
 }

@@ -50,7 +50,7 @@ public class StocksByRegionEventTypesConverter extends EventTypesConverter {
 	
 	private static HashMap<String, EventType> createNameToRegionHash() {
 		HashMap<String, EventType> result = new HashMap<String, EventType>();
-		for (String regionName : StockEventTypesManager.companiesByRegionEventTypeNames) {
+		for (String regionName : StockEventTypesManager.regionEventTypeNames) {
 			List<String> companyLabels = null;
 			try {
 				companyLabels = loadCompanyLabelsByRegion(regionName);

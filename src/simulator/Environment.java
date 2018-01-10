@@ -2,8 +2,10 @@ package sase.simulator;
 
 import java.io.IOException;
 
+import sase.adaptive.estimation.IEventArrivalRateEstimator;
 import sase.adaptive.estimation.SlidingWindowEventArrivalRateEstimator;
 import sase.adaptive.estimation.SlidingWindowSelectivityEstimator;
+import sase.adaptive.estimation.StaticEventArrivalRateEstimator;
 import sase.adaptive.monitoring.AdaptationNecessityDetector;
 import sase.adaptive.monitoring.AdaptationNecessityDetectorFactory;
 import sase.config.MainConfig;
@@ -12,6 +14,7 @@ import sase.evaluation.IEvaluationMechanismInfo;
 import sase.pattern.Pattern;
 import sase.specification.AdaptationSpecification;
 import sase.specification.SimulationSpecification;
+import sase.statistics.Statistics;
 import sase.statistics.StatisticsManager;
 
 public class Environment {
@@ -26,7 +29,7 @@ public class Environment {
 	}
 	
 	private StatisticsManager statisticsManager = null;
-	private SlidingWindowEventArrivalRateEstimator eventRateEstimator = null;
+	private IEventArrivalRateEstimator eventRateEstimator = null;
 	private SlidingWindowSelectivityEstimator selectivityEstimator = null;
 	private IEvaluationMechanismInfo evaluationMechanismInfo = null;
 	private PredicateResultsCache predicateResultsCache = null;
@@ -48,7 +51,7 @@ public class Environment {
 		
 		if (MainConfig.adaptationTrialsIntervalToTimeWindowRatio == null) {
 			//disable all adaptive behavior
-			eventRateEstimator = null;
+			eventRateEstimator = new StaticEventArrivalRateEstimator();
 			selectivityEstimator = null;
 			adaptationNecessityDetector = null;
 		}
@@ -85,7 +88,7 @@ public class Environment {
 		return selectivityEstimator;
 	}
 
-	public SlidingWindowEventArrivalRateEstimator getEventRateEstimator() {
+	public IEventArrivalRateEstimator getEventRateEstimator() {
 		return eventRateEstimator;
 	}
 
@@ -108,5 +111,15 @@ public class Environment {
 	public EvaluationPlanCreator getEvaluationPlanCreator() {
 		return evaluationPlanCreator;
 	}
+    
+    public boolean isTimeoutReached(Long timeSinceLastMeasurement) {
+    	if (MainConfig.maxExecutionTime == null) {
+    		return false;
+    	}
+    	long currentProcessingTime = (timeSinceLastMeasurement == null) ?
+    			getStatisticsManager().getDiscreteStatistic(Statistics.processingTime) :
+    			getStatisticsManager().getDiscreteStatistic(Statistics.processingTime) + timeSinceLastMeasurement;
+    	return currentProcessingTime > MainConfig.maxExecutionTime;
+    }
 	
 }

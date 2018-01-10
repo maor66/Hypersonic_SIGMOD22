@@ -42,7 +42,7 @@ public class EfficientInputBuffer {
 			{
 				midIndex = (maxIndex + minIndex) / 2;
 				Event currEvent = events.get(midIndex); 
-				currTimestamp = currEvent.getTimestamp(); 
+				currTimestamp = currEvent.getSequenceNumber(); 
 				if (currTimestamp == timestamp)
 					return midIndex;
 				if (currTimestamp < timestamp)
@@ -58,15 +58,13 @@ public class EfficientInputBuffer {
 			}
 		}
 		
-		public List<Event> getSlice(Event startEvent, Event endEvent) {
+		public List<Event> getSlice(Long startNumber, Long endNumber) {
 			if (events.isEmpty())
 				return events;
-			Long startTime = startEvent == null ? null : startEvent.getTimestamp();
-			Long endTime = endEvent == null ? null : endEvent.getTimestamp();
-			int startIndex = startTime == null ? 
-					0 : getIndexWithClosestTimestamp(startTime, true);
-			int endIndex = endTime == null ? 
-					events.size() : getIndexWithClosestTimestamp(endTime, true);
+			int startIndex = startNumber == null ? 
+					0 : getIndexWithClosestTimestamp(startNumber, true);
+			int endIndex = endNumber == null ? 
+					events.size() : getIndexWithClosestTimestamp(endNumber, true);
 			if (startIndex > endIndex)
 				return new ArrayList<Event>();
 			List<Event> result = events.subList(startIndex, endIndex);
@@ -159,7 +157,13 @@ public class EfficientInputBuffer {
 	}
 	
 	public List<Event> getSlice(EventType type, Event startEvent, Event endEvent) {
-		return events.get(type).getSlice(startEvent, endEvent);
+		Long startNumber = startEvent == null ? null : startEvent.getSequenceNumber();
+		Long endNumber = endEvent == null ? null : endEvent.getSequenceNumber();
+		return getSlice(type, startNumber, endNumber);
+	}
+	
+	public List<Event> getSlice(EventType type, Long startNumber, Long endNumber) {
+		return events.get(type).getSlice(startNumber, endNumber);
 	}
 	
 	public void refresh(Long currentTime) {

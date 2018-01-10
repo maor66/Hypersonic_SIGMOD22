@@ -43,7 +43,7 @@ public class Match {
 
 	@Override
 	public String toString() {
-		String result = "Match [";
+		String result = "[";
 		for (int i = 0; i < primitiveEvents.size(); ++i) {
 			result += primitiveEvents.get(i);
 			if (i < primitiveEvents.size() - 1) {

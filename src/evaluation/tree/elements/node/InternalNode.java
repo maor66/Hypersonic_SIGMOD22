@@ -1,26 +1,21 @@
-package sase.evaluation.tree.elements;
+package sase.evaluation.tree.elements.node;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import sase.base.EventType;
-import sase.config.MainConfig;
-import sase.input.EventTypesConverterTypes;
 import sase.pattern.condition.base.AtomicCondition;
 import sase.pattern.condition.base.CNFCondition;
-import sase.pattern.condition.time.PairTemporalOrderCondition;
 
-public class InternalNode extends Node {
+public abstract class InternalNode extends Node {
 
-	private final Node leftChild;
-	private final Node rightChild;
+	protected Node leftChild;
+	protected Node rightChild;
 	
-	public InternalNode(CNFCondition condition, List<EventType> order, Node leftSon, Node rightSon) {
-		super(condition, order);
-		this.leftChild = leftSon;
-		this.rightChild = rightSon;
-		this.leftChild.setParent(this);
-		this.rightChild.setParent(this);
+	public InternalNode(CNFCondition condition, Node leftSon, Node rightSon) {
+		super(condition);
+		setLeftChild(leftSon);
+		setRightChild(rightSon);
 		completeNodeCreation();
 	}
 
@@ -32,6 +27,16 @@ public class InternalNode extends Node {
 		return rightChild;
 	}
 	
+	public void setLeftChild(Node leftChild) {
+		this.leftChild = leftChild;
+		this.leftChild.setParent(this);
+	}
+
+	public void setRightChild(Node rightChild) {
+		this.rightChild = rightChild;
+		this.rightChild.setParent(this);
+	}
+
 	public Node getOtherChild(Node son) {
 		if (son == leftChild) {
 			return rightChild;
@@ -69,10 +74,6 @@ public class InternalNode extends Node {
 		setParent(parent);
 		leftChild.finalizeNode(this);
 		rightChild.finalizeNode(this);
-		//XXX: ATTENTION - TEMPORARY HACK!!! Remove this ASAP.
-		if (MainConfig.eventTypesConverterType != EventTypesConverterTypes.TRAFFIC_SPEED_VEHICLES_NUMBER) {
-			calculateTemporalCondition();
-		}
 	}
 
 	@Override
@@ -80,43 +81,6 @@ public class InternalNode extends Node {
 		List<EventType> leftEventTypes = leftChild.getEventTypes();
 		List<EventType> rightEventTypes = rightChild.getEventTypes();
 		nodeCondition = mainCondition.getConditionBetweenTypeSets(leftEventTypes, rightEventTypes);
-	}
-	
-	private void calculateTemporalCondition() {
-		List<EventType> leftEventTypes = leftChild.getEventTypes();
-		List<EventType> rightEventTypes = rightChild.getEventTypes();
-		CNFCondition temporalCondition = new CNFCondition();
-		for (EventType eventType : rightEventTypes) {
-			for (int i = order.indexOf(eventType) - 1; i >= 0; --i) {
-				EventType currEventType = order.get(i);
-				if (rightEventTypes.contains(currEventType)) {
-					break;//already tightly bound
-				}
-				if (leftEventTypes.contains(currEventType)) {
-					//tightest bound found
-					PairTemporalOrderCondition currentTemporalCondition = 
-												new PairTemporalOrderCondition(currEventType, eventType);
-					currentTemporalCondition.setSelectivity(1.0);
-					temporalCondition.addAtomicCondition(currentTemporalCondition);
-					break;
-				}
-			}
-			for (int i = order.indexOf(eventType) + 1; i < order.size(); ++i) {
-				EventType currEventType = order.get(i);
-				if (rightEventTypes.contains(currEventType)) {
-					break;//already tightly bound
-				}
-				if (leftEventTypes.contains(currEventType)) {
-					//tightest bound found
-					PairTemporalOrderCondition currentTemporalCondition = 
-												new PairTemporalOrderCondition(eventType, currEventType);
-					currentTemporalCondition.setSelectivity(1.0);
-					temporalCondition.addAtomicCondition(currentTemporalCondition);
-					break;
-				}
-			}
-		}
-		nodeCondition.addAtomicConditions(temporalCondition);
 	}
 	
 	@Override

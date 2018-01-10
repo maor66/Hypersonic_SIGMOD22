@@ -13,17 +13,25 @@ public class EventRateConfig {
 		HashMap<String, Integer> eventRateHashMap = new HashMap<String, Integer>();
 
 		//stocks - selected companies
-		//TODO: those are dummy values, only added for convenience - find out the real ones
-		eventRateHashMap.put(StockEventTypesManager.microsoftEventTypeName, 100);
-		eventRateHashMap.put(StockEventTypesManager.yahooEventTypeName, 100);
-		eventRateHashMap.put(StockEventTypesManager.googleEventTypeName, 100);
-		eventRateHashMap.put(StockEventTypesManager.appleEventTypeName, 100);
-		eventRateHashMap.put(StockEventTypesManager.ciscoEventTypeName, 100);
-		eventRateHashMap.put(StockEventTypesManager.intelEventTypeName, 100);
-		eventRateHashMap.put(StockEventTypesManager.illuminaEventTypeName, 100);
-		eventRateHashMap.put(StockEventTypesManager.etradeEventTypeName, 100);
-		eventRateHashMap.put(StockEventTypesManager.broadcomEventTypeName, 100);
-		eventRateHashMap.put(StockEventTypesManager.rambusEventTypeName, 100);
+		//TODO: these values are only valid for one input file - find out the global ones
+		eventRateHashMap.put(StockEventTypesManager.microsoftEventTypeName, 450);
+		eventRateHashMap.put(StockEventTypesManager.yahooEventTypeName, 441);
+		eventRateHashMap.put(StockEventTypesManager.googleEventTypeName, 433);
+		eventRateHashMap.put(StockEventTypesManager.appleEventTypeName, 429);
+		eventRateHashMap.put(StockEventTypesManager.ciscoEventTypeName, 424);
+		eventRateHashMap.put(StockEventTypesManager.intelEventTypeName, 421);
+		eventRateHashMap.put(StockEventTypesManager.crosstechEventTypeName, 89);
+		eventRateHashMap.put(StockEventTypesManager.xtlbioEventTypeName, 90);
+		eventRateHashMap.put(StockEventTypesManager.quantumEventTypeName, 90);
+		eventRateHashMap.put(StockEventTypesManager.juniperEventTypeName, 91);
+		eventRateHashMap.put(StockEventTypesManager.aepindustriesEventTypeName, 91);
+		eventRateHashMap.put(StockEventTypesManager.reprosEventTypeName, 92);
+		eventRateHashMap.put(StockEventTypesManager.townebankEventTypeName, 17);
+		eventRateHashMap.put(StockEventTypesManager.mindctiEventTypeName, 18);
+		eventRateHashMap.put(StockEventTypesManager.chelseaEventTypeName, 18);
+		eventRateHashMap.put(StockEventTypesManager.nymoxEventTypeName, 18);
+		eventRateHashMap.put(StockEventTypesManager.purecycleEventTypeName, 18);
+		eventRateHashMap.put(StockEventTypesManager.netlistEventTypeName, 19);
 		
 		//stocks - regions
 		eventRateHashMap.put(StockEventTypesManager.africanCompanyEventTypeName, 20);

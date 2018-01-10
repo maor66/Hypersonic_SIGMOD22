@@ -1,12 +1,15 @@
 package sase.evaluation.nfa.lazy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import sase.base.AggregatedEvent;
 import sase.base.Event;
+import sase.base.EventSelectionStrategies;
 import sase.base.EventType;
+import sase.config.MainConfig;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.NFA;
 import sase.evaluation.nfa.eager.elements.Instance;
@@ -18,8 +21,10 @@ import sase.evaluation.nfa.lazy.elements.LazyTransition;
 import sase.evaluation.nfa.lazy.elements.LazyTransitionType;
 import sase.evaluation.nfa.lazy.optimizations.BufferPreprocessor;
 import sase.pattern.Pattern;
+import sase.pattern.Pattern.PatternOperatorType;
 import sase.pattern.condition.Condition;
 import sase.pattern.condition.base.TrivialCondition;
+import sase.pattern.condition.contiguity.PartialContiguityCondition;
 import sase.pattern.condition.time.EventTemporalPositionCondition;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
@@ -29,15 +34,27 @@ public abstract class LazyNFA extends NFA {
 	protected NFAState rejectingState = null;
 	protected final EfficientInputBuffer inputBuffer;
 	protected final List<EventType> unboundedIterativeEventTypes;
+	protected PartialContiguityCondition contiguityVerifier = null;
 
 	public LazyNFA(Pattern pattern) {
 		super(pattern);
 		inputBuffer = new EfficientInputBuffer(pattern);
 		unboundedIterativeEventTypes = getUnboundedIterativeEventTypes();
+		if (MainConfig.selectionStrategy == EventSelectionStrategies.CONTUGUITY && 
+			pattern.getType() == PatternOperatorType.SEQ) {
+			contiguityVerifier = new PartialContiguityCondition(pattern.getEventTypes());
+		}
 	}
 	
 	public NFAState getRejectingState() {
 		return rejectingState;
+	}
+	
+	public boolean verifyContiguityConditions(Event firstEvent, Event secondEvent) {
+		if (contiguityVerifier == null) {
+			return true;
+		}
+		return contiguityVerifier.verify(Arrays.asList(new Event[] {firstEvent, secondEvent}));
 	}
 
 	private List<List<EventType>> getSequencesWithBoundEventType(EventType eventType) {
@@ -96,9 +113,7 @@ public abstract class LazyNFA extends NFA {
 		else {
 			performRegularInstanceLoop(event, instancesToCheck, instancesToAdd, instancesToRemove, matches);
 		}
-		for (Instance instance : instances.getInstancesInAcceptingState()) {
-			checkInstanceForMatch(instance, matches, instancesToRemove);
-		}
+		getPendingMatches(matches, instancesToRemove, false);
 		handleInstanceStorageUpdate(instancesToCheck, instancesToAdd, instancesToRemove);
 		if (instances.shouldStoreEvent(event)) {
 			inputBuffer.store(event);
@@ -108,22 +123,39 @@ public abstract class LazyNFA extends NFA {
 																				   instances.getInstancesNumber());
 		Environment.getEnvironment().getStatisticsManager().updateDiscreteIfBigger(Statistics.peakBufferedEvents,
 																				   inputBuffer.numberOfEvents());
+		if (MainConfig.selectionStrategy != EventSelectionStrategies.SKIP_TILL_ANY) {
+			retainFirstElementOnly(matches);
+		}
 		return matches.size() > 0 ? matches : null;
 	}
 	
 	private void performRegularInstanceLoop(Event event, List<List<Instance>> instancesToCheck,
 											List<Instance> instancesToAdd, List<Instance> instancesToRemove,
 											List<Match> matches) {
+		Long startTimestamp = System.currentTimeMillis();
 		for (List<Instance> instanceList : instancesToCheck) {
+			boolean shouldStop = false;
 			List<Instance> instancesToRelocate = new ArrayList<Instance>();
 			NFAState currentState = instanceList.get(0).getCurrentState();
 			for (Instance instance : instanceList) {
-				performSingleInstaceLoopIteration(event, instance, instancesToAdd, instancesToRemove, matches);
+				if (Environment.getEnvironment().isTimeoutReached(System.currentTimeMillis() - startTimestamp)) {
+					shouldStop = true;
+					break;
+				}
+				performSingleInstanceLoopIteration(event, instance, instancesToAdd, instancesToRemove);
 				if (currentState != instance.getCurrentState()) {
 					instancesToRelocate.add(instance);
 				}
+				if (MainConfig.selectionStrategy != EventSelectionStrategies.SKIP_TILL_ANY && !instancesToAdd.isEmpty()) {
+					retainFirstElementOnly(instancesToAdd);
+					shouldStop = true;
+					break;
+				}
 			}
 			relocateInstances(instanceList, instancesToRelocate);
+			if (shouldStop) {
+				break;
+			}
 		}
 	}
 	
@@ -142,6 +174,7 @@ public abstract class LazyNFA extends NFA {
 																 List<Match> matches) {
 		
 		for (List<Instance> instanceList : instancesToCheck) {
+			boolean shouldStop = false;
 			for (Instance instance : instanceList) {
 				if (isInUnboundedIterativeTypeState(instance)) {
 					instancesToAdd.addAll(attemptBufferEvaluationWithPendingEvent((LazyInstance)instance, event));
@@ -149,16 +182,23 @@ public abstract class LazyNFA extends NFA {
 				else {
 					//TODO: the modification in performRegularInstanceLoop for avoiding instance storage inconsistency
 					//when an instance switches to another state yet remains in the same list should be applied here as well
-					performSingleInstaceLoopIteration(event, instance, instancesToAdd, instancesToRemove, matches);
+					performSingleInstanceLoopIteration(event, instance, instancesToAdd, instancesToRemove);
 				}
+				if (MainConfig.selectionStrategy != EventSelectionStrategies.SKIP_TILL_ANY && !instancesToAdd.isEmpty()) {
+					retainFirstElementOnly(instancesToAdd);
+					shouldStop = true;
+					break;
+				}
+			}
+			if (shouldStop) {
+				break;
 			}
 		}
 	}
 	
-	private void performSingleInstaceLoopIteration(Event event, Instance instance,
+	private void performSingleInstanceLoopIteration(Event event, Instance instance,
 												   List<Instance> instancesToAdd,
-												   List<Instance> instancesToRemove,
-												   List<Match> matches) {
+												   List<Instance> instancesToRemove) {
 		LazyInstance lazyInstance = (LazyInstance) instance;
 		instancesToAdd.addAll(processNewEventOnInstance(event, lazyInstance));
 		instancesToAdd.remove(instance);// just in case we somehow

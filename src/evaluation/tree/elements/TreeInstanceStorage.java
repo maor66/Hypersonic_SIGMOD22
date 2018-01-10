@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import sase.base.Event;
 import sase.evaluation.common.Match;
+import sase.evaluation.tree.elements.node.Node;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
 
@@ -50,6 +52,10 @@ public class TreeInstanceStorage {
 		return matches;
 	}
 	
+	public boolean hasMatches() {
+		return !instances.get(treeRoot).isEmpty();
+	}
+	
 	public void validateTimeWindow(long currentTime) {
 		for (List<TreeInstance> instanceList : instances.values()) {
 			if (instanceList.isEmpty()) {
@@ -93,4 +99,22 @@ public class TreeInstanceStorage {
 		return number;
 	}
 
+	public void removeConflictingInstances(Match match) {
+		List<Event> events = match.getPrimitiveEvents();
+		for (List<TreeInstance> instanceList : instances.values()) {
+			List<TreeInstance> instancesToRemove = new ArrayList<TreeInstance>();
+			for (TreeInstance instance : instanceList) {
+				List<Event> currentInstanceEvents = instance.getEvents();
+				if (events == currentInstanceEvents) { //comparison by reference intended
+					continue;
+				}
+				int originalSize = currentInstanceEvents.size();
+				currentInstanceEvents.removeAll(events);
+				if (currentInstanceEvents.size() < originalSize) {
+					instancesToRemove.add(instance);
+				}
+			}
+			instanceList.removeAll(instancesToRemove);
+		}
+	}
 }

@@ -3,6 +3,7 @@ package sase.pattern.condition.base;
 import java.util.List;
 
 import sase.base.Event;
+import sase.base.EventType;
 import sase.config.MainConfig;
 import sase.pattern.condition.Condition;
 import sase.simulator.Environment;
@@ -30,11 +31,17 @@ public abstract class AtomicCondition extends Condition {
 	}
 	
 	public boolean verify(List<Event> events) {
+		Event firstEvent = null;
+		Event secondEvent = null;
 		if (this instanceof DoubleEventCondition) {
+			EventType firstEventType = ((DoubleEventCondition)this).getLeftEventType();
+			firstEvent = getEventByType(events, firstEventType);
+			EventType secondEventType = ((DoubleEventCondition)this).getRightEventType();
+			secondEvent = getEventByType(events, secondEventType);
 			Boolean success = 
 				Environment.getEnvironment().getPredicateResultsCache().getConditionEvaluationResult(this,
-																									 events.get(0),
-																									 events.get(1));
+																									 firstEvent,
+																									 secondEvent);
 			if (success != null) {
 				return success;
 			}
@@ -48,11 +55,20 @@ public abstract class AtomicCondition extends Condition {
 		}
 		if (this instanceof DoubleEventCondition) {
 			Environment.getEnvironment().getPredicateResultsCache().recordConditionEvaluation(this,
-																							  events.get(0),
-																							  events.get(1),
+																							  firstEvent,
+																							  secondEvent,
 																							  success);
 		}
 		return success;
+	}
+	
+	private Event getEventByType(List<Event> events, EventType eventType) {
+		for (Event event : events) {
+			if (event.getType() == eventType) {
+				return event;
+			}
+		}
+		return null;
 	}
 	
 	protected abstract boolean actuallyVerify(List<Event> events);

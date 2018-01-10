@@ -6,6 +6,9 @@ import sase.specification.InputSpecification;
 import sase.specification.PatternSpecification;
 import sase.specification.SimulationSpecification;
 import sase.specification.creators.SpecificationCreatorTypes;
+import sase.specification.creators.condition.ConditionSpecificationCreatorTypes;
+import sase.specification.creators.condition.ConditionSpecificationSetCreatorTypes;
+import sase.user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
 import sase.adaptive.monitoring.AdaptationNecessityDetectorTypes;
 import sase.adaptive.monitoring.invariant.compare.InvariantComparerType;
 import sase.base.Event; //this dummy import is needed to avoid the annoying 'unused warning suppression' message
@@ -15,15 +18,21 @@ import sase.evaluation.tree.TopologyCreatorTypes;
 import sase.evaluation.tree.TreeCostModelTypes;
 import sase.order.OrderingAlgorithmTypes;
 import sase.order.cost.CostModelTypes;
+import sase.pattern.Pattern.PatternOperatorType;
 
 @SuppressWarnings("unused")
 public class SimulationConfig {
 	
 	//specification creator definition
-	public static final SpecificationCreatorTypes specificationCreatorType = SpecificationCreatorTypes.CROSS_PRODUCT;
+	public static final SpecificationCreatorTypes specificationCreatorType = 
+																SpecificationCreatorTypes.STOCK_EVALUATION;
+	public static final ConditionSpecificationCreatorTypes conditionCreatorType = 
+																ConditionSpecificationCreatorTypes.STOCK_DELTA;
+	public static final ConditionSpecificationSetCreatorTypes conditionSetCreatorType = 
+																ConditionSpecificationSetCreatorTypes.COUNTERS;
 
 	//for stock events
-	public static final long timeWindows[] = {2, 4, 6, 8, 10};
+	public static final long timeWindows[] = {20};
 	
 	//for tram events
 	//public static final long timeWindows[] = {3 * 60, 6 * 60, 9 * 60, 12 * 60, 15 * 60, 18 * 60};
@@ -34,35 +43,50 @@ public class SimulationConfig {
 	//for fraud events
 	//public static final long timeWindows[] = {3, 6, 9, 12, 15, 18};
 	
-	/* Settings for automatic stock sequence patterns generation. */
-	public static final int[] patternLengths = {3,4,5,6,7};
-	public static final int patternsPerLength = 3;
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	/* Settings for pattern specification generation. */
+	public static final int[] patternSizes = {7};
+	public static final int patternsPerLength = 5;
+	public static final Long timeWindowForPatternGenerator = 25L;
+	public static final PatternOperatorType mainOperatorType = PatternOperatorType.AND_SEQ;
+	
+	public static final int negatedEventsNumber = 0;
+	public static final double negatedConditionProbability = 1.0;
+	
+	public static final int iteratedEventsNumber = 0;
+	public static final ComparisonOperation triggerComparisonOperator = ComparisonOperation.EQUALS;
+	public static final ComparisonOperation iterativeComparisonOperator = ComparisonOperation.EQUALS;
+	public static final ComparisonOperation terminatorComparisonOperator = ComparisonOperation.EQUALS;
+	
+	public static final int numberOfDisjunctions = 3;
+	
+	public static final int[] numbersOfConditions = {1,2,3,4,4};
 	public static final double[] correlations = {0.5,0.6,0.7,0.8,0.9};
-	public static final Long timeWindowForPatternGenerator = 5L;
+	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	/* Individual specification sets for cross-combining. */
 	public static final EvaluationSpecification[] evaluationSpecifications = {
 			new EvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 						CostModelTypes.THROUGHPUT_LATENCY,
 						0.0),
-//			new EvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
-//						CostModelTypes.THROUGHPUT_LATENCY,
-//						0.0),
-//			new EvaluationSpecification(OrderingAlgorithmTypes.II_RANDOM,
-//						CostModelTypes.THROUGHPUT_LATENCY,
-//						0.0),
-//			new EvaluationSpecification(OrderingAlgorithmTypes.II_GREEDY_COST,
-//						CostModelTypes.THROUGHPUT_LATENCY,
-//						0.0),
-//			new EvaluationSpecification(OrderingAlgorithmTypes.DYNAMIC,
-//						CostModelTypes.THROUGHPUT_LATENCY,
-//						0.0),
-//			new EvaluationSpecification(TopologyCreatorTypes.SELINGER,
-//										TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
-//			new EvaluationSpecification(TopologyCreatorTypes.ZSTREAM, 
-//										TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
-//			new EvaluationSpecification(TopologyCreatorTypes.ORDERED_ZSTREAM, 
-//										TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
+			new EvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
+						CostModelTypes.THROUGHPUT_LATENCY,
+						0.0),
+			new EvaluationSpecification(OrderingAlgorithmTypes.II_RANDOM,
+						CostModelTypes.THROUGHPUT_LATENCY,
+						0.0),
+			new EvaluationSpecification(OrderingAlgorithmTypes.II_GREEDY_COST,
+						CostModelTypes.THROUGHPUT_LATENCY,
+						0.0),
+			new EvaluationSpecification(OrderingAlgorithmTypes.DYNAMIC,
+						CostModelTypes.THROUGHPUT_LATENCY,
+						0.0),
+			new EvaluationSpecification(TopologyCreatorTypes.SELINGER,
+										TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
+			new EvaluationSpecification(TopologyCreatorTypes.ZSTREAM, 
+										TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
+			new EvaluationSpecification(TopologyCreatorTypes.ORDERED_ZSTREAM, 
+										TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
 			new EvaluationSpecification(EvaluationMechanismTypes.EAGER),
 //			new EvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
 //						CostModelTypes.THROUGHPUT_LATENCY,
@@ -280,9 +304,13 @@ public class SimulationConfig {
 //			    					 		CostModelTypes.THROUGHPUT_LATENCY,
 //			    					 		0.0)),
 
-//		new SimulationSpecification(PatternConfig.testSequenceOfFive,
-//									new EvaluationSpecification(TopologyCreatorTypes.SELINGER, 
-//																TreeCostModelTypes.THROUGHPUT)),
+		new SimulationSpecification(PatternConfig.testSequence,
+				new EvaluationSpecification(OrderingAlgorithmTypes.DYNAMIC,
+											CostModelTypes.THROUGHPUT_LATENCY,
+											0.0)),
+		new SimulationSpecification(PatternConfig.testSequence,
+									new EvaluationSpecification(TopologyCreatorTypes.SELINGER, 
+																TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0)),
 
 			
 		/* Sequence */

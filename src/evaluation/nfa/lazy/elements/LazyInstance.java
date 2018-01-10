@@ -1,6 +1,8 @@
 package sase.evaluation.nfa.lazy.elements;
 
 import sase.base.Event;
+import sase.base.EventSelectionStrategies;
+import sase.config.MainConfig;
 import sase.evaluation.common.EventBuffer;
 import sase.evaluation.nfa.NFA;
 import sase.evaluation.nfa.eager.elements.Instance;
@@ -101,11 +103,27 @@ public class LazyInstance extends Instance {
 		}
 	}
 	
+	private boolean isRegularTransitionPossible(Event event, LazyTransition transition) {
+		if (MainConfig.selectionStrategy == EventSelectionStrategies.CONTUGUITY) {
+			LazyNFA lazyNfa = (LazyNFA)automaton;
+			Event precedingEvent = transition.getActualPrecedingEvent(getEventsFromMatchBuffer());
+			if (precedingEvent != null && !lazyNfa.verifyContiguityConditions(event, precedingEvent)) {
+				return false;
+			}
+			Event succeedingEvent = transition.getActualSucceedingEvent(getEventsFromMatchBuffer());
+			if (succeedingEvent != null && !lazyNfa.verifyContiguityConditions(event, succeedingEvent)) {
+				return false;
+			}
+		}
+		return super.isTransitionPossible(event, transition);
+	}
+	
 	@Override
 	public boolean isTransitionPossible(Event event, Transition transition) {
-		switch(((LazyTransition)transition).getType()) {
+		LazyTransition lazyTransition = (LazyTransition)transition;
+		switch(lazyTransition.getType()) {
 			case REGULAR:
-				return super.isTransitionPossible(event, transition);
+				return isRegularTransitionPossible(event, lazyTransition);
 			case SEARCH_FAILED:
 				return true; //we assume this type of edge to only be traversed when all conditions hold
 			case TIMEOUT:

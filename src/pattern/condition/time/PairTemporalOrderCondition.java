@@ -2,7 +2,6 @@ package sase.pattern.condition.time;
 
 import sase.base.Event;
 import sase.base.EventType;
-import sase.pattern.EventTypesManager;
 import sase.pattern.condition.base.DoubleEventCondition;
 
 /**
@@ -16,8 +15,7 @@ public class PairTemporalOrderCondition extends DoubleEventCondition {
 
 	@Override
 	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
-		return EventTypesManager.getInstance().getEventTimestamp(firstEvent) < 
-				EventTypesManager.getInstance().getEventTimestamp(secondEvent);
+		return firstEvent.getSequenceNumber() < secondEvent.getSequenceNumber();
 	}
 	
 	@Override

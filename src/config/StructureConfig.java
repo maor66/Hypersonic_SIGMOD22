@@ -793,4 +793,19 @@ public class StructureConfig {
 			},
 	 	};
 
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	 	public static final String[][][] testSequence = 
+	 			//main 'OR'
+	 			new String[][][]{
+	 				//first 'AND'
+	 				new String[][] {
+	 					//first 'SEQ'
+	 					new String[] {
+	 						StockEventTypesManager.ciscoEventTypeName,
+	 						StockEventTypesManager.netlistEventTypeName,
+	 						StockEventTypesManager.aepindustriesEventTypeName,
+	 					},
+	 				},
+	 			 };
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

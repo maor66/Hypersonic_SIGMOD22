@@ -7,7 +7,7 @@ import sase.evaluation.tree.ITreeCostModel;
 import sase.evaluation.tree.ITreeTopologyCreator;
 import sase.evaluation.tree.cost.ThroughputLatencyTreeCostModel;
 import sase.evaluation.tree.cost.ThroughputTreeCostModel;
-import sase.evaluation.tree.elements.Node;
+import sase.evaluation.tree.elements.node.Node;
 import sase.order.IOrderingAlgorithm;
 import sase.order.OrderingAlgorithmFactory;
 import sase.order.OrderingAlgorithmTypes;
@@ -41,7 +41,8 @@ public class OrderedZStreamTreeTopologyCreator extends ZStreamTreeTopologyCreato
 	public Node createTreeTopology(Pattern pattern, CNFCondition mainCondition, ITreeCostModel costModel) {
 		ICostModel orderCostModel = createOrderCostModel(costModel, pattern.getEventTypes());
 		List<EventType> calculatedEventOrder = orderingAlgorithm.calculateEvaluationOrder(pattern, orderCostModel);
-		return createTreeTopologyFromEventList(calculatedEventOrder, mainCondition, costModel);
+		return createTreeTopologyByLeavesOrder(pattern, pattern.getEventTypes(), 
+											   calculatedEventOrder, mainCondition, costModel);
 	}
 
 }

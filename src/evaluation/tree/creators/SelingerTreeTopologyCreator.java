@@ -7,10 +7,11 @@ import java.util.List;
 import sase.base.EventType;
 import sase.evaluation.tree.ITreeCostModel;
 import sase.evaluation.tree.ITreeTopologyCreator;
-import sase.evaluation.tree.elements.InternalNode;
-import sase.evaluation.tree.elements.LeafNode;
-import sase.evaluation.tree.elements.Node;
+import sase.evaluation.tree.TopologyCreatorUtils;
+import sase.evaluation.tree.elements.node.LeafNode;
+import sase.evaluation.tree.elements.node.Node;
 import sase.order.algorithm.DynamicOrderingAlgorithm;
+import sase.pattern.CompositePattern;
 import sase.pattern.Pattern;
 import sase.pattern.condition.base.CNFCondition;
 
@@ -19,9 +20,10 @@ public class SelingerTreeTopologyCreator extends DynamicOrderingAlgorithm implem
 	@Override
 	public Node createTreeTopology(Pattern pattern, CNFCondition mainCondition, ITreeCostModel costModel) {
 		List<EventType> eventTypes = pattern.getEventTypes();
+		List<EventType> iterativeEventTypes = ((CompositePattern)pattern).getIterativeEventTypes();
 		HashMap<List<EventType>, CostAwareTree> subsets = new HashMap<List<EventType>, CostAwareTree>();
 		for (EventType eventType : eventTypes) {
-			LeafNode currLeafNode = new LeafNode(eventType, mainCondition);
+			LeafNode currLeafNode = new LeafNode(eventType, mainCondition, iterativeEventTypes.contains(eventType));
 			List<EventType> listForEventType = new ArrayList<EventType>();
 			listForEventType.add(eventType);
 			subsets.put(listForEventType, new CostAwareTree(currLeafNode, costModel.getCost(currLeafNode)));
@@ -35,7 +37,8 @@ public class SelingerTreeTopologyCreator extends DynamicOrderingAlgorithm implem
 						List<EventType> complement = getComplement(subset, subSubSet);
 						Node firstTree = subsets.get(subSubSet).root;
 						Node secondTree = subsets.get(complement).root;
-						Node newTree = new InternalNode(mainCondition, eventTypes, firstTree, secondTree);
+						Node newTree = TopologyCreatorUtils.createNodeByPatternType(pattern, mainCondition, 
+																					eventTypes, firstTree, secondTree);
 						Double newCost = costModel.getCost(newTree);
 						CostAwareTree oldTreeWithCost = subsets.get(subset);
 						if (oldTreeWithCost == null || newCost < oldTreeWithCost.cost) {

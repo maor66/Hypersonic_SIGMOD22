@@ -10,6 +10,7 @@ import sase.user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperatio
 import sase.user.stocks.specification.IterativeAverageStockCorrelationConditionSpecification;
 import sase.user.stocks.specification.IterativeValueCmpStockCorrelationConditionSpecification;
 import sase.user.stocks.specification.StockCorrelationConditionSpecification;
+import sase.user.stocks.specification.StockDeltaOrderingConditionSpecification;
 import sase.user.stocks.specification.StockFirstValueCmpConditionSpecification;
 import sase.user.trams.TramCongestionIntersectionConditionSpecification;
 import sase.user.trams.TramEventTypesManager;
@@ -496,23 +497,10 @@ public class ConditionConfig {
 	
 	
 	////////////////////////////////////////Test configuration/////////////////////////////////////
-	public static final ConditionSpecification[] testSequenceOfFive = new ConditionSpecification[] {
-			new StockCorrelationConditionSpecification(StockEventTypesManager.northAmericanCompanyEventTypeName,
-					   StockEventTypesManager.europeanCompanyEventTypeName,
-					   0.9, 1.0),
-			new StockCorrelationConditionSpecification(StockEventTypesManager.europeanCompanyEventTypeName,
-					   StockEventTypesManager.africanCompanyEventTypeName,
-					   0.9, 1.0),
-			new StockCorrelationConditionSpecification(StockEventTypesManager.africanCompanyEventTypeName,
-					   StockEventTypesManager.southAmericanCompanyEventTypeName,
-					   0.9, 1.0),
-			new StockCorrelationConditionSpecification(StockEventTypesManager.southAmericanCompanyEventTypeName,
-					   StockEventTypesManager.centralAmericanCompanyEventTypeName,
-					   0.9, 1.0),
-			new StockCorrelationConditionSpecification(StockEventTypesManager.centralAmericanCompanyEventTypeName,
-					   StockEventTypesManager.northAmericanCompanyEventTypeName,
-					   0.9, 1.0),};
-	
+	public static final ConditionSpecification[] testSequence = new ConditionSpecification[] {
+			new StockDeltaOrderingConditionSpecification(StockEventTypesManager.ciscoEventTypeName,
+					   									 StockEventTypesManager.netlistEventTypeName),
+	};
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	//	Trams

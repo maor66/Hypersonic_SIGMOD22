@@ -13,7 +13,7 @@ public class GreedyCostModelOrderingAlgorithm extends GreedyOrderingAlgorithm im
 	protected EventType selectNextEventType(CompositePattern compositePattern, ICostModel costModel,
 										  List<EventType> prefix, List<EventType> remainingTypes) {
 		EventType currentBestEventType = null;
-		Double currentLowestCost = 0.0;
+		Double currentLowestCost = null;
 		for (EventType candidateEventType : remainingTypes) {
 			List<EventType> tempList = new ArrayList<EventType>(prefix);
 			tempList.add(candidateEventType);

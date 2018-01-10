@@ -2,9 +2,14 @@ package sase.base;
 
 import sase.pattern.EventTypesManager;
 
-public class Event {
+public class Event implements Comparable<Event> {
 	
 	private static final int signatureSize = 2;
+	private static long eventCounter = 0;
+	
+	public static void resetCounter() {
+		eventCounter = 0;
+	}
 	
 	public static Object[] getEventSignature(Object[] eventPayload) {
 		Object[] result = new Object[signatureSize];
@@ -14,11 +19,13 @@ public class Event {
 		return result;
 	}
 
+	protected final long sequenceNumber;
 	protected final EventType type;
 	protected final long systemTimestamp;
 	protected Object[] payload;
 
 	public Event(EventType type, Object[] payload) {
+		this.sequenceNumber = eventCounter++;
 		this.type = type;
 		this.systemTimestamp = System.currentTimeMillis();
 		this.payload = payload == null ? null : 
@@ -67,16 +74,26 @@ public class Event {
 		return systemTimestamp;
 	}
 	
+	public long getSequenceNumber() {
+		return sequenceNumber;
+	}
+
 	@Override
 	public String toString() {
-		String result = String.format("%s:", type);
+		return String.format("%s%d:%d", type.getName(), sequenceNumber, getTimestamp());
+		/*String result = String.format("%s:", type);
 		for (int i = 0; i < payload.length; ++i) {
 			result += payload[i];
 			if (i < payload.length - 1) {
 				result += ",";
 			}
 		}
-		return result;
+		return result;*/
+	}
+
+	@Override
+	public int compareTo(Event e) {
+		return new Long(sequenceNumber - e.sequenceNumber).intValue();
 	}
 
 }

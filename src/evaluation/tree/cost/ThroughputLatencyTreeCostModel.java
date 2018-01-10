@@ -4,9 +4,9 @@ import java.util.List;
 
 import sase.base.EventType;
 import sase.evaluation.tree.ITreeCostModel;
-import sase.evaluation.tree.elements.InternalNode;
-import sase.evaluation.tree.elements.LeafNode;
-import sase.evaluation.tree.elements.Node;
+import sase.evaluation.tree.elements.node.InternalNode;
+import sase.evaluation.tree.elements.node.LeafNode;
+import sase.evaluation.tree.elements.node.Node;
 
 public class ThroughputLatencyTreeCostModel extends ThroughputTreeCostModel implements ITreeCostModel {
 
