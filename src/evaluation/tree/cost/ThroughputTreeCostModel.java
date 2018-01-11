@@ -1,10 +1,10 @@
-package evaluation.tree.cost;
+package sase.evaluation.tree.cost;
 
-import evaluation.tree.ITreeCostModel;
-import evaluation.tree.elements.InternalNode;
-import evaluation.tree.elements.LeafNode;
-import evaluation.tree.elements.Node;
-import simulator.Environment;
+import sase.evaluation.tree.ITreeCostModel;
+import sase.evaluation.tree.elements.node.InternalNode;
+import sase.evaluation.tree.elements.node.LeafNode;
+import sase.evaluation.tree.elements.node.Node;
+import sase.simulator.Environment;
 
 public class ThroughputTreeCostModel implements ITreeCostModel {
 
@@ -52,6 +52,9 @@ public class ThroughputTreeCostModel implements ITreeCostModel {
 
 	private Double getLeafNodeCardinality(LeafNode node) {
 		int eventRate = Environment.getEnvironment().getEventRateEstimator().getEventRateEstimate(node.getEventType());
+		if (node.isIterated()) {
+			eventRate = new Double(Math.pow(2, eventRate)).intValue();
+		}
 		Double result = eventRate * node.getNodeCondition().getSelectivity();
 		return (result == null) ? 0 : result;
 	}

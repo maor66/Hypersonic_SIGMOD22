@@ -1,29 +1,30 @@
-package evaluation.nfa;
+package sase.evaluation.nfa;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import base.Attribute;
-import base.Datatype;
-import base.Event;
-import base.EventType;
-import config.MainConfig;
-import evaluation.IEvaluationMechanism;
-import evaluation.IEvaluationMechanismInfo;
-import evaluation.common.Match;
-import evaluation.common.State;
-import evaluation.nfa.eager.elements.Instance;
-import evaluation.nfa.eager.elements.InstanceStorage;
-import evaluation.nfa.eager.elements.NFAState;
-import evaluation.nfa.eager.elements.Transition;
-import pattern.CompositePattern;
-import pattern.Pattern;
-import pattern.condition.Condition;
-import pattern.condition.base.AtomicCondition;
-import pattern.condition.base.CNFCondition;
-import simulator.Environment;
-import statistics.Statistics;
+import sase.base.Attribute;
+import sase.base.Datatype;
+import sase.base.Event;
+import sase.base.EventSelectionStrategies;
+import sase.base.EventType;
+import sase.config.MainConfig;
+import sase.evaluation.IEvaluationMechanism;
+import sase.evaluation.IEvaluationMechanismInfo;
+import sase.evaluation.common.Match;
+import sase.evaluation.common.State;
+import sase.evaluation.nfa.eager.elements.Instance;
+import sase.evaluation.nfa.eager.elements.InstanceStorage;
+import sase.evaluation.nfa.eager.elements.NFAState;
+import sase.evaluation.nfa.eager.elements.Transition;
+import sase.pattern.CompositePattern;
+import sase.pattern.Pattern;
+import sase.pattern.condition.Condition;
+import sase.pattern.condition.base.AtomicCondition;
+import sase.pattern.condition.base.CNFCondition;
+import sase.simulator.Environment;
+import sase.statistics.Statistics;
 
 public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismInfo {
 
@@ -116,19 +117,17 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 	protected void handleInstanceStorageUpdate(List<List<Instance>> instancesToCheck, 
 											   List<Instance> instancesToAdd, 
 											   List<Instance> instancesToRemove) {
-		if (instancesToCheck.size() == 1) {
-			//an optimization aiming to improve the common case, when all new and 'to be removed' instances
-			//share the same current state
-			instances.addAll(instancesToAdd);
-			instances.removeAll(instancesToRemove);
+		for (Instance instance : instancesToAdd) {
+			instances.add(instance);
 		}
-		else {
-			for (Instance instance : instancesToAdd) {
-				instances.add(instance);
-			}
-			for (Instance instance : instancesToRemove) {
-				instances.remove(instance);
-			}
+		for (Instance instance : instancesToRemove) {
+			instances.remove(instance);
+		}
+	}
+	
+	protected void retainFirstElementOnly(List<? extends Object> list) {
+		if (list != null && !list.isEmpty()) {
+			list = list.subList(0, 1);
 		}
 	}
 
@@ -144,22 +143,37 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 		if (instancesToCheck == null) {
 			return null;
 		}
+		Long startTimestamp = System.currentTimeMillis();
 		for (List<Instance> instanceList : instancesToCheck) {
+			boolean shouldStop = false;
 			for (Instance instance : instanceList) {
+				if (Environment.getEnvironment().isTimeoutReached(System.currentTimeMillis() - startTimestamp)) {
+					shouldStop = true;
+					break;
+				}
 				instancesToAdd.addAll(processNewEventOnInstance(event, instance));
 				if (instance.shouldInvalidate()) {
 					instancesToRemove.add(instance);
 				}
+				if (MainConfig.selectionStrategy != EventSelectionStrategies.SKIP_TILL_ANY && !instancesToAdd.isEmpty()) {
+					retainFirstElementOnly(instancesToAdd);
+					shouldStop = true;
+					break;
+				}
+			}
+			if (shouldStop) {
+				break;
 			}
 		}
-		for (Instance instance : instances.getInstancesInAcceptingState()) {
-			checkInstanceForMatch(instance, matches, instancesToRemove);
-		}
+		getPendingMatches(matches, instancesToRemove, false);
 		handleInstanceStorageUpdate(instancesToCheck, instancesToAdd, instancesToRemove);
 		Environment.getEnvironment().getStatisticsManager().updateDiscreteIfBigger(Statistics.peakInstances,
 																				   getInstancesNumber());
 		Environment.getEnvironment().getStatisticsManager().updateDiscreteIfBigger(Statistics.peakBufferedEvents,
 																				   getBufferedEventsNumber());
+		if (MainConfig.selectionStrategy != EventSelectionStrategies.SKIP_TILL_ANY) {
+			retainFirstElementOnly(matches);
+		}
 		return matches.size() > 0 ? matches : null;
 	}
 
@@ -182,9 +196,21 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 	public long getTimeWindow() {
 		return timeWindow;
 	}
+	
+	protected boolean getPendingMatches(List<Match> listOfMatches,
+									 	List<Instance> listOfInstancesToBeRemoved,
+									 	boolean stopOnFirstMatch) {
+		for (Instance instance : instances.getInstancesInAcceptingState()) {
+			checkInstanceForMatch(instance, listOfMatches, listOfInstancesToBeRemoved);
+			if (stopOnFirstMatch && (!listOfMatches.isEmpty())) {
+				return true;
+			}
+		}
+		return (!listOfMatches.isEmpty());
+	}
 
 	protected boolean checkInstanceForMatch(Instance instance, List<Match> listOfMatches,
-			List<Instance> listOfInstancesToBeRemoved) {
+											List<Instance> listOfInstancesToBeRemoved) {
 		Match initialMatch = instance.getMatch();
 		Match actualMatch = performMatchPostProcessing(instance);
 		if (initialMatch == null) {
@@ -219,12 +245,12 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 		List<Instance> expiredAcceptingInstances = instances.validateTimeWindow(currentTime, false);
 		List<Match> matches = new ArrayList<Match>();
 		for (Instance instance : expiredAcceptingInstances) {
-				checkInstanceForMatch(instance, matches);// it's possible that
-															// this instance is
-															// expired with a
-															// match
+			checkInstanceForMatch(instance, matches);// it's possible that
+													 // this instance is
+													 // expired with a
+													 // match
 		}
-		return matches.size() > 0 ? matches : null;
+		return matches;
 	}
 
 	public boolean isCreationCompleted() {
@@ -356,6 +382,16 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 			result *= transition.getCondition().getSelectivity();
 		}
 		return result;
+	}
+	
+	@Override
+	public void removeConflictingInstances(List<Match> matches) {
+		if (matches == null) {
+			return;
+		}
+		for (Match match : matches) {
+			instances.removeConflictingInstances(match);
+		}
 	}
 
 	protected abstract void initNFAStructure(Pattern pattern);

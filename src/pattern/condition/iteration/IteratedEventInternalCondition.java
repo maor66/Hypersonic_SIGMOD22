@@ -7,8 +7,12 @@ import pattern.condition.base.SingleEventCondition;
 
 public abstract class IteratedEventInternalCondition extends SingleEventCondition {
 
+	private static final double defaultSelectivity = 1.0;
+	
 	public IteratedEventInternalCondition(EventType type) {
 		super(type);
+		//TODO: for now, the selectivity of the internal conditions on iterated events is not taken into account
+		setSelectivity(defaultSelectivity);
 	}
 
 	@Override

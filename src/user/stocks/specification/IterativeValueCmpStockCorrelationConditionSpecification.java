@@ -1,16 +1,16 @@
-package user.stocks.specification;
+package sase.user.stocks.specification;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import base.EventType;
-import pattern.EventTypesManager;
-import pattern.condition.base.AtomicCondition;
-import pattern.condition.iteration.FirstValueExternalCondition;
-import pattern.condition.iteration.eager.IteratedIncrementalDoubleEventCondition;
-import specification.ConditionSpecification;
-import user.stocks.condition.StockFirstValueCmpCondition;
-import user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
+import sase.base.EventType;
+import sase.config.SimulationConfig;
+import sase.pattern.EventTypesManager;
+import sase.pattern.condition.base.AtomicCondition;
+import sase.pattern.condition.iteration.FirstValueExternalCondition;
+import sase.pattern.condition.iteration.eager.IteratedIncrementalDoubleEventCondition;
+import sase.specification.ConditionSpecification;
+import sase.user.stocks.condition.StockFirstValueCmpCondition;
 
 public class IterativeValueCmpStockCorrelationConditionSpecification extends ConditionSpecification {
 	
@@ -19,8 +19,8 @@ public class IterativeValueCmpStockCorrelationConditionSpecification extends Con
 	private final String succeedingEventName;
 
 	public IterativeValueCmpStockCorrelationConditionSpecification(String precedingEventName,
-																  		String iterativeEventName,
-																  		String succeedingEventName) {
+																   String iterativeEventName,
+																   String succeedingEventName) {
 		this.precedingEventName = precedingEventName;
 		this.iterativeEventName = iterativeEventName;
 		this.succeedingEventName = succeedingEventName;
@@ -44,17 +44,17 @@ public class IterativeValueCmpStockCorrelationConditionSpecification extends Con
 		EventType succeedingType = EventTypesManager.getInstance().getTypeByName(succeedingEventName);
 		StockFirstValueCmpCondition nestedTriggeringEqualityCondition = 
 									new StockFirstValueCmpCondition(precedingType, iterativeType,
-																	ComparisonOperation.EQUALS);
+																	SimulationConfig.triggerComparisonOperator);
 		FirstValueExternalCondition triggeringEqualityCondition = 
 									new FirstValueExternalCondition(nestedTriggeringEqualityCondition);
 		StockFirstValueCmpCondition nestedIterativeEqualityCondition = 
 									new StockFirstValueCmpCondition(iterativeType, iterativeType,
-																	ComparisonOperation.EQUALS);
+																	SimulationConfig.iterativeComparisonOperator);
 		IteratedIncrementalDoubleEventCondition iterativeEqualityCondition = 
 									new IteratedIncrementalDoubleEventCondition(nestedIterativeEqualityCondition);
 		StockFirstValueCmpCondition externalEqualityCondition = 
 									new StockFirstValueCmpCondition(precedingType, succeedingType,
-																	ComparisonOperation.EQUALS);
+																	SimulationConfig.terminatorComparisonOperator);
 		
 		List<AtomicCondition> result = new ArrayList<AtomicCondition>();
 		result.add(triggeringEqualityCondition);
@@ -65,12 +65,12 @@ public class IterativeValueCmpStockCorrelationConditionSpecification extends Con
 	
 	@Override
 	public String toString() {
-		return String.format("%s => (%s)* => %s", precedingEventName, iterativeEventName, succeedingEventName);
+		return String.format("%s=>(%s)*=>%s", precedingEventName, iterativeEventName, succeedingEventName);
 	}
 
 	@Override
 	public String getShortDescription() {
-		return "Unsupported";
+		return toString();
 	}
 
 }

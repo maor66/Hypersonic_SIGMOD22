@@ -1,9 +1,9 @@
-package evaluation.tree.creators.adaptive.zstream;
+package sase.evaluation.tree.creators.adaptive.zstream;
 
-import adaptive.estimation.SlidingWindowEventArrivalRateEstimator;
-import adaptive.monitoring.invariant.IInvariantCalculator;
-import adaptive.monitoring.invariant.InvariantInput;
-import simulator.Environment;
+import sase.adaptive.estimation.IEventArrivalRateEstimator;
+import sase.adaptive.monitoring.invariant.IInvariantCalculator;
+import sase.adaptive.monitoring.invariant.InvariantInput;
+import sase.simulator.Environment;
 
 //TODO:I'm so sorry for the completely unjustified code duplication in this class..
 public class TreeInvariantCalculator implements IInvariantCalculator {
@@ -25,7 +25,7 @@ public class TreeInvariantCalculator implements IInvariantCalculator {
 			return Environment.getEnvironment().getEventRateEstimator().getEventRateEstimate(treeInvariantInput.leftLeafType);
 		}
 		if (treeInvariantInput.leftPairOfLeaves != null) {
-			SlidingWindowEventArrivalRateEstimator eventRateEstimator = Environment.getEnvironment().getEventRateEstimator();
+			IEventArrivalRateEstimator eventRateEstimator = Environment.getEnvironment().getEventRateEstimator();
 			int leftRate = eventRateEstimator.getEventRateEstimate(treeInvariantInput.leftPairOfLeaves.leftLeafType);
 			int rightRate = eventRateEstimator.getEventRateEstimate(treeInvariantInput.leftPairOfLeaves.rightLeafType);
 			return leftRate * rightRate * treeInvariantInput.leftPairOfLeaves.conditions.getSelectivity();
@@ -48,7 +48,7 @@ public class TreeInvariantCalculator implements IInvariantCalculator {
 			return Environment.getEnvironment().getEventRateEstimator().getEventRateEstimate(treeInvariantInput.rightLeafType);
 		}
 		if (treeInvariantInput.rightPairOfLeaves != null) {
-			SlidingWindowEventArrivalRateEstimator eventRateEstimator = Environment.getEnvironment().getEventRateEstimator();
+			IEventArrivalRateEstimator eventRateEstimator = Environment.getEnvironment().getEventRateEstimator();
 			int leftRate = eventRateEstimator.getEventRateEstimate(treeInvariantInput.rightPairOfLeaves.leftLeafType);
 			int rightRate = eventRateEstimator.getEventRateEstimate(treeInvariantInput.rightPairOfLeaves.rightLeafType);
 			return leftRate * rightRate * treeInvariantInput.rightPairOfLeaves.conditions.getSelectivity();

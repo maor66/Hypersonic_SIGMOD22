@@ -79,7 +79,7 @@ public class Instance {
 			return false;
 		EventBuffer bufferOfEventsToVerify = matchBuffer.clone();
 		bufferOfEventsToVerify.addEvent(event);
-		return transition.getCondition().verify(bufferOfEventsToVerify.getEvents());
+		return transition.verifyCondition(bufferOfEventsToVerify.getEvents());
 	}
 	
 	protected void executeMatchBufferTransition(Event event) {

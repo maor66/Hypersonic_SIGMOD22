@@ -1,8 +1,8 @@
-package evaluation.tree;
+package sase.evaluation.tree;
 
-import evaluation.tree.elements.Node;
-import pattern.Pattern;
-import pattern.condition.base.CNFCondition;
+import sase.evaluation.tree.elements.node.Node;
+import sase.pattern.Pattern;
+import sase.pattern.condition.base.CNFCondition;
 
 public interface ITreeTopologyCreator {
 

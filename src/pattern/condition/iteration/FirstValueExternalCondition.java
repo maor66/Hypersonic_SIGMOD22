@@ -26,9 +26,4 @@ public class FirstValueExternalCondition extends IteratedEventExternalCondition 
 		return nestedCondition.verify(eventsToVerify);
 	}
 
-	@Override
-	protected String getConditionKey() {
-		return "Unsupported";
-	}
-
 }

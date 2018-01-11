@@ -1,11 +1,10 @@
-package pattern.condition.time;
+package sase.pattern.condition.time;
 
 import java.util.List;
 
-import base.Event;
-import base.EventType;
-import pattern.EventTypesManager;
-import pattern.condition.base.AtomicCondition;
+import sase.base.Event;
+import sase.base.EventType;
+import sase.pattern.condition.base.AtomicCondition;
 
 public class EventTemporalPositionCondition extends AtomicCondition {
 
@@ -43,8 +42,7 @@ public class EventTemporalPositionCondition extends AtomicCondition {
 	
 	//TODO: horrible code duplication with PairTemporalOrderCondition! Refactor!
 	private boolean isEarlier(Event firstEvent, Event secondEvent) {
-		return EventTypesManager.getInstance().getEventTimestamp(firstEvent) < 
-				EventTypesManager.getInstance().getEventTimestamp(secondEvent);
+		return firstEvent.getSequenceNumber() < secondEvent.getSequenceNumber();
 	}
 	
 	@Override
@@ -55,13 +53,13 @@ public class EventTemporalPositionCondition extends AtomicCondition {
 		for (EventType eventType : precedingEventTypes) {
 			Event precedingEvent = getEventByType(events, eventType);
 			if (isEarlier(targetEvent, precedingEvent)) {
-					return false;
+				return false;
 			}
 		}
 		for (EventType eventType : succeedingEventTypes) {
 			Event succeedingEvent = getEventByType(events, eventType);
 			if (isEarlier(succeedingEvent, targetEvent)) {
-					return false;
+				return false;
 			}
 		}
 		return true;

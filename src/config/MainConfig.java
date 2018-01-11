@@ -1,10 +1,13 @@
-package config;
+package sase.config;
 
-import config.path.PathConfig;
-import config.path.WindowsPathConfig;
-import input.EventProducerTypes;
-import input.EventTypesConverterTypes;
-import user.stocks.StockEventTypesManager;
+import sase.base.EventSelectionStrategies;
+import sase.config.path.LinuxPathConfig;
+import sase.config.path.PathConfig;
+import sase.config.path.WindowsPathConfig;
+import sase.input.EventProducerTypes;
+import sase.input.EventTypesConverterTypes;
+import sase.pattern.EventTypesManager;
+import sase.user.stocks.StockEventTypesManager;
 
 @SuppressWarnings("unused")
 public class MainConfig {
@@ -62,13 +65,16 @@ public class MainConfig {
 	public static final String selectivityEstimatorsFilePath = pathConfig.selectivityEstimatorsFilePath;
 	
 	/* Maximal allowed execution time for a single simulation. */
-	public static final Long maxExecutionTime = (long)(8*60*60*1000);
+	public static final Long maxExecutionTime = (long)(30*60*1000);
 	
 	/* Enable/disable to use simulation history to avoid repeated runs. */
-	public static final boolean useSimulationHistory = false;
+	public static final boolean useSimulationHistory = true;
 	
 	/* Runtime statistics monitoring settings. */
 	public static final boolean isArrivalRateMonitoringAllowed = false;
 	public static final boolean isSelectivityMonitoringAllowed = false;
 	public static final Double adaptationTrialsIntervalToTimeWindowRatio = null;//null to disable adaptation
+	
+	/* Event selection strategy used during the current run. */
+	public static final EventSelectionStrategies selectionStrategy = EventSelectionStrategies.SKIP_TILL_ANY;
 }

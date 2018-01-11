@@ -1,27 +1,33 @@
-package evaluation.nfa.eager;
+package sase.evaluation.nfa.eager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import base.Event;
-import base.EventType;
-import evaluation.common.Match;
-import evaluation.nfa.eager.elements.Instance;
-import evaluation.nfa.eager.elements.NFAState;
-import evaluation.nfa.eager.elements.Transition;
-import evaluation.nfa.lazy.elements.EfficientInputBuffer;
-import pattern.CompositePattern;
-import pattern.Pattern;
-import pattern.condition.base.AtomicCondition;
-import pattern.condition.base.CNFCondition;
-import pattern.condition.base.TrivialCondition;
-import pattern.condition.iteration.eager.IteratedIncrementalCondition;
-import pattern.condition.iteration.eager.IterationTriggerCondition;
-import pattern.condition.time.PairTemporalOrderCondition;
-import simulator.Environment;
-import statistics.Statistics;
+import sase.base.Event;
+import sase.base.EventSelectionStrategies;
+import sase.base.EventType;
+import sase.config.MainConfig;
+import sase.evaluation.common.Match;
+import sase.evaluation.nfa.eager.elements.Instance;
+import sase.evaluation.nfa.eager.elements.NFAState;
+import sase.evaluation.nfa.eager.elements.Transition;
+import sase.evaluation.nfa.lazy.elements.EfficientInputBuffer;
+import sase.pattern.CompositePattern;
+import sase.pattern.Pattern;
+import sase.pattern.UnaryPattern;
+import sase.pattern.Pattern.PatternOperatorType;
+import sase.pattern.condition.base.AtomicCondition;
+import sase.pattern.condition.base.CNFCondition;
+import sase.pattern.condition.base.TrivialCondition;
+import sase.pattern.condition.contiguity.PairwiseContiguityCondition;
+import sase.pattern.condition.contiguity.TotalContiguityCondition;
+import sase.pattern.condition.iteration.eager.IteratedIncrementalCondition;
+import sase.pattern.condition.iteration.eager.IterationTriggerCondition;
+import sase.pattern.condition.time.PairTemporalOrderCondition;
+import sase.simulator.Environment;
+import sase.statistics.Statistics;
 
 public class AND_SEQ_NFA extends AND_NFA {
 
@@ -35,6 +41,9 @@ public class AND_SEQ_NFA extends AND_NFA {
 		super(pattern);
 		this.pattern = (CompositePattern)pattern;
 		negatedEventsBuffer = new EfficientInputBuffer(pattern, true);
+		if (MainConfig.selectionStrategy == EventSelectionStrategies.CONTUGUITY) {
+			addContiguityConstraints();
+		}
 		initNegativeTemporalConditions();
 	}
 	
@@ -67,6 +76,56 @@ public class AND_SEQ_NFA extends AND_NFA {
 				}
 			}
 		}
+	}
+	
+	private void addContiguityConstraints() {
+		switch (pattern.getType()) {
+			case SEQ:
+				addPairwiseContiguityConstraints();
+				if (!pattern.isActuallyComposite()) {
+					break;
+				}
+				//otherwise, continue to the AND case
+			case AND_SEQ:
+				addTotalContiguityConstraints();
+				break;
+			case ITER:
+			case NEG:
+			case NONE:
+			case NOP:
+			case OLD_AND:
+			case OLD_SEQ:
+			case OR:
+			default:
+				break;
+		}
+	}
+	
+	private void addPairwiseContiguityConstraints() {
+		if (pattern.getType() != PatternOperatorType.SEQ || pattern.getEventTypes().size() < 2) {
+			return;
+		}
+		CNFCondition mainCondition = (CNFCondition)pattern.getCondition();
+		UnaryPattern prevPattern = null;
+		for (Pattern pattern : pattern.getNestedPatterns()) {
+			if (pattern.getType() == PatternOperatorType.NEG) {
+				continue;
+			}
+			if (pattern.getType() == PatternOperatorType.ITER) {
+				prevPattern = null;
+				continue;
+			}
+			UnaryPattern unaryPattern = (UnaryPattern) pattern;
+			if (prevPattern != null) {
+				mainCondition.addAtomicCondition(new PairwiseContiguityCondition(prevPattern.getEventType(),
+																				 unaryPattern.getEventType()));
+			}
+			prevPattern = unaryPattern;
+		}
+	}
+	
+	private void addTotalContiguityConstraints() {
+		((CNFCondition) pattern.getCondition()).addAtomicCondition(new TotalContiguityCondition());
 	}
 	
 	private boolean isSequenceOrderViolation(EventType candidateType, List<EventType> nextTypes) {

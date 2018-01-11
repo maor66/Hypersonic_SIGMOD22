@@ -1,49 +1,29 @@
-package user.stocks.specification;
+package sase.user.stocks.specification;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import base.EventType;
-import pattern.EventTypesManager;
-import pattern.condition.base.AtomicCondition;
-import specification.ConditionSpecification;
-import user.stocks.condition.StockDeltaOrderingCondition;
+import sase.base.EventType;
+import sase.pattern.condition.base.AtomicCondition;
+import sase.specification.DoubleEventConditionSpecification;
+import sase.user.stocks.condition.StockDeltaOrderingCondition;
 
-public class StockDeltaOrderingConditionSpecification extends ConditionSpecification {
+public class StockDeltaOrderingConditionSpecification extends DoubleEventConditionSpecification {
 
-	private final String firstEventName;
-	private final String secondEventName;
+	public StockDeltaOrderingConditionSpecification(String firstEventName, String secondEventName, Double selectivity) {
+		super(firstEventName, secondEventName, selectivity);
+	}
 	
 	public StockDeltaOrderingConditionSpecification(String firstEventName, String secondEventName) {
-		this.firstEventName = firstEventName;
-		this.secondEventName = secondEventName;
-	}
-
-	public String getFirstEventName() {
-		return firstEventName;
-	}
-
-	public String getSecondEventName() {
-		return secondEventName;
-	}
-	
-	@Override
-	public List<AtomicCondition> createConditions() {
-		EventType firstType = EventTypesManager.getInstance().getTypeByName(firstEventName);
-		EventType secondType = EventTypesManager.getInstance().getTypeByName(secondEventName);
-		StockDeltaOrderingCondition condition = new StockDeltaOrderingCondition(firstType, secondType);
-		List<AtomicCondition> conditions = new ArrayList<AtomicCondition>();
-		conditions.add(condition);
-		return conditions;
+		super(firstEventName, secondEventName, null);
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("Value equality between %s and %s", firstEventName, secondEventName);
+		return String.format("Delta comparison between %s and %s", firstEventName, secondEventName);
 	}
 
 	@Override
-	public String getShortDescription() {
-		return "Unsupported";
+	protected AtomicCondition createDoubleEventCondition(EventType firstType, EventType secondType,
+														 Double conditionSelectivity) {
+		return new StockDeltaOrderingCondition(firstType, secondType, selectivity);
 	}
 }

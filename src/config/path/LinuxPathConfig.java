@@ -1,4 +1,4 @@
-package config.path;
+package sase.config.path;
 
 public class LinuxPathConfig extends PathConfig {
 	

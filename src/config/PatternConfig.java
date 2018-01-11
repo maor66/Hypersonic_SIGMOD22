@@ -1,4 +1,4 @@
-package config;
+package sase.config;
 
 import pattern.creation.PatternTypes;
 import specification.ConditionSpecification;
@@ -317,10 +317,10 @@ public class PatternConfig {
 	
 	
 	////////////////////////////////////////Test configuration/////////////////////////////////////
-	public static final PatternSpecification testSequenceOfFive = 
-			new PatternSpecification("SEQ5TEST", PatternTypes.STOCK_PATTERN, (long)20,
-									 StructureConfig.sequenceOfFive,
-									 ConditionConfig.testSequenceOfFive);
+	public static final PatternSpecification testSequence = 
+			new PatternSpecification("SEQTEST", PatternTypes.STOCK_PATTERN, (long)20,
+									 StructureConfig.testSequence,
+									 ConditionConfig.testSequence);
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	//	Trams
@@ -414,7 +414,7 @@ public class PatternConfig {
 				 new String[][][] {new String[][]{new String[]{ 
 						 StockEventTypesManager.microsoftEventTypeName,
 						 StockEventTypesManager.ciscoEventTypeName,
-						 StockEventTypesManager.rambusEventTypeName 
+						 StockEventTypesManager.quantumEventTypeName 
 				 }}},
 				 new ConditionSpecification[] {
 					 new StockDeltaOrderingConditionSpecification(
@@ -422,14 +422,14 @@ public class PatternConfig {
 							 StockEventTypesManager.ciscoEventTypeName),
 					 new StockDeltaOrderingConditionSpecification(
 							 StockEventTypesManager.ciscoEventTypeName,
-							 StockEventTypesManager.rambusEventTypeName),
+							 StockEventTypesManager.quantumEventTypeName),
 								 }),
 		new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{ 
 						 StockEventTypesManager.microsoftEventTypeName,
 						 StockEventTypesManager.googleEventTypeName,
 						 StockEventTypesManager.ciscoEventTypeName,
-						 StockEventTypesManager.rambusEventTypeName 
+						 StockEventTypesManager.quantumEventTypeName 
 				 }}},
 				 new ConditionSpecification[] {
 					 new StockDeltaOrderingConditionSpecification(
@@ -440,7 +440,7 @@ public class PatternConfig {
 							 StockEventTypesManager.ciscoEventTypeName),
 					 new StockDeltaOrderingConditionSpecification(
 							 StockEventTypesManager.ciscoEventTypeName,
-							 StockEventTypesManager.rambusEventTypeName),
+							 StockEventTypesManager.quantumEventTypeName),
 				 }),
 		new PatternSpecification("SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{ 
@@ -448,7 +448,7 @@ public class PatternConfig {
 						 StockEventTypesManager.googleEventTypeName,
 						 StockEventTypesManager.ciscoEventTypeName,
 						 StockEventTypesManager.intelEventTypeName,
-						 StockEventTypesManager.rambusEventTypeName 
+						 StockEventTypesManager.quantumEventTypeName 
 				 }}},
 				 new ConditionSpecification[] {
 					 new StockDeltaOrderingConditionSpecification(
@@ -462,7 +462,7 @@ public class PatternConfig {
 							 StockEventTypesManager.intelEventTypeName),
 					 new StockDeltaOrderingConditionSpecification(
 							 StockEventTypesManager.intelEventTypeName,
-							 StockEventTypesManager.rambusEventTypeName),
+							 StockEventTypesManager.quantumEventTypeName),
 				 }),
 		new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{ 
@@ -470,8 +470,8 @@ public class PatternConfig {
 						 StockEventTypesManager.googleEventTypeName,
 						 StockEventTypesManager.ciscoEventTypeName,
 						 StockEventTypesManager.intelEventTypeName,
-						 StockEventTypesManager.etradeEventTypeName,
-						 StockEventTypesManager.rambusEventTypeName 
+						 StockEventTypesManager.crosstechEventTypeName,
+						 StockEventTypesManager.quantumEventTypeName 
 				 }}},
 				 new ConditionSpecification[] {
 					 new StockDeltaOrderingConditionSpecification(
@@ -485,10 +485,10 @@ public class PatternConfig {
 							 StockEventTypesManager.intelEventTypeName),
 					 new StockDeltaOrderingConditionSpecification(
 							 StockEventTypesManager.intelEventTypeName,
-							 StockEventTypesManager.etradeEventTypeName),
+							 StockEventTypesManager.crosstechEventTypeName),
 					 new StockDeltaOrderingConditionSpecification(
-							 StockEventTypesManager.etradeEventTypeName,
-							 StockEventTypesManager.rambusEventTypeName),
+							 StockEventTypesManager.crosstechEventTypeName,
+							 StockEventTypesManager.quantumEventTypeName),
 				 }),
 		new PatternSpecification("SEQ7", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{ 
@@ -497,8 +497,8 @@ public class PatternConfig {
 						 StockEventTypesManager.appleEventTypeName,
 						 StockEventTypesManager.ciscoEventTypeName,
 						 StockEventTypesManager.intelEventTypeName,
-						 StockEventTypesManager.etradeEventTypeName,
-						 StockEventTypesManager.rambusEventTypeName 
+						 StockEventTypesManager.crosstechEventTypeName,
+						 StockEventTypesManager.quantumEventTypeName 
 				 }}},
 				 new ConditionSpecification[] {
 					 new StockDeltaOrderingConditionSpecification(
@@ -515,10 +515,10 @@ public class PatternConfig {
 							 StockEventTypesManager.intelEventTypeName),
 					 new StockDeltaOrderingConditionSpecification(
 							 StockEventTypesManager.intelEventTypeName,
-							 StockEventTypesManager.etradeEventTypeName),
+							 StockEventTypesManager.crosstechEventTypeName),
 					 new StockDeltaOrderingConditionSpecification(
-							 StockEventTypesManager.etradeEventTypeName,
-							 StockEventTypesManager.rambusEventTypeName),
+							 StockEventTypesManager.crosstechEventTypeName,
+							 StockEventTypesManager.quantumEventTypeName),
 				 }),
 		new PatternSpecification("SEQ8", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{ 
@@ -527,9 +527,9 @@ public class PatternConfig {
 						 StockEventTypesManager.appleEventTypeName,
 						 StockEventTypesManager.ciscoEventTypeName,
 						 StockEventTypesManager.intelEventTypeName,
-						 StockEventTypesManager.etradeEventTypeName,
-						 StockEventTypesManager.broadcomEventTypeName,
-						 StockEventTypesManager.rambusEventTypeName 
+						 StockEventTypesManager.crosstechEventTypeName,
+						 StockEventTypesManager.xtlbioEventTypeName,
+						 StockEventTypesManager.quantumEventTypeName 
 				 }}},
 				 new ConditionSpecification[] {
 					 new StockDeltaOrderingConditionSpecification(
@@ -546,13 +546,13 @@ public class PatternConfig {
 							 StockEventTypesManager.intelEventTypeName),
 					 new StockDeltaOrderingConditionSpecification(
 							 StockEventTypesManager.intelEventTypeName,
-							 StockEventTypesManager.etradeEventTypeName),
+							 StockEventTypesManager.crosstechEventTypeName),
 					 new StockDeltaOrderingConditionSpecification(
-							 StockEventTypesManager.etradeEventTypeName,
-							 StockEventTypesManager.broadcomEventTypeName),
+							 StockEventTypesManager.crosstechEventTypeName,
+							 StockEventTypesManager.xtlbioEventTypeName),
 					 new StockDeltaOrderingConditionSpecification(
-							 StockEventTypesManager.broadcomEventTypeName,
-							 StockEventTypesManager.rambusEventTypeName),
+							 StockEventTypesManager.xtlbioEventTypeName,
+							 StockEventTypesManager.quantumEventTypeName),
 				 }),
 //		new PatternSpecification("SEQ9", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 //				 new String[][][] {new String[][]{new String[]{ 
@@ -562,9 +562,9 @@ public class PatternConfig {
 //						 StockEventTypesManager.appleEventTypeName,
 //						 StockEventTypesManager.ciscoEventTypeName,
 //						 StockEventTypesManager.intelEventTypeName,
-//						 StockEventTypesManager.etradeEventTypeName,
-//						 StockEventTypesManager.broadcomEventTypeName,
-//						 StockEventTypesManager.rambusEventTypeName 
+//						 StockEventTypesManager.crosstechEventTypeName,
+//						 StockEventTypesManager.xtlbioEventTypeName,
+//						 StockEventTypesManager.quantumEventTypeName 
 //				 }}},
 //				 new ConditionSpecification[] {
 //					 new StockDeltaOrderingConditionSpecification(
@@ -584,13 +584,13 @@ public class PatternConfig {
 //							 StockEventTypesManager.intelEventTypeName),
 //					 new StockDeltaOrderingConditionSpecification(
 //							 StockEventTypesManager.intelEventTypeName,
-//							 StockEventTypesManager.etradeEventTypeName),
+//							 StockEventTypesManager.crosstechEventTypeName),
 //					 new StockDeltaOrderingConditionSpecification(
-//							 StockEventTypesManager.etradeEventTypeName,
-//							 StockEventTypesManager.broadcomEventTypeName),
+//							 StockEventTypesManager.crosstechEventTypeName,
+//							 StockEventTypesManager.xtlbioEventTypeName),
 //					 new StockDeltaOrderingConditionSpecification(
-//							 StockEventTypesManager.broadcomEventTypeName,
-//							 StockEventTypesManager.rambusEventTypeName),
+//							 StockEventTypesManager.xtlbioEventTypeName,
+//							 StockEventTypesManager.quantumEventTypeName),
 //				 }),
 //		new PatternSpecification("SEQ10", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 //				 new String[][][] {new String[][]{new String[]{ 
@@ -601,9 +601,9 @@ public class PatternConfig {
 //						 StockEventTypesManager.ciscoEventTypeName,
 //						 StockEventTypesManager.intelEventTypeName,
 //						 StockEventTypesManager.illuminaEventTypeName,
-//						 StockEventTypesManager.etradeEventTypeName,
-//						 StockEventTypesManager.broadcomEventTypeName,
-//						 StockEventTypesManager.rambusEventTypeName 
+//						 StockEventTypesManager.crosstechEventTypeName,
+//						 StockEventTypesManager.xtlbioEventTypeName,
+//						 StockEventTypesManager.quantumEventTypeName 
 //				 }}},
 //				 new ConditionSpecification[] {
 //					 new StockDeltaOrderingConditionSpecification(
@@ -626,13 +626,13 @@ public class PatternConfig {
 //							 StockEventTypesManager.illuminaEventTypeName),
 //					 new StockDeltaOrderingConditionSpecification(
 //							 StockEventTypesManager.illuminaEventTypeName,
-//							 StockEventTypesManager.etradeEventTypeName),
+//							 StockEventTypesManager.crosstechEventTypeName),
 //					 new StockDeltaOrderingConditionSpecification(
-//							 StockEventTypesManager.etradeEventTypeName,
-//							 StockEventTypesManager.broadcomEventTypeName),
+//							 StockEventTypesManager.crosstechEventTypeName,
+//							 StockEventTypesManager.xtlbioEventTypeName),
 //					 new StockDeltaOrderingConditionSpecification(
-//							 StockEventTypesManager.broadcomEventTypeName,
-//							 StockEventTypesManager.rambusEventTypeName),
+//							 StockEventTypesManager.xtlbioEventTypeName,
+//							 StockEventTypesManager.quantumEventTypeName),
 //				 }),
 	};
 	private static final long trafficPatternTimeWindow = 20;

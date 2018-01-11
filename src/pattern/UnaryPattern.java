@@ -13,6 +13,14 @@ public class UnaryPattern extends Pattern {
 		eventTypes.add(eventType);
 		return eventTypes;
 	}
+	
+	public static List<PatternOperatorType> getUnaryPatternTypes() {
+		List<PatternOperatorType> result = new ArrayList<PatternOperatorType> ();
+		result.add(PatternOperatorType.NOP);
+		result.add(PatternOperatorType.NEG);
+		result.add(PatternOperatorType.ITER);
+		return result;
+	}
 
 	public UnaryPattern(PatternOperatorType operatorType, EventType eventType, Condition condition,
 			long timeWindow) {
@@ -30,11 +38,7 @@ public class UnaryPattern extends Pattern {
 
 	@Override
 	protected PatternOperatorType[] getValidPatternTypes() {
-		return new PatternOperatorType[] {
-				PatternOperatorType.NOP,
-				PatternOperatorType.NEG,
-				PatternOperatorType.ITER
-		};
+		return getUnaryPatternTypes().toArray(new PatternOperatorType[0]);
 	}
 
 	@Override

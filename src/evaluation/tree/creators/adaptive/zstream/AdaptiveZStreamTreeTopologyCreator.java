@@ -1,25 +1,27 @@
-package evaluation.tree.creators.adaptive.zstream;
+package sase.evaluation.tree.creators.adaptive.zstream;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import adaptive.estimation.SlidingWindowEventArrivalRateEstimator;
-import adaptive.monitoring.invariant.Invariant;
-import adaptive.monitoring.invariant.InvariantAdaptationNecessityDetector;
-import adaptive.monitoring.invariant.compare.InvariantComparer.ComparisonType;
-import base.EventType;
-import evaluation.tree.ITreeCostModel;
-import evaluation.tree.ITreeTopologyCreator;
-import evaluation.tree.cost.ThroughputTreeCostModel;
-import evaluation.tree.creators.ZStreamTreeTopologyCreator;
-import evaluation.tree.elements.InternalNode;
-import evaluation.tree.elements.LeafNode;
-import evaluation.tree.elements.Node;
-import pattern.Pattern;
-import pattern.condition.base.CNFCondition;
-import simulator.Environment;
+import sase.adaptive.estimation.IEventArrivalRateEstimator;
+import sase.adaptive.monitoring.invariant.Invariant;
+import sase.adaptive.monitoring.invariant.InvariantAdaptationNecessityDetector;
+import sase.adaptive.monitoring.invariant.compare.InvariantComparer.ComparisonType;
+import sase.base.EventType;
+import sase.evaluation.tree.ITreeCostModel;
+import sase.evaluation.tree.ITreeTopologyCreator;
+import sase.evaluation.tree.TopologyCreatorUtils;
+import sase.evaluation.tree.cost.ThroughputTreeCostModel;
+import sase.evaluation.tree.creators.ZStreamTreeTopologyCreator;
+import sase.evaluation.tree.elements.node.InternalNode;
+import sase.evaluation.tree.elements.node.LeafNode;
+import sase.evaluation.tree.elements.node.Node;
+import sase.pattern.CompositePattern;
+import sase.pattern.Pattern;
+import sase.pattern.condition.base.CNFCondition;
+import sase.simulator.Environment;
 
 public class AdaptiveZStreamTreeTopologyCreator implements ITreeTopologyCreator {
 	
@@ -53,9 +55,10 @@ public class AdaptiveZStreamTreeTopologyCreator implements ITreeTopologyCreator 
 		}
 		List<EventType> eventTypes = pattern.getEventTypes();
 		HashMap<List<EventType>, TreeInfo> subsets = new HashMap<List<EventType>, TreeInfo>();
-		SlidingWindowEventArrivalRateEstimator eventRateEstimator = Environment.getEnvironment().getEventRateEstimator();
+		IEventArrivalRateEstimator eventRateEstimator = Environment.getEnvironment().getEventRateEstimator();
+		List<EventType> iterativeEventTypes = ((CompositePattern)pattern).getIterativeEventTypes();
 		for (EventType eventType : eventTypes) {
-			LeafNode currLeafNode = new LeafNode(eventType, mainCondition);
+			LeafNode currLeafNode = new LeafNode(eventType, mainCondition, iterativeEventTypes.contains(eventType));
 			List<EventType> listForEventType = new ArrayList<EventType>();
 			listForEventType.add(eventType);
 			double leafCardinality = 
@@ -66,7 +69,7 @@ public class AdaptiveZStreamTreeTopologyCreator implements ITreeTopologyCreator 
 			for (int j = 0; j <= eventTypes.size() - i; ++j) {
 				List<EventType> eventsForMainTree = eventTypes.subList(j, j + i);
 				for (int k = j + 1; k <= j + i - 1; ++k) {
-					processSingleCandidateTree(i, j, k, eventsForMainTree, eventTypes, mainCondition, subsets);
+					processSingleCandidateTree(pattern, i, j, k, eventsForMainTree, eventTypes, mainCondition, subsets);
 				}
 			}
 		}
@@ -81,7 +84,8 @@ public class AdaptiveZStreamTreeTopologyCreator implements ITreeTopologyCreator 
 		return (Environment.getEnvironment().getAdaptationNecessityDetector() instanceof InvariantAdaptationNecessityDetector);
 	}
 	
-	private void processSingleCandidateTree(int i, int j, int k,
+	private void processSingleCandidateTree(Pattern pattern,
+											int i, int j, int k,
 											List<EventType> eventsForMainTree,
 											List<EventType> eventTypes, CNFCondition mainCondition,
 											HashMap<List<EventType>, TreeInfo> subsets) {
@@ -90,7 +94,8 @@ public class AdaptiveZStreamTreeTopologyCreator implements ITreeTopologyCreator 
 		
 		TreeInfo leftTreeInfo = subsets.get(eventsForLeftSubTree);
 		TreeInfo rightTreeInfo = subsets.get(eventsForRightSubTree);
-		Node newTree = new InternalNode(mainCondition, eventTypes, leftTreeInfo.tree, rightTreeInfo.tree);
+		Node newTree = TopologyCreatorUtils.createNodeByPatternType(pattern, mainCondition, 
+																	eventTypes, leftTreeInfo.tree, rightTreeInfo.tree);
 		CNFCondition newCondition = newTree.getNodeCondition();
 		Double newCardinality =
 					leftTreeInfo.cardinality * rightTreeInfo.cardinality * newCondition.getSelectivity();

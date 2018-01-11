@@ -11,9 +11,30 @@ import user.stocks.StockEventTypesManager;
 public class StockFirstValueCmpCondition extends DoubleEventCondition {
 	
 	public enum ComparisonOperation {
-		SMALLER,
-		EQUALS,
-		BIGGER
+		SMALLER {
+            @Override
+            public String toString() {
+                return "<";
+            }
+        },
+		EQUALS {
+            @Override
+            public String toString() {
+                return "=";
+            }
+        },
+		BIGGER {
+            @Override
+            public String toString() {
+                return ">";
+            }
+        },
+		ANY {
+            @Override
+            public String toString() {
+                return "<>=";
+            }
+        }
 	};
 	
 	private ComparisonOperation operation;
@@ -38,6 +59,8 @@ public class StockFirstValueCmpCondition extends DoubleEventCondition {
 			return (firstEventValue == secondEventValue);
 		case SMALLER:
 			return (firstEventValue < secondEventValue);
+		case ANY:
+			return true;
 		default:
 			return false;
 		}
@@ -47,10 +70,5 @@ public class StockFirstValueCmpCondition extends DoubleEventCondition {
 	public String toString() {
 		return String.format("Comparison of first price values of %s and %s", 
 							 eventTypes.get(0).getName(), eventTypes.get(1).getName());
-	}
-
-	@Override
-	protected String getConditionKey() {
-		return "Unsupported";
 	}
 }

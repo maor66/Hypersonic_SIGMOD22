@@ -97,6 +97,11 @@ public class LazyTransition extends Transition {
 	}
 	
 	@Override
+	public boolean verifyCondition(List<Event> events) {
+		return super.verifyCondition(events) && temporalCondition.verify(events);
+	}
+	
+	@Override
 	public String toString() {
 		String transitionAsString = super.toString();
 		if (type == LazyTransitionType.REGULAR) {

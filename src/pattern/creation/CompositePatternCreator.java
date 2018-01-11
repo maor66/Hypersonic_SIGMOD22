@@ -17,19 +17,19 @@ import specification.ConditionSpecification;
 public class CompositePatternCreator extends PatternCreator {
 
 	private final String[][][] patternSpecification;
-	private final ConditionSpecification[] correlations;
+	private final ConditionSpecification[] conditionSpecifications;
 	private final List<String> negatedEvents;
 	private final List<String> iteratedEvents;
 	private final long timeWindow;
 	private final CNFCondition mainCondition;
 	
 	public CompositePatternCreator(String[][][] patternSpecification,
-												   ConditionSpecification[] correlations,
-												   String[] negatedEvents,
-												   String[] iteratedEvents,
-												   long timeWindow) {
+								   ConditionSpecification[] conditionSpecifications,
+								   String[] negatedEvents,
+								   String[] iteratedEvents,
+								   long timeWindow) {
 		this.patternSpecification = patternSpecification;
-		this.correlations = correlations;
+		this.conditionSpecifications = conditionSpecifications;
 		this.negatedEvents = Arrays.asList(negatedEvents);
 		this.iteratedEvents = Arrays.asList(iteratedEvents);
 		this.timeWindow = timeWindow;
@@ -46,7 +46,7 @@ public class CompositePatternCreator extends PatternCreator {
 	
 	private CNFCondition createMainCondition() {
     	List<AtomicCondition> atomicConditions = new ArrayList<AtomicCondition>();
-    	for (ConditionSpecification specification : correlations) {
+    	for (ConditionSpecification specification : conditionSpecifications) {
     		atomicConditions.addAll(specification.createConditions());
 		}
     	return new CNFCondition(atomicConditions);

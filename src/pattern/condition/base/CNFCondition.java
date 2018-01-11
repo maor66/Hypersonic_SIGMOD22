@@ -39,8 +39,7 @@ public class CNFCondition extends Condition {
 		Double selectivity = 1.0;
 		for (AtomicCondition atomicCondition : atomicConditions) {
 			if (atomicCondition.getSelectivity() == null) {
-				selectivity = null;
-				break;
+				return null;
 			}
 			selectivity *= atomicCondition.getSelectivity();
 		}

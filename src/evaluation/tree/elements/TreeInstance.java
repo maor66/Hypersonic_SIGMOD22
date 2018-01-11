@@ -1,14 +1,15 @@
-package evaluation.tree.elements;
+package sase.evaluation.tree.elements;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import base.Event;
-import evaluation.common.EventBuffer;
-import evaluation.common.Match;
-import evaluation.tree.TreeEvaluationMechanism;
-import simulator.Environment;
-import statistics.Statistics;
+import sase.base.Event;
+import sase.evaluation.common.EventBuffer;
+import sase.evaluation.common.Match;
+import sase.evaluation.tree.TreeEvaluationMechanism;
+import sase.evaluation.tree.elements.node.LeafNode;
+import sase.evaluation.tree.elements.node.Node;
+import sase.simulator.Environment;
+import sase.statistics.Statistics;
 
 public class TreeInstance {
 
@@ -19,7 +20,7 @@ public class TreeInstance {
 	public TreeInstance(TreeEvaluationMechanism tree, Node currentNode, EventBuffer matchBuffer) {
 		this.tree = tree;
 		this.currentNode = currentNode;
-		this.matchBuffer = (matchBuffer == null) ? new EventBuffer(null) : matchBuffer.clone();
+		this.matchBuffer = (matchBuffer == null) ? new EventBuffer(tree.getIterativeTypes()) : matchBuffer.clone();
 		Environment.getEnvironment().getStatisticsManager().incrementDiscreteMemoryStatistic(Statistics.instanceCreations);
 	}
 	
@@ -54,6 +55,10 @@ public class TreeInstance {
 		return matchBuffer.getEvents();
 	}
 
+	public TreeEvaluationMechanism getEvaluationMechanism() {
+		return tree;
+	}
+
 	public TreeInstance createParentInstance(TreeInstance peerInstance) {
 		if (hasMatch()) {
 			return null;
@@ -61,12 +66,20 @@ public class TreeInstance {
 		if (peerInstance.getCurrentNode() != currentNode.getPeer()) { //sanity check
 			return null;
 		}
-		List<Event> events = new ArrayList<Event>(matchBuffer.getEvents());
-		List<Event> peerEvents = peerInstance.getEvents();
-		events.addAll(peerEvents);
+		EventBuffer newEventBuffer = matchBuffer.clone();
+		newEventBuffer.extend(peerInstance.matchBuffer);
 		Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.bufferInsertions,
-																						  peerEvents.size());
-		return new TreeInstance(tree, currentNode.getParent(), new EventBuffer(null, events));
+																						  newEventBuffer.size());
+		return new TreeInstance(tree, currentNode.getParent(), newEventBuffer);
+	}
+	
+	public TreeInstance createExtendedAggregatedLeafInstance(Event newEvent) {
+		if (!(currentNode instanceof LeafNode)) {
+			return null; //this is definitely an error
+		}
+		EventBuffer newMatchBuffer = matchBuffer.clone();
+		newMatchBuffer.addEvent(newEvent);
+		return new TreeInstance(tree, currentNode, newMatchBuffer);
 	}
 	
 	public void addEvent(Event event) {
@@ -75,7 +88,7 @@ public class TreeInstance {
 	}
 	
 	public boolean validateNodeCondition() {
-		return currentNode.isNodeConditionSatisfied(matchBuffer.getEvents());
+		return currentNode.isNodeConditionSatisfied(this);
 	}
 	
 	public long size() {

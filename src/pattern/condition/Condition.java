@@ -1,12 +1,11 @@
-package pattern.condition;
+package sase.pattern.condition;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import base.Event;
-import base.EventType;
-import config.MainConfig;
-import statistics.ConditionSelectivityCollector;
+import sase.base.Event;
+import sase.base.EventType;
+import sase.statistics.ConditionSelectivityCollector;
 
 /**
  * Represents a condition to be satisfied by a complex event.
@@ -46,11 +45,7 @@ public abstract class Condition {
 	}
 	
 	protected void setSelectivityByEstimate() {
-		if (selectivity == null && 
-			!MainConfig.isSelectivityMonitoringAllowed && 
-			!MainConfig.conditionSelectivityMeasurementMode) {
-				setSelectivity(ConditionSelectivityCollector.getInstance().getSelectivityEstimate(getConditionKey()));
-		}
+		setSelectivity(ConditionSelectivityCollector.getInstance().getSelectivityEstimate(getConditionKey()));
 	}
 	
 	@Override

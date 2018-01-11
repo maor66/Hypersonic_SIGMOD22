@@ -1,14 +1,13 @@
-package adaptive.estimation;
+package sase.adaptive.estimation;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import base.EventType;
-import config.EventRateConfig;
-import config.MainConfig;
-import pattern.EventTypesManager;
+import sase.base.EventType;
+import sase.config.EventRateConfig;
+import sase.pattern.EventTypesManager;
 
-public class SlidingWindowEventArrivalRateEstimator {
+public class SlidingWindowEventArrivalRateEstimator implements IEventArrivalRateEstimator {
 
 	private class EventRateEstimator {
 		public EventType type;
@@ -43,9 +42,6 @@ public class SlidingWindowEventArrivalRateEstimator {
 	}
 	
 	public int getEventRateEstimate(EventType type) {
-		if (!MainConfig.isArrivalRateMonitoringAllowed) {
-			return EventRateConfig.eventRate.get(type);
-		}
 		for (EventRateEstimator eventRateEstimator : estimators) {
 			if (eventRateEstimator.type == type) {
 				if (eventRateEstimator.estimator.getNumberOfRecordedElements() < (long)recordedEventsLowerBound) {

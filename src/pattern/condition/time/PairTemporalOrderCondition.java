@@ -1,9 +1,8 @@
-package pattern.condition.time;
+package sase.pattern.condition.time;
 
-import base.Event;
-import base.EventType;
-import pattern.EventTypesManager;
-import pattern.condition.base.DoubleEventCondition;
+import sase.base.Event;
+import sase.base.EventType;
+import sase.pattern.condition.base.DoubleEventCondition;
 
 /**
  * Represents a condition enforcing a temporal order on a pair of events.
@@ -16,8 +15,7 @@ public class PairTemporalOrderCondition extends DoubleEventCondition {
 
 	@Override
 	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
-		return EventTypesManager.getInstance().getEventTimestamp(firstEvent) < 
-				EventTypesManager.getInstance().getEventTimestamp(secondEvent);
+		return firstEvent.getSequenceNumber() < secondEvent.getSequenceNumber();
 	}
 	
 	@Override

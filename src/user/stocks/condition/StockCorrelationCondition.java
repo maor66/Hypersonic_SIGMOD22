@@ -20,7 +20,6 @@ public class StockCorrelationCondition extends DoubleEventCondition {
 									 double minCorrelation, Double selectivity) {
 		super(firstType, secondType, selectivity);
 		this.minCorrelation = minCorrelation;
-		setSelectivityByEstimate();
 	}
 	
 	public StockCorrelationCondition(EventType firstType, EventType secondType, double minCorrelation) {

@@ -1,39 +1,44 @@
-package evaluation.tree.creators;
+package sase.evaluation.tree.creators;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import base.EventType;
-import evaluation.tree.ITreeCostModel;
-import evaluation.tree.ITreeTopologyCreator;
-import evaluation.tree.elements.InternalNode;
-import evaluation.tree.elements.LeafNode;
-import evaluation.tree.elements.Node;
-import pattern.Pattern;
-import pattern.condition.base.CNFCondition;
+import sase.base.EventType;
+import sase.evaluation.tree.ITreeCostModel;
+import sase.evaluation.tree.ITreeTopologyCreator;
+import sase.evaluation.tree.TopologyCreatorUtils;
+import sase.evaluation.tree.elements.node.LeafNode;
+import sase.evaluation.tree.elements.node.Node;
+import sase.pattern.CompositePattern;
+import sase.pattern.Pattern;
+import sase.pattern.condition.base.CNFCondition;
 
 public class ZStreamTreeTopologyCreator implements ITreeTopologyCreator {
 
-	protected Node createTreeTopologyFromEventList(List<EventType> eventTypes,
+	protected Node createTreeTopologyByLeavesOrder(Pattern pattern, 
+												   List<EventType> originalEventOrder,
+												   List<EventType> leavesOrder,
 												   CNFCondition mainCondition,
 												   ITreeCostModel costModel) {
+		List<EventType> iterativeEventTypes = ((CompositePattern)pattern).getIterativeEventTypes();
 		HashMap<List<EventType>, CostAwareTree> subsets = new HashMap<List<EventType>, CostAwareTree>();
-		for (EventType eventType : eventTypes) {
-			LeafNode currLeafNode = new LeafNode(eventType, mainCondition);
+		for (EventType eventType : leavesOrder) {
+			LeafNode currLeafNode = new LeafNode(eventType, mainCondition, iterativeEventTypes.contains(eventType));
 			List<EventType> listForEventType = new ArrayList<EventType>();
 			listForEventType.add(eventType);
 			subsets.put(listForEventType, new CostAwareTree(currLeafNode, costModel.getCost(currLeafNode)));
 		}
-		for (int i = 2; i <= eventTypes.size(); ++i) {
-			for (int j = 0; j <= eventTypes.size() - i; ++j) {
+		for (int i = 2; i <= leavesOrder.size(); ++i) {
+			for (int j = 0; j <= leavesOrder.size() - i; ++j) {
 				for (int k = j + 1; k <= j + i - 1; ++k) {
-					List<EventType> eventsForMainTree = eventTypes.subList(j, j + i);
-					List<EventType> eventsForLeftSubTree = eventTypes.subList(j, k);
-					List<EventType> eventsForRightSubTree = eventTypes.subList(k, j + i);
+					List<EventType> eventsForMainTree = leavesOrder.subList(j, j + i);
+					List<EventType> eventsForLeftSubTree = leavesOrder.subList(j, k);
+					List<EventType> eventsForRightSubTree = leavesOrder.subList(k, j + i);
 					Node leftTree = subsets.get(eventsForLeftSubTree).root;
 					Node rightTree = subsets.get(eventsForRightSubTree).root;
-					Node newTree = new InternalNode(mainCondition, eventTypes, leftTree, rightTree);
+					Node newTree = TopologyCreatorUtils.createNodeByPatternType(pattern, mainCondition, 
+																				originalEventOrder, leftTree, rightTree);
 					Double newCost = costModel.getCost(newTree);
 					CostAwareTree oldTreeWithCost = subsets.get(eventsForMainTree);
 					if (oldTreeWithCost == null || newCost < oldTreeWithCost.cost) {
@@ -42,13 +47,14 @@ public class ZStreamTreeTopologyCreator implements ITreeTopologyCreator {
 				}
 			}
 		}
-		return subsets.get(eventTypes).root;
+		return subsets.get(leavesOrder).root;
 		
 	}
 	
 	@Override
 	public Node createTreeTopology(Pattern pattern, CNFCondition mainCondition, ITreeCostModel costModel) {
-		return createTreeTopologyFromEventList(pattern.getEventTypes(), mainCondition, costModel);
+		return createTreeTopologyByLeavesOrder(pattern, pattern.getEventTypes(), 
+											   pattern.getEventTypes(), mainCondition, costModel);
 	}
 
 }

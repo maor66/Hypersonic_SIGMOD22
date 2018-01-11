@@ -1,32 +1,38 @@
-package simulator;
-
-import adaptive.monitoring.AdaptationNecessityDetector;
-import base.Event;
-import config.MainConfig;
-import config.SimulationConfig;
-import evaluation.EvaluationMechanismFactory;
-import evaluation.IEvaluationMechanism;
-import evaluation.IEvaluationMechanismInfo;
-import evaluation.common.Match;
-import input.EventProducer;
-import input.EventProducerFactory;
-import pattern.EventTypesManager;
-import pattern.Pattern;
-import pattern.creation.PatternFactory;
-import specification.PatternSpecification;
-import specification.SimulationSpecification;
-import specification.creators.ISimulationSpecificationCreator;
-import specification.creators.SpecificationCreatorFactory;
-import statistics.ConditionSelectivityCollector;
-import statistics.EventRateCollector;
-import statistics.Statistics;
-import statistics.StatisticsManager;
+package sase.simulator;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import sase.adaptive.monitoring.AdaptationNecessityDetector;
+import sase.base.Event;
+import sase.base.EventSelectionStrategies;
+import sase.config.MainConfig;
+import sase.config.SimulationConfig;
+import sase.evaluation.EvaluationMechanismFactory;
+import sase.evaluation.IEvaluationMechanism;
+import sase.evaluation.IEvaluationMechanismInfo;
+import sase.evaluation.common.Match;
+import sase.input.EventProducer;
+import sase.input.EventProducerFactory;
+import sase.pattern.EventTypesManager;
+import sase.pattern.Pattern;
+import sase.pattern.creation.PatternFactory;
+import sase.specification.PatternSpecification;
+import sase.specification.SimulationSpecification;
+import sase.specification.creators.ISimulationSpecificationCreator;
+import sase.specification.creators.SpecificationCreatorFactory;
+import sase.statistics.ConditionSelectivityCollector;
+import sase.statistics.EventRateCollector;
+import sase.statistics.Statistics;
+import sase.statistics.StatisticsManager;
+
 public class Simulator {
+	
+	private static final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	
 	private List<SimulationSpecification> specifications;
 	
@@ -62,21 +68,42 @@ public class Simulator {
 	
 	private List<Match> actuallyProcessIncomingEvent(Event event) {
 		if (secondaryEvaluationMechanism == null) {
-			List<Match> matches = primaryEvaluationMechanism.validateTimeWindow(event.getTimestamp());
-			addIfNotNull(primaryEvaluationMechanism.processNewEvent(event, true), matches);
+			List<Match> matches = validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
+			addIfNotNull(processNewEventOnEvaluationMechanism(primaryEvaluationMechanism, event, true), matches);
 			return matches;
 		}
-		List<Match> matches = primaryEvaluationMechanism.validateTimeWindow(event.getTimestamp());
-		matches.addAll(secondaryEvaluationMechanism.validateTimeWindow(event.getTimestamp()));
-		addIfNotNull(primaryEvaluationMechanism.processNewEvent(event, false), matches);
-		addIfNotNull(secondaryEvaluationMechanism.processNewEvent(event, true), matches);
+		List<Match> matches = validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
+		matches.addAll(validateTimeWindowOnEvaluationMechanism(secondaryEvaluationMechanism, event));
+		addIfNotNull(processNewEventOnEvaluationMechanism(primaryEvaluationMechanism, event, false), matches);
+		addIfNotNull(processNewEventOnEvaluationMechanism(secondaryEvaluationMechanism, event, true), matches);
 		return matches;
 	}
 	
 	private void addIfNotNull(List<Match> listToAdd, List<Match> listToAddTo) {
-		if (listToAdd != null && listToAddTo != null) {
+		if (listToAdd != null) {
 			listToAddTo.addAll(listToAdd);
 		}
+	}
+	
+	@SuppressWarnings("unused")
+	private List<Match> processNewEventOnEvaluationMechanism(IEvaluationMechanism mechanism,
+															 Event event, boolean canStartInstance) {
+		List<Match> matches = mechanism.processNewEvent(event, canStartInstance);
+		if (MainConfig.selectionStrategy != EventSelectionStrategies.SKIP_TILL_ANY) {
+			mechanism.removeConflictingInstances(matches);
+		}
+		if (MainConfig.debugMode && matches != null && !matches.isEmpty()) {
+			System.out.println(matches);
+		}
+		return matches;
+	}
+
+	private List<Match> validateTimeWindowOnEvaluationMechanism(IEvaluationMechanism mechanism, Event event) {
+		List<Match> matches = mechanism.validateTimeWindow(event.getTimestamp());
+		if (MainConfig.selectionStrategy != EventSelectionStrategies.SKIP_TILL_ANY) {
+			mechanism.removeConflictingInstances(matches);
+		}
+		return matches;
 	}
 	
 	private void tryAdaptEvaluation(long currentTimestamp) {
@@ -124,7 +151,7 @@ public class Simulator {
     	Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.evaluationMechanismCreationTime);
     	IEvaluationMechanism evaluationMechanism = (IEvaluationMechanism)evaluationMechanismObject;
     	evaluationMechanism.completeCreation(pattern);
-    	//System.out.println(evaluationMechanism.getStructureSummary());
+    	System.out.println(evaluationMechanism.getStructureSummary());
     	Environment.getEnvironment().setEvaluationMechanismInfo((IEvaluationMechanismInfo)evaluationMechanismObject);
     	return evaluationMechanism;
 	}
@@ -156,8 +183,9 @@ public class Simulator {
 	}
 
     private void prepareNextEvaluationStep(SimulationSpecification currentSpecification) throws Exception {
-    	System.out.println(String.format("Running Simulation Step %d/%d\n%s", 
-    									 ++currentStepNumber, specifications.size(), currentSpecification));
+    	System.out.println(String.format("Running Simulation Step %d/%d %s\n%s", 
+    									 ++currentStepNumber, specifications.size(), 
+    									 dateFormat.format(new Date()), currentSpecification));
     	
     	pattern = PatternFactory.createPattern(currentSpecification.getPatternSpecification(),
     										   currentSpecification.getInputSpecification());
@@ -183,7 +211,7 @@ public class Simulator {
     	}
     	try {
     		while (eventProducer.hasMoreEvents()) {
-    			if (isTimeoutReached()) {
+    			if (Environment.getEnvironment().isTimeoutReached(null)) {
     				Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(Statistics.isTimeoutReached, 1);
     				return;
     			}
@@ -216,6 +244,7 @@ public class Simulator {
     
     private void cleanupEvaluationStep() {
     	eventProducer.finish();
+    	Event.resetCounter();
     	if (MainConfig.eventRateMeasurementMode) {
     		System.out.println(eventRateEstimator.getEventRates());
     	}
@@ -223,14 +252,6 @@ public class Simulator {
     		return;
     	}
     	System.gc();
-    }
-    
-    private boolean isTimeoutReached() {
-    	if (MainConfig.maxExecutionTime == null) {
-    		return false;
-    	}
-    	return Environment.getEnvironment().getStatisticsManager().getDiscreteStatistic(Statistics.processingTime) > 
-    																							MainConfig.maxExecutionTime;
     }
     
     private SimulationSpecification[] generateSpecifications() {

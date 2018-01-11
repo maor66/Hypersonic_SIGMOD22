@@ -13,6 +13,8 @@ import pattern.condition.base.CNFCondition;
 public abstract class Pattern {
 
 	public enum PatternOperatorType {
+		NONE,
+		
 		OLD_SEQ, 
 		OLD_AND,
 		

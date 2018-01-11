@@ -13,6 +13,8 @@ public class ConditionSelectivityCollector {
 	
 	private static ConditionSelectivityCollector instance = null;
 	private static final double defaultSelectivity = 0.5;
+	//NOTE: should be null unless you intentionally want some (unknown) conditions to have a synthetic, static selectivity!
+	private static final Double selectivityOfUnknownCondition = 1.0;
 	
 	public static ConditionSelectivityCollector getInstance() {
 		if (instance == null) {
@@ -67,19 +69,23 @@ public class ConditionSelectivityCollector {
 		for (String transformedKey : transformedKeys) {
 			Double newEstimate = selectivityEstimates.get(transformedKey);
 			if (newEstimate != null) {
-				return newEstimate;
+				//TODO: the returned value is dependent on whether the condition is symmetric, whether it is anti-symmetric
+				//and also on other statistical properties
+				return 1 - newEstimate;
 			}
 		}
-		return null;
+		return selectivityOfUnknownCondition;
 	}
 	
 	private String[] getKeyTransformations(String key) {
 		//for now, only attempt to swap the first and the second sub-identifiers, separated by colon
 		String[] keyParts = key.split(":", 3);
-		if (keyParts.length < 3) {
+		String invertedKey;
+		if (keyParts.length < 2) {
 			return null;
 		}
-		String invertedKey = keyParts[1] + ":" + keyParts[0] + ":" + keyParts[2];
+		invertedKey = (keyParts.length == 2) ? (keyParts[1] + ":" + keyParts[0]) :
+											   (keyParts[1] + ":" + keyParts[0] + ":" + keyParts[2]);
 		return new String[]{ invertedKey };
 	}
 
@@ -102,6 +108,14 @@ public class ConditionSelectivityCollector {
 		catch(IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
+		for (String estimateKey : selectivityEstimates.keySet()) {
+			System.out.println(String.format("%s:%f", estimateKey, selectivityEstimates.get(estimateKey)));
+		}
+		for (String estimateKey : counters.keySet()) {
+			if (counters.get(estimateKey).out == 0) {
+				System.out.println(estimateKey);
+			}
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -117,10 +131,12 @@ public class ConditionSelectivityCollector {
 			//we assume no file is available
 			selectivityEstimates = new HashMap<String, Double>();
 		}
-		catch(Exception e)
-		{
+		catch(Exception e) {
 			throw new RuntimeException(e);
 		}
+//		for (String estimateKey : selectivityEstimates.keySet()) {
+//			System.out.println(String.format("%s:%f", estimateKey, selectivityEstimates.get(estimateKey)));
+//		}
 	}
 
 }

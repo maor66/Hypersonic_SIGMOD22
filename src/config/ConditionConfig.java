@@ -1,18 +1,19 @@
-package config;
+package sase.config;
 
-import specification.ConditionSpecification;
-import user.speedd.fraud.CreditCardFraudEventTypesManager;
-import user.speedd.fraud.SameCreditCardIDConditionSpecification;
-import user.speedd.traffic.TrafficEventTypesManager;
-import user.speedd.traffic.TrafficSameVehicleIDConditionSpecification;
-import user.stocks.StockEventTypesManager;
-import user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
-import user.stocks.specification.IterativeAverageStockCorrelationConditionSpecification;
-import user.stocks.specification.IterativeValueCmpStockCorrelationConditionSpecification;
-import user.stocks.specification.StockCorrelationConditionSpecification;
-import user.stocks.specification.StockFirstValueCmpConditionSpecification;
-import user.trams.TramCongestionIntersectionConditionSpecification;
-import user.trams.TramEventTypesManager;
+import sase.specification.ConditionSpecification;
+import sase.user.speedd.fraud.CreditCardFraudEventTypesManager;
+import sase.user.speedd.fraud.SameCreditCardIDConditionSpecification;
+import sase.user.speedd.traffic.TrafficEventTypesManager;
+import sase.user.speedd.traffic.TrafficSameVehicleIDConditionSpecification;
+import sase.user.stocks.StockEventTypesManager;
+import sase.user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
+import sase.user.stocks.specification.IterativeAverageStockCorrelationConditionSpecification;
+import sase.user.stocks.specification.IterativeValueCmpStockCorrelationConditionSpecification;
+import sase.user.stocks.specification.StockCorrelationConditionSpecification;
+import sase.user.stocks.specification.StockDeltaOrderingConditionSpecification;
+import sase.user.stocks.specification.StockFirstValueCmpConditionSpecification;
+import sase.user.trams.TramCongestionIntersectionConditionSpecification;
+import sase.user.trams.TramEventTypesManager;
 
 public class ConditionConfig {
 	
@@ -496,23 +497,10 @@ public class ConditionConfig {
 	
 	
 	////////////////////////////////////////Test configuration/////////////////////////////////////
-	public static final ConditionSpecification[] testSequenceOfFive = new ConditionSpecification[] {
-			new StockCorrelationConditionSpecification(StockEventTypesManager.northAmericanCompanyEventTypeName,
-					   StockEventTypesManager.europeanCompanyEventTypeName,
-					   0.9, 1.0),
-			new StockCorrelationConditionSpecification(StockEventTypesManager.europeanCompanyEventTypeName,
-					   StockEventTypesManager.africanCompanyEventTypeName,
-					   0.9, 1.0),
-			new StockCorrelationConditionSpecification(StockEventTypesManager.africanCompanyEventTypeName,
-					   StockEventTypesManager.southAmericanCompanyEventTypeName,
-					   0.9, 1.0),
-			new StockCorrelationConditionSpecification(StockEventTypesManager.southAmericanCompanyEventTypeName,
-					   StockEventTypesManager.centralAmericanCompanyEventTypeName,
-					   0.9, 1.0),
-			new StockCorrelationConditionSpecification(StockEventTypesManager.centralAmericanCompanyEventTypeName,
-					   StockEventTypesManager.northAmericanCompanyEventTypeName,
-					   0.9, 1.0),};
-	
+	public static final ConditionSpecification[] testSequence = new ConditionSpecification[] {
+			new StockDeltaOrderingConditionSpecification(StockEventTypesManager.ciscoEventTypeName,
+					   									 StockEventTypesManager.netlistEventTypeName),
+	};
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	//	Trams

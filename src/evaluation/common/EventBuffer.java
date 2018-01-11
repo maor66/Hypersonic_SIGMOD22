@@ -132,6 +132,23 @@ public class EventBuffer {
 		return clonedEventBuffer;
 	}
 	
+	public void extend(EventBuffer other) {
+		for (EventType aggregatedEventType : other.typeToAggregatedEvent.keySet()) {
+			if (!typeToAggregatedEvent.containsKey(aggregatedEventType)) {
+				typeToAggregatedEvent.put(aggregatedEventType, null);
+			}
+		}
+		for (Event event : other.getEvents()) {
+			if (event instanceof AggregatedEvent) {
+				AggregatedEvent clonedEvent = ((AggregatedEvent)event).clone();
+				addEvent(clonedEvent);
+			}
+			else {
+				addEvent(event);
+			}
+		}
+	}
+	
 	public long size() {
 		return events.size() * EventTypesManager.getInstance().getAverageEventSize();
 	}

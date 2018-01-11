@@ -1,4 +1,4 @@
-package config;
+package sase.config;
 
 import user.speedd.fraud.CreditCardFraudEventTypesManager;
 import user.speedd.traffic.TrafficEventTypesManager;

@@ -1,15 +1,16 @@
-package evaluation.nfa.eager.elements;
+package sase.evaluation.nfa.eager.elements;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import base.Event;
-import base.EventType;
-import evaluation.nfa.NFA;
-import evaluation.nfa.lazy.LazyNFA;
-import simulator.Environment;
-import statistics.Statistics;
+import sase.base.Event;
+import sase.base.EventType;
+import sase.evaluation.common.Match;
+import sase.evaluation.nfa.NFA;
+import sase.evaluation.nfa.lazy.LazyNFA;
+import sase.simulator.Environment;
+import sase.statistics.Statistics;
 
 
 public class InstanceStorage {
@@ -182,6 +183,25 @@ public class InstanceStorage {
 			result.addAll(instanceList);
 		}
 		return result;
+	}
+	
+	public void removeConflictingInstances(Match match) {
+		List<Event> events = match.getPrimitiveEvents();
+		for (List<Instance> instanceList : instancesByCurrentState.values()) {
+			List<Instance> instancesToRemove = new ArrayList<Instance>();
+			for (Instance instance : instanceList) {
+				List<Event> currentInstanceEvents = instance.getEventsFromMatchBuffer();
+				if (events == currentInstanceEvents) { //comparison by reference intended
+					continue;
+				}
+				int originalSize = currentInstanceEvents.size();
+				currentInstanceEvents.removeAll(events);
+				if (currentInstanceEvents.size() < originalSize) {
+					instancesToRemove.add(instance);
+				}
+			}
+			instanceList.removeAll(instancesToRemove);
+		}
 	}
 
 }
