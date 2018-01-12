@@ -1,33 +1,33 @@
-package sase.evaluation.nfa.lazy;
+package evaluation.nfa.lazy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import sase.base.AggregatedEvent;
-import sase.base.Event;
-import sase.base.EventSelectionStrategies;
-import sase.base.EventType;
-import sase.config.MainConfig;
-import sase.evaluation.common.Match;
-import sase.evaluation.nfa.NFA;
-import sase.evaluation.nfa.eager.elements.Instance;
-import sase.evaluation.nfa.eager.elements.NFAState;
-import sase.evaluation.nfa.eager.elements.Transition;
-import sase.evaluation.nfa.lazy.elements.EfficientInputBuffer;
-import sase.evaluation.nfa.lazy.elements.LazyInstance;
-import sase.evaluation.nfa.lazy.elements.LazyTransition;
-import sase.evaluation.nfa.lazy.elements.LazyTransitionType;
-import sase.evaluation.nfa.lazy.optimizations.BufferPreprocessor;
-import sase.pattern.Pattern;
-import sase.pattern.Pattern.PatternOperatorType;
-import sase.pattern.condition.Condition;
-import sase.pattern.condition.base.TrivialCondition;
-import sase.pattern.condition.contiguity.PartialContiguityCondition;
-import sase.pattern.condition.time.EventTemporalPositionCondition;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
+import base.AggregatedEvent;
+import base.Event;
+import base.EventSelectionStrategies;
+import base.EventType;
+import config.MainConfig;
+import evaluation.common.Match;
+import evaluation.nfa.NFA;
+import evaluation.nfa.eager.elements.Instance;
+import evaluation.nfa.eager.elements.NFAState;
+import evaluation.nfa.eager.elements.Transition;
+import evaluation.nfa.lazy.elements.EfficientInputBuffer;
+import evaluation.nfa.lazy.elements.LazyInstance;
+import evaluation.nfa.lazy.elements.LazyTransition;
+import evaluation.nfa.lazy.elements.LazyTransitionType;
+import evaluation.nfa.lazy.optimizations.BufferPreprocessor;
+import pattern.Pattern;
+import pattern.Pattern.PatternOperatorType;
+import pattern.condition.Condition;
+import pattern.condition.base.TrivialCondition;
+import pattern.condition.contiguity.PartialContiguityCondition;
+import pattern.condition.time.EventTemporalPositionCondition;
+import simulator.Environment;
+import statistics.Statistics;
 
 public abstract class LazyNFA extends NFA {
 

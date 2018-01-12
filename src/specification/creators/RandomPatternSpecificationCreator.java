@@ -1,20 +1,20 @@
-package sase.specification.creators;
+package specification.creators;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import sase.base.EventType;
-import sase.config.SimulationConfig;
-import sase.pattern.EventTypesManager;
-import sase.pattern.Pattern.PatternOperatorType;
-import sase.pattern.creation.PatternTypes;
-import sase.specification.ConditionSpecification;
-import sase.specification.PatternSpecification;
-import sase.specification.SimulationSpecification;
-import sase.specification.creators.condition.IConditionSpecificationCreator;
-import sase.specification.creators.condition.IConditionSpecificationSetCreator;
-import sase.user.stocks.StockEventTypesManager;
+import base.EventType;
+import config.SimulationConfig;
+import pattern.EventTypesManager;
+import pattern.Pattern.PatternOperatorType;
+import pattern.creation.PatternTypes;
+import specification.ConditionSpecification;
+import specification.PatternSpecification;
+import specification.SimulationSpecification;
+import specification.creators.condition.IConditionSpecificationCreator;
+import specification.creators.condition.IConditionSpecificationSetCreator;
+import user.stocks.StockEventTypesManager;
 
 public abstract class RandomPatternSpecificationCreator implements ISimulationSpecificationCreator {
 	

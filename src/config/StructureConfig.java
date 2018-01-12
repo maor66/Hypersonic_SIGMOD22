@@ -1,4 +1,4 @@
-package sase.config;
+package config;
 
 import user.speedd.fraud.CreditCardFraudEventTypesManager;
 import user.speedd.traffic.TrafficEventTypesManager;
@@ -599,7 +599,7 @@ public class StructureConfig {
 			},
 		 };
 		 
-	//Equality patterns for SASE comparison
+	//Equality patterns for comparison
 	public static final String[][][] sequenceOfThreeForEqualitySequence = 
 		//main 'OR'
 		new String[][][]{

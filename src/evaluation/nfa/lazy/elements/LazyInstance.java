@@ -1,15 +1,15 @@
-package sase.evaluation.nfa.lazy.elements;
+package evaluation.nfa.lazy.elements;
 
-import sase.base.Event;
-import sase.base.EventSelectionStrategies;
-import sase.config.MainConfig;
-import sase.evaluation.common.EventBuffer;
-import sase.evaluation.nfa.NFA;
-import sase.evaluation.nfa.eager.elements.Instance;
-import sase.evaluation.nfa.eager.elements.NFAState;
-import sase.evaluation.nfa.eager.elements.Transition;
-import sase.evaluation.nfa.lazy.LazyNFA;
-import sase.evaluation.nfa.lazy.elements.EfficientInputBuffer;
+import base.Event;
+import base.EventSelectionStrategies;
+import config.MainConfig;
+import evaluation.common.EventBuffer;
+import evaluation.nfa.NFA;
+import evaluation.nfa.eager.elements.Instance;
+import evaluation.nfa.eager.elements.NFAState;
+import evaluation.nfa.eager.elements.Transition;
+import evaluation.nfa.lazy.LazyNFA;
+import evaluation.nfa.lazy.elements.EfficientInputBuffer;
 
 public class LazyInstance extends Instance {
 

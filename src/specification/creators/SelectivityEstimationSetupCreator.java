@@ -1,9 +1,9 @@
-package sase.specification.creators;
+package specification.creators;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.specification.SimulationSpecification;
+import specification.SimulationSpecification;
 
 public abstract class SelectivityEstimationSetupCreator implements ISimulationSpecificationCreator {
 	

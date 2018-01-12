@@ -1,6 +1,6 @@
-package sase.base;
+package base;
 
-import sase.pattern.EventTypesManager;
+import pattern.EventTypesManager;
 
 public class Event implements Comparable<Event> {
 	

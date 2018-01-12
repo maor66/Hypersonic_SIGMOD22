@@ -1,10 +1,10 @@
-package sase.pattern.condition.contiguity;
+package pattern.condition.contiguity;
 
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.condition.base.AtomicCondition;
+import base.Event;
+import base.EventType;
+import pattern.condition.base.AtomicCondition;
 
 public class PartialContiguityCondition extends AtomicCondition {
 

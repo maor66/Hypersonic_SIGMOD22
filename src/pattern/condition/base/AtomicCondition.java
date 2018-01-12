@@ -1,13 +1,13 @@
-package sase.pattern.condition.base;
+package pattern.condition.base;
 
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.config.MainConfig;
-import sase.pattern.condition.Condition;
-import sase.simulator.Environment;
-import sase.statistics.ConditionSelectivityCollector;
+import base.Event;
+import base.EventType;
+import config.MainConfig;
+import pattern.condition.Condition;
+import simulator.Environment;
+import statistics.ConditionSelectivityCollector;
 
 /**
  * Represents a condition which involves a single check of primitive event(s) attribute(s).

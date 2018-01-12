@@ -1,10 +1,10 @@
-package sase.user.stocks.specification;
+package user.stocks.specification;
 
-import sase.base.EventType;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.specification.DoubleEventConditionSpecification;
-import sase.user.stocks.condition.StockFirstValueCmpCondition;
-import sase.user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
+import base.EventType;
+import pattern.condition.base.AtomicCondition;
+import specification.DoubleEventConditionSpecification;
+import user.stocks.condition.StockFirstValueCmpCondition;
+import user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
 
 public class StockFirstValueCmpConditionSpecification extends DoubleEventConditionSpecification {
 

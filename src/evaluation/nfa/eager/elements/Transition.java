@@ -1,12 +1,12 @@
-package sase.evaluation.nfa.eager.elements;
+package evaluation.nfa.eager.elements;
 
 import java.util.Arrays;
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.config.MainConfig;
-import sase.pattern.condition.Condition;
+import base.Event;
+import base.EventType;
+import config.MainConfig;
+import pattern.condition.Condition;
 
 public class Transition {
 	public enum Action {

@@ -33,7 +33,10 @@ public class RecursiveNFArun extends RecursiveTask<NFArunResult> {
 
     @Override
     protected NFArunResult compute() {
+        return null;
+        /*
         List<Instance> firstInstanceInList = (instancesToCheck.size() > 0)  ? instancesToCheck.get(0) : null;
+        /*
         if (null == firstInstanceInList || (instancesToAdd.size() + instancesToRemove.size() + firstInstanceInList.size() < 100000))
         {
             if (lazyNFA.shouldActivateUnboundedIterativeMode()) {
@@ -51,7 +54,10 @@ public class RecursiveNFArun extends RecursiveTask<NFArunResult> {
             }
             return new NFArunResult(instancesToAdd,instancesToRemove,matches);
         }
-        else {
+
+
+*/
+      //  else {
             /*
             List<List<Instance>> instancesToCheckLeft = new ArrayList<List<Instance>>();
             List<List<Instance>> instancesToCheckRight = new ArrayList<List<Instance>>();
@@ -60,8 +66,8 @@ public class RecursiveNFArun extends RecursiveTask<NFArunResult> {
             instancesToCheckLeft.add(listToAdd);
             listToAdd = new ArrayList<>(firstInstanceInList.subList(firstInstanceInList.size()/2, firstInstanceInList.size()));
             instancesToCheckRight.add(listToAdd);
-             */
-            List<List<Instance>> instancesToCheckLeft = new ArrayList<List<Instance>>(instancesToCheck);
+
+                 List<List<Instance>> instancesToCheckLeft = new ArrayList<List<Instance>>(instancesToCheck);
             instancesToCheckLeft.set(0, new ArrayList<>(firstInstanceInList.subList(0, firstInstanceInList.size()/2)));
             List<List<Instance>> instancesToCheckRight = new ArrayList<List<Instance>>(instancesToCheck);
             instancesToCheckRight.set(0, new ArrayList<>(firstInstanceInList.subList(firstInstanceInList.size()/2, firstInstanceInList.size())));
@@ -78,8 +84,9 @@ public class RecursiveNFArun extends RecursiveTask<NFArunResult> {
             /*
             invokeAll(new RecursiveNFArun(lazyNFA, new Event(event),instancesToCheckLeft, new ArrayList<Instance>(), new ArrayList<Instance>(),  new LinkedList<Match>()),
                       new RecursiveNFArun(lazyNFA, new Event(event),instancesToCheckRight, new ArrayList<Instance>(), new ArrayList<Instance>(),  new LinkedList<Match>()));
-                      */
+
 
         }
+         */
     }
 }

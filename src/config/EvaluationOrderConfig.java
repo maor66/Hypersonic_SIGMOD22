@@ -1,4 +1,4 @@
-package sase.config;
+package config;
 
 import user.speedd.fraud.CreditCardFraudEventTypesManager;
 import user.speedd.traffic.TrafficEventTypesManager;
@@ -119,7 +119,7 @@ public class EvaluationOrderConfig {
 		StockEventTypesManager.northAmericanCompanyEventTypeName,
 	};
 	
-	//Equality patterns for SASE comparison
+	//Equality patterns for comparison
 	public static final String[] orderOfThreeForEqualitySequence = new String[] {
 		StockEventTypesManager.africanCompanyEventTypeName,
 		StockEventTypesManager.centralAmericanCompanyEventTypeName,

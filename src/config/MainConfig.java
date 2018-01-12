@@ -1,13 +1,13 @@
-package sase.config;
+package config;
 
-import sase.base.EventSelectionStrategies;
-import sase.config.path.LinuxPathConfig;
-import sase.config.path.PathConfig;
-import sase.config.path.WindowsPathConfig;
-import sase.input.EventProducerTypes;
-import sase.input.EventTypesConverterTypes;
-import sase.pattern.EventTypesManager;
-import sase.user.stocks.StockEventTypesManager;
+import base.EventSelectionStrategies;
+import config.path.LinuxPathConfig;
+import config.path.PathConfig;
+import config.path.WindowsPathConfig;
+import input.EventProducerTypes;
+import input.EventTypesConverterTypes;
+import pattern.EventTypesManager;
+import user.stocks.StockEventTypesManager;
 
 @SuppressWarnings("unused")
 public class MainConfig {

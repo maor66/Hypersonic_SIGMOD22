@@ -1,18 +1,18 @@
-package sase.user.stocks.specification.creators;
+package user.stocks.specification.creators;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.order.OrderingAlgorithmTypes;
-import sase.order.cost.CostModelTypes;
-import sase.pattern.creation.PatternTypes;
-import sase.specification.ConditionSpecification;
-import sase.specification.EvaluationSpecification;
-import sase.specification.PatternSpecification;
-import sase.specification.SimulationSpecification;
-import sase.specification.creators.SelectivityEstimationSetupCreator;
-import sase.user.stocks.StockEventTypesManager;
-import sase.user.stocks.specification.StockCorrelationConditionSpecification;
+import order.OrderingAlgorithmTypes;
+import order.cost.CostModelTypes;
+import pattern.creation.PatternTypes;
+import specification.ConditionSpecification;
+import specification.EvaluationSpecification;
+import specification.PatternSpecification;
+import specification.SimulationSpecification;
+import specification.creators.SelectivityEstimationSetupCreator;
+import user.stocks.StockEventTypesManager;
+import user.stocks.specification.StockCorrelationConditionSpecification;
 
 public class CorrelationSelectivityEstimationSetupCreator extends SelectivityEstimationSetupCreator {
 

@@ -1,10 +1,10 @@
-package sase.user.stocks.specification;
+package user.stocks.specification;
 
 
-import sase.base.EventType;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.specification.DoubleEventConditionSpecification;
-import sase.user.stocks.condition.StockDeltaOrderingCondition;
+import base.EventType;
+import pattern.condition.base.AtomicCondition;
+import specification.DoubleEventConditionSpecification;
+import user.stocks.condition.StockDeltaOrderingCondition;
 
 public class StockDeltaOrderingConditionSpecification extends DoubleEventConditionSpecification {
 

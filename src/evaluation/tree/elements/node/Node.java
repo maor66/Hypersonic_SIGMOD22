@@ -1,12 +1,12 @@
-package sase.evaluation.tree.elements.node;
+package evaluation.tree.elements.node;
 
 import java.util.List;
 
-import sase.base.EventType;
-import sase.evaluation.common.State;
-import sase.evaluation.tree.elements.TreeInstance;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.pattern.condition.base.CNFCondition;
+import base.EventType;
+import evaluation.common.State;
+import evaluation.tree.elements.TreeInstance;
+import pattern.condition.base.AtomicCondition;
+import pattern.condition.base.CNFCondition;
 
 public abstract class Node extends State {
 

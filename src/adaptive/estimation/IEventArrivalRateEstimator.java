@@ -1,6 +1,6 @@
-package sase.adaptive.estimation;
+package adaptive.estimation;
 
-import sase.base.EventType;
+import base.EventType;
 
 public interface IEventArrivalRateEstimator {
 

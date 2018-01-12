@@ -1,10 +1,10 @@
-package sase.user.stocks.specification.creators;
+package user.stocks.specification.creators;
 
-import sase.specification.ConditionSpecification;
-import sase.specification.DoubleEventConditionSpecification;
-import sase.specification.creators.condition.IConditionSpecificationCreator;
-import sase.user.stocks.specification.IterativeValueCmpStockCorrelationConditionSpecification;
-import sase.user.stocks.specification.StockDeltaOrderingConditionSpecification;
+import specification.ConditionSpecification;
+import specification.DoubleEventConditionSpecification;
+import specification.creators.condition.IConditionSpecificationCreator;
+import user.stocks.specification.IterativeValueCmpStockCorrelationConditionSpecification;
+import user.stocks.specification.StockDeltaOrderingConditionSpecification;
 
 public class StockDeltaConditionCreator implements IConditionSpecificationCreator {
 

@@ -1,10 +1,10 @@
-package sase.evaluation.tree.cost;
+package evaluation.tree.cost;
 
-import sase.evaluation.tree.ITreeCostModel;
-import sase.evaluation.tree.elements.node.InternalNode;
-import sase.evaluation.tree.elements.node.LeafNode;
-import sase.evaluation.tree.elements.node.Node;
-import sase.simulator.Environment;
+import evaluation.tree.ITreeCostModel;
+import evaluation.tree.elements.node.InternalNode;
+import evaluation.tree.elements.node.LeafNode;
+import evaluation.tree.elements.node.Node;
+import simulator.Environment;
 
 public class ThroughputTreeCostModel implements ITreeCostModel {
 

@@ -1,19 +1,19 @@
-package sase.config;
+package config;
 
-import sase.specification.ConditionSpecification;
-import sase.user.speedd.fraud.CreditCardFraudEventTypesManager;
-import sase.user.speedd.fraud.SameCreditCardIDConditionSpecification;
-import sase.user.speedd.traffic.TrafficEventTypesManager;
-import sase.user.speedd.traffic.TrafficSameVehicleIDConditionSpecification;
-import sase.user.stocks.StockEventTypesManager;
-import sase.user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
-import sase.user.stocks.specification.IterativeAverageStockCorrelationConditionSpecification;
-import sase.user.stocks.specification.IterativeValueCmpStockCorrelationConditionSpecification;
-import sase.user.stocks.specification.StockCorrelationConditionSpecification;
-import sase.user.stocks.specification.StockDeltaOrderingConditionSpecification;
-import sase.user.stocks.specification.StockFirstValueCmpConditionSpecification;
-import sase.user.trams.TramCongestionIntersectionConditionSpecification;
-import sase.user.trams.TramEventTypesManager;
+import specification.ConditionSpecification;
+import user.speedd.fraud.CreditCardFraudEventTypesManager;
+import user.speedd.fraud.SameCreditCardIDConditionSpecification;
+import user.speedd.traffic.TrafficEventTypesManager;
+import user.speedd.traffic.TrafficSameVehicleIDConditionSpecification;
+import user.stocks.StockEventTypesManager;
+import user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
+import user.stocks.specification.IterativeAverageStockCorrelationConditionSpecification;
+import user.stocks.specification.IterativeValueCmpStockCorrelationConditionSpecification;
+import user.stocks.specification.StockCorrelationConditionSpecification;
+import user.stocks.specification.StockDeltaOrderingConditionSpecification;
+import user.stocks.specification.StockFirstValueCmpConditionSpecification;
+import user.trams.TramCongestionIntersectionConditionSpecification;
+import user.trams.TramEventTypesManager;
 
 public class ConditionConfig {
 	
@@ -476,7 +476,7 @@ public class ConditionConfig {
 															0.9),};
 	
 
-	//Equality patterns for SASE comparison
+	//Equality patterns for comparison
 	public static final ConditionSpecification[] sequenceOfThreeEquality = new ConditionSpecification[] {
 			new StockFirstValueCmpConditionSpecification(StockEventTypesManager.europeanCompanyEventTypeName,
 					   StockEventTypesManager.centralAmericanCompanyEventTypeName, ComparisonOperation.BIGGER),

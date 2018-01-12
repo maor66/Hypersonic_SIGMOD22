@@ -1,16 +1,16 @@
-package sase.evaluation;
+package evaluation;
 
-import sase.evaluation.nfa.eager.AND_NFA;
-import sase.evaluation.nfa.eager.AND_SEQ_NFA;
-import sase.evaluation.nfa.eager.OR_AND_SEQ_NFA;
-import sase.evaluation.nfa.eager.SEQ_NFA;
-import sase.evaluation.nfa.lazy.LazyChainNFA;
-import sase.evaluation.nfa.lazy.LazyMultiChainNFA;
-import sase.evaluation.tree.MultiTreeEvaluationMechanism;
-import sase.evaluation.tree.TreeEvaluationMechanism;
-import sase.pattern.Pattern;
-import sase.simulator.Environment;
-import sase.specification.EvaluationSpecification;
+import evaluation.nfa.eager.AND_NFA;
+import evaluation.nfa.eager.AND_SEQ_NFA;
+import evaluation.nfa.eager.OR_AND_SEQ_NFA;
+import evaluation.nfa.eager.SEQ_NFA;
+import evaluation.nfa.lazy.LazyChainNFA;
+import evaluation.nfa.lazy.LazyMultiChainNFA;
+import evaluation.tree.MultiTreeEvaluationMechanism;
+import evaluation.tree.TreeEvaluationMechanism;
+import pattern.Pattern;
+import simulator.Environment;
+import specification.EvaluationSpecification;
 
 public class EvaluationMechanismFactory {
 

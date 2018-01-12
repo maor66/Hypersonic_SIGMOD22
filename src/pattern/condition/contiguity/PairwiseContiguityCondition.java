@@ -1,8 +1,8 @@
-package sase.pattern.condition.contiguity;
+package pattern.condition.contiguity;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.pattern.condition.base.DoubleEventCondition;
+import base.Event;
+import base.EventType;
+import pattern.condition.base.DoubleEventCondition;
 
 public class PairwiseContiguityCondition extends DoubleEventCondition {
 	

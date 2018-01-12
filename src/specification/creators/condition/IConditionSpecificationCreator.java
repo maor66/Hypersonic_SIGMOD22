@@ -1,7 +1,7 @@
-package sase.specification.creators.condition;
+package specification.creators.condition;
 
-import sase.specification.ConditionSpecification;
-import sase.specification.DoubleEventConditionSpecification;
+import specification.ConditionSpecification;
+import specification.DoubleEventConditionSpecification;
 
 public interface IConditionSpecificationCreator {
 

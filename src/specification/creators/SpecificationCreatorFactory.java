@@ -1,12 +1,12 @@
-package sase.specification.creators;
+package specification.creators;
 
-import sase.config.SimulationConfig;
-import sase.specification.creators.condition.ConditionSpecificationCreatorFactory;
-import sase.specification.creators.condition.IConditionSpecificationCreator;
-import sase.specification.creators.condition.IConditionSpecificationSetCreator;
-import sase.user.stocks.specification.creators.CorrelationSelectivityEstimationSetupCreator;
-import sase.user.stocks.specification.creators.DeltaSelectivityEstimationSetupCreator;
-import sase.user.stocks.specification.creators.StockPatternSpecificationCreator;
+import config.SimulationConfig;
+import specification.creators.condition.ConditionSpecificationCreatorFactory;
+import specification.creators.condition.IConditionSpecificationCreator;
+import specification.creators.condition.IConditionSpecificationSetCreator;
+import user.stocks.specification.creators.CorrelationSelectivityEstimationSetupCreator;
+import user.stocks.specification.creators.DeltaSelectivityEstimationSetupCreator;
+import user.stocks.specification.creators.StockPatternSpecificationCreator;
 
 public class SpecificationCreatorFactory {
 

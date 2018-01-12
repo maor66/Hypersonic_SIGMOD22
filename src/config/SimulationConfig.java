@@ -1,31 +1,31 @@
-package sase.config;
+package config;
 
-import sase.specification.AdaptationSpecification;
-import sase.specification.EvaluationSpecification;
-import sase.specification.InputSpecification;
-import sase.specification.PatternSpecification;
-import sase.specification.SimulationSpecification;
-import sase.specification.creators.SpecificationCreatorTypes;
-import sase.specification.creators.condition.ConditionSpecificationCreatorTypes;
-import sase.specification.creators.condition.ConditionSpecificationSetCreatorTypes;
-import sase.user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
-import sase.adaptive.monitoring.AdaptationNecessityDetectorTypes;
-import sase.adaptive.monitoring.invariant.compare.InvariantComparerType;
-import sase.base.Event; //this dummy import is needed to avoid the annoying 'unused warning suppression' message
-import sase.evaluation.EvaluationMechanismTypes;
-import sase.evaluation.nfa.lazy.LazyNFANegationTypes;
-import sase.evaluation.tree.TopologyCreatorTypes;
-import sase.evaluation.tree.TreeCostModelTypes;
-import sase.order.OrderingAlgorithmTypes;
-import sase.order.cost.CostModelTypes;
-import sase.pattern.Pattern.PatternOperatorType;
+import specification.AdaptationSpecification;
+import specification.EvaluationSpecification;
+import specification.InputSpecification;
+import specification.PatternSpecification;
+import specification.SimulationSpecification;
+import specification.creators.SpecificationCreatorTypes;
+import specification.creators.condition.ConditionSpecificationCreatorTypes;
+import specification.creators.condition.ConditionSpecificationSetCreatorTypes;
+import user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
+import adaptive.monitoring.AdaptationNecessityDetectorTypes;
+import adaptive.monitoring.invariant.compare.InvariantComparerType;
+import base.Event; //this dummy import is needed to avoid the annoying 'unused warning suppression' message
+import evaluation.EvaluationMechanismTypes;
+import evaluation.nfa.lazy.LazyNFANegationTypes;
+import evaluation.tree.TopologyCreatorTypes;
+import evaluation.tree.TreeCostModelTypes;
+import order.OrderingAlgorithmTypes;
+import order.cost.CostModelTypes;
+import pattern.Pattern.PatternOperatorType;
 
 @SuppressWarnings("unused")
 public class SimulationConfig {
 	
 	//specification creator definition
 	public static final SpecificationCreatorTypes specificationCreatorType = 
-																SpecificationCreatorTypes.STOCK_EVALUATION;
+																SpecificationCreatorTypes.NONE;
 	public static final ConditionSpecificationCreatorTypes conditionCreatorType = 
 																ConditionSpecificationCreatorTypes.STOCK_DELTA;
 	public static final ConditionSpecificationSetCreatorTypes conditionSetCreatorType = 
@@ -521,7 +521,7 @@ public class SimulationConfig {
 //				new EvaluationSpecification(EvaluationMechanismTypes.EAGER)),
 //		
 //		
-//		/* Equality patterns for SASE comparison. */
+//		/* Equality patterns for comparison. */
 //		new SimulationSpecification(PatternConfig.sequenceOfThreeWithEquation,
 //			    new EvaluationSpecification(EvaluationMechanismTypes.LAZY_CHAIN,
 //			    					 EvaluationOrderConfig.orderOfThreeForEqualitySequence)),

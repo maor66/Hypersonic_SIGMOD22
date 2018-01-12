@@ -1,14 +1,14 @@
-package sase.evaluation.tree.elements;
+package evaluation.tree.elements;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import sase.base.Event;
-import sase.evaluation.common.Match;
-import sase.evaluation.tree.elements.node.Node;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
+import base.Event;
+import evaluation.common.Match;
+import evaluation.tree.elements.node.Node;
+import simulator.Environment;
+import statistics.Statistics;
 
 public class TreeInstanceStorage {
 

@@ -1,7 +1,7 @@
-package sase.adaptive.estimation;
+package adaptive.estimation;
 
-import sase.base.EventType;
-import sase.config.EventRateConfig;
+import base.EventType;
+import config.EventRateConfig;
 
 public class StaticEventArrivalRateEstimator implements IEventArrivalRateEstimator {
 

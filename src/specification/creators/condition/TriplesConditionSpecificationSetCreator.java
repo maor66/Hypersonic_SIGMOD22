@@ -1,13 +1,13 @@
-package sase.specification.creators.condition;
+package specification.creators.condition;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import sase.base.EventType;
-import sase.order.algorithm.DynamicOrderingAlgorithm;
-import sase.specification.DoubleEventConditionSpecification;
-import sase.specification.creators.RandomPatternSpecificationCreator;
+import base.EventType;
+import order.algorithm.DynamicOrderingAlgorithm;
+import specification.DoubleEventConditionSpecification;
+import specification.creators.RandomPatternSpecificationCreator;
 
 public class TriplesConditionSpecificationSetCreator extends BasicConditionSpecificationSetCreator {
 

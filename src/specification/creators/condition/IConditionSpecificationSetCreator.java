@@ -1,9 +1,9 @@
-package sase.specification.creators.condition;
+package specification.creators.condition;
 
 import java.util.List;
 
-import sase.base.EventType;
-import sase.specification.ConditionSpecification;
+import base.EventType;
+import specification.ConditionSpecification;
 
 public interface IConditionSpecificationSetCreator {
 

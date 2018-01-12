@@ -1,4 +1,4 @@
-package sase.config.path;
+package config.path;
 
 public class WindowsPathConfig extends PathConfig {
 

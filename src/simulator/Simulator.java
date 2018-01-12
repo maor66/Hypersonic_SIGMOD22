@@ -1,4 +1,4 @@
-package sase.simulator;
+package simulator;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -7,28 +7,28 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import sase.adaptive.monitoring.AdaptationNecessityDetector;
-import sase.base.Event;
-import sase.base.EventSelectionStrategies;
-import sase.config.MainConfig;
-import sase.config.SimulationConfig;
-import sase.evaluation.EvaluationMechanismFactory;
-import sase.evaluation.IEvaluationMechanism;
-import sase.evaluation.IEvaluationMechanismInfo;
-import sase.evaluation.common.Match;
-import sase.input.EventProducer;
-import sase.input.EventProducerFactory;
-import sase.pattern.EventTypesManager;
-import sase.pattern.Pattern;
-import sase.pattern.creation.PatternFactory;
-import sase.specification.PatternSpecification;
-import sase.specification.SimulationSpecification;
-import sase.specification.creators.ISimulationSpecificationCreator;
-import sase.specification.creators.SpecificationCreatorFactory;
-import sase.statistics.ConditionSelectivityCollector;
-import sase.statistics.EventRateCollector;
-import sase.statistics.Statistics;
-import sase.statistics.StatisticsManager;
+import adaptive.monitoring.AdaptationNecessityDetector;
+import base.Event;
+import base.EventSelectionStrategies;
+import config.MainConfig;
+import config.SimulationConfig;
+import evaluation.EvaluationMechanismFactory;
+import evaluation.IEvaluationMechanism;
+import evaluation.IEvaluationMechanismInfo;
+import evaluation.common.Match;
+import input.EventProducer;
+import input.EventProducerFactory;
+import pattern.EventTypesManager;
+import pattern.Pattern;
+import pattern.creation.PatternFactory;
+import specification.PatternSpecification;
+import specification.SimulationSpecification;
+import specification.creators.ISimulationSpecificationCreator;
+import specification.creators.SpecificationCreatorFactory;
+import statistics.ConditionSelectivityCollector;
+import statistics.EventRateCollector;
+import statistics.Statistics;
+import statistics.StatisticsManager;
 
 public class Simulator {
 	

@@ -1,8 +1,8 @@
-package sase.specification.creators.condition;
+package specification.creators.condition;
 
-import sase.config.SimulationConfig;
-import sase.user.stocks.specification.creators.StockCorrelationConditionCreator;
-import sase.user.stocks.specification.creators.StockDeltaConditionCreator;
+import config.SimulationConfig;
+import user.stocks.specification.creators.StockCorrelationConditionCreator;
+import user.stocks.specification.creators.StockDeltaConditionCreator;
 
 public class ConditionSpecificationCreatorFactory {
 

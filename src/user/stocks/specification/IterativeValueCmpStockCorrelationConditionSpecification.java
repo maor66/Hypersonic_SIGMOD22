@@ -1,16 +1,16 @@
-package sase.user.stocks.specification;
+package user.stocks.specification;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.config.SimulationConfig;
-import sase.pattern.EventTypesManager;
-import sase.pattern.condition.base.AtomicCondition;
-import sase.pattern.condition.iteration.FirstValueExternalCondition;
-import sase.pattern.condition.iteration.eager.IteratedIncrementalDoubleEventCondition;
-import sase.specification.ConditionSpecification;
-import sase.user.stocks.condition.StockFirstValueCmpCondition;
+import base.EventType;
+import config.SimulationConfig;
+import pattern.EventTypesManager;
+import pattern.condition.base.AtomicCondition;
+import pattern.condition.iteration.FirstValueExternalCondition;
+import pattern.condition.iteration.eager.IteratedIncrementalDoubleEventCondition;
+import specification.ConditionSpecification;
+import user.stocks.condition.StockFirstValueCmpCondition;
 
 public class IterativeValueCmpStockCorrelationConditionSpecification extends ConditionSpecification {
 	

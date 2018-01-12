@@ -1,11 +1,11 @@
-package sase.evaluation;
+package evaluation;
 
 import java.util.HashMap;
 import java.util.List;
 
-import sase.base.EventType;
-import sase.evaluation.tree.elements.node.Node;
-import sase.pattern.Pattern;
+import base.EventType;
+import evaluation.tree.elements.node.Node;
+import pattern.Pattern;
 
 public class EvaluationPlan {
 

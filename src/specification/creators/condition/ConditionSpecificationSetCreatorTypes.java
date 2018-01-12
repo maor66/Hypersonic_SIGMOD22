@@ -1,4 +1,4 @@
-package sase.specification.creators.condition;
+package specification.creators.condition;
 
 public enum ConditionSpecificationSetCreatorTypes {
 	NONE,

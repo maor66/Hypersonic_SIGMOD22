@@ -1,14 +1,14 @@
-package sase.evaluation.tree;
+package evaluation.tree;
 
 import java.util.List;
 
-import sase.base.EventType;
-import sase.evaluation.tree.elements.node.ConjunctiveInternalNode;
-import sase.evaluation.tree.elements.node.InternalNode;
-import sase.evaluation.tree.elements.node.Node;
-import sase.evaluation.tree.elements.node.SeqInternalNode;
-import sase.pattern.Pattern;
-import sase.pattern.condition.base.CNFCondition;
+import base.EventType;
+import evaluation.tree.elements.node.ConjunctiveInternalNode;
+import evaluation.tree.elements.node.InternalNode;
+import evaluation.tree.elements.node.Node;
+import evaluation.tree.elements.node.SeqInternalNode;
+import pattern.Pattern;
+import pattern.condition.base.CNFCondition;
 
 public class TopologyCreatorUtils {
 

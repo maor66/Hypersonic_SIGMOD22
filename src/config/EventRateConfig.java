@@ -1,4 +1,4 @@
-package sase.config;
+package config;
 
 import java.util.HashMap;
 

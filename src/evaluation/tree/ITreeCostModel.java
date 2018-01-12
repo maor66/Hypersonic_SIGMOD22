@@ -1,6 +1,6 @@
-package sase.evaluation.tree;
+package evaluation.tree;
 
-import sase.evaluation.tree.elements.node.Node;
+import evaluation.tree.elements.node.Node;
 
 public interface ITreeCostModel {
 

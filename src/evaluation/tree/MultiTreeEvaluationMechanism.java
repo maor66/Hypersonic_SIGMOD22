@@ -1,22 +1,22 @@
-package sase.evaluation.tree;
+package evaluation.tree;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventSelectionStrategies;
-import sase.config.MainConfig;
-import sase.evaluation.EvaluationPlan;
-import sase.evaluation.IEvaluationMechanism;
-import sase.evaluation.IEvaluationMechanismInfo;
-import sase.evaluation.common.Match;
-import sase.evaluation.common.State;
-import sase.evaluation.tree.elements.node.Node;
-import sase.pattern.CompositePattern;
-import sase.pattern.Pattern;
-import sase.pattern.Pattern.PatternOperatorType;
-import sase.pattern.condition.base.AtomicCondition;
+import base.Event;
+import base.EventSelectionStrategies;
+import config.MainConfig;
+import evaluation.EvaluationPlan;
+import evaluation.IEvaluationMechanism;
+import evaluation.IEvaluationMechanismInfo;
+import evaluation.common.Match;
+import evaluation.common.State;
+import evaluation.tree.elements.node.Node;
+import pattern.CompositePattern;
+import pattern.Pattern;
+import pattern.Pattern.PatternOperatorType;
+import pattern.condition.base.AtomicCondition;
 
 public class MultiTreeEvaluationMechanism implements IEvaluationMechanism, IEvaluationMechanismInfo  {
 

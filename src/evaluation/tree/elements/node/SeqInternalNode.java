@@ -1,13 +1,13 @@
-package sase.evaluation.tree.elements.node;
+package evaluation.tree.elements.node;
 
 import java.util.List;
 
-import sase.base.EventSelectionStrategies;
-import sase.base.EventType;
-import sase.config.MainConfig;
-import sase.pattern.condition.base.CNFCondition;
-import sase.pattern.condition.contiguity.PairwiseContiguityCondition;
-import sase.pattern.condition.time.PairTemporalOrderCondition;
+import base.EventSelectionStrategies;
+import base.EventType;
+import config.MainConfig;
+import pattern.condition.base.CNFCondition;
+import pattern.condition.contiguity.PairwiseContiguityCondition;
+import pattern.condition.time.PairTemporalOrderCondition;
 
 public class SeqInternalNode extends InternalNode {
 

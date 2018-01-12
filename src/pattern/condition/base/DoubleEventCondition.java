@@ -1,12 +1,12 @@
-package sase.pattern.condition.base;
+package pattern.condition.base;
 
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.config.MainConfig;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
+import base.Event;
+import base.EventType;
+import config.MainConfig;
+import simulator.Environment;
+import statistics.Statistics;
 
 /**
  * Represents a condition which involves attributes of a pair of primitive events.

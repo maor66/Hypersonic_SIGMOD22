@@ -1,9 +1,9 @@
-package sase.order.algorithm.adaptive.greedy;
+package order.algorithm.adaptive.greedy;
 
-import sase.adaptive.estimation.IEventArrivalRateEstimator;
-import sase.adaptive.monitoring.invariant.IInvariantCalculator;
-import sase.adaptive.monitoring.invariant.InvariantInput;
-import sase.simulator.Environment;
+import adaptive.estimation.IEventArrivalRateEstimator;
+import adaptive.monitoring.invariant.IInvariantCalculator;
+import adaptive.monitoring.invariant.InvariantInput;
+import simulator.Environment;
 
 public class GreedyInvariantCalculator implements IInvariantCalculator {
 

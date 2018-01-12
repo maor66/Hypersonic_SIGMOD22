@@ -1,12 +1,12 @@
-package sase.user.stocks.specification.creators;
+package user.stocks.specification.creators;
 
 import java.util.Random;
 
-import sase.config.SimulationConfig;
-import sase.specification.ConditionSpecification;
-import sase.specification.DoubleEventConditionSpecification;
-import sase.specification.creators.condition.IConditionSpecificationCreator;
-import sase.user.stocks.specification.StockCorrelationConditionSpecification;
+import config.SimulationConfig;
+import specification.ConditionSpecification;
+import specification.DoubleEventConditionSpecification;
+import specification.creators.condition.IConditionSpecificationCreator;
+import user.stocks.specification.StockCorrelationConditionSpecification;
 
 public class StockCorrelationConditionCreator implements IConditionSpecificationCreator {
 	

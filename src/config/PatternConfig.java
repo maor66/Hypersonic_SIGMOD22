@@ -1,4 +1,4 @@
-package sase.config;
+package config;
 
 import pattern.creation.PatternTypes;
 import specification.ConditionSpecification;
@@ -297,7 +297,7 @@ public class PatternConfig {
 									 ConditionConfig.sequenceOfThreeWithMiddleIteration);
 	
 	
-	//Equality patterns for SASE comparison
+	//Equality patterns for comparison
 	public static final PatternSpecification sequenceOfThreeWithEquation = 
 			new PatternSpecification("SEQ3EQ", PatternTypes.STOCK_PATTERN, null, 
 									 StructureConfig.sequenceOfThreeForEqualitySequence,
@@ -408,7 +408,7 @@ public class PatternConfig {
 	
 	
 	
-	private static final long stockByCompanyPatternTimeWindow = 1000;
+	private static final long stockByCompanyPatternTimeWindow = 10;
 	public static final PatternSpecification[] stockByCompanyPatternSpecifications = {
 		new PatternSpecification("SEQ3", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{ 

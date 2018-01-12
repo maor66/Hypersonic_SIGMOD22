@@ -1,6 +1,6 @@
-package sase.evaluation.tree.elements.node;
+package evaluation.tree.elements.node;
 
-import sase.pattern.condition.base.CNFCondition;
+import pattern.condition.base.CNFCondition;
 
 public class ConjunctiveInternalNode extends InternalNode {
 

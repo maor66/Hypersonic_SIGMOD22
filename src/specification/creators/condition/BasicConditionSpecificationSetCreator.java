@@ -1,13 +1,13 @@
-package sase.specification.creators.condition;
+package specification.creators.condition;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import sase.base.EventType;
-import sase.config.SimulationConfig;
-import sase.specification.ConditionSpecification;
-import sase.specification.DoubleEventConditionSpecification;
+import base.EventType;
+import config.SimulationConfig;
+import specification.ConditionSpecification;
+import specification.DoubleEventConditionSpecification;
 
 public abstract class BasicConditionSpecificationSetCreator implements IConditionSpecificationSetCreator {
 

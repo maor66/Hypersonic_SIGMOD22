@@ -1,12 +1,12 @@
-package sase.evaluation.tree.elements.node;
+package evaluation.tree.elements.node;
 
 import java.util.List;
 
-import sase.base.Event;
-import sase.base.EventType;
-import sase.evaluation.tree.elements.TreeInstance;
-import sase.pattern.condition.base.CNFCondition;
-import sase.pattern.condition.time.PairTemporalOrderCondition;
+import base.Event;
+import base.EventType;
+import evaluation.tree.elements.TreeInstance;
+import pattern.condition.base.CNFCondition;
+import pattern.condition.time.PairTemporalOrderCondition;
 
 public class NSeqInternalNode extends SeqInternalNode {
 	
