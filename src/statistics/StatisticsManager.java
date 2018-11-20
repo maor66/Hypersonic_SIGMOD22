@@ -168,6 +168,13 @@ public class StatisticsManager {
 		fractionalStatistics.put(key, fractionalStatistics.get(key) + valueToAdd);
 	}
 	
+	public void replaceFractionalStatistic(String key, double valueToPut) {
+		if (!(fractionalStatistics.containsKey(key))) {
+			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
+		}
+		fractionalStatistics.put(key, valueToPut);
+	}
+	
 	public void startMeasuringTime(String timeStatisticKey) {
 		if (!discreteStatistics.containsKey(timeStatisticKey) && !fractionalStatistics.containsKey(timeStatisticKey)) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", timeStatisticKey));

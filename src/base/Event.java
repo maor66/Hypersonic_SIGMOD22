@@ -20,7 +20,7 @@ public class Event implements Comparable<Event> {
 	}
 
 	protected final long sequenceNumber;
-	protected final EventType type;
+	protected EventType type;
 	protected final long systemTimestamp;
 	protected Object[] payload;
 
@@ -34,6 +34,10 @@ public class Event implements Comparable<Event> {
 	
 	public EventType getType() {
 		return type;
+	}
+
+	public void setType(EventType type) {
+		this.type = type;
 	}
 
 	public Object[] getAttributes() {

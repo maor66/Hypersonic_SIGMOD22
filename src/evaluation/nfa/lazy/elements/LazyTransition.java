@@ -98,7 +98,7 @@ public class LazyTransition extends Transition {
 	
 	@Override
 	public boolean verifyCondition(List<Event> events) {
-		return super.verifyCondition(events) && temporalCondition.verify(events);
+		return super.verifyCondition(events) && (temporalCondition == null || temporalCondition.verify(events));
 	}
 	
 	@Override

@@ -1,31 +1,49 @@
 package sase.config;
 
-import sase.specification.AdaptationSpecification;
-import sase.specification.EvaluationSpecification;
-import sase.specification.InputSpecification;
-import sase.specification.PatternSpecification;
 import sase.specification.SimulationSpecification;
+import sase.specification.adaptation.AdaptationSpecification;
+import sase.specification.adaptation.ConstantThresholdAdaptationSpecification;
+import sase.specification.adaptation.TrivialAdaptationSpecification;
+import sase.specification.algo.OrderAlgoUnitSpecification;
+import sase.specification.algo.TreeAlgoUnitSpecification;
 import sase.specification.creators.SpecificationCreatorTypes;
 import sase.specification.creators.condition.ConditionSpecificationCreatorTypes;
 import sase.specification.creators.condition.ConditionSpecificationSetCreatorTypes;
+import sase.specification.evaluation.CostBasedLazyNFAEvaluationSpecification;
+import sase.specification.evaluation.EvaluationSpecification;
+import sase.specification.evaluation.IterativeImprovementMPTEvaluationSpecification;
+import sase.specification.evaluation.MultiPlanEvaluationSpecification;
+import sase.specification.evaluation.SimulatedAnnealingMPTEvaluationSpecification;
+import sase.specification.evaluation.TabuSearchMPTEvaluationSpecification;
+import sase.specification.evaluation.TreeEvaluationSpecification;
+import sase.specification.input.InputSpecification;
+import sase.specification.input.ShuffleEventTypesInputSpecification;
+import sase.specification.input.TrivialInputSpecification;
+import sase.specification.workload.PatternReorderingSensitivityTypes;
+import sase.specification.workload.PatternSpecification;
+import sase.specification.workload.SinglePatternWorkloadSpecification;
+import sase.specification.workload.WorkloadCreationSpecification;
 import sase.user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
 import sase.adaptive.monitoring.AdaptationNecessityDetectorTypes;
 import sase.adaptive.monitoring.invariant.compare.InvariantComparerType;
 import sase.base.Event; //this dummy import is needed to avoid the annoying 'unused warning suppression' message
 import sase.evaluation.EvaluationMechanismTypes;
 import sase.evaluation.nfa.lazy.LazyNFANegationTypes;
+import sase.evaluation.nfa.lazy.order.OrderingAlgorithmTypes;
+import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
 import sase.evaluation.tree.TopologyCreatorTypes;
 import sase.evaluation.tree.TreeCostModelTypes;
-import sase.order.OrderingAlgorithmTypes;
-import sase.order.cost.CostModelTypes;
-import sase.pattern.Pattern.PatternOperatorType;
+import sase.multi.calculator.MPTCalculatorTypes;
+import sase.multi.calculator.local.neighborhood.NeighborhoodTypes;
+import sase.pattern.Pattern.PatternOperatorTypes;
+import sase.pattern.workload.WorkloadManagerTypes;
 
 @SuppressWarnings("unused")
 public class SimulationConfig {
 	
 	//specification creator definition
 	public static final SpecificationCreatorTypes specificationCreatorType = 
-																SpecificationCreatorTypes.STOCK_EVALUATION;
+																SpecificationCreatorTypes.CROSS_PRODUCT_MULTI_STOCK;
 	public static final ConditionSpecificationCreatorTypes conditionCreatorType = 
 																ConditionSpecificationCreatorTypes.STOCK_DELTA;
 	public static final ConditionSpecificationSetCreatorTypes conditionSetCreatorType = 
@@ -45,10 +63,10 @@ public class SimulationConfig {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	/* Settings for pattern specification generation. */
-	public static final int[] patternSizes = {7};
-	public static final int patternsPerLength = 5;
+	public static final int[] patternSizes = {3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22};
+	public static final int patternsPerLength = 1;
 	public static final Long timeWindowForPatternGenerator = 25L;
-	public static final PatternOperatorType mainOperatorType = PatternOperatorType.AND_SEQ;
+	public static final PatternOperatorTypes mainOperatorType = PatternOperatorTypes.AND_SEQ;
 	
 	public static final int negatedEventsNumber = 0;
 	public static final double negatedConditionProbability = 1.0;
@@ -61,33 +79,407 @@ public class SimulationConfig {
 	public static final int numberOfDisjunctions = 3;
 	
 	public static final int[] numbersOfConditions = {1,2,3,4,4};
+	public static final Double conditionToEventRatio = 3.0 / 4.0;
 	public static final double[] correlations = {0.5,0.6,0.7,0.8,0.9};
+	
+	
+	private static final int statisticsMonitoringWindowToTimeWindowRatio = 2;
 	////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	public static final InputSpecification[] inputSpecifications = {
+			//Experiments 1-8
+			///////////////////////////////////////////////////////////////////////no input modification
+			new TrivialInputSpecification(),
+			/////////////////////////////////////////////////////////////////////////////////////////////////////			
+			
+			//Experiment 9
+			///////////////////////////////////////////////////////////////////////input modification
+//			new ShuffleEventTypesInputSpecification(100),
+//			new ShuffleEventTypesInputSpecification(500),
+//			new ShuffleEventTypesInputSpecification(1000),
+//			new ShuffleEventTypesInputSpecification(5000),
+//			new ShuffleEventTypesInputSpecification(10000),
+			/////////////////////////////////////////////////////////////////////////////////////////////////////			
+	};
+	
+	
+	
+	public static final AdaptationSpecification[] adaptationSpecifications = {
+			//Experiments 1-8
+			///////////////////////////////////////////////////////////////////////no input modification
+			new TrivialAdaptationSpecification(),
+			/////////////////////////////////////////////////////////////////////////////////////////////////////			
+			
+			//Experiment 9
+			///////////////////////////////////////////////////////////////////////input modification
+//			new TrivialAdaptationSpecification(),
+//			new ConstantThresholdAdaptationSpecification(statisticsMonitoringWindowToTimeWindowRatio, 0.0001, 0.1),
+			/////////////////////////////////////////////////////////////////////////////////////////////////////
+	};
+	
+	
+	
+	public static final WorkloadCreationSpecification[] workloadCreationSpecifications = {			
+
+		//Experiments 1,6
+		///////////////////////////////////////////////////////////////////////workload size
+//			new WorkloadCreationSpecification(50, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(150, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(200, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(250, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(300, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////			
+
+		//Experiment 2, 6b
+		///////////////////////////////////////////////////////////////////////pattern length
+//			new WorkloadCreationSpecification(100, 3, 5, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 5, 7, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 6, 8, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 7, 9, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+			
+		//Experiment 3,3b
+		///////////////////////////////////////////////////////////////////////graph density
+			new WorkloadCreationSpecification(100, 4, 6, 20,
+					  15, null, 2, 
+					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+			new WorkloadCreationSpecification(100, 4, 6, 20,
+					  30, null, 2, 
+					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+			new WorkloadCreationSpecification(100, 4, 6, 20,
+					  45, null, 2, 
+					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+			new WorkloadCreationSpecification(100, 4, 6, 20,
+					  60, null, 2, 
+					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+			new WorkloadCreationSpecification(100, 4, 6, 20,
+					  75, null, 2, 
+					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+			new WorkloadCreationSpecification(100, 4, 6, 20,
+			  		  90, null, 2, 
+			  		  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+			  		  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+			
+		//Experiment 4,4b
+		///////////////////////////////////////////////////////////////////////reordering sensitivity
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.LOW, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.HIGH, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		//Experiment 5
+		///////////////////////////////////////////////////////////////////////local search time limit
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		//Experiment 7
+		///////////////////////////////////////////////////////////////////////SLA
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.1, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.2, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.3, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.4, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.5, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+			
+		//Experiment 8
+		///////////////////////////////////////////////////////////////////////workload modification
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.0),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_DYNAMIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_DYNAMIC, 0.5, 0.005),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_DYNAMIC, 0.5, 0.025),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_DYNAMIC, 0.5, 0.125),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+			
+		//Experiment 9
+		///////////////////////////////////////////////////////////////////////adaptivity
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					  30, null, 2, 
+//					  PatternReorderingSensitivityTypes.HIGH, conditionCreatorType, 
+//					  0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		//Experiments 10, 6c
+		///////////////////////////////////////////////////////////////////////time windows
+//			new WorkloadCreationSpecification(100, 4, 6, 5,
+//					30, null, 2, 
+//					PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 10,
+//					30, null, 2, 
+//					PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 15,
+//					30, null, 2, 
+//					PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 20,
+//					30, null, 2, 
+//					PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+//			new WorkloadCreationSpecification(100, 4, 6, 25,
+//					30, null, 2, 
+//					PatternReorderingSensitivityTypes.MEDIUM, conditionCreatorType, 
+//					0.0, WorkloadManagerTypes.MULTI_STATIC, 0.5, 0.001),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+	};
+	
+	
 	
 	/* Individual specification sets for cross-combining. */
 	public static final EvaluationSpecification[] evaluationSpecifications = {
-			new EvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-						CostModelTypes.THROUGHPUT_LATENCY,
-						0.0),
-			new EvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
-						CostModelTypes.THROUGHPUT_LATENCY,
-						0.0),
-			new EvaluationSpecification(OrderingAlgorithmTypes.II_RANDOM,
-						CostModelTypes.THROUGHPUT_LATENCY,
-						0.0),
-			new EvaluationSpecification(OrderingAlgorithmTypes.II_GREEDY_COST,
-						CostModelTypes.THROUGHPUT_LATENCY,
-						0.0),
-			new EvaluationSpecification(OrderingAlgorithmTypes.DYNAMIC,
-						CostModelTypes.THROUGHPUT_LATENCY,
-						0.0),
-			new EvaluationSpecification(TopologyCreatorTypes.SELINGER,
-										TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
-			new EvaluationSpecification(TopologyCreatorTypes.ZSTREAM, 
-										TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
-			new EvaluationSpecification(TopologyCreatorTypes.ORDERED_ZSTREAM, 
-										TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
-			new EvaluationSpecification(EvaluationMechanismTypes.EAGER),
+		
+		//Experiment 1
+		////////////////////////////////////////all algorithm/neighborhood combinations
+//		new IterativeImprovementMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				(long)180, 0, NeighborhoodTypes.STATE_SWAP, 10000, 1000),
+//		new IterativeImprovementMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				(long)180, 0, NeighborhoodTypes.PAIRWISE, 10000, 1000),
+//		new IterativeImprovementMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				(long)180, 4, NeighborhoodTypes.MULTI_SET, 10000, 1000),
+//		new IterativeImprovementMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				(long)180, 8, NeighborhoodTypes.MULTI_SET, 10000, 1000),
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.STATE_SWAP, (long)180, 0, 10000000, 0.99, 1000),
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)180, 0, 10000000, 0.99, 1000),
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.MULTI_SET, (long)180, 4, 10000000, 0.99, 1000),
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.MULTI_SET, (long)180, 8, 10000000, 0.99, 1000),
+//		new TabuSearchMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.STATE_SWAP, (long)180, 0, 10000000, 100, 10000),
+//		new TabuSearchMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)180, 0, 10000000, 100, 10000),
+//		new TabuSearchMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.MULTI_SET, (long)180, 4, 10000000, 100, 10000),
+//		new TabuSearchMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.MULTI_SET, (long)180, 8, 10000000, 100, 10000),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		//Experiments 2-4, 7-8, 10
+		////////////////////////////////////////selected algorithm/neighborhood combinations
+		new SimulatedAnnealingMPTEvaluationSpecification(
+				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+				NeighborhoodTypes.PAIRWISE, (long)180, 0, 10000000, 0.99, 1000),
+		new SimulatedAnnealingMPTEvaluationSpecification(
+				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+				NeighborhoodTypes.MULTI_SET, (long)180, 8, 10000000, 0.99, 1000),
+		new TabuSearchMPTEvaluationSpecification(
+				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+				NeighborhoodTypes.PAIRWISE, (long)180, 0, 10000000, 100, 10000),
+		new TabuSearchMPTEvaluationSpecification(
+				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+				NeighborhoodTypes.MULTI_SET, (long)180, 8, 10000000, 100, 10000),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		//Experiments 3b, 4b
+		///////////////////////////////////////////////////////////////////////comparison to sharing/reordering only
+//		new MultiPlanEvaluationSpecification(MPTCalculatorTypes.NO_SHARING, 
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT)),
+//		new MultiPlanEvaluationSpecification(MPTCalculatorTypes.NO_REORDERING, 
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT)),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		//Experiment 5
+		////////////////////////////////////////plan calculation time
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)60, 0, 10000000, 0.99, 1000),
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)120, 0, 10000000, 0.99, 1000),
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)180, 0, 10000000, 0.99, 1000),
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)300, 0, 10000000, 0.99, 1000),
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)450, 0, 10000000, 0.99, 1000),
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)600, 0, 10000000, 0.99, 1000),
+//		new TabuSearchMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)60, 0, 10000000, 100, 10000),
+//		new TabuSearchMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)120, 0, 10000000, 100, 10000),
+//		new TabuSearchMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)180, 0, 10000000, 100, 10000),
+//		new TabuSearchMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)300, 0, 10000000, 100, 10000),
+//		new TabuSearchMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)450, 0, 10000000, 100, 10000),
+//		new TabuSearchMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)600, 0, 10000000, 100, 10000),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		//Experiment 6, 6b, 6c
+		///////////////////////////////////////////////////////////////////////comparison to state-of-the-art
+//		new MultiPlanEvaluationSpecification(MPTCalculatorTypes.NO_SHARING, 
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT)),
+//		new MultiPlanEvaluationSpecification(MPTCalculatorTypes.NO_REORDERING, 
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT)),
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.SHARING_DEGREE),
+//				NeighborhoodTypes.PAIRWISE, (long)180, 0, 10000000, 0.99, 1000),
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)180, 0, 10000000, 0.99, 1000),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		//Experiment 9
+		///////////////////////////////////////////////////////////////////////best-performing combination (real-time)
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new OrderAlgoUnitSpecification(OrderingAlgorithmTypes.GREEDY_COST, CostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)10, 0, 10000000, 0.99, 1000),
+		/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		
+		//intentionally commented out multi-tree configurations - if needed, all experiments will be repeated on them
+//		new MultiPlanEvaluationSpecification(MPTCalculatorTypes.EXHAUSTIVE,
+//				new TreeAlgoUnitSpecification(TopologyCreatorTypes.SELINGER, TreeCostModelTypes.THROUGHPUT)),
+//		new IterativeImprovementMPTEvaluationSpecification(
+//				new TreeAlgoUnitSpecification(TopologyCreatorTypes.SELINGER, TreeCostModelTypes.THROUGHPUT),
+//				(long)20, 5, NeighborhoodTypes.MULTI_SET, 10000000, 100),
+//		new SimulatedAnnealingMPTEvaluationSpecification(
+//				new TreeAlgoUnitSpecification(TopologyCreatorTypes.SELINGER, TreeCostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)20, 0, 10000000, 0.99, 1000),
+//		new TabuSearchMPTEvaluationSpecification(
+//				new TreeAlgoUnitSpecification(TopologyCreatorTypes.SELINGER, TreeCostModelTypes.THROUGHPUT),
+//				NeighborhoodTypes.PAIRWISE, (long)20, 0, 10000000, 100, 10000),
+
+	};
+			
+//	public static final EvaluationSpecification[] evaluationSpecifications = {		
+			
+//			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+//						CostModelTypes.THROUGHPUT_LATENCY,
+//						0.0),
+//			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
+//						CostModelTypes.THROUGHPUT_LATENCY,
+//						0.0),
+//			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.II_RANDOM,
+//						CostModelTypes.THROUGHPUT_LATENCY,
+//						0.0),
+//			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.II_GREEDY_COST,
+//						CostModelTypes.THROUGHPUT_LATENCY,
+//						0.0),
+//			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.DYNAMIC,
+//						CostModelTypes.THROUGHPUT_LATENCY,
+//						0.0),
+//			new TreeEvaluationSpecification(TopologyCreatorTypes.SELINGER,
+//											TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
+//			new TreeEvaluationSpecification(TopologyCreatorTypes.ZSTREAM, 
+//											TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
+//			new TreeEvaluationSpecification(TopologyCreatorTypes.ORDERED_ZSTREAM, 
+//											TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0),
+//			new EvaluationSpecification(EvaluationMechanismTypes.EAGER),
 //			new EvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
 //						CostModelTypes.THROUGHPUT_LATENCY,
 //						100.0),
@@ -108,11 +500,13 @@ public class SimulationConfig {
 //										TreeCostModelTypes.THROUGHPUT_LATENCY, 100.0),
 //			new EvaluationSpecification(OrderingAlgorithmTypes.GREEDY_ADAPTIVE, CostModelTypes.NONE, 0.0),
 //			new EvaluationSpecification(TopologyCreatorTypes.ADAPTIVE_ZSTREAM, TreeCostModelTypes.NONE, 0.0),
-	};
+//	};
 	public static final PatternSpecification[] patternSpecifications = PatternConfig.stockByCompanyPatternSpecifications;
-	private static final int statisticsMonitoringWindowToTimeWindowRatio = 2;
-	public static final AdaptationSpecification[] adaptationSpecifications = {
-		new AdaptationSpecification(),
+//	public static final AdaptationSpecification[] adaptationSpecifications = {
+//		new TrivialAdaptationSpecification(),
+//		new ConstantThresholdAdaptationSpecification(statisticsMonitoringWindowToTimeWindowRatio, 0.0001, 0.1),
+		
+		
 //		new AdaptationSpecification(statisticsMonitoringWindowToTimeWindowRatio, 0.0001, 
 //									AdaptationNecessityDetectorTypes.TRIVIAL, 
 //								    InvariantComparerType.NONE, null, null),
@@ -158,11 +552,12 @@ public class SimulationConfig {
 //		new AdaptationSpecification(statisticsMonitoringWindowToTimeWindowRatio, 0.0001, 
 //									AdaptationNecessityDetectorTypes.INVARIANT, 
 //									InvariantComparerType.MINIMAL_DISTANCE, 0.5, null),
-	};
+
 	private static final long numberOfSyntheticEvents = 100000;
 	private static final int numberOfSyntheticEventTypes = 4;
-	public static final InputSpecification[] inputSpecifications = {
-		new InputSpecification(),
+
+//	public static final InputSpecification[] inputSpecifications = {
+			
 //		new InputSpecification(numberOfSyntheticEvents, numberOfSyntheticEventTypes,
 //				1.0, 1.0,//arrival rates range 
 //				0.1, 0.1,//selectivities range
@@ -291,7 +686,7 @@ public class SimulationConfig {
 //				0.1, 0.0,//selectivities change range 
 //				10000, 0,//time between input changes
 //				1),
-	};
+//	};
 	
 	/* Settings for performing complex simulations, comparing between several running modes. */
 	public static final SimulationSpecification[] specifications = {
@@ -304,13 +699,13 @@ public class SimulationConfig {
 //			    					 		CostModelTypes.THROUGHPUT_LATENCY,
 //			    					 		0.0)),
 
-		new SimulationSpecification(PatternConfig.testSequence,
-				new EvaluationSpecification(OrderingAlgorithmTypes.DYNAMIC,
-											CostModelTypes.THROUGHPUT_LATENCY,
-											0.0)),
-		new SimulationSpecification(PatternConfig.testSequence,
-									new EvaluationSpecification(TopologyCreatorTypes.SELINGER, 
-																TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0)),
+		new SimulationSpecification(new SinglePatternWorkloadSpecification(PatternConfig.testSequence),
+				new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.DYNAMIC,
+															CostModelTypes.THROUGHPUT_LATENCY,
+															0.0)),
+		new SimulationSpecification(new SinglePatternWorkloadSpecification(PatternConfig.testSequence),
+									new TreeEvaluationSpecification(TopologyCreatorTypes.SELINGER, 
+																	TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0)),
 
 			
 		/* Sequence */

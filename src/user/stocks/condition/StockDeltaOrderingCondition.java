@@ -1,5 +1,7 @@
 package sase.user.stocks.condition;
 
+import java.util.Objects;
+
 import sase.base.Event;
 import sase.base.EventType;
 import sase.pattern.condition.base.DoubleEventCondition;
@@ -31,5 +33,19 @@ public class StockDeltaOrderingCondition extends DoubleEventCondition {
 		return String.format("Comparison of relative deltas of %s and %s", 
 							 eventTypes.get(0).getName(), eventTypes.get(1).getName());
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof StockDeltaOrderingCondition)) {
+			return false;
+		}
+		StockDeltaOrderingCondition condition = (StockDeltaOrderingCondition)other;
+		return (firstType == condition.firstType && secondType == condition.secondType);
+	}
+	
+	@Override
+    public int hashCode() {
+        return Objects.hash(firstType, secondType);
+    }
 
 }

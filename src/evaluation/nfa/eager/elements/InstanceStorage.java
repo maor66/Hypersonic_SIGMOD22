@@ -17,6 +17,7 @@ public class InstanceStorage {
 
 	private NFA nfa;
 	private HashMap<NFAState, List<Instance>> instancesByCurrentState;
+	private List<NFAState> acceptingStates;
 	private HashMap<EventType, List<NFAState>> eventTypeToExpectingTakeStates;
 	private HashMap<EventType, List<NFAState>> eventTypeToExpectingStoreStates;
 	
@@ -28,8 +29,12 @@ public class InstanceStorage {
 	
 	private void initializeInstanceToTypeHash() {
 		instancesByCurrentState = new HashMap<NFAState, List<Instance>>();
+		acceptingStates = new ArrayList<NFAState>();
 		for (NFAState state : nfa.getStates()) {
 			instancesByCurrentState.put(state, new ArrayList<Instance>());
+			if (state.isAccepting()) {
+				acceptingStates.add(state);
+			}
 		}
 	}
 	
@@ -145,8 +150,12 @@ public class InstanceStorage {
 		return result;
 	}
 	
-	public List<Instance> getInstancesInAcceptingState() {
-		return instancesByCurrentState.get(nfa.getAcceptingState());
+	public List<Instance> getInstancesInAcceptingStates() {
+		List<Instance> result = new ArrayList<Instance>();
+		for (NFAState state : acceptingStates) {
+			result.addAll(instancesByCurrentState.get(state));
+		}
+		return result;
 	}
 	
 	private List<Instance> validateTimeWindowForInstancesInState(long currentTime, NFAState state) {
@@ -160,7 +169,7 @@ public class InstanceStorage {
 		instances.removeAll(expiredInstances);
 		Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.instanceDeletions,
 																						  expiredInstances.size());
-		return (state == nfa.getAcceptingState()) ? expiredInstances : new ArrayList<Instance>();
+		return state.isAccepting() ? expiredInstances : new ArrayList<Instance>();
 	}
 	
 	public List<Instance> validateTimeWindow(long currentTime, boolean rejectingStateOnly) {

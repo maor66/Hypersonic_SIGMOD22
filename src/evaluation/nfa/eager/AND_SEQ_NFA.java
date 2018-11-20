@@ -14,10 +14,9 @@ import sase.evaluation.nfa.eager.elements.Instance;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.lazy.elements.EfficientInputBuffer;
-import sase.pattern.CompositePattern;
 import sase.pattern.Pattern;
 import sase.pattern.UnaryPattern;
-import sase.pattern.Pattern.PatternOperatorType;
+import sase.pattern.Pattern.PatternOperatorTypes;
 import sase.pattern.condition.base.AtomicCondition;
 import sase.pattern.condition.base.CNFCondition;
 import sase.pattern.condition.base.TrivialCondition;
@@ -31,7 +30,6 @@ import sase.statistics.Statistics;
 
 public class AND_SEQ_NFA extends AND_NFA {
 
-	protected CompositePattern pattern;
 	private final HashMap<EventType, CNFCondition> negativeTemporalConditions = new HashMap<EventType, CNFCondition>();
 	private final List<EventType> negativeTypesAtSequenceEnd = new ArrayList<EventType>();
 	private EfficientInputBuffer negatedEventsBuffer;
@@ -39,7 +37,6 @@ public class AND_SEQ_NFA extends AND_NFA {
 	
 	public AND_SEQ_NFA(Pattern pattern) {
 		super(pattern);
-		this.pattern = (CompositePattern)pattern;
 		negatedEventsBuffer = new EfficientInputBuffer(pattern, true);
 		if (MainConfig.selectionStrategy == EventSelectionStrategies.CONTUGUITY) {
 			addContiguityConstraints();
@@ -102,16 +99,16 @@ public class AND_SEQ_NFA extends AND_NFA {
 	}
 	
 	private void addPairwiseContiguityConstraints() {
-		if (pattern.getType() != PatternOperatorType.SEQ || pattern.getEventTypes().size() < 2) {
+		if (pattern.getType() != PatternOperatorTypes.SEQ || pattern.getEventTypes().size() < 2) {
 			return;
 		}
 		CNFCondition mainCondition = (CNFCondition)pattern.getCondition();
 		UnaryPattern prevPattern = null;
 		for (Pattern pattern : pattern.getNestedPatterns()) {
-			if (pattern.getType() == PatternOperatorType.NEG) {
+			if (pattern.getType() == PatternOperatorTypes.NEG) {
 				continue;
 			}
-			if (pattern.getType() == PatternOperatorType.ITER) {
+			if (pattern.getType() == PatternOperatorTypes.ITER) {
 				prevPattern = null;
 				continue;
 			}

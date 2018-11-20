@@ -4,7 +4,9 @@ public enum EvaluationMechanismTypes {
 	EAGER,
 	LAZY_CHAIN,
 	LAZY_TREE,
-	TREE;
+	TREE,
+	MULTI_PATTERN_TREE,
+	MULTI_PATTERN_MULTI_TREE;
 	
 	@Override
 	public String toString() {
@@ -17,6 +19,10 @@ public enum EvaluationMechanismTypes {
 				return "Lazy Tree NFA";
 			case TREE:
 				return "Tree";
+			case MULTI_PATTERN_TREE:
+				return "Multi-Pattern Tree";
+			case MULTI_PATTERN_MULTI_TREE:
+				return "Multi-Pattern Multi-Tree";
 			default: 
 				return "";
 		}

@@ -4,18 +4,20 @@ import java.util.List;
 import java.util.Queue;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import sase.base.Event;
 import sase.base.EventSelectionStrategies;
 import sase.base.EventType;
 import sase.config.MainConfig;
-import sase.evaluation.EvaluationPlan;
 import sase.evaluation.IEvaluationMechanism;
 import sase.evaluation.IEvaluationMechanismInfo;
 import sase.evaluation.common.Match;
 import sase.evaluation.common.State;
 import sase.evaluation.nfa.lazy.elements.EfficientInputBuffer;
+import sase.evaluation.plan.EvaluationPlan;
+import sase.evaluation.plan.TreeEvaluationPlan;
 import sase.evaluation.tree.elements.TreeInstance;
 import sase.evaluation.tree.elements.TreeInstanceStorage;
 import sase.evaluation.tree.elements.node.InternalNode;
@@ -25,7 +27,7 @@ import sase.evaluation.tree.elements.node.Node;
 import sase.evaluation.tree.elements.node.SeqInternalNode;
 import sase.pattern.CompositePattern;
 import sase.pattern.Pattern;
-import sase.pattern.Pattern.PatternOperatorType;
+import sase.pattern.Pattern.PatternOperatorTypes;
 import sase.pattern.condition.base.AtomicCondition;
 import sase.pattern.condition.base.CNFCondition;
 import sase.simulator.Environment;
@@ -34,31 +36,55 @@ import sase.statistics.Statistics;
 public class TreeEvaluationMechanism implements IEvaluationMechanism, IEvaluationMechanismInfo {
 	
 	private Node root;
-	private HashMap<EventType, LeafNode> eventTypeToLeafMap;
-	private TreeInstanceStorage storage;
-	private final long timeWindow;
+	protected HashMap<EventType, LeafNode> eventTypeToLeafMap;
+	protected TreeInstanceStorage storage;
+	private Long timeWindow;
 	private EfficientInputBuffer negativeBuffer;
-	private final List<EventType> iterativeTypes;
+	private List<EventType> iterativeTypes;
+	private Long lastTimestamp;
 	
 	public TreeEvaluationMechanism(Pattern pattern, EvaluationPlan evaluationPlan) {
+		initTreeStructure(pattern, evaluationPlan);
+		initEventTypeToLeafMap();
+		initStorage();
+		if (pattern == null) {
+			return;
+		}
 		timeWindow = pattern.getTimeWindow();
-		root = evaluationPlan.getTreeRepresentation();
+		negativeBuffer = new EfficientInputBuffer(pattern, true);
+		iterativeTypes = ((CompositePattern)pattern).getIterativeEventTypes();
+	}
+	
+	protected void initTreeStructure(Pattern pattern, EvaluationPlan evaluationPlan) {
+		root = ((TreeEvaluationPlan)evaluationPlan).getRepresentation();
 		Environment.getEnvironment().getStatisticsManager().replaceDiscreteStatistic(Statistics.treeNodesNumber,
 																					 root.getNodesInSubTree().size());
 		addNSeqNodes(pattern);
+	}
+	
+	protected void initEventTypeToLeafMap() {
 		eventTypeToLeafMap = new HashMap<EventType, LeafNode>();
 		List<LeafNode> leaves = root.getLeavesInSubTree();
 		for (LeafNode currLeafNode : leaves) {
 			eventTypeToLeafMap.put(currLeafNode.getEventType(), currLeafNode);
 		}
+	}
+	
+	protected void initStorage() {
 		storage = new TreeInstanceStorage(root);
-		negativeBuffer = new EfficientInputBuffer(pattern, true);
-		iterativeTypes = ((CompositePattern)pattern).getIterativeEventTypes();
+	}
+	
+	private void recordCurrentTime() {
+		lastTimestamp = System.currentTimeMillis();
+	}
+	
+	private boolean isTimeOut() {
+		return Environment.getEnvironment().isTimeoutReached(System.currentTimeMillis() - lastTimestamp);
 	}
 
 	@Override
 	public List<Match> processNewEvent(Event event, boolean canStartInstance) {
-		if (negativeBuffer.hasTypeBuffer(event.getType())) {
+		if (negativeBuffer != null && negativeBuffer.hasTypeBuffer(event.getType())) {
 			//a negative event
 			negativeBuffer.store(event);
 			return null;
@@ -68,7 +94,7 @@ public class TreeEvaluationMechanism implements IEvaluationMechanism, IEvaluatio
 			// irrelevant event
 			return null;
 		}
-		TreeInstance leafInstance = new TreeInstance(this, leafForEvent);
+		TreeInstance leafInstance = createLeafInstance(leafForEvent);
 		leafInstance.addEvent(event);
 		if (!leafInstance.validateNodeCondition()) {
 			return storage.getMatches();
@@ -85,13 +111,17 @@ public class TreeEvaluationMechanism implements IEvaluationMechanism, IEvaluatio
 																				   storage.getInstancesNumber());
 		return storage.getMatches();
 	}
+	
+	protected TreeInstance createLeafInstance(LeafNode leaf) {
+		return new TreeInstance(this, leaf);
+	}
 
 	private void activateTreeProcessing(Event event, boolean canStartInstance, TreeInstance leafInstance) {
 		Queue<TreeInstance> instanceQueue = new ArrayDeque<TreeInstance>();
 		instanceQueue.add(leafInstance);
-		Long startTimestamp = System.currentTimeMillis();
+		recordCurrentTime();
 		while (!instanceQueue.isEmpty()) {
-			if (Environment.getEnvironment().isTimeoutReached(System.currentTimeMillis() - startTimestamp)) {
+			if (isTimeOut()) {
 				return;
 			}
 			TreeInstance currentInstance = instanceQueue.remove();
@@ -102,35 +132,44 @@ public class TreeEvaluationMechanism implements IEvaluationMechanism, IEvaluatio
 			if (MainConfig.selectionStrategy != EventSelectionStrategies.SKIP_TILL_ANY && isNewlyComposedInstance) {
 				break;
 			}
-			Node peerNode = currentInstance.getCurrentNode().getPeer();
-			if (peerNode == null) { //i.e. if this node is the root
-				continue;
+			List<Node> peers = getPeers(currentInstance);
+			for (Node peerNode : peers) {
+				List<TreeInstance> peerInstances = storage.getInstancesForNode(peerNode);
+				if (peerInstances == null || peerInstances.isEmpty()) {
+					continue;
+				}
+				processEventOnPeerInstanceSet(event, currentInstance, peerInstances, instanceQueue);
 			}
-			List<TreeInstance> peerInstances = storage.getInstancesForNode(peerNode);
-			if (peerInstances == null || peerInstances.isEmpty()) {
-				continue;
-			}
-			List<TreeInstance> expiredInstances = new ArrayList<TreeInstance>();
-			if (isIterativeInstance(peerInstances.get(0))) {
-				instanceQueue.addAll(createIterativeInstances(event, peerInstances, expiredInstances));
-			}
-			else {
-				for (TreeInstance peerInstance : peerInstances) {
-					if (Environment.getEnvironment().isTimeoutReached(System.currentTimeMillis() - startTimestamp)) {
-						return;
-					}
-					if (peerInstance.isExpired(event.getTimestamp())) {
-						expiredInstances.add(peerInstance);
-						continue;
-					}
-					TreeInstance parentInstance = currentInstance.createParentInstance(peerInstance);
-					if (parentInstance.validateNodeCondition()) {
-						instanceQueue.add(parentInstance);
-					}
+		}
+	}
+	
+	private void processEventOnPeerInstanceSet(Event event, TreeInstance currentInstance, 
+											   List<TreeInstance> peerInstances, Queue<TreeInstance> instanceQueue) {
+		List<TreeInstance> expiredInstances = new ArrayList<TreeInstance>();
+		if (isIterativeInstance(peerInstances.get(0))) {
+			instanceQueue.addAll(createIterativeInstances(event, peerInstances, expiredInstances));
+		}
+		else {
+			for (TreeInstance peerInstance : peerInstances) {
+				if (isTimeOut()) {
+					break;
+				}
+				if (peerInstance.isExpired(event.getTimestamp())) {
+					expiredInstances.add(peerInstance);
+					continue;
+				}
+				TreeInstance parentInstance = currentInstance.createParentInstance(peerInstance);
+				if (parentInstance.validateNodeCondition()) {
+					instanceQueue.add(parentInstance);
 				}
 			}
-			peerInstances.removeAll(expiredInstances);
 		}
+		peerInstances.removeAll(expiredInstances);
+	}
+
+	protected List<Node> getPeers(TreeInstance currentInstance) {
+		Node peer = currentInstance.getCurrentNode().getPeer();
+		return peer == null ? new ArrayList<Node>() : Arrays.asList(peer);
 	}
 
 	private List<TreeInstance> createIterativeInstances(Event event, 
@@ -157,7 +196,7 @@ public class TreeEvaluationMechanism implements IEvaluationMechanism, IEvaluatio
 		
 	}
 
-	private boolean isIterativeInstance(TreeInstance treeInstance) {
+	protected boolean isIterativeInstance(TreeInstance treeInstance) {
 		return (treeInstance.getCurrentNode() instanceof LeafNode) && 
 				iterativeTypes.contains(((LeafNode)treeInstance.getCurrentNode()).getEventType());
 	}
@@ -207,7 +246,7 @@ public class TreeEvaluationMechanism implements IEvaluationMechanism, IEvaluatio
 				result.remove(negativeEventType);
 			}
 		}
-		if (pattern.getType() != PatternOperatorType.SEQ) {
+		if (pattern.getType() != PatternOperatorTypes.SEQ) {
 			return result;
 		}
 		//add temporal conditions - assume no two adjacent negative events
@@ -248,7 +287,7 @@ public class TreeEvaluationMechanism implements IEvaluationMechanism, IEvaluatio
 	}
 
 	@Override
-	public void completeCreation(Pattern pattern) {
+	public void completeCreation(List<Pattern> patterns) {
 	}
 
 	@Override

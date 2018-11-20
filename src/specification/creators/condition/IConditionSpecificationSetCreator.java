@@ -3,7 +3,7 @@ package sase.specification.creators.condition;
 import java.util.List;
 
 import sase.base.EventType;
-import sase.specification.ConditionSpecification;
+import sase.specification.condition.ConditionSpecification;
 
 public interface IConditionSpecificationSetCreator {
 

@@ -7,13 +7,17 @@ import sase.base.EventType;
 import sase.evaluation.nfa.NFA;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
+import sase.pattern.CompositePattern;
 import sase.pattern.Pattern;
 import sase.pattern.condition.base.CNFCondition;
 
 public class AND_NFA extends NFA {
 
+	protected final CompositePattern pattern;
+
 	public AND_NFA(Pattern pattern) {
 		super(pattern);
+		this.pattern = (CompositePattern)pattern;
 	}
 
 	private static List<List<Integer>> getAllPermutations(List<Integer> numbers) {
@@ -81,7 +85,7 @@ public class AND_NFA extends NFA {
 	}
 	
 	@Override
-	protected void initNFAStructure(Pattern pattern) {
+	protected void initNFAStructure() {
 		initialState = new NFAState("Initial State", true, false, false);
 		states.add(initialState);
 		finalState = new NFAState("Final State", false, true, true);

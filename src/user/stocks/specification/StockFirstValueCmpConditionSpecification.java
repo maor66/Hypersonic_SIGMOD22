@@ -2,7 +2,7 @@ package sase.user.stocks.specification;
 
 import sase.base.EventType;
 import sase.pattern.condition.base.AtomicCondition;
-import sase.specification.DoubleEventConditionSpecification;
+import sase.specification.condition.DoubleEventConditionSpecification;
 import sase.user.stocks.condition.StockFirstValueCmpCondition;
 import sase.user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
 

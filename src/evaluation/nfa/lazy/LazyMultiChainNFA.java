@@ -2,10 +2,11 @@ package sase.evaluation.nfa.lazy;
 
 import java.util.HashMap;
 
-import sase.evaluation.EvaluationPlan;
 import sase.evaluation.nfa.eager.elements.NFAState;
+import sase.evaluation.plan.EvaluationPlan;
+import sase.evaluation.plan.DisjunctionEvaluationPlan;
 import sase.pattern.Pattern;
-import sase.pattern.Pattern.PatternOperatorType;
+import sase.pattern.Pattern.PatternOperatorTypes;
 
 public class LazyMultiChainNFA extends LazyNFA {
 
@@ -14,15 +15,15 @@ public class LazyMultiChainNFA extends LazyNFA {
 	
 	public LazyMultiChainNFA(Pattern pattern, EvaluationPlan evaluationPlan, LazyNFANegationTypes negationType) {
 		super(pattern);
-		if (pattern.getType() != PatternOperatorType.OR) {
+		if (pattern.getType() != PatternOperatorTypes.OR) {
 			throw new RuntimeException(String.format("Illegal pattern provided: %s", pattern));
 		}
 		this.negationType = negationType;
-		nestedPlans = evaluationPlan.getNestedPlans();
+		nestedPlans = ((DisjunctionEvaluationPlan)evaluationPlan).getRepresentation();
 	}
 
 	@Override
-	protected void initNFAStructure(Pattern pattern) {
+	protected void initNFAStructure() {
 		initialState = new NFAState("Initial State", true, false, false);
 		states.add(initialState);
 		finalState = new NFAState("Final State", false, true, true);
@@ -33,7 +34,7 @@ public class LazyMultiChainNFA extends LazyNFA {
 		for (Pattern nestedPattern : nestedPlans.keySet()) {
 			EvaluationPlan nestedPlan = nestedPlans.get(nestedPattern);
 			LazyChainNFA nfaForNestedPattern = new LazyChainNFA(nestedPattern, nestedPlan, negationType);
-			nfaForNestedPattern.initNFAStructure(nestedPattern);
+			nfaForNestedPattern.initNFAStructure();
 			appendNFA(nfaForNestedPattern);
 		}
 	}

@@ -802,8 +802,8 @@ public class StructureConfig {
 	 					//first 'SEQ'
 	 					new String[] {
 	 						StockEventTypesManager.ciscoEventTypeName,
-	 						StockEventTypesManager.netlistEventTypeName,
-	 						StockEventTypesManager.aepindustriesEventTypeName,
+	 						StockEventTypesManager.nlstEventTypeName,
+	 						StockEventTypesManager.aepiEventTypeName,
 	 					},
 	 				},
 	 			 };

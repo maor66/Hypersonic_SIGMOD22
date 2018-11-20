@@ -1,10 +1,10 @@
 package sase.adaptive.monitoring;
 
-import sase.evaluation.EvaluationPlan;
+import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
 import sase.simulator.Environment;
 
-public class PlanCreatorBasedAdaptationNecessityDetector extends AdaptationNecessityDetector {
+public class PlanCreatorBasedAdaptationNecessityDetector implements IAdaptationNecessityDetector {
 
 	private Pattern pattern;
 	private EvaluationPlan evaluationPlan = null;

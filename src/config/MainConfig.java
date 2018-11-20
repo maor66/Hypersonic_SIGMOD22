@@ -43,11 +43,11 @@ public class MainConfig {
 	
 	/* Settings for creating and managing statistics. */
 	public static String outputFilePath = pathConfig.outputFilePath;
+
 	public static final boolean periodicallyReportStatistics = false;
 	public static final int statisticsReportPeriod = 1000;
 	
 	/* Settings for modifying the original events stream to produce synthetic data. */
-	public static final boolean enableDynamicEventStreamModification = false;
 	public static final String rarestEventTypeName = null;
 	public static final boolean enableFullDynamicMode = false;
 	public static final String recognizedEventTypeNames[] = {
@@ -68,13 +68,19 @@ public class MainConfig {
 	public static final Long maxExecutionTime = (long)(30*60*1000);
 	
 	/* Enable/disable to use simulation history to avoid repeated runs. */
-	public static final boolean useSimulationHistory = true;
+	public static final boolean useSimulationHistory = false;
+	
+	/* Enable to run experiments on plan construction phase only. */
+	public static final boolean planConstructionOnly = false;
 	
 	/* Runtime statistics monitoring settings. */
 	public static final boolean isArrivalRateMonitoringAllowed = false;
 	public static final boolean isSelectivityMonitoringAllowed = false;
-	public static final Double adaptationTrialsIntervalToTimeWindowRatio = null;//null to disable adaptation
+	public static final Double adaptationTrialsIntervalToTimeWindowRatio = null; //2.0;//null to disable adaptation
 	
 	/* Event selection strategy used during the current run. */
 	public static final EventSelectionStrategies selectionStrategy = EventSelectionStrategies.SKIP_TILL_ANY;
+	
+	/* Enable/disable debug prints of the generated evaluation structures. */
+	public static final boolean printStructureSummary = false;
 }

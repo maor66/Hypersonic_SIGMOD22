@@ -6,8 +6,8 @@ import java.util.Random;
 
 import sase.base.EventType;
 import sase.config.SimulationConfig;
-import sase.specification.ConditionSpecification;
-import sase.specification.DoubleEventConditionSpecification;
+import sase.specification.condition.ConditionSpecification;
+import sase.specification.condition.DoubleEventConditionSpecification;
 
 public abstract class BasicConditionSpecificationSetCreator implements IConditionSpecificationSetCreator {
 

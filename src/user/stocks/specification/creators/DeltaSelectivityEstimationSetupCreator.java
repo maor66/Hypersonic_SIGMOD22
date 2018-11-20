@@ -5,14 +5,16 @@ import java.util.Arrays;
 import java.util.List;
 
 import sase.config.SimulationConfig;
-import sase.order.OrderingAlgorithmTypes;
-import sase.order.cost.CostModelTypes;
+import sase.evaluation.nfa.lazy.order.OrderingAlgorithmTypes;
+import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
+import sase.multi.sla.SlaVerifierTypes;
 import sase.pattern.creation.PatternTypes;
-import sase.specification.ConditionSpecification;
-import sase.specification.EvaluationSpecification;
-import sase.specification.PatternSpecification;
 import sase.specification.SimulationSpecification;
+import sase.specification.condition.ConditionSpecification;
 import sase.specification.creators.SelectivityEstimationSetupCreator;
+import sase.specification.evaluation.CostBasedLazyNFAEvaluationSpecification;
+import sase.specification.workload.PatternSpecification;
+import sase.specification.workload.SinglePatternWorkloadSpecification;
 import sase.user.stocks.StockEventTypesManager;
 import sase.user.stocks.specification.StockDeltaOrderingConditionSpecification;
 
@@ -40,12 +42,12 @@ public class DeltaSelectivityEstimationSetupCreator extends SelectivityEstimatio
 										 structure, 
 										 new ConditionSpecification[] {
 												 conditionSpecification	 
-										 });
+										 }, SlaVerifierTypes.NONE);
 		SimulationSpecification simulationSpecification = 
-				new SimulationSpecification(patternSpecification,
-											new EvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-																		CostModelTypes.THROUGHPUT_LATENCY,
-																		0.0));
+				new SimulationSpecification(new SinglePatternWorkloadSpecification(patternSpecification),
+					new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+																CostModelTypes.THROUGHPUT_LATENCY,
+																0.0));
 		List<SimulationSpecification> result = new ArrayList<SimulationSpecification>();
 		result.add(simulationSpecification);
 		return result;

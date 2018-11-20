@@ -60,6 +60,8 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 		if (pattern instanceof CompositePattern) {
 			CompositePattern compositePattern = (CompositePattern) pattern;
 			sequences = compositePattern.extractSequences(false);
+			//NOTE: not guaranteed to work in the multi-pattern setting (what happens if an event type is positive in one
+			//pattern and negative in another one?)
 			negativeTypes = compositePattern.getNegativeEventTypes();
 			iterativeTypes = compositePattern.getIterativeEventTypes();
 		} else {
@@ -70,10 +72,10 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 		isCreationCompleted = false;
 	}
 
-	public void completeCreation(Pattern pattern) {
+	public void completeCreation(List<Pattern> patterns) {
 		if (isCreationCompleted)
 			return;
-		initNFAStructure(pattern);
+		initNFAStructure();
 		isCreationCompleted = true;
 		Environment.getEnvironment().getStatisticsManager().replaceDiscreteStatistic(Statistics.automatonStatesNumber,
 																					 states.size());
@@ -200,7 +202,7 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 	protected boolean getPendingMatches(List<Match> listOfMatches,
 									 	List<Instance> listOfInstancesToBeRemoved,
 									 	boolean stopOnFirstMatch) {
-		for (Instance instance : instances.getInstancesInAcceptingState()) {
+		for (Instance instance : instances.getInstancesInAcceptingStates()) {
 			checkInstanceForMatch(instance, listOfMatches, listOfInstancesToBeRemoved);
 			if (stopOnFirstMatch && (!listOfMatches.isEmpty())) {
 				return true;
@@ -218,11 +220,11 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 		}
 		// the evaluation was completed - the instance should be removed
 		// regardless of success
-		if (actualMatch != null) {
+		if (actualMatch != null && instance.shouldReportMatch()) {
 			// an actual match was detected
 			listOfMatches.add(actualMatch);
 		}
-		if (listOfInstancesToBeRemoved != null) {
+		if (listOfInstancesToBeRemoved != null && instance.shouldDiscardWithMatch()) {
 			listOfInstancesToBeRemoved.add(instance);
 		}
 		return true;
@@ -234,7 +236,7 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 
 	public List<Match> getLastMatches() {
 		List<Match> matches = new ArrayList<Match>();
-		for (Instance instance : instances.getInstancesInAcceptingState()) {
+		for (Instance instance : instances.getInstancesInAcceptingStates()) {
 			checkInstanceForMatch(instance, matches);
 		}
 		return matches;
@@ -394,5 +396,5 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 		}
 	}
 
-	protected abstract void initNFAStructure(Pattern pattern);
+	protected abstract void initNFAStructure();
 }

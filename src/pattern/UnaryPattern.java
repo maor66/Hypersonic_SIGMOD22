@@ -14,15 +14,15 @@ public class UnaryPattern extends Pattern {
 		return eventTypes;
 	}
 	
-	public static List<PatternOperatorType> getUnaryPatternTypes() {
-		List<PatternOperatorType> result = new ArrayList<PatternOperatorType> ();
-		result.add(PatternOperatorType.NOP);
-		result.add(PatternOperatorType.NEG);
-		result.add(PatternOperatorType.ITER);
+	public static List<PatternOperatorTypes> getUnaryPatternTypes() {
+		List<PatternOperatorTypes> result = new ArrayList<PatternOperatorTypes> ();
+		result.add(PatternOperatorTypes.NOP);
+		result.add(PatternOperatorTypes.NEG);
+		result.add(PatternOperatorTypes.ITER);
 		return result;
 	}
 
-	public UnaryPattern(PatternOperatorType operatorType, EventType eventType, Condition condition,
+	public UnaryPattern(PatternOperatorTypes operatorType, EventType eventType, Condition condition,
 			long timeWindow) {
 		super(operatorType, createListFromSingleEventType(eventType), condition, timeWindow);
 	}
@@ -37,8 +37,8 @@ public class UnaryPattern extends Pattern {
 	}
 
 	@Override
-	protected PatternOperatorType[] getValidPatternTypes() {
-		return getUnaryPatternTypes().toArray(new PatternOperatorType[0]);
+	protected PatternOperatorTypes[] getValidPatternTypes() {
+		return getUnaryPatternTypes().toArray(new PatternOperatorTypes[0]);
 	}
 
 	@Override

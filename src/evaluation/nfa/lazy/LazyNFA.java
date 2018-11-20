@@ -21,7 +21,7 @@ import sase.evaluation.nfa.lazy.elements.LazyTransition;
 import sase.evaluation.nfa.lazy.elements.LazyTransitionType;
 import sase.evaluation.nfa.lazy.optimizations.BufferPreprocessor;
 import sase.pattern.Pattern;
-import sase.pattern.Pattern.PatternOperatorType;
+import sase.pattern.Pattern.PatternOperatorTypes;
 import sase.pattern.condition.Condition;
 import sase.pattern.condition.base.TrivialCondition;
 import sase.pattern.condition.contiguity.PartialContiguityCondition;
@@ -40,8 +40,9 @@ public abstract class LazyNFA extends NFA {
 		super(pattern);
 		inputBuffer = new EfficientInputBuffer(pattern);
 		unboundedIterativeEventTypes = getUnboundedIterativeEventTypes();
+		//NOTE: will not work in the multi-pattern setting
 		if (MainConfig.selectionStrategy == EventSelectionStrategies.CONTUGUITY && 
-			pattern.getType() == PatternOperatorType.SEQ) {
+			pattern.getType() == PatternOperatorTypes.SEQ) {
 			contiguityVerifier = new PartialContiguityCondition(pattern.getEventTypes());
 		}
 	}
@@ -234,8 +235,10 @@ public abstract class LazyNFA extends NFA {
 		if (match == null) {
 			return false;
 		}
-		listOfMatches.add(match);
-		if (listOfInstancesToBeRemoved != null) {
+		if (lazyInstance.shouldReportMatch()) {
+			listOfMatches.add(match);
+		}
+		if (listOfInstancesToBeRemoved != null && lazyInstance.shouldDiscardWithMatch()) {
 			listOfInstancesToBeRemoved.add(lazyInstance);
 		}
 		return true;

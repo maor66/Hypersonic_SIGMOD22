@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import sase.adaptive.estimation.IEventArrivalRateEstimator;
 import sase.adaptive.monitoring.invariant.Invariant;
 import sase.adaptive.monitoring.invariant.InvariantAdaptationNecessityDetector;
 import sase.adaptive.monitoring.invariant.compare.InvariantComparer.ComparisonType;
@@ -55,14 +54,12 @@ public class AdaptiveZStreamTreeTopologyCreator implements ITreeTopologyCreator 
 		}
 		List<EventType> eventTypes = pattern.getEventTypes();
 		HashMap<List<EventType>, TreeInfo> subsets = new HashMap<List<EventType>, TreeInfo>();
-		IEventArrivalRateEstimator eventRateEstimator = Environment.getEnvironment().getEventRateEstimator();
 		List<EventType> iterativeEventTypes = ((CompositePattern)pattern).getIterativeEventTypes();
 		for (EventType eventType : eventTypes) {
 			LeafNode currLeafNode = new LeafNode(eventType, mainCondition, iterativeEventTypes.contains(eventType));
 			List<EventType> listForEventType = new ArrayList<EventType>();
 			listForEventType.add(eventType);
-			double leafCardinality = 
-					eventRateEstimator.getEventRateEstimate(eventType) * currLeafNode.getNodeCondition().getSelectivity();
+			double leafCardinality = eventType.getRate() * currLeafNode.getNodeCondition().getSelectivity();
 			subsets.put(listForEventType, new TreeInfo(currLeafNode, leafCardinality, leafCardinality, 1));
 		}
 		for (int i = 2; i <= eventTypes.size(); ++i) {

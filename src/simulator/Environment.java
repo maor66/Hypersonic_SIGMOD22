@@ -6,14 +6,14 @@ import sase.adaptive.estimation.IEventArrivalRateEstimator;
 import sase.adaptive.estimation.SlidingWindowEventArrivalRateEstimator;
 import sase.adaptive.estimation.SlidingWindowSelectivityEstimator;
 import sase.adaptive.estimation.StaticEventArrivalRateEstimator;
-import sase.adaptive.monitoring.AdaptationNecessityDetector;
+import sase.adaptive.monitoring.IAdaptationNecessityDetector;
 import sase.adaptive.monitoring.AdaptationNecessityDetectorFactory;
 import sase.config.MainConfig;
 import sase.evaluation.EvaluationPlanCreator;
 import sase.evaluation.IEvaluationMechanismInfo;
-import sase.pattern.Pattern;
-import sase.specification.AdaptationSpecification;
+import sase.pattern.workload.IWorkloadManager;
 import sase.specification.SimulationSpecification;
+import sase.specification.adaptation.AdaptationSpecification;
 import sase.statistics.Statistics;
 import sase.statistics.StatisticsManager;
 
@@ -33,13 +33,13 @@ public class Environment {
 	private SlidingWindowSelectivityEstimator selectivityEstimator = null;
 	private IEvaluationMechanismInfo evaluationMechanismInfo = null;
 	private PredicateResultsCache predicateResultsCache = null;
-	private AdaptationNecessityDetector adaptationNecessityDetector = null;
+	private IAdaptationNecessityDetector adaptationNecessityDetector = null;
 	private EvaluationPlanCreator evaluationPlanCreator = null;
 	
 	private Environment() {
 	}
 
-	public void reset(Pattern pattern, SimulationSpecification currentSpecification) {
+	public void reset(IWorkloadManager workloadManager, SimulationSpecification currentSpecification) {
 		try {
 			StatisticsManager.resetStatisticsManager(currentSpecification.getShortDescription());
 		} catch (IOException e) {
@@ -49,6 +49,7 @@ public class Environment {
 		
 		evaluationPlanCreator = new EvaluationPlanCreator(currentSpecification.getEvaluationSpecification());
 		
+		//TODO: for now, adaptation will only work for single-pattern workloads
 		if (MainConfig.adaptationTrialsIntervalToTimeWindowRatio == null) {
 			//disable all adaptive behavior
 			eventRateEstimator = new StaticEventArrivalRateEstimator();
@@ -58,19 +59,16 @@ public class Environment {
 		else {
 			AdaptationSpecification adaptationSpecification = currentSpecification.getAdaptationSpecification();
 			Long statisticsEstimationWindowSize =
-					pattern.getTimeWindow() * adaptationSpecification.statisticsMonitoringWindowToTimeWindowRatio;
+					workloadManager.getMaxTimeWindow() * adaptationSpecification.statisticsMonitoringWindowToTimeWindowRatio;
 			eventRateEstimator = 
 				new SlidingWindowEventArrivalRateEstimator(statisticsEstimationWindowSize, 
 														   adaptationSpecification.maxError,
-														   pattern.getEventTypes().size());
+														   workloadManager.getAllEventTypes().size());
 			selectivityEstimator = 
 					new SlidingWindowSelectivityEstimator(statisticsEstimationWindowSize, adaptationSpecification.maxError);
 			adaptationNecessityDetector = 
-					new AdaptationNecessityDetectorFactory().createAdaptationNecessityDetector(
-							adaptationSpecification.adaptationDetectorType, pattern,
-							adaptationSpecification.comparerType,
-							adaptationSpecification.minimalInvariantRelativeDistance,
-							adaptationSpecification.minThroughputDifferenceRatio);
+					AdaptationNecessityDetectorFactory.createAdaptationNecessityDetector(adaptationSpecification, 
+																						 workloadManager.getCurrentWorkload());
 		}
 		evaluationMechanismInfo = null;
 		predicateResultsCache = new PredicateResultsCache();
@@ -104,7 +102,7 @@ public class Environment {
 		return predicateResultsCache;
 	}
 
-	public AdaptationNecessityDetector getAdaptationNecessityDetector() {
+	public IAdaptationNecessityDetector getAdaptationNecessityDetector() {
 		return adaptationNecessityDetector;
 	}
 

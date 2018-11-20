@@ -3,11 +3,11 @@ package sase.adaptive.monitoring.invariant;
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.adaptive.monitoring.AdaptationNecessityDetector;
+import sase.adaptive.monitoring.IAdaptationNecessityDetector;
 import sase.adaptive.monitoring.invariant.compare.InvariantComparerFactory;
 import sase.adaptive.monitoring.invariant.compare.InvariantComparerType;
 
-public class InvariantAdaptationNecessityDetector extends AdaptationNecessityDetector {
+public class InvariantAdaptationNecessityDetector implements IAdaptationNecessityDetector {
 
 	private List<Invariant> invariants;
 	private final InvariantComparerFactory comparerFactory;

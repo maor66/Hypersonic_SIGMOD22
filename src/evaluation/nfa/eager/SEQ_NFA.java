@@ -14,8 +14,11 @@ import sase.pattern.condition.time.PairTemporalOrderCondition;
 
 public class SEQ_NFA extends NFA {
 
+	protected final Pattern pattern;
+	
 	public SEQ_NFA(Pattern pattern) {
 		super(pattern);
+		this.pattern = pattern;
 	}
 
 	public static void addTimingConstraints(List<EventType> events, CNFCondition condition) {
@@ -28,7 +31,7 @@ public class SEQ_NFA extends NFA {
 	}
 	
 	@Override
-	protected void initNFAStructure(Pattern pattern) {
+	protected void initNFAStructure() {
 		CNFCondition condition = (CNFCondition)pattern.getCondition();
 		List<EventType> currentSequenceOrder = pattern.getEventTypes();
 		addTimingConstraints(currentSequenceOrder, condition);

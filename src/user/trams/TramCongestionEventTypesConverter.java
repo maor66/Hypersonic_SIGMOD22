@@ -29,7 +29,7 @@ public class TramCongestionEventTypesConverter extends EventTypesConverter {
 	}
 	
 	private EventType getEventTypeByPatternLength(EventType initialEventType) {
-		int numberOfEventTypes = patternSpecification.getNumberOfEventTypes();
+		int numberOfEventTypes = workloadSpecification.getEventNames().size();
 		if (numberOfEventTypes < 4 && initialEventType == TramEventTypesManager.mediumCongestionEventType) {
 			return TramEventTypesManager.lightCongestionEventType;
 		}

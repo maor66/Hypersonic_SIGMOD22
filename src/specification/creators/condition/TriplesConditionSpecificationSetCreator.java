@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Random;
 
 import sase.base.EventType;
-import sase.order.algorithm.DynamicOrderingAlgorithm;
-import sase.specification.DoubleEventConditionSpecification;
+import sase.evaluation.nfa.lazy.order.algorithm.DynamicOrderingAlgorithm;
+import sase.specification.condition.DoubleEventConditionSpecification;
 import sase.specification.creators.RandomPatternSpecificationCreator;
 
 public class TriplesConditionSpecificationSetCreator extends BasicConditionSpecificationSetCreator {

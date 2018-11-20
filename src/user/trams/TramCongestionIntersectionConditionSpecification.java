@@ -5,7 +5,7 @@ import java.util.List;
 import sase.base.EventType;
 import sase.pattern.EventTypesManager;
 import sase.pattern.condition.base.AtomicCondition;
-import sase.specification.ConditionSpecification;
+import sase.specification.condition.ConditionSpecification;
 
 public class TramCongestionIntersectionConditionSpecification extends ConditionSpecification {
 

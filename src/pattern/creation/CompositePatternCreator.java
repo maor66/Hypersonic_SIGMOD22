@@ -9,10 +9,10 @@ import sase.pattern.CompositePattern;
 import sase.pattern.EventTypesManager;
 import sase.pattern.Pattern;
 import sase.pattern.UnaryPattern;
-import sase.pattern.Pattern.PatternOperatorType;
+import sase.pattern.Pattern.PatternOperatorTypes;
 import sase.pattern.condition.base.AtomicCondition;
 import sase.pattern.condition.base.CNFCondition;
-import sase.specification.ConditionSpecification;
+import sase.specification.condition.ConditionSpecification;
 
 public class CompositePatternCreator extends PatternCreator {
 
@@ -61,15 +61,15 @@ public class CompositePatternCreator extends PatternCreator {
 	}
 	
 	private Pattern createPrimitivePattern(String eventName) {
-		PatternOperatorType patternType;
+		PatternOperatorTypes patternType;
 		if (isEventNegated(eventName)) {
-			patternType = PatternOperatorType.NEG;
+			patternType = PatternOperatorTypes.NEG;
 		}
 		else if (isEventIterated(eventName)) {
-			patternType = PatternOperatorType.ITER;
+			patternType = PatternOperatorTypes.ITER;
 		}
 		else {
-			patternType = PatternOperatorType.NOP;
+			patternType = PatternOperatorTypes.NOP;
 		}
 		EventType eventType = EventTypesManager.getInstance().getTypeByName(eventName);
 		return new UnaryPattern(patternType, eventType, mainCondition.getConditionForType(eventType, true), timeWindow);
@@ -85,7 +85,7 @@ public class CompositePatternCreator extends PatternCreator {
 		for (String eventName : subPatternSpecification) {
 			primitivePatterns.add(createPrimitivePattern(eventName));
 		}
-		return new CompositePattern(PatternOperatorType.SEQ, primitivePatterns, 
+		return new CompositePattern(PatternOperatorTypes.SEQ, primitivePatterns, 
 									getSubConditionForPatterns(primitivePatterns), timeWindow);
 	}
 	
@@ -99,7 +99,7 @@ public class CompositePatternCreator extends PatternCreator {
 		for (String[] sequenceSpecification : subPatternSpecification) {
 			primitiveOrSequencePatterns.add(createPrimitiveOrSequencePattern(sequenceSpecification));
 		}
-		return new CompositePattern(PatternOperatorType.AND_SEQ, primitiveOrSequencePatterns, 
+		return new CompositePattern(PatternOperatorTypes.AND_SEQ, primitiveOrSequencePatterns, 
 									getSubConditionForPatterns(primitiveOrSequencePatterns), timeWindow);
 	}
 	
@@ -114,6 +114,6 @@ public class CompositePatternCreator extends PatternCreator {
 		for (String[][] andSpecification : patternSpecification) {
 			subPatterns.add(createSequenceOrConjunctionPattern(andSpecification));
 		}
-		return new CompositePattern(PatternOperatorType.OR, subPatterns, mainCondition, timeWindow);
+		return new CompositePattern(PatternOperatorTypes.OR, subPatterns, mainCondition, timeWindow);
 	}
 }

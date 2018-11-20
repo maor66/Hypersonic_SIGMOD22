@@ -7,7 +7,7 @@ import java.util.Random;
 
 import sase.base.EventType;
 import sase.config.SimulationConfig;
-import sase.specification.DoubleEventConditionSpecification;
+import sase.specification.condition.DoubleEventConditionSpecification;
 
 public class CountersConditionSpecificationSetCreator extends BasicConditionSpecificationSetCreator {
 	
@@ -16,9 +16,7 @@ public class CountersConditionSpecificationSetCreator extends BasicConditionSpec
 	@Override
 	protected List<DoubleEventConditionSpecification> createPositiveNonIteratedConditionSpecifications(
 			List<EventType> eventTypes, IConditionSpecificationCreator conditionCreator) {
-		int minPatternSize = SimulationConfig.patternSizes[0];
-		int numberOfConditions = (eventTypes.size() < minPatternSize) ? minNumberOfConditions : 
-												SimulationConfig.numbersOfConditions[eventTypes.size() - minPatternSize];
+		int numberOfConditions = getNumberOfConditions(eventTypes.size());
 		List<DoubleEventConditionSpecification> conditionSpecifications = new ArrayList<DoubleEventConditionSpecification>();
 		while (conditionSpecifications.size() < numberOfConditions) {
 			List<String> eventNamesForCurrentCondition = selectUnoccupiedEventNames(eventTypes, conditionSpecifications);
@@ -26,6 +24,17 @@ public class CountersConditionSpecificationSetCreator extends BasicConditionSpec
 																					eventNamesForCurrentCondition.get(1)));
 		}
 		return conditionSpecifications;
+	}
+	
+	private int getNumberOfConditions(int numberOfEvents) {
+		int minPatternSize = SimulationConfig.patternSizes[0];
+		if (numberOfEvents < minPatternSize) {
+			return minNumberOfConditions; 
+		}
+		if (SimulationConfig.conditionToEventRatio == null) {
+			return SimulationConfig.numbersOfConditions[numberOfEvents - minPatternSize];
+		}
+		return (int) (numberOfEvents * SimulationConfig.conditionToEventRatio);
 	}
 
 	private List<String> selectUnoccupiedEventNames(List<EventType> eventTypes,

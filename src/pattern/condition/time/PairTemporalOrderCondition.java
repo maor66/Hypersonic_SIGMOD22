@@ -1,5 +1,7 @@
 package sase.pattern.condition.time;
 
+import java.util.Objects;
+
 import sase.base.Event;
 import sase.base.EventType;
 import sase.pattern.condition.base.DoubleEventCondition;
@@ -33,6 +35,11 @@ public class PairTemporalOrderCondition extends DoubleEventCondition {
 		return (getLeftEventType() == otherCondition.getLeftEventType() && 
 				getRightEventType() == otherCondition.getRightEventType());	
 	}
+	
+	@Override
+    public int hashCode() {
+        return Objects.hash(getLeftEventType(), getRightEventType());
+    }
 
 	@Override
 	protected String getConditionKey() {

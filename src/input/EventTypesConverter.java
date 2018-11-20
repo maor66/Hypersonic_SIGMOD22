@@ -1,15 +1,15 @@
 package sase.input;
 
 import sase.base.EventType;
-import sase.specification.PatternSpecification;
 import sase.specification.SimulationSpecification;
+import sase.specification.workload.WorkloadSpecification;
 
 public abstract class EventTypesConverter {
 	
-	protected final PatternSpecification patternSpecification;
+	protected final WorkloadSpecification workloadSpecification;
 	
 	public EventTypesConverter(SimulationSpecification simulationSpecification) {
-		patternSpecification = simulationSpecification.getPatternSpecification();
+		workloadSpecification = simulationSpecification.getWorkloadSpecification();
 	}
 
 	public abstract EventType convertToKnownEventType(String[] rawEvent);

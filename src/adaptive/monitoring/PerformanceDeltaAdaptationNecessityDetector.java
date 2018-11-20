@@ -4,7 +4,7 @@ import sase.simulator.Environment;
 import sase.statistics.Statistics;
 import sase.statistics.StatisticsManager;
 
-public class PerformanceDeltaAdaptationNecessityDetector extends AdaptationNecessityDetector {
+public class PerformanceDeltaAdaptationNecessityDetector implements IAdaptationNecessityDetector {
 
 	private long currentNumberOfProcessedEvents = 0;
 	private long lastTotalNumberOfProcessedEvents = 0;

@@ -19,7 +19,7 @@ public class SlidingWindowEventArrivalRateEstimator implements IEventArrivalRate
 		}
 	}
 
-	private static final int defaultEventTypeRate = 1;
+	private static final double defaultEventTypeRate = 1.0;
 	
 	private List<EventRateEstimator> estimators;
 	private final long recordedEventsLowerBound;
@@ -41,7 +41,7 @@ public class SlidingWindowEventArrivalRateEstimator implements IEventArrivalRate
 		}
 	}
 	
-	public int getEventRateEstimate(EventType type) {
+	public double getEventRateEstimate(EventType type) {
 		for (EventRateEstimator eventRateEstimator : estimators) {
 			if (eventRateEstimator.type == type) {
 				if (eventRateEstimator.estimator.getNumberOfRecordedElements() < (long)recordedEventsLowerBound) {

@@ -12,15 +12,15 @@ import sase.pattern.Pattern;
 import sase.pattern.condition.base.AtomicCondition;
 import sase.pattern.condition.base.CNFCondition;
 import sase.simulator.Environment;
-import sase.specification.InputSpecification;
 import sase.specification.SimulationSpecification;
+import sase.specification.input.SyntheticInputSpecification;
 import sase.statistics.Statistics;
 import sase.statistics.StatisticsManager;
 import sase.user.synthetic.SyntheticCondition;
 
 public class SyntheticEventProducer extends EventProducer implements ISyntheticSelectivityProvider {
 	
-	private final InputSpecification specification;
+	private final SyntheticInputSpecification specification;
 	private long currentTimestamp = 0;
 	private long numberOfSentEvents;
 	private Double[] currentArrivalRates;
@@ -33,7 +33,7 @@ public class SyntheticEventProducer extends EventProducer implements ISyntheticS
 	
 	public SyntheticEventProducer(Pattern pattern, SimulationSpecification simulationSpecification) {
 		super(simulationSpecification);
-		this.specification = simulationSpecification.getInputSpecification();
+		this.specification = (SyntheticInputSpecification)simulationSpecification.getInputSpecification();
 		initializeArrivalRates();
 		SyntheticCondition.reset();
 		initializeSelectivities((CNFCondition)pattern.getCondition());

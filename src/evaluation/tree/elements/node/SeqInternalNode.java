@@ -17,6 +17,17 @@ public class SeqInternalNode extends InternalNode {
 		super(condition, leftSon, rightSon);
 		this.order = order;
 	}
+	
+	public SeqInternalNode(SeqInternalNode other) {
+		super(other);
+		this.order = other.order;
+	}
+	
+	protected SeqInternalNode(Node leftChild, Node rightChild, CNFCondition nodeCondition, Long acceptingPatternId,
+							  List<EventType> order) {
+		super(leftChild, rightChild, nodeCondition, acceptingPatternId);
+		this.order = order;
+	}
 
 	public List<EventType> getOrder() {
 		return order;
@@ -78,6 +89,16 @@ public class SeqInternalNode extends InternalNode {
 		int firstIndex = order.indexOf(firstEventType);
 		int secondIndex = order.indexOf(secondEventType);
 		return new PairwiseContiguityCondition(firstEventType, secondEventType, secondIndex - firstIndex);
+	}
+
+	@Override
+	public Node cloneNode() {
+		return new SeqInternalNode(nodeCondition, order, leftChild.cloneNode(), rightChild.cloneNode());
+	}
+
+	@Override
+	public InternalNode createEquivalentNode(Node newLeftChild, Node newRightChild) {
+		return new SeqInternalNode(newLeftChild, newRightChild, nodeCondition, acceptingPatternId, order);
 	}
 
 }

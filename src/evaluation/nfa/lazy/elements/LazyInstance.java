@@ -22,7 +22,7 @@ public class LazyInstance extends Instance {
 		this(nfa, initialState, null);
 	}
 	
-	public LazyInstance(LazyNFA nfa, NFAState initialState, EventBuffer eventBuffer) {
+	protected LazyInstance(LazyNFA nfa, NFAState initialState, EventBuffer eventBuffer) {
 		super(nfa, initialState, eventBuffer);
 		shouldStoreCurrentEvent = false;
 		shouldStopEvaluation = false;

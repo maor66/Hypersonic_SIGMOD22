@@ -31,6 +31,7 @@ public class Statistics {
 	//fractional statistics
 	public static final String averageLatency = "Average Latency";
 	public static final String averageInputChangeDetectionTime = "Average Input Change Detection Time";
+	public static final String evaluationPlanCost = "Evaluation Plan Cost";
 	
 	public static String[] getDiscreteOrderedNames() {
 		return new String[] {
@@ -65,6 +66,7 @@ public class Statistics {
 		return new String[] {
 			averageLatency,
 			averageInputChangeDetectionTime,
+			evaluationPlanCost,
 		};
 	}
 

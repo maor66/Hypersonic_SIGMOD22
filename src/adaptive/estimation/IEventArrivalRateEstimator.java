@@ -5,5 +5,5 @@ import sase.base.EventType;
 public interface IEventArrivalRateEstimator {
 
 	public void registerEventArrival(EventType type);
-	public int getEventRateEstimate(EventType type);
+	public double getEventRateEstimate(EventType type);
 }

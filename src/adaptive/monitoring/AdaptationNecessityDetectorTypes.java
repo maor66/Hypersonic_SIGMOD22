@@ -5,5 +5,6 @@ public enum AdaptationNecessityDetectorTypes {
 	TRIVIAL,
 	INVARIANT,
 	RECOMPUTE,
-	PERFORMANCE
+	PERFORMANCE,
+	CONSTANT_THRESHOLD,
 }

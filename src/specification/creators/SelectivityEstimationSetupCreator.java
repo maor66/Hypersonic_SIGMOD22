@@ -9,7 +9,7 @@ public abstract class SelectivityEstimationSetupCreator implements ISimulationSp
 	
 	@Override
 	public SimulationSpecification[] createSpecifications() {
-		String[] eventTypeNames = getEventTypeNames(); //StockEventTypesManager.regionEventTypeNames;
+		String[] eventTypeNames = getEventTypeNames();
 		List<SimulationSpecification> result = new ArrayList<SimulationSpecification>();
 		for (int i = 0; i < eventTypeNames.length; ++i) {
 			for (int j = i + 1; j < eventTypeNames.length; ++j) {

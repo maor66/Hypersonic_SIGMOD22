@@ -6,8 +6,8 @@ import java.util.List;
 import sase.base.Event;
 import sase.base.EventType;
 import sase.config.MainConfig;
-import sase.specification.InputSpecification;
 import sase.specification.SimulationSpecification;
+import sase.specification.input.InputSpecification;
 import sase.user.speedd.fraud.CreditCardFraudEventTypesConverter;
 import sase.user.speedd.traffic.TrafficSpeedEventTypesConverter;
 import sase.user.stocks.converters.StocksByCompanyEventTypesConverter;
@@ -22,7 +22,7 @@ import sase.user.trams.TramCongestionEventTypesConverter;
 public abstract class EventProducer {
 	
 	private EventTypesConverter converter;
-	private EventStreamModifier modifier;
+	private IEventStreamModifier modifier;
 	private List<Event> pendingEvents;
 	
 	protected EventProducer(SimulationSpecification simulationSpecification) {
@@ -56,26 +56,17 @@ public abstract class EventProducer {
 				break;
 		}
 		InputSpecification inputSpecification = simulationSpecification.getInputSpecification();
-		try {
-			modifier = new EventStreamModifier(inputSpecification.filteringFactor, 
-											   inputSpecification.duplicatingFactor);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		modifier = EventStreamModifierFactory.createEventStreamModifier(inputSpecification);
 		pendingEvents = new LinkedList<Event>();
 	}
 
 	protected boolean produceActualEvents(String[] rawEvent) {
 		EventType eventType = converter.convertToKnownEventType(rawEvent);
-		if (eventType == null)
+		if (eventType == null) {
 			return false;
+		}
 		Event event = new Event(eventType, rawEvent);
-		if (MainConfig.enableDynamicEventStreamModification) {
-			pendingEvents.addAll(modifier.produceModifiedEvents(event));
-		}
-		else {
-			pendingEvents.add(event);
-		}
+		pendingEvents.addAll(modifier.produceModifiedEvents(event));
 		return true;
 	}
 	

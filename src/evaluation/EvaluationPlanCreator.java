@@ -5,21 +5,40 @@ import java.util.HashMap;
 import java.util.List;
 
 import sase.base.EventType;
+import sase.evaluation.nfa.lazy.order.IOrderingAlgorithm;
+import sase.evaluation.nfa.lazy.order.OrderingAlgorithmFactory;
+import sase.evaluation.nfa.lazy.order.OrderingAlgorithmTypes;
+import sase.evaluation.nfa.lazy.order.cost.CostModelFactory;
+import sase.evaluation.nfa.lazy.order.cost.ICostModel;
+import sase.evaluation.plan.DisjunctionEvaluationPlan;
+import sase.evaluation.plan.EvaluationPlan;
+import sase.evaluation.plan.MultiPatternMultiTreeEvaluationPlan;
+import sase.evaluation.plan.MultiPatternTreeEvaluationPlan;
+import sase.evaluation.plan.OrderEvaluationPlan;
+import sase.evaluation.plan.TreeEvaluationPlan;
 import sase.evaluation.tree.ITreeCostModel;
 import sase.evaluation.tree.ITreeTopologyCreator;
 import sase.evaluation.tree.TopologyCreatorFactory;
 import sase.evaluation.tree.TreeCostModelFactory;
 import sase.evaluation.tree.elements.node.Node;
-import sase.order.IOrderingAlgorithm;
-import sase.order.OrderingAlgorithmFactory;
-import sase.order.cost.CostModelFactory;
-import sase.order.cost.ICostModel;
+import sase.multi.MultiPatternGraph;
+import sase.multi.MultiPatternMultiTree;
+import sase.multi.MultiPatternTree;
+import sase.multi.MultiPlan;
+import sase.multi.algo.OrderAlgoUnit;
+import sase.multi.algo.TreeAlgoUnit;
+import sase.multi.calculator.IMPTCalculator;
+import sase.multi.calculator.MPTCalculatorFactory;
 import sase.pattern.CompositePattern;
 import sase.pattern.EventTypesManager;
 import sase.pattern.Pattern;
-import sase.pattern.Pattern.PatternOperatorType;
+import sase.pattern.Pattern.PatternOperatorTypes;
 import sase.pattern.condition.base.CNFCondition;
-import sase.specification.EvaluationSpecification;
+import sase.specification.evaluation.CostBasedLazyNFAEvaluationSpecification;
+import sase.specification.evaluation.EvaluationSpecification;
+import sase.specification.evaluation.FixedLazyNFAEvaluationSpecification;
+import sase.specification.evaluation.MultiPlanEvaluationSpecification;
+import sase.specification.evaluation.TreeEvaluationSpecification;
 
 public class EvaluationPlanCreator {
 
@@ -29,19 +48,33 @@ public class EvaluationPlanCreator {
 		this.specification = specification;
 	}
 	
+	public EvaluationPlan createEvaluationPlan(List<Pattern> patterns, IEvaluationMechanism currentEvaluationMechanism) {
+		if (specification.type == EvaluationMechanismTypes.MULTI_PATTERN_TREE ||
+			specification.type == EvaluationMechanismTypes.MULTI_PATTERN_MULTI_TREE) {
+			return createMultiPatternPlan(patterns, specification.type, currentEvaluationMechanism);
+		}
+		if (patterns.size() != 1) {
+			throw new RuntimeException("Illegal workload size for single-pattern setting");
+		}
+		return createEvaluationPlan(patterns.get(0));
+	}
+
 	public EvaluationPlan createEvaluationPlan(Pattern pattern) {
 		switch (specification.type) {
 			case LAZY_CHAIN:
 				return createOrderBasedPlan(pattern);
 			case TREE:
 				return createTreeBasedPlan(pattern);
+			case MULTI_PATTERN_TREE:
+			case MULTI_PATTERN_MULTI_TREE:
+				throw new RuntimeException("Illegal evaluation structure for single-pattern setting");
 			case EAGER:
-			case LAZY_TREE:
+			case LAZY_TREE:				
 			default:
 				return null;
 		}
 	}
-	
+
 	private HashMap<Pattern, EvaluationPlan> createNestedPlans(Pattern pattern) {
 		CompositePattern compositePattern = (CompositePattern) pattern;
 		List<Pattern> nestedPatterns = compositePattern.getNestedPatterns();
@@ -53,27 +86,43 @@ public class EvaluationPlanCreator {
 	}
 	
 	private EvaluationPlan createOrderBasedPlan(Pattern pattern) {
-		List<EventType> evaluationOrder = specification.evaluationOrder == null ? null :
-			 							  EventTypesManager.getInstance().convertNamesToTypes(specification.evaluationOrder);
-		if (evaluationOrder != null && pattern.getEventTypes().size() != evaluationOrder.size())
-				throw new RuntimeException(
-						String.format("Invalid evaluation order %s specified for pattern containing events %s", 
-									  evaluationOrder.toString(), pattern.getEventTypes().toString()));
+		if (specification instanceof FixedLazyNFAEvaluationSpecification) {
+			return createFixedOrderBasedPlan(pattern);
+		}
+		if (!(specification instanceof CostBasedLazyNFAEvaluationSpecification)) {
+			throw new RuntimeException("Unexpected specification type");
+		}
+		CostBasedLazyNFAEvaluationSpecification costBasedSpecification = 
+												(CostBasedLazyNFAEvaluationSpecification)specification;
 		IOrderingAlgorithm orderingAlgorithm = 
-				OrderingAlgorithmFactory.createOrderingAlgorithm(specification.orderingAlgorithmType,
-											 					 new Object[] { evaluationOrder });
-		ICostModel costModel = CostModelFactory.createCostModel(specification.costModelType, 
+				OrderingAlgorithmFactory.createOrderingAlgorithm(costBasedSpecification.orderingAlgorithmType, null);
+		ICostModel costModel = CostModelFactory.createCostModel(costBasedSpecification.costModelType, 
 																new Object[] { pattern.getEventTypes(),
-															    specification.throughputToLatencyRatio});
+																costBasedSpecification.throughputToLatencyRatio});
 		return actuallyCreateOrderBasedPlan(pattern, orderingAlgorithm, costModel);
+	}
+	
+	private EvaluationPlan createFixedOrderBasedPlan(Pattern pattern) {
+		FixedLazyNFAEvaluationSpecification fixedOrderSpecification = (FixedLazyNFAEvaluationSpecification)specification;
+		List<EventType> evaluationOrder = 
+							EventTypesManager.getInstance().convertNamesToTypes(fixedOrderSpecification.evaluationOrder);
+		if (pattern.getEventTypes().size() != evaluationOrder.size()) {
+			throw new RuntimeException(
+					String.format("Invalid evaluation order %s specified for pattern containing events %s", 
+								  evaluationOrder.toString(), pattern.getEventTypes().toString()));
+		}
+		IOrderingAlgorithm orderingAlgorithm = 
+				OrderingAlgorithmFactory.createOrderingAlgorithm(OrderingAlgorithmTypes.FIXED, 
+																 new Object[] { evaluationOrder });
+		return actuallyCreateOrderBasedPlan(pattern, orderingAlgorithm, null);
 	}
 	
 	private EvaluationPlan actuallyCreateOrderBasedPlan(Pattern pattern,
 														IOrderingAlgorithm orderingAlgorithm, ICostModel costModel) {
-		if (pattern.getType() == PatternOperatorType.OR) {
-			return new EvaluationPlan(EvaluationMechanismTypes.LAZY_CHAIN, createNestedPlans(pattern));
+		if (pattern.getType() == PatternOperatorTypes.OR) {
+			return new DisjunctionEvaluationPlan(createNestedPlans(pattern));
 		}
-		return new EvaluationPlan(createEvaluationOrder(pattern, orderingAlgorithm, costModel));
+		return new OrderEvaluationPlan(pattern, createEvaluationOrder(pattern, orderingAlgorithm, costModel), costModel);
 	}
 	
 	private List<EventType> createEvaluationOrder(Pattern pattern,
@@ -94,24 +143,55 @@ public class EvaluationPlanCreator {
 	}
 	
 	private EvaluationPlan createTreeBasedPlan(Pattern pattern) {
-		ITreeTopologyCreator topologyCreator = TopologyCreatorFactory.createTopologyCreator(specification.topologyCreatorType);
+		if (!(specification instanceof TreeEvaluationSpecification)) {
+			throw new RuntimeException("Unexpected specification type");
+		}
+		TreeEvaluationSpecification treeSpecification = (TreeEvaluationSpecification)specification;
+		ITreeTopologyCreator topologyCreator = 
+				TopologyCreatorFactory.createTopologyCreator(treeSpecification.topologyCreatorType);
 		ITreeCostModel costModel = TreeCostModelFactory.createTreeCostModel(
-													specification.treeCostModelType, 
-													new Object[] { pattern.getEventTypes(),
-															   	   specification.throughputToLatencyRatio});
+				treeSpecification.treeCostModelType, new Object[] { pattern.getEventTypes(),
+																	treeSpecification.throughputToLatencyRatio});
 		return actuallyCreateTreeBasedPlan(pattern, topologyCreator, costModel);
 	}
 
 	private EvaluationPlan actuallyCreateTreeBasedPlan(Pattern pattern,
 													   ITreeTopologyCreator topologyCreator, ITreeCostModel costModel) {
-		if (pattern.getType() == PatternOperatorType.OR) {
-			return new EvaluationPlan(EvaluationMechanismTypes.TREE, createNestedPlans(pattern));
+		if (pattern.getType() == PatternOperatorTypes.OR) {
+			return new DisjunctionEvaluationPlan(createNestedPlans(pattern));
 		}
 		CompositePattern compositePattern = (CompositePattern)pattern;
 		CompositePattern positivePattern = compositePattern.getFilteredSubPattern(compositePattern.getNegativeEventTypes());
 		Node root = topologyCreator.createTreeTopology(positivePattern, (CNFCondition) pattern.getCondition(), costModel);
 		root.finalizeTree();
-		return new EvaluationPlan(root);
+		return new TreeEvaluationPlan(root, costModel);
+	}
+	
+	private EvaluationPlan createMultiPatternPlan(List<Pattern> patterns, 
+												  EvaluationMechanismTypes multiPatternMechanismType,
+												  IEvaluationMechanism currentEvaluationMechanism) {
+		if (!(specification instanceof MultiPlanEvaluationSpecification)) {
+			throw new RuntimeException("Unexpected specification type");
+		}
+		MultiPlanEvaluationSpecification mptSpecification = (MultiPlanEvaluationSpecification)specification;
+		IMPTCalculator mptCalculator = MPTCalculatorFactory.createMPTCalculator(mptSpecification);
+		MultiPlan multiPlan = (currentEvaluationMechanism == null) ?
+				mptCalculator.calculateMultiPlan(new MultiPatternGraph(patterns)) :
+				mptCalculator.improveMultiPlan(((IMultiPatternEvaluationMechanism)currentEvaluationMechanism).getMultiPlan());
+		multiPlan.setAlgoUnit(mptCalculator.getAlgoUnit());
+		switch (multiPatternMechanismType) {
+			case MULTI_PATTERN_TREE:
+				MultiPatternTree multiPatternTree = (MultiPatternTree)multiPlan;
+				OrderAlgoUnit orderAlgoUnit = (OrderAlgoUnit)mptCalculator.getAlgoUnit();
+				return new MultiPatternTreeEvaluationPlan(multiPatternTree, orderAlgoUnit.getCostModel());
+			case MULTI_PATTERN_MULTI_TREE:
+				MultiPatternMultiTree multiPatternMultiTree = (MultiPatternMultiTree)multiPlan;
+				TreeAlgoUnit treeAlgoUnit = (TreeAlgoUnit)mptCalculator.getAlgoUnit();
+				return new MultiPatternMultiTreeEvaluationPlan(multiPatternMultiTree, treeAlgoUnit.getCostModel());
+			default:
+				throw new RuntimeException(String.format("%s is not a valid multi-pattern evaluation mechanism", 
+														 multiPatternMechanismType));
+		}
 	}
 
 	public EvaluationSpecification getSpecification() {

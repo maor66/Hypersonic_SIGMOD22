@@ -16,7 +16,7 @@ public class CreditCardFraudEventTypesConverter extends EventTypesConverter {
 	}
 	
 	private EventType getNoFraudEventTypeByTransactionSum(Double transactionSum) {
-		int numberOfEventTypes = patternSpecification.getNumberOfEventTypes();
+		int numberOfEventTypes = workloadSpecification.getEventNames().size();
 		if (transactionSum >= veryLargeSumThreshold) {
 			return CreditCardFraudEventTypesManager.veryLargeTransactionNoFraudEventType;
 		}

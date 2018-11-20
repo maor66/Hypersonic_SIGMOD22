@@ -60,11 +60,16 @@ public class Instance {
 		shouldInvalidate = true;
 	}
 	
+	protected Long getInstanceTimeWindow() {
+		return automaton.getTimeWindow();
+	}
+	
 	public boolean isExpired(long currentTime) {
 		long actualCurrentTime = (currentTime > 0) ? currentTime : automaton.getLastKnownGlobalTime();
 		List<Event> events = getEventsFromMatchBuffer();
 		for (Event event : events) {
-			if (event.getTimestamp() + automaton.getTimeWindow() < actualCurrentTime)
+			Long instanceTimeWindow = getInstanceTimeWindow();
+			if (instanceTimeWindow != null && event.getTimestamp() + instanceTimeWindow < actualCurrentTime)
 				return true;
 		}
 		return false;
@@ -117,5 +122,13 @@ public class Instance {
 	@Override
 	public String toString() {
 		return String.format("Instance in state %s", currentState);
+	}
+
+	public boolean shouldDiscardWithMatch() {
+		return true;
+	}
+	
+	public boolean shouldReportMatch() {
+		return true;
 	}
 }

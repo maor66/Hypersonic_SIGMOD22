@@ -1,6 +1,8 @@
 package sase.pattern.condition.time;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 import sase.base.Event;
 import sase.base.EventType;
@@ -105,5 +107,35 @@ public class EventTemporalPositionCondition extends AtomicCondition {
 	protected String getConditionKey() {
 		return "Unsupported";
 	}
+	
+	@Override
+	public Double getSelectivity() {
+		return 1.0; //for now, we ignore the selectivity of all temporal constraints
+	}
+	
+	@Override
+	protected boolean shouldIgnoreSelectivityMeasurements() {
+		return true;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof EventTemporalPositionCondition)) {
+			return false;
+		}
+		EventTemporalPositionCondition condition = (EventTemporalPositionCondition)other;
+		if (targetEventType != condition.targetEventType) {
+			return false;
+		}
+		if (!(new HashSet<EventType>(precedingEventTypes).equals(new HashSet<EventType>(condition.precedingEventTypes)))) {
+			return false;
+		}
+		return (new HashSet<EventType>(succeedingEventTypes).equals(new HashSet<EventType>(condition.succeedingEventTypes)));
+	}
+	
+	@Override
+    public int hashCode() {
+        return Objects.hash(targetEventType, precedingEventTypes, succeedingEventTypes);
+    }
 
 }

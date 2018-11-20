@@ -16,7 +16,7 @@ public class TrafficSpeedEventTypesConverter extends EventTypesConverter {
 	}
 	
 	private EventType getEventTypeBySpeed(Double speed) {
-		int numberOfEventTypes = patternSpecification.getNumberOfEventTypes();
+		int numberOfEventTypes = workloadSpecification.getEventNames().size();
 		if (speed >= veryHighSpeedThreshold) {
 			return TrafficEventTypesManager.veryHighSpeedEventType;
 		}

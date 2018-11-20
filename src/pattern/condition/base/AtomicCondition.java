@@ -31,6 +31,9 @@ public abstract class AtomicCondition extends Condition {
 	}
 	
 	public boolean verify(List<Event> events) {
+		if (shouldIgnoreSelectivityMeasurements()) {
+			return actuallyVerify(events);
+		}
 		Event firstEvent = null;
 		Event secondEvent = null;
 		if (this instanceof DoubleEventCondition) {
@@ -69,6 +72,10 @@ public abstract class AtomicCondition extends Condition {
 			}
 		}
 		return null;
+	}
+	
+	protected boolean shouldIgnoreSelectivityMeasurements() {
+		return false;
 	}
 	
 	protected abstract boolean actuallyVerify(List<Event> events);

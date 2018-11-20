@@ -7,7 +7,7 @@ import sase.pattern.condition.Condition;
 
 public class SimplePattern extends Pattern {
 
-	public SimplePattern(PatternOperatorType operatorType, List<EventType> eventTypes, Condition condition,
+	public SimplePattern(PatternOperatorTypes operatorType, List<EventType> eventTypes, Condition condition,
 			long timeWindow) {
 		super(operatorType, eventTypes, condition, timeWindow);
 	}
@@ -18,10 +18,10 @@ public class SimplePattern extends Pattern {
 	}
 
 	@Override
-	protected PatternOperatorType[] getValidPatternTypes() {
-		return new PatternOperatorType[] {
-				PatternOperatorType.OLD_AND,
-				PatternOperatorType.OLD_SEQ
+	protected PatternOperatorTypes[] getValidPatternTypes() {
+		return new PatternOperatorTypes[] {
+				PatternOperatorTypes.OLD_AND,
+				PatternOperatorTypes.OLD_SEQ
 		};
 	}
 

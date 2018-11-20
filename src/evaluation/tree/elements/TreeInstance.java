@@ -13,8 +13,8 @@ import sase.statistics.Statistics;
 
 public class TreeInstance {
 
-	private TreeEvaluationMechanism tree;
-	private Node currentNode;
+	protected TreeEvaluationMechanism tree;
+	protected Node currentNode;
 	private EventBuffer matchBuffer;
 	
 	public TreeInstance(TreeEvaluationMechanism tree, Node currentNode, EventBuffer matchBuffer) {
@@ -31,10 +31,14 @@ public class TreeInstance {
 	public boolean isExpired(long currentTime) {
 		List<Event> events = matchBuffer.getEvents();
 		for (Event event : events) {
-			if (event.getTimestamp() + tree.getTimeWindow() < currentTime)
+			if (event.getTimestamp() + getInstanceTimeWindow() < currentTime)
 				return true;
 		}
 		return false;
+	}
+	
+	protected Long getInstanceTimeWindow() {
+		return tree.getTimeWindow();
 	}
 	
 	public boolean hasMatch() {
@@ -60,17 +64,15 @@ public class TreeInstance {
 	}
 
 	public TreeInstance createParentInstance(TreeInstance peerInstance) {
-		if (hasMatch()) {
-			return null;
-		}
-		if (peerInstance.getCurrentNode() != currentNode.getPeer()) { //sanity check
-			return null;
+		Node commonParent = Node.getCommonParent(currentNode, peerInstance.getCurrentNode());
+		if (commonParent == null) {
+			throw new RuntimeException("No common parent found");
 		}
 		EventBuffer newEventBuffer = matchBuffer.clone();
 		newEventBuffer.extend(peerInstance.matchBuffer);
 		Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.bufferInsertions,
 																						  newEventBuffer.size());
-		return new TreeInstance(tree, currentNode.getParent(), newEventBuffer);
+		return createInstanceForNodeAndBuffer(tree, commonParent, newEventBuffer);
 	}
 	
 	public TreeInstance createExtendedAggregatedLeafInstance(Event newEvent) {
@@ -79,7 +81,11 @@ public class TreeInstance {
 		}
 		EventBuffer newMatchBuffer = matchBuffer.clone();
 		newMatchBuffer.addEvent(newEvent);
-		return new TreeInstance(tree, currentNode, newMatchBuffer);
+		return createInstanceForNodeAndBuffer(tree, currentNode, newMatchBuffer);
+	}
+
+	protected TreeInstance createInstanceForNodeAndBuffer(TreeEvaluationMechanism tree, Node node, EventBuffer buffer) {
+		return new TreeInstance(tree, node, buffer);
 	}
 	
 	public void addEvent(Event event) {

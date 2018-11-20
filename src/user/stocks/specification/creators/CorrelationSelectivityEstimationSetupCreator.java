@@ -3,14 +3,16 @@ package sase.user.stocks.specification.creators;
 import java.util.ArrayList;
 import java.util.List;
 
-import sase.order.OrderingAlgorithmTypes;
-import sase.order.cost.CostModelTypes;
+import sase.evaluation.nfa.lazy.order.OrderingAlgorithmTypes;
+import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
+import sase.multi.sla.SlaVerifierTypes;
 import sase.pattern.creation.PatternTypes;
-import sase.specification.ConditionSpecification;
-import sase.specification.EvaluationSpecification;
-import sase.specification.PatternSpecification;
 import sase.specification.SimulationSpecification;
+import sase.specification.condition.ConditionSpecification;
 import sase.specification.creators.SelectivityEstimationSetupCreator;
+import sase.specification.evaluation.CostBasedLazyNFAEvaluationSpecification;
+import sase.specification.workload.PatternSpecification;
+import sase.specification.workload.SinglePatternWorkloadSpecification;
 import sase.user.stocks.StockEventTypesManager;
 import sase.user.stocks.specification.StockCorrelationConditionSpecification;
 
@@ -44,12 +46,12 @@ public class CorrelationSelectivityEstimationSetupCreator extends SelectivityEst
 											 currentStructure, 
 											 new ConditionSpecification[] {
 													 currentConditionSpecification	 
-											 });
+											 }, SlaVerifierTypes.NONE);
 			SimulationSpecification currentSimulationSpecification = 
-					new SimulationSpecification(currentPatternSpecification,
-												new EvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-																			CostModelTypes.THROUGHPUT_LATENCY,
-																			0.0));
+					new SimulationSpecification(new SinglePatternWorkloadSpecification(currentPatternSpecification),
+						new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+																	CostModelTypes.THROUGHPUT_LATENCY,
+																	0.0));
 			result.add(currentSimulationSpecification);
 		}
 		return result;

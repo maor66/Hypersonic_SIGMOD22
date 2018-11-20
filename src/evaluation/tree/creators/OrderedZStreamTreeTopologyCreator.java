@@ -3,17 +3,17 @@ package sase.evaluation.tree.creators;
 import java.util.List;
 
 import sase.base.EventType;
+import sase.evaluation.nfa.lazy.order.IOrderingAlgorithm;
+import sase.evaluation.nfa.lazy.order.OrderingAlgorithmFactory;
+import sase.evaluation.nfa.lazy.order.OrderingAlgorithmTypes;
+import sase.evaluation.nfa.lazy.order.cost.ICostModel;
+import sase.evaluation.nfa.lazy.order.cost.ThroughputCostModel;
+import sase.evaluation.nfa.lazy.order.cost.ThroughputLatencyCostModel;
 import sase.evaluation.tree.ITreeCostModel;
 import sase.evaluation.tree.ITreeTopologyCreator;
 import sase.evaluation.tree.cost.ThroughputLatencyTreeCostModel;
 import sase.evaluation.tree.cost.ThroughputTreeCostModel;
 import sase.evaluation.tree.elements.node.Node;
-import sase.order.IOrderingAlgorithm;
-import sase.order.OrderingAlgorithmFactory;
-import sase.order.OrderingAlgorithmTypes;
-import sase.order.cost.ICostModel;
-import sase.order.cost.ThroughputCostModel;
-import sase.order.cost.ThroughputLatencyCostModel;
 import sase.pattern.Pattern;
 import sase.pattern.condition.base.CNFCondition;
 

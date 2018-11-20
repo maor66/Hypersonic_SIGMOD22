@@ -6,13 +6,14 @@ import java.util.List;
 import sase.base.EventSelectionStrategies;
 import sase.base.EventType;
 import sase.config.MainConfig;
-import sase.evaluation.EvaluationPlan;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.lazy.elements.EvaluationOrder;
+import sase.evaluation.plan.EvaluationPlan;
+import sase.evaluation.plan.OrderEvaluationPlan;
 import sase.pattern.CompositePattern;
 import sase.pattern.Pattern;
-import sase.pattern.Pattern.PatternOperatorType;
+import sase.pattern.Pattern.PatternOperatorTypes;
 import sase.pattern.condition.Condition;
 import sase.pattern.condition.base.AtomicCondition;
 import sase.pattern.condition.base.CNFCondition;
@@ -33,12 +34,12 @@ public class LazyChainNFA extends LazyNFA {
 	public LazyChainNFA(Pattern pattern, EvaluationPlan evaluationPlan, LazyNFANegationTypes negationType) {
 		super(pattern);
 		this.negationType = negationType;
-		evaluationOrder = new EvaluationOrder(pattern, evaluationPlan.getOrderRepresentation());
+		evaluationOrder = new EvaluationOrder(pattern, ((OrderEvaluationPlan)evaluationPlan).getRepresentation());
 		fullCondition = createFullCondition(pattern);
 		CompositePattern compositePattern = (CompositePattern) pattern;
 		globalTemporalOrderCondition = new GlobalTemporalOrderCondition(compositePattern.extractSequences(false));
 		if (MainConfig.selectionStrategy == EventSelectionStrategies.CONTUGUITY && 
-			pattern.getType() == PatternOperatorType.AND_SEQ) {
+			pattern.getType() == PatternOperatorTypes.AND_SEQ) {
 				fullCondition.addAtomicCondition(new TotalContiguityCondition());
 		}
 	}
@@ -58,7 +59,7 @@ public class LazyChainNFA extends LazyNFA {
 	}
 
 	@Override
-	protected void initNFAStructure(Pattern pattern) {
+	protected void initNFAStructure() {
 		initialState = new NFAState("Initial State", true, false, false);
 		finalState = new NFAState("Final State", false, true, true);
 		rejectingState = new NFAState("Rejecting State", false, true, false);

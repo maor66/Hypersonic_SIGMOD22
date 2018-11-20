@@ -13,6 +13,11 @@ public class TrivialCondition extends AtomicCondition {
 	protected boolean actuallyVerify(List<Event> events) {
 		return true;
 	}
+	
+	@Override
+	protected boolean shouldIgnoreSelectivityMeasurements() {
+		return true;
+	}
 
 	@Override
 	public String toString() {

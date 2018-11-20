@@ -1,6 +1,7 @@
 package sase.pattern;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import sase.base.EventType;
@@ -12,7 +13,7 @@ import sase.pattern.condition.base.CNFCondition;
  */
 public abstract class Pattern {
 
-	public enum PatternOperatorType {
+	public enum PatternOperatorTypes {
 		NONE,
 		
 		OLD_SEQ, 
@@ -27,16 +28,20 @@ public abstract class Pattern {
 		OR
 	}
 	
-	private final PatternOperatorType type;
+	private static Long patternIdCounter = (long) 0;
+	
+	private final Long patternId;
+	private final PatternOperatorTypes type;
 	private final Condition condition;
 	private final long timeWindow;
 	
 	private List<EventType> eventTypes;//NOTE: for sequence patterns this also defines the desired order
 	
-	public Pattern(PatternOperatorType operatorType, 
+	public Pattern(PatternOperatorTypes operatorType, 
 				   List<EventType> eventTypes, 
 				   Condition condition, 
 				   long timeWindow) {
+		this.patternId = patternIdCounter++;
 		this.type = operatorType;
 		this.condition = condition;
 		this.timeWindow = timeWindow;
@@ -45,7 +50,11 @@ public abstract class Pattern {
 		validatePatternType();
 	}
 
-	public PatternOperatorType getType() {
+	public Long getPatternId() {
+		return patternId;
+	}
+
+	public PatternOperatorTypes getType() {
 		return type;
 	}
 
@@ -63,7 +72,7 @@ public abstract class Pattern {
 	
 	private void validatePatternType()
 	{
-		for (PatternOperatorType patternOperatorType : getValidPatternTypes()) {
+		for (PatternOperatorTypes patternOperatorType : getValidPatternTypes()) {
 			if (patternOperatorType == getType()) {
 				return;
 			}
@@ -72,7 +81,7 @@ public abstract class Pattern {
 												 getPatternCategoryName(), getType()));
 	}
 	
-	protected Condition getSubCondition(List<EventType> subSetOfEvents) {
+	protected Condition getSubCondition(Collection<EventType> subSetOfEvents) {
 		List<EventType> excludedEvents = new ArrayList<EventType>();
 		for (EventType eventType : eventTypes) {
 			if (!subSetOfEvents.contains(eventType)) {
@@ -84,6 +93,6 @@ public abstract class Pattern {
 	}
 	
 	public abstract boolean isActuallyComposite();
-	protected abstract PatternOperatorType[] getValidPatternTypes();
+	protected abstract PatternOperatorTypes[] getValidPatternTypes();
 	protected abstract String getPatternCategoryName();
 }

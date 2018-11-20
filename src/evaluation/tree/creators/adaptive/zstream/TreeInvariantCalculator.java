@@ -1,9 +1,7 @@
 package sase.evaluation.tree.creators.adaptive.zstream;
 
-import sase.adaptive.estimation.IEventArrivalRateEstimator;
 import sase.adaptive.monitoring.invariant.IInvariantCalculator;
 import sase.adaptive.monitoring.invariant.InvariantInput;
-import sase.simulator.Environment;
 
 //TODO:I'm so sorry for the completely unjustified code duplication in this class..
 public class TreeInvariantCalculator implements IInvariantCalculator {
@@ -22,12 +20,11 @@ public class TreeInvariantCalculator implements IInvariantCalculator {
 	
 	private double calculateLeftSubTreeCardinality(TreeInvariantInput treeInvariantInput) {
 		if (treeInvariantInput.leftLeafType != null) {
-			return Environment.getEnvironment().getEventRateEstimator().getEventRateEstimate(treeInvariantInput.leftLeafType);
+			return treeInvariantInput.leftLeafType.getRate();
 		}
 		if (treeInvariantInput.leftPairOfLeaves != null) {
-			IEventArrivalRateEstimator eventRateEstimator = Environment.getEnvironment().getEventRateEstimator();
-			int leftRate = eventRateEstimator.getEventRateEstimate(treeInvariantInput.leftPairOfLeaves.leftLeafType);
-			int rightRate = eventRateEstimator.getEventRateEstimate(treeInvariantInput.leftPairOfLeaves.rightLeafType);
+			double leftRate = treeInvariantInput.leftPairOfLeaves.leftLeafType.getRate();
+			double rightRate = treeInvariantInput.leftPairOfLeaves.rightLeafType.getRate();
 			return leftRate * rightRate * treeInvariantInput.leftPairOfLeaves.conditions.getSelectivity();
 		}
 		return treeInvariantInput.leftSubTreeCardinality;
@@ -45,12 +42,11 @@ public class TreeInvariantCalculator implements IInvariantCalculator {
 	
 	private double calculateRightSubTreeCardinality(TreeInvariantInput treeInvariantInput) {
 		if (treeInvariantInput.rightLeafType != null) {
-			return Environment.getEnvironment().getEventRateEstimator().getEventRateEstimate(treeInvariantInput.rightLeafType);
+			return treeInvariantInput.rightLeafType.getRate();
 		}
 		if (treeInvariantInput.rightPairOfLeaves != null) {
-			IEventArrivalRateEstimator eventRateEstimator = Environment.getEnvironment().getEventRateEstimator();
-			int leftRate = eventRateEstimator.getEventRateEstimate(treeInvariantInput.rightPairOfLeaves.leftLeafType);
-			int rightRate = eventRateEstimator.getEventRateEstimate(treeInvariantInput.rightPairOfLeaves.rightLeafType);
+			double leftRate = treeInvariantInput.rightPairOfLeaves.leftLeafType.getRate();
+			double rightRate = treeInvariantInput.rightPairOfLeaves.rightLeafType.getRate();
 			return leftRate * rightRate * treeInvariantInput.rightPairOfLeaves.conditions.getSelectivity();
 		}
 		return treeInvariantInput.rightSubTreeCardinality;

@@ -18,7 +18,11 @@ public class ConditionSpecificationCreatorFactory {
 	}
 	
 	public static IConditionSpecificationCreator createConditionSpecificationCreator() {
-		switch (SimulationConfig.conditionCreatorType) {
+		return createConditionSpecificationCreator(SimulationConfig.conditionCreatorType);
+	}
+	
+	public static IConditionSpecificationCreator createConditionSpecificationCreator(ConditionSpecificationCreatorTypes type) {
+		switch (type) {
 			case STOCK_CORRELATION:
 				return new StockCorrelationConditionCreator();
 			case STOCK_DELTA:

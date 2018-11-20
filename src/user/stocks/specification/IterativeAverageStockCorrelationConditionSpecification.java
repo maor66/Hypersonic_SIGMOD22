@@ -6,7 +6,7 @@ import java.util.List;
 import sase.base.EventType;
 import sase.pattern.EventTypesManager;
 import sase.pattern.condition.base.AtomicCondition;
-import sase.specification.ConditionSpecification;
+import sase.specification.condition.ConditionSpecification;
 import sase.user.stocks.condition.StockAverageCorrelationCondition;
 import sase.user.stocks.condition.StockCorrelationCondition;
 import sase.user.stocks.condition.StockSameCompanyCondition;

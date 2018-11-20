@@ -20,7 +20,10 @@ public class LeafNode extends Node {
 	}
 	
 	public LeafNode(LeafNode other) {
-		this(other.eventType, other.mainCondition, other.isIterated);
+		super(other.mainCondition);
+		this.eventType = other.eventType;
+		this.isIterated = other.isIterated;
+		this.nodeCondition = other.nodeCondition;
 	}
 	
 	public EventType getEventType() {
@@ -32,7 +35,7 @@ public class LeafNode extends Node {
 	}
 
 	@Override
-	public List<EventType> getEventTypes() {
+	public List<EventType> actuallyGetEventTypes() {
 		List<EventType> result = new ArrayList<EventType>();
 		result.add(eventType);
 		return result;
@@ -75,6 +78,16 @@ public class LeafNode extends Node {
 	@Override
 	public double getNodeReachProbability() {
 		return 1.0;
+	}
+
+	@Override
+	public Node cloneNode() {
+		return new LeafNode(this);
+	}
+
+	@Override
+	public String getShortDescription() {
+		return eventType.getName();
 	}
 
 }

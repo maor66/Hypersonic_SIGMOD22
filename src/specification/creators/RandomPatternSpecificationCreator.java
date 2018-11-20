@@ -6,14 +6,16 @@ import java.util.Random;
 
 import sase.base.EventType;
 import sase.config.SimulationConfig;
+import sase.multi.sla.SlaVerifierTypes;
 import sase.pattern.EventTypesManager;
-import sase.pattern.Pattern.PatternOperatorType;
+import sase.pattern.Pattern.PatternOperatorTypes;
 import sase.pattern.creation.PatternTypes;
-import sase.specification.ConditionSpecification;
-import sase.specification.PatternSpecification;
 import sase.specification.SimulationSpecification;
+import sase.specification.condition.ConditionSpecification;
 import sase.specification.creators.condition.IConditionSpecificationCreator;
 import sase.specification.creators.condition.IConditionSpecificationSetCreator;
+import sase.specification.workload.PatternSpecification;
+import sase.specification.workload.SinglePatternWorkloadSpecification;
 import sase.user.stocks.StockEventTypesManager;
 
 public abstract class RandomPatternSpecificationCreator implements ISimulationSpecificationCreator {
@@ -50,7 +52,8 @@ public abstract class RandomPatternSpecificationCreator implements ISimulationSp
 			for (int j = 0; j < SimulationConfig.evaluationSpecifications.length; ++j) {
 				int currentSpecificationIndex = i * SimulationConfig.evaluationSpecifications.length + j;
 				specifications[currentSpecificationIndex] = 
-						new SimulationSpecification(patternSpecifications[i], SimulationConfig.evaluationSpecifications[j]);
+						new SimulationSpecification(new SinglePatternWorkloadSpecification(patternSpecifications[i]), 
+													SimulationConfig.evaluationSpecifications[j]);
 			}
 		}
 		return specifications;
@@ -61,7 +64,7 @@ public abstract class RandomPatternSpecificationCreator implements ISimulationSp
 		PatternSpecification[] result = new PatternSpecification[numberOfPatterns];
 		for (int i = 0; i < SimulationConfig.patternSizes.length; ++i) {
 			int currentLength = SimulationConfig.patternSizes[i] + SimulationConfig.negatedEventsNumber;
-			if (SimulationConfig.mainOperatorType == PatternOperatorType.OR) {
+			if (SimulationConfig.mainOperatorType == PatternOperatorTypes.OR) {
 				currentLength *= SimulationConfig.numberOfDisjunctions;
 			}
 			for (int j = 0; j < SimulationConfig.patternsPerLength; ++j) {
@@ -86,7 +89,7 @@ public abstract class RandomPatternSpecificationCreator implements ISimulationSp
 										getTimeWindowForPatternGenerator(), patternStructure,
 										eventTypeListToEventNameList(negatedEventTypes).toArray(new String[0]), 
 										eventTypeListToEventNameList(iteratedEventTypes).toArray(new String[0]),
-				 						conditionSpecifications);
+				 						conditionSpecifications, SlaVerifierTypes.NONE);
 	}
 	
 	protected List<EventType> createEventTypesForPattern(int length, 

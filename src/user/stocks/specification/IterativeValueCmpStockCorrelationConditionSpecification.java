@@ -9,7 +9,7 @@ import sase.pattern.EventTypesManager;
 import sase.pattern.condition.base.AtomicCondition;
 import sase.pattern.condition.iteration.FirstValueExternalCondition;
 import sase.pattern.condition.iteration.eager.IteratedIncrementalDoubleEventCondition;
-import sase.specification.ConditionSpecification;
+import sase.specification.condition.ConditionSpecification;
 import sase.user.stocks.condition.StockFirstValueCmpCondition;
 
 public class IterativeValueCmpStockCorrelationConditionSpecification extends ConditionSpecification {

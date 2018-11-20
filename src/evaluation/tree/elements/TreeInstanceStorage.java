@@ -13,12 +13,24 @@ import sase.statistics.Statistics;
 public class TreeInstanceStorage {
 
 	private final Node treeRoot;
-	private HashMap<Node, List<TreeInstance>> instances;
+	protected HashMap<Node, List<TreeInstance>> instances;
 
 	public TreeInstanceStorage(Node treeRoot) {
 		this.treeRoot = treeRoot;
 		instances = new HashMap<Node, List<TreeInstance>>();
 		List<Node> nodes = treeRoot.getNodesInSubTree();
+		for (Node node : nodes) {
+			instances.put(node, new ArrayList<TreeInstance>());
+		}
+	}
+	
+	protected TreeInstanceStorage() {
+		treeRoot = null;
+		instances = new HashMap<Node, List<TreeInstance>>();
+	}
+	
+	protected void registerNodesInSubtree(Node subtree) {
+		List<Node> nodes = subtree.getNodesInSubTree();
 		for (Node node : nodes) {
 			instances.put(node, new ArrayList<TreeInstance>());
 		}

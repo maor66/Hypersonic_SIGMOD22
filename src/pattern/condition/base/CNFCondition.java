@@ -1,7 +1,9 @@
 package sase.pattern.condition.base;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 import sase.base.Event;
 import sase.base.EventType;
@@ -28,6 +30,10 @@ public class CNFCondition extends Condition {
 	
 	public CNFCondition(List<AtomicCondition> conditions) {
 		this(conditions, null);
+	}
+	
+	public CNFCondition(CNFCondition other) {
+		this(new ArrayList<AtomicCondition>(other.atomicConditions));
 	}
 	
 	public CNFCondition() {
@@ -255,6 +261,16 @@ public class CNFCondition extends Condition {
 		}
 		return new CNFCondition(filteredConditions);
 	}
+	
+	public CNFCondition getIntersection(CNFCondition other) {
+		List<AtomicCondition> newConditions = new ArrayList<AtomicCondition>(atomicConditions);
+		newConditions.retainAll(other.getAtomicConditions());
+		return new CNFCondition(newConditions);
+	}
+	
+	public boolean isEmpty() {
+		return atomicConditions.isEmpty();
+	}
 
 	@Override
 	public String toString() {
@@ -273,4 +289,18 @@ public class CNFCondition extends Condition {
 	protected String getConditionKey() {
 		return "Unsupported";
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof CNFCondition)) {
+			return false;
+		}
+		CNFCondition condition = (CNFCondition)other;
+		return new HashSet<AtomicCondition>(atomicConditions).equals(new HashSet<AtomicCondition>(condition.atomicConditions));
+	}
+
+	@Override
+    public int hashCode() {
+        return Objects.hash(atomicConditions);
+    }
 }

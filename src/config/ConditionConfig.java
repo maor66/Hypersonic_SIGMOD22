@@ -1,6 +1,6 @@
 package sase.config;
 
-import sase.specification.ConditionSpecification;
+import sase.specification.condition.ConditionSpecification;
 import sase.user.speedd.fraud.CreditCardFraudEventTypesManager;
 import sase.user.speedd.fraud.SameCreditCardIDConditionSpecification;
 import sase.user.speedd.traffic.TrafficEventTypesManager;
@@ -499,7 +499,7 @@ public class ConditionConfig {
 	////////////////////////////////////////Test configuration/////////////////////////////////////
 	public static final ConditionSpecification[] testSequence = new ConditionSpecification[] {
 			new StockDeltaOrderingConditionSpecification(StockEventTypesManager.ciscoEventTypeName,
-					   									 StockEventTypesManager.netlistEventTypeName),
+					   									 StockEventTypesManager.nlstEventTypeName),
 	};
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////

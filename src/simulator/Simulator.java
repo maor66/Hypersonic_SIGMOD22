@@ -6,8 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
-import sase.adaptive.monitoring.AdaptationNecessityDetector;
+import sase.adaptive.monitoring.IAdaptationNecessityDetector;
+import sase.adaptive.monitoring.IMultiPatternAdaptationNecessityDetector;
 import sase.base.Event;
 import sase.base.EventSelectionStrategies;
 import sase.config.MainConfig;
@@ -15,16 +17,21 @@ import sase.config.SimulationConfig;
 import sase.evaluation.EvaluationMechanismFactory;
 import sase.evaluation.IEvaluationMechanism;
 import sase.evaluation.IEvaluationMechanismInfo;
+import sase.evaluation.IMultiPatternEvaluationMechanism;
 import sase.evaluation.common.Match;
 import sase.input.EventProducer;
 import sase.input.EventProducerFactory;
+import sase.multi.MultiPlan;
+import sase.pattern.CompositePattern;
 import sase.pattern.EventTypesManager;
-import sase.pattern.Pattern;
-import sase.pattern.creation.PatternFactory;
-import sase.specification.PatternSpecification;
+import sase.pattern.workload.IWorkloadManager;
+import sase.pattern.workload.PatternWorkloadFactory;
 import sase.specification.SimulationSpecification;
 import sase.specification.creators.ISimulationSpecificationCreator;
 import sase.specification.creators.SpecificationCreatorFactory;
+import sase.specification.workload.PatternSpecification;
+import sase.specification.workload.SinglePatternWorkloadSpecification;
+import sase.specification.workload.WorkloadSpecification;
 import sase.statistics.ConditionSelectivityCollector;
 import sase.statistics.EventRateCollector;
 import sase.statistics.Statistics;
@@ -36,7 +43,8 @@ public class Simulator {
 	
 	private List<SimulationSpecification> specifications;
 	
-	private Pattern pattern;
+	private IWorkloadManager workload;
+	private Long timeWindow;
     private EventProducer eventProducer;
     private	EventRateCollector eventRateEstimator;
 
@@ -64,8 +72,9 @@ public class Simulator {
 		Environment.getEnvironment().getPredicateResultsCache().clear();
 		recordNewMatches(matches);
 		tryAdaptEvaluation(event.getTimestamp());
+		tryModifyWorkload(event.getTimestamp());
 	}
-	
+
 	private List<Match> actuallyProcessIncomingEvent(Event event) {
 		if (secondaryEvaluationMechanism == null) {
 			List<Match> matches = validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
@@ -108,7 +117,7 @@ public class Simulator {
 	
 	private void tryAdaptEvaluation(long currentTimestamp) {
 		if (secondaryEvaluationMechanism != null) {
-			if (currentTimestamp - secondaryEvaluationMechanismCreationTimestamp > pattern.getTimeWindow()) {
+			if (currentTimestamp - secondaryEvaluationMechanismCreationTimestamp > timeWindow) {
 				primaryEvaluationMechanism = secondaryEvaluationMechanism;
 				secondaryEvaluationMechanism = null;
 			}
@@ -121,12 +130,11 @@ public class Simulator {
 			lastAdaptCheckTimestamp = currentTimestamp;
 			return;
 		}
-		if (currentTimestamp - lastAdaptCheckTimestamp < 
-										pattern.getTimeWindow() * MainConfig.adaptationTrialsIntervalToTimeWindowRatio) {
+		if (currentTimestamp - lastAdaptCheckTimestamp < timeWindow * MainConfig.adaptationTrialsIntervalToTimeWindowRatio) {
 			return;
 		}
 		lastAdaptCheckTimestamp = currentTimestamp;
-		AdaptationNecessityDetector detector = Environment.getEnvironment().getAdaptationNecessityDetector();
+		IAdaptationNecessityDetector detector = Environment.getEnvironment().getAdaptationNecessityDetector();
 		Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.adaptationTime);
 		if (detector.shouldAdapt()) {
 			StatisticsManager statisticsManager = Environment.getEnvironment().getStatisticsManager();
@@ -136,8 +144,11 @@ public class Simulator {
 					statisticsManager.stopMeasuringTime(Statistics.averageInputChangeDetectionTime);
 				}
 			}
-			secondaryEvaluationMechanism = createNewEvaluationMechanism();
-			secondaryEvaluationMechanismCreationTimestamp = currentTimestamp;
+			if (detector instanceof IMultiPatternAdaptationNecessityDetector) {
+				updateColoredPatterns((IMultiPatternEvaluationMechanism)primaryEvaluationMechanism,
+									  (IMultiPatternAdaptationNecessityDetector)detector);
+			}
+			createSecondaryEvaluationMechanism(currentTimestamp);
 			if (primaryEvaluationMechanism.getStructureSummary().equals(secondaryEvaluationMechanism.getStructureSummary())) {
 				statisticsManager.incrementDiscreteStatistic(Statistics.numberOfFalseAdaptations);
 			}
@@ -145,13 +156,52 @@ public class Simulator {
 		Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.adaptationTime);
 	}
 	
+	private void tryModifyWorkload(long currentTimestamp) {
+		if (!(primaryEvaluationMechanism instanceof IMultiPatternEvaluationMechanism)) {
+			return;
+		}
+		if (secondaryEvaluationMechanism != null) {
+			return;
+		}
+		MultiPlan multiPlan = ((IMultiPatternEvaluationMechanism)primaryEvaluationMechanism).getMultiPlan();
+		if (!workload.tryAlterWorkload(multiPlan)) {
+			return;
+		}
+		createSecondaryEvaluationMechanism(currentTimestamp);
+	}
+	
+	private void createSecondaryEvaluationMechanism(long currentTimestamp) {
+		secondaryEvaluationMechanism = createNewEvaluationMechanism(primaryEvaluationMechanism);
+		secondaryEvaluationMechanismCreationTimestamp = currentTimestamp;
+	}
+	
+	private void updateColoredPatterns(IMultiPatternEvaluationMechanism evaluationMechanism,
+									   IMultiPatternAdaptationNecessityDetector detector) {
+		Set<CompositePattern> affectedPatterns = detector.getAffectedPatterns();
+		MultiPlan multiPlan = evaluationMechanism.getMultiPlan();
+		multiPlan.getGraph().uncolorAll();
+		for (CompositePattern pattern : affectedPatterns) {
+			multiPlan.getGraph().colorPattern(pattern);
+		}
+	}
+
 	private IEvaluationMechanism createNewEvaluationMechanism() {
+		return createNewEvaluationMechanism(null);
+	}
+	
+	private IEvaluationMechanism createNewEvaluationMechanism(IEvaluationMechanism currentEvaluationMechanism) {
     	Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.evaluationMechanismCreationTime);
-    	Object evaluationMechanismObject = EvaluationMechanismFactory.createEvaluationMechanism(pattern);
+    	Object evaluationMechanismObject = 
+    		EvaluationMechanismFactory.createEvaluationMechanism(workload.getCurrentWorkload(), currentEvaluationMechanism);
     	Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.evaluationMechanismCreationTime);
     	IEvaluationMechanism evaluationMechanism = (IEvaluationMechanism)evaluationMechanismObject;
-    	evaluationMechanism.completeCreation(pattern);
-    	System.out.println(evaluationMechanism.getStructureSummary());
+    	evaluationMechanism.completeCreation(workload.getCurrentWorkload());
+    	if (MainConfig.printStructureSummary) {
+    		System.out.println(evaluationMechanism.getStructureSummary());
+    	}
+    	else {
+     		System.out.println("Evaluation Mechanism Generated.");
+     	}
     	Environment.getEnvironment().setEvaluationMechanismInfo((IEvaluationMechanismInfo)evaluationMechanismObject);
     	return evaluationMechanism;
 	}
@@ -169,7 +219,7 @@ public class Simulator {
 	
 	private void attemptToRecoverExistingStatistics(SimulationSpecification currentSpecification) {
 		currentHistoryId = String.format("%s|%s", 
- 				 						 currentSpecification.getPatternSpecification().getShortDescription(), 
+ 				 						 currentSpecification.getWorkloadSpecification().getShortDescription(), 
  				 						 primaryEvaluationMechanism.getStructureSummary());
 		oldStatisticsManager = simulationHistory.getStatisticsManagerForSimulation(currentHistoryId);
 		if (oldStatisticsManager == null) {
@@ -187,18 +237,18 @@ public class Simulator {
     									 ++currentStepNumber, specifications.size(), 
     									 dateFormat.format(new Date()), currentSpecification));
     	
-    	pattern = PatternFactory.createPattern(currentSpecification.getPatternSpecification(),
-    										   currentSpecification.getInputSpecification());
-    	Environment.getEnvironment().reset(pattern, currentSpecification);
+    	workload = PatternWorkloadFactory.createPatternWorkload(currentSpecification.getWorkloadSpecification(),
+    										    				currentSpecification.getInputSpecification());
+    	Environment.getEnvironment().reset(workload, currentSpecification);
+    	timeWindow = workload.getMaxTimeWindow();
     	
-    	eventProducer = EventProducerFactory.createEventProducer(pattern, currentSpecification);
+    	eventProducer = EventProducerFactory.createEventProducer(workload.getCurrentWorkload(), currentSpecification);
     	
     	primaryEvaluationMechanism = createNewEvaluationMechanism();
     	secondaryEvaluationMechanism = null;
     	lastAdaptCheckTimestamp = null;
     	
-    	eventRateEstimator = new EventRateCollector(EventTypesManager.getInstance().getKnownEventTypes(), 
-    												pattern.getTimeWindow());
+    	eventRateEstimator = new EventRateCollector(EventTypesManager.getInstance().getKnownEventTypes(), timeWindow);
     	if (MainConfig.useSimulationHistory) {
     		attemptToRecoverExistingStatistics(currentSpecification);
     	}
@@ -210,6 +260,9 @@ public class Simulator {
     		return;
     	}
     	try {
+    		if (MainConfig.planConstructionOnly) {
+    			return;
+    		}
     		while (eventProducer.hasMoreEvents()) {
     			if (Environment.getEnvironment().isTimeoutReached(null)) {
     				Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(Statistics.isTimeoutReached, 1);
@@ -238,7 +291,9 @@ public class Simulator {
     			recordNewMatches(secondaryEvaluationMechanism.getLastMatches());
     		}
     		Environment.getEnvironment().getStatisticsManager().reportStatistics();
-			simulationHistory.registerSimulation(currentHistoryId, Environment.getEnvironment().getStatisticsManager());
+			if (MainConfig.useSimulationHistory) {
+				simulationHistory.registerSimulation(currentHistoryId, Environment.getEnvironment().getStatisticsManager());
+			}
     	}
     }
     
@@ -261,29 +316,45 @@ public class Simulator {
     	}
     	return specificationCreator.createSpecifications();
     }
+    
+    private List<SimulationSpecification> createSpecificationsForTimeWindows(SimulationSpecification specification) {
+		WorkloadSpecification workloadSpecification = specification.getWorkloadSpecification();
+    	if (SimulationConfig.timeWindows.length == 0 || workloadSpecification.getMaxTimeWindow() != null ||
+			!(workloadSpecification instanceof SinglePatternWorkloadSpecification)) {
+			return null;
+		}
+    	List<SimulationSpecification> result = new ArrayList<SimulationSpecification>();
+		PatternSpecification patternSpecification = 
+				((SinglePatternWorkloadSpecification)workloadSpecification).getPatternSpecification();
+		for (long timeWindow : SimulationConfig.timeWindows) {
+			long actualTimeWindow = (patternSpecification.getIteratedEventNames().length == 0) ?
+									 timeWindow : timeWindow * 2 / 5;
+			PatternSpecification newPatternSpecification = 
+					new PatternSpecification(patternSpecification.getName(), 
+											 patternSpecification.getType(), 
+											 actualTimeWindow,
+											 patternSpecification.getStructure(),
+											 patternSpecification.getNegatedEventNames(),
+											 patternSpecification.getIteratedEventNames(),
+											 patternSpecification.getConditions(),
+											 patternSpecification.getVerifierType());
+			SinglePatternWorkloadSpecification newWorkloadSpecification = 
+					new SinglePatternWorkloadSpecification(newPatternSpecification);
+			result.add(new SimulationSpecification(newWorkloadSpecification, specification.getEvaluationSpecification()));
+		}
+		return result;
+    }
 	
 	private void start() {
 		specifications = new ArrayList<SimulationSpecification>();
 		SimulationSpecification[] baseSpecifications = generateSpecifications();
 		for (SimulationSpecification currentSpecification : baseSpecifications) {
-			PatternSpecification patternSpecification = currentSpecification.getPatternSpecification();
-			if (SimulationConfig.timeWindows.length == 0 || patternSpecification.getTimeWindow() != null) {
+			List<SimulationSpecification> actualSpecifications = createSpecificationsForTimeWindows(currentSpecification);
+			if (actualSpecifications == null) {
 				specifications.add(currentSpecification);
-				continue;
 			}
-			for (long timeWindow : SimulationConfig.timeWindows) {
-				long actualTimeWindow = (patternSpecification.getIteratedEventNames().length == 0) ?
-										 timeWindow : timeWindow * 2 / 5;
-				PatternSpecification newPatternSpecification = 
-						new PatternSpecification(patternSpecification.getName(), 
-												 patternSpecification.getType(), 
-												 actualTimeWindow,
-												 patternSpecification.getStructure(),
-												 patternSpecification.getNegatedEventNames(),
-												 patternSpecification.getIteratedEventNames(),
-												 patternSpecification.getConditions());
-				specifications.add(new SimulationSpecification(newPatternSpecification, 
-															   currentSpecification.getEvaluationSpecification()));
+			else {
+				specifications.addAll(actualSpecifications);
 			}
 		}
     }

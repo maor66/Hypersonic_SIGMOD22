@@ -10,7 +10,7 @@ public class StaticEventArrivalRateEstimator implements IEventArrivalRateEstimat
 	}
 
 	@Override
-	public int getEventRateEstimate(EventType type) {
+	public double getEventRateEstimate(EventType type) {
 		return EventRateConfig.eventRate.get(type.getName());
 	}
 

@@ -3,8 +3,8 @@ package sase.user.stocks.specification.creators;
 import java.util.Random;
 
 import sase.config.SimulationConfig;
-import sase.specification.ConditionSpecification;
-import sase.specification.DoubleEventConditionSpecification;
+import sase.specification.condition.ConditionSpecification;
+import sase.specification.condition.DoubleEventConditionSpecification;
 import sase.specification.creators.condition.IConditionSpecificationCreator;
 import sase.user.stocks.specification.StockCorrelationConditionSpecification;
 

@@ -3,6 +3,8 @@ package sase.base;
 import java.util.ArrayList;
 import java.util.List;
 
+import sase.simulator.Environment;
+
 public class EventType {
 
 	private final String name;
@@ -22,6 +24,10 @@ public class EventType {
 
 	public List<Attribute> getAttributes() {
 		return attributes;
+	}
+	
+	public Double getRate() {
+		return Environment.getEnvironment().getEventRateEstimator().getEventRateEstimate(this);
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 package sase.evaluation.common;
 
 import java.util.List;
+import java.util.Objects;
 
 import sase.base.Event;
 
@@ -36,6 +37,11 @@ public class Match {
 		}
 		return true;
 	}
+	
+	@Override
+    public int hashCode() {
+        return Objects.hash(primitiveEvents);
+    }
 	
 	public long getDetectionLatency() {
 		return detectionLatency;

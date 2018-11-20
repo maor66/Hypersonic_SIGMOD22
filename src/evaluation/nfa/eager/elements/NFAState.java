@@ -29,7 +29,7 @@ public class NFAState extends State {
 	
 	public NFAState(String name, boolean isInitial, boolean isFinal, boolean isAccepting) {
 		this.id = stateIdCounter++;
-		this.name = name;
+		this.name = name == null ? String.format("State_%d", id) : name;
 		this.isInitial = isInitial;
 		this.isFinal = isFinal;
 		this.isAccepting = isAccepting;

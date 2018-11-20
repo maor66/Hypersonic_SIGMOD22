@@ -1,10 +1,12 @@
 package sase.pattern;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import sase.base.EventType;
 import sase.pattern.condition.Condition;
+import sase.pattern.condition.base.CNFCondition;
 
 public class CompositePattern extends Pattern {
 
@@ -23,7 +25,7 @@ public class CompositePattern extends Pattern {
 		return eventTypes;
 	}
 
-	public CompositePattern(PatternOperatorType operatorType, List<Pattern> nestedPatterns, Condition condition,
+	public CompositePattern(PatternOperatorTypes operatorType, List<Pattern> nestedPatterns, Condition condition,
 			long timeWindow) {
 		super(operatorType, createEventListFromPatternList(nestedPatterns), condition, timeWindow);
 		this.nestedPatterns = nestedPatterns;
@@ -32,7 +34,7 @@ public class CompositePattern extends Pattern {
 	@Override
 	public boolean isActuallyComposite() {
 		for (Pattern pattern : nestedPatterns) {
-			if (pattern.getType() != PatternOperatorType.NOP) {
+			if (pattern.getType() != PatternOperatorTypes.NOP) {
 				return true;
 			}
 		}
@@ -40,9 +42,9 @@ public class CompositePattern extends Pattern {
 	}
 
 	@Override
-	protected PatternOperatorType[] getValidPatternTypes() {
-		return new PatternOperatorType[] { PatternOperatorType.SEQ, PatternOperatorType.AND_SEQ,
-				PatternOperatorType.OR };
+	protected PatternOperatorTypes[] getValidPatternTypes() {
+		return new PatternOperatorTypes[] { PatternOperatorTypes.SEQ, PatternOperatorTypes.AND_SEQ,
+				PatternOperatorTypes.OR };
 	}
 
 	@Override
@@ -53,6 +55,13 @@ public class CompositePattern extends Pattern {
 	public List<Pattern> getNestedPatterns() {
 		return nestedPatterns;
 	}
+	
+	public CNFCondition getCNFCondition() {
+		if (!(getCondition() instanceof CNFCondition)) {
+			throw new RuntimeException("Illegal condition");
+		}
+		return (CNFCondition)getCondition();
+	}
 
 	public List<List<EventType>> extractSequences(boolean positiveElementsOnly) {
 		List<List<EventType>> sequences = new ArrayList<List<EventType>>();
@@ -61,7 +70,7 @@ public class CompositePattern extends Pattern {
 			if (positiveElementsOnly) {
 				List<EventType> positiveList = new ArrayList<EventType>();
 				for (Pattern nestedPattern : nestedPatterns) {
-					if (nestedPattern.getType() != PatternOperatorType.NEG) {
+					if (nestedPattern.getType() != PatternOperatorTypes.NEG) {
 						positiveList.add(((UnaryPattern) nestedPattern).getEventType());
 					}
 				}
@@ -73,7 +82,7 @@ public class CompositePattern extends Pattern {
 		case AND_SEQ:
 		case OR:
 			for (Pattern nestedPattern : nestedPatterns) {
-				if (nestedPattern.getType() != PatternOperatorType.SEQ) {
+				if (nestedPattern.getType() != PatternOperatorTypes.SEQ) {
 					continue;// unary pattern
 				}
 				sequences.addAll(((CompositePattern) nestedPattern).extractSequences(positiveElementsOnly));
@@ -85,20 +94,20 @@ public class CompositePattern extends Pattern {
 		return sequences;
 	}
 
-	private boolean shouldIncludePattern(PatternOperatorType requiredPatternType, PatternOperatorType actualPatternType) {
+	private boolean shouldIncludePattern(PatternOperatorTypes requiredPatternType, PatternOperatorTypes actualPatternType) {
 		if (requiredPatternType == actualPatternType) {
 			return true;
 		}
-		return (requiredPatternType == PatternOperatorType.NONE &&
+		return (requiredPatternType == PatternOperatorTypes.NONE &&
 				UnaryPattern.getUnaryPatternTypes().contains(actualPatternType));
 	}
 	
-	private List<EventType> getEventTypesForPatternType(PatternOperatorType patternType) {
+	private List<EventType> getEventTypesForPatternType(PatternOperatorTypes patternType) {
 		List<EventType> result = new ArrayList<EventType>();
 		for (Pattern nestedPattern : nestedPatterns) {
 			if (shouldIncludePattern(patternType, nestedPattern.getType())) {
 				result.add(((UnaryPattern) nestedPattern).getEventType());
-			} else if (nestedPattern.getType() == PatternOperatorType.SEQ) {
+			} else if (nestedPattern.getType() == PatternOperatorTypes.SEQ) {
 				result.addAll(((CompositePattern) nestedPattern).getNegativeEventTypes());
 			}
 		}
@@ -106,14 +115,14 @@ public class CompositePattern extends Pattern {
 	}
 
 	public List<EventType> getNegativeEventTypes() {
-		return getEventTypesForPatternType(PatternOperatorType.NEG);
+		return getEventTypesForPatternType(PatternOperatorTypes.NEG);
 	}
 
 	public List<EventType> getIterativeEventTypes() {
-		return getEventTypesForPatternType(PatternOperatorType.ITER);
+		return getEventTypesForPatternType(PatternOperatorTypes.ITER);
 	}
 	
-	public CompositePattern getSubPattern(List<EventType> eventTypesForSubPattern) {
+	public CompositePattern getSubPattern(Collection<EventType> eventTypesForSubPattern) {
 		List<Pattern> nestedPatternsForSubPattern = new ArrayList<Pattern>();
 		for (Pattern pattern : nestedPatterns) {
 			if (pattern instanceof UnaryPattern) {
@@ -144,6 +153,11 @@ public class CompositePattern extends Pattern {
 			}
 		}
 		return getSubPattern(eventTypesForSubPattern);
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("Pattern %d over %s", getPatternId(), getEventTypes());
 	}
 
 }

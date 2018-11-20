@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sase.base.EventType;
+import sase.pattern.CompositePattern;
 import sase.pattern.condition.base.AtomicCondition;
 import sase.pattern.condition.base.CNFCondition;
 
@@ -19,6 +20,11 @@ public class GlobalTemporalOrderCondition extends CNFCondition {
 			}
 		}
 		return conditions;
+	}
+	
+	public static List<EventTemporalPositionCondition> getPatternTemporalConstraintsForOrder(CompositePattern pattern,
+																							 List<EventType> order) {
+		return new GlobalTemporalOrderCondition(pattern.extractSequences(false)).getPositionConstraintsByOrder(order, false);
 	}
 	
 	public GlobalTemporalOrderCondition(List<List<EventType>> sequences) {
