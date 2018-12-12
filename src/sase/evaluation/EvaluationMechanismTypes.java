@@ -6,9 +6,10 @@ public enum EvaluationMechanismTypes {
 	LAZY_TREE,
 	TREE,
 	MULTI_PATTERN_TREE,
-	MULTI_PATTERN_MULTI_TREE;
-	
-	@Override
+	MULTI_PATTERN_MULTI_TREE,
+	LAZY_CHAIN_PARALLEL;
+
+    @Override
 	public String toString() {
 		switch(this) {
 			case EAGER: 
@@ -23,6 +24,8 @@ public enum EvaluationMechanismTypes {
 				return "Multi-Pattern Tree";
 			case MULTI_PATTERN_MULTI_TREE:
 				return "Multi-Pattern Multi-Tree";
+			case LAZY_CHAIN_PARALLEL:
+				return "Parallel chain NFA";
 			default: 
 				return "";
 		}

@@ -12,6 +12,7 @@ import sase.evaluation.nfa.eager.SEQ_NFA;
 import sase.evaluation.nfa.lazy.LazyChainNFA;
 import sase.evaluation.nfa.lazy.LazyMultiChainNFA;
 import sase.evaluation.nfa.lazy.LazyMultiPatternTreeNFA;
+import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
 import sase.evaluation.plan.DisjunctionEvaluationPlan;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.evaluation.plan.MultiPatternMultiTreeEvaluationPlan;
@@ -60,6 +61,9 @@ public class EvaluationMechanismFactory {
 					case LAZY_CHAIN:
 						return new LazyChainNFA(pattern, evaluationPlan, 
 												((LazyNFAEvaluationSpecification)specification).negationType);
+					case LAZY_CHAIN_PARALLEL:
+						return new ParallelLazyChainNFA(pattern, evaluationPlan,
+                    ((LazyNFAEvaluationSpecification)specification).negationType);
 					case LAZY_TREE:
 						return null;
 					case TREE:

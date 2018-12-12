@@ -86,6 +86,7 @@ public class EvaluationPlanCreator {
 	}
 	
 	private EvaluationPlan createOrderBasedPlan(Pattern pattern) {
+		// Maor: Here is where the order of the chain is determined
 		if (specification instanceof FixedLazyNFAEvaluationSpecification) {
 			return createFixedOrderBasedPlan(pattern);
 		}
