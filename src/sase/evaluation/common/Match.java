@@ -2,8 +2,11 @@ package sase.evaluation.common;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import sase.base.Event;
+import sase.base.EventType;
 
 public class Match {
 	private final List<Event> primitiveEvents;
@@ -58,5 +61,11 @@ public class Match {
 		}
 		result += "]";
 		return result;
+	}
+
+	public Match createNewPartialMatchWithEvent(List<EventType> fullEvaluationOrder, Event event) {
+		//TODO: latency measurement is probably wrong
+		//TODO: creates partial match by evaluation/frequency order and not by sequence order. not sure if ok
+		return new Match(Stream.concat(primitiveEvents.stream(),List.of(event).stream()).collect(Collectors.toList()), event.getSystemTimestamp()); //Combining two lists)
 	}
 }
