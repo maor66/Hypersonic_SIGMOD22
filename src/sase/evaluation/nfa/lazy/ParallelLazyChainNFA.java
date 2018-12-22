@@ -46,10 +46,15 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private List<Match> findPartialMatchesInCurrentState(TypedNFAState eventState, List<Event> eventList, List<Match> partialMatchList) {
         //TODO: PARALLELIZE: This is the step where a thread receives the event and should do its task (find PMs with comparing to MB)
         List <Match> extraEventPartialMatches = new ArrayList<>();
-        for (Match partialMatch : partialMatchList) {
-            for (Event event : eventList) { //One of the list is of size 1, so it is actually comparing one object with every other on the list
-                if (isEventCompatibleWithPartialMatch(eventState, partialMatch, event)) {
-                    extraEventPartialMatches.add(partialMatch.createNewPartialMatchWithEvent(evaluationOrder.getFullEvaluationOrder(), event));
+        if (eventState.isInitial()) { // In the first state only, events are forwarded automatically to the next state.
+            extraEventPartialMatches.add(new Match(eventList, System.currentTimeMillis()));
+        }
+        else {
+            for (Match partialMatch : partialMatchList) {
+                for (Event event : eventList) { //One of the list is of size 1, so it is actually comparing one object with every other on the list
+                    if (isEventCompatibleWithPartialMatch(eventState, partialMatch, event)) {
+                        extraEventPartialMatches.add(partialMatch.createNewPartialMatchWithEvent(evaluationOrder.getFullEvaluationOrder(), event));
+                    }
                 }
             }
         }
@@ -75,7 +80,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         partialMatchBuffer.get(nextState).addAll(extraEventPartialMatches); //TODO: PARALLELIZE: should be done in a seperate thread (or threads)
         List <Match> completeMatches = new ArrayList<>();
         for (Match partialMatch : extraEventPartialMatches) {
-            completeMatches.addAll(findPartialMatchesOnNewPartialMatch(nextState, partialMatch);
+            completeMatches.addAll(findPartialMatchesOnNewPartialMatch(nextState, partialMatch));
         }
         return completeMatches;
     }
@@ -86,9 +91,9 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         parallelInputBuffer = new HashMap<>();
         partialMatchBuffer = new HashMap<>();
         //TODO : should create states as TypedNFAStates
-        for (TypedNFAState s : states) {
-            parallelInputBuffer.put(s, new ArrayList<>());
-            partialMatchBuffer.put(s, new ArrayList<>());
+        for (State s : states) {
+            parallelInputBuffer.put((TypedNFAState)s, new ArrayList<>());
+            partialMatchBuffer.put((TypedNFAState)s, new ArrayList<>());
         }
     }
 

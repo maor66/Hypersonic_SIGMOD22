@@ -8,6 +8,7 @@ import sase.base.EventType;
 import sase.config.MainConfig;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
+import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.EvaluationOrder;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.evaluation.plan.OrderEvaluationPlan;
@@ -60,8 +61,8 @@ public class LazyChainNFA extends LazyNFA {
 
 	@Override
 	protected void initNFAStructure() {
-		initialState = new NFAState("Initial State", true, false, false);
-		finalState = new NFAState("Final State", false, true, true);
+		initialState = new TypedNFAState(evaluationOrder.getFullEvaluationOrder().get(0),"Initial State", true, false, false);
+		finalState = new TypedNFAState(evaluationOrder.getFullEvaluationOrder().get(evaluationOrder.getFullEvaluationOrder().size()-1),"Final State", false, true, true);
 		rejectingState = new NFAState("Rejecting State", false, true, false);
 		switch(negationType) {
 			case NONE:
@@ -186,7 +187,7 @@ public class LazyChainNFA extends LazyNFA {
 			EventType currentType = evaluationOrderForChain.get(i);
 			//Maor: this is probably where creating the states (should override for TypedNFAState)
 			NFAState currentState = (i == 0 || prevState == null) ? firstState : 
-										  new NFAState(String.format("State for %s", prevType.getName()));
+										  new TypedNFAState(currentType, String.format("State for %s", prevType.getName()));
 			if (!states.contains(currentState)) {
 				states.add(currentState);
 			}

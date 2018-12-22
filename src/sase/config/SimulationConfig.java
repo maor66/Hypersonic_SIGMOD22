@@ -9,13 +9,7 @@ import sase.specification.algo.TreeAlgoUnitSpecification;
 import sase.specification.creators.SpecificationCreatorTypes;
 import sase.specification.creators.condition.ConditionSpecificationCreatorTypes;
 import sase.specification.creators.condition.ConditionSpecificationSetCreatorTypes;
-import sase.specification.evaluation.CostBasedLazyNFAEvaluationSpecification;
-import sase.specification.evaluation.EvaluationSpecification;
-import sase.specification.evaluation.IterativeImprovementMPTEvaluationSpecification;
-import sase.specification.evaluation.MultiPlanEvaluationSpecification;
-import sase.specification.evaluation.SimulatedAnnealingMPTEvaluationSpecification;
-import sase.specification.evaluation.TabuSearchMPTEvaluationSpecification;
-import sase.specification.evaluation.TreeEvaluationSpecification;
+import sase.specification.evaluation.*;
 import sase.specification.input.InputSpecification;
 import sase.specification.input.ShuffleEventTypesInputSpecification;
 import sase.specification.input.TrivialInputSpecification;
@@ -458,11 +452,15 @@ public class SimulationConfig {
 			//Maor: what algorithms are going to be run (in my case, I need my own, RIP and Hirzel)
 	public static final EvaluationSpecification[] evaluationSpecifications = {
 
-					//Maor: Lazy in the 2015 article
-			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-						CostModelTypes.THROUGHPUT_LATENCY,
-						0.0),
-//			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
+
+		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+				CostModelTypes.THROUGHPUT_LATENCY,
+				0.0),
+		//Maor: Lazy in the 2015 article
+//			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+//						CostModelTypes.THROUGHPUT_LATENCY,
+//						0.0),
+////			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
 //						CostModelTypes.THROUGHPUT_LATENCY,
 //						0.0),
 //			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.II_RANDOM,
@@ -702,7 +700,7 @@ public class SimulationConfig {
 //			    					 		0.0)),
 
 		new SimulationSpecification(new SinglePatternWorkloadSpecification(PatternConfig.testSequence),
-				new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.DYNAMIC,
+				new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.DYNAMIC,
 															CostModelTypes.THROUGHPUT_LATENCY,
 															0.0)),
 		new SimulationSpecification(new SinglePatternWorkloadSpecification(PatternConfig.testSequence),

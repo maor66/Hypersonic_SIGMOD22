@@ -62,7 +62,7 @@ public class MainConfig {
 	public static final boolean eventRateMeasurementMode = false;
 	
 	/* Condition selectivity measurement settings. */
-	public static final boolean conditionSelectivityMeasurementMode = true; //Maor: indicates whether to use selectivity file or calculate them
+	public static final boolean conditionSelectivityMeasurementMode = false; //Maor: indicates whether to use selectivity file or calculate them
 	public static final String selectivityEstimatorsFilePath = pathConfig.selectivityEstimatorsFilePath;
 	
 	/* Maximal allowed execution time for a single simulation. */

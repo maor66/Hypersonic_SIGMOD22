@@ -195,7 +195,7 @@ public class Simulator {
     		EvaluationMechanismFactory.createEvaluationMechanism(workload.getCurrentWorkload(), currentEvaluationMechanism);
     	Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.evaluationMechanismCreationTime);
     	IEvaluationMechanism evaluationMechanism = (IEvaluationMechanism)evaluationMechanismObject;
-    	evaluationMechanism.completeCreation(workload.getCurrentWorkload());
+    	evaluationMechanism.completeCreation(workload.getCurrentWorkload()); //Maor: States are created here, this fixes the problem when states are not initialize when trying to createStateMappings
     	if (MainConfig.printStructureSummary) {
     		System.out.println(evaluationMechanism.getStructureSummary());
     	}

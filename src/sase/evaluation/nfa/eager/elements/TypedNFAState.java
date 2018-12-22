@@ -10,6 +10,14 @@ public class TypedNFAState extends NFAState{
         this.eventType = eventType;
     }
 
+    public TypedNFAState(EventType eventType, String name) {
+        super(name);
+        this.eventType = eventType;
+    }
+    public TypedNFAState(EventType eventType, String name, boolean isInitial, boolean isFinal, boolean isAccepting) {
+        super(name,isInitial,isFinal,isAccepting);
+        this.eventType = eventType;
+    }
     public EventType getEventType() {
         return eventType;
     }
