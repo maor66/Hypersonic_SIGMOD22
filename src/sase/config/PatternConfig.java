@@ -432,6 +432,7 @@ public class PatternConfig {
 							 StockEventTypesManager.qtwwEventTypeName),
 								 }, 
 				SlaVerifierTypes.NONE),
+			/*
 		new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{ 
 						 StockEventTypesManager.microsoftEventTypeName,
@@ -707,6 +708,7 @@ public class PatternConfig {
 					 new TrafficSpeedToVehiclesNumberCorrelationConditionSpecification(6,7),
 				 }, 
 				SlaVerifierTypes.NONE),
+				*/
 	};
 	private static final long syntheticPatternTimeWindow = 10;
 	public static final PatternSpecification[] syntheticPatternSpecifications = {

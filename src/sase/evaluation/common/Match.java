@@ -68,4 +68,12 @@ public class Match {
 		//TODO: creates partial match by evaluation/frequency order and not by sequence order. not sure if ok
 		return new Match(Stream.concat(primitiveEvents.stream(),List.of(event).stream()).collect(Collectors.toList()), event.getSystemTimestamp()); //Combining two lists)
 	}
+
+    public long getEarliestEvent() {
+		long earliestTime = Integer.MAX_VALUE;
+		for (Event event : primitiveEvents){
+			earliestTime = (earliestTime < event.getTimestamp()) ? event.getTimestamp() :earliestTime;
+		}
+		return earliestTime;
+    }
 }
