@@ -214,6 +214,7 @@ public class Simulator {
 			Environment.getEnvironment().getStatisticsManager().updateFractionalStatistic(Statistics.averageLatency,
 																						  match.getDetectionLatency());
 			Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.matches);
+			System.out.println(match);
 		}
 	}
 	

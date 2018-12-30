@@ -70,10 +70,17 @@ public class Match {
 	}
 
     public long getEarliestEvent() {
-		long earliestTime = Integer.MAX_VALUE;
+		long earliestTime = Long.MAX_VALUE;
 		for (Event event : primitiveEvents){
-			earliestTime = (earliestTime < event.getTimestamp()) ? event.getTimestamp() :earliestTime;
+			earliestTime = (earliestTime > event.getTimestamp()) ? event.getTimestamp() :earliestTime;
 		}
 		return earliestTime;
     }
+	public long getLatestEvent() {
+		long latestTime = Integer.MIN_VALUE;
+		for (Event event : primitiveEvents){
+			latestTime = (latestTime < event.getTimestamp()) ? event.getTimestamp() :latestTime;
+		}
+		return latestTime;
+	}
 }

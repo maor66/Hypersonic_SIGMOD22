@@ -23,6 +23,7 @@ public class Event implements Comparable<Event> {
 	protected EventType type;
 	protected final long systemTimestamp;
 	protected Object[] payload;
+	private boolean isFinisherEvent = false;
 
 	public Event(EventType type, Object[] payload) {
 		this.sequenceNumber = eventCounter++;
@@ -30,6 +31,16 @@ public class Event implements Comparable<Event> {
 		this.systemTimestamp = System.currentTimeMillis();
 		this.payload = payload == null ? null : 
 										 EventTypesManager.getInstance().convertStringPayloadToObjectPayload(payload);
+	}
+
+	public Event()
+	{
+		this(null, null);
+		isFinisherEvent = true;
+	}
+	public boolean isFinisherEvent()
+	{
+		return isFinisherEvent;
 	}
 	
 	public EventType getType() {
