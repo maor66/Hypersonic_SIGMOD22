@@ -2,7 +2,6 @@ package sase.evaluation.nfa.lazy;
 
 import sase.base.Event;
 import sase.evaluation.common.Match;
-import sase.evaluation.nfa.NFA;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
@@ -12,7 +11,9 @@ import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,6 +26,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private Map<NFAState, List<InputBufferWorker>> IBWorkers;
     private Map<NFAState, Integer> cyclicInputThreadCounter;
     private static int INPUT_BUFFER_THREADS_PER_STATE = 4;
+    private TypedNFAState eventState;
 
     public ParallelLazyChainNFA(Pattern pattern, EvaluationPlan evaluationPlan, LazyNFANegationTypes negationType) {
         super(pattern, evaluationPlan, negationType);
@@ -47,7 +49,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        List<Match> matches =  findPartialMatchesOnNewEvent(eventState, event);
+        List<Match> matches = findPartialMatchesOnNewEvent(eventState, event);
         return verifyMatches(matches);
     }
 
@@ -72,7 +74,10 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private List<Match> findPartialMatchesInCurrentState(TypedNFAState eventState, List<Event> eventList, List<Match> partialMatchList) {
         //TODO: PARALLELIZE: This is the step where a thread receives the event and should do its task (find PMs with comparing to MB)
         List<Match> extraEventPartialMatches = new ArrayList<>();
-        removeExpiredEvents(eventState);
+        if (partialMatchList.size() == 1) { //Should only remove when a new rPM arrives
+            removeEventsFromIB(eventState, partialMatchList.get(0));
+        }
+        removeExpiredEvents(eventState); //This removes the rPMs from the MB
         if (eventState.isInitial()) { // In the first state only, events are forwarded automatically to the next state.
             extraEventPartialMatches.add(new Match(eventList, System.currentTimeMillis()));
         } else {
@@ -86,6 +91,16 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
         TypedNFAState nextState = (TypedNFAState) getActualNextTransition(eventState).getDestination();
         return sendPartialMatchToNextState(nextState, extraEventPartialMatches); // Sending in "batch" all new partial matches (they more "complete" as the new event is added) to the next state
+    }
+
+    private void removeEventsFromIB(TypedNFAState eventState, Match partialMatch) {
+        for (InputBufferWorker worker: IBWorkers.get(eventState)) {
+            try {
+                worker.getDataStorage().getRemovingData().put(partialMatch);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private boolean isEventCompatibleWithPartialMatch(TypedNFAState eventState, Match partialMatch, Event event) {
@@ -126,7 +141,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 List<InputBufferWorker> stateWorkers = new ArrayList<>();
                 cyclicInputThreadCounter.put(state, -1);
                 for (int i = 0; i < INPUT_BUFFER_THREADS_PER_STATE; i++) {
-                    ThreadContainers threadData = new ThreadContainers(new LinkedBlockingQueue(), ((TypedNFAState) state).getEventType(), timeWindow);
+                    ThreadContainers threadData = new ThreadContainers(new LinkedBlockingQueue<>(), new LinkedBlockingQueue<>(), ((TypedNFAState) state).getEventType(), timeWindow);
                     threadContainers.add(threadData);
                     InputBufferWorker worker = new InputBufferWorker(threadData);
                     stateWorkers.add(worker);
@@ -175,7 +190,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     {
         List<Event> events = parallelInputBuffer.get(stateToRemoveFrom);
         List<Match> partialMatches = partialMatchBuffer.get(stateToRemoveFrom);
-        events.removeIf(event -> event.getTimestamp() + timeWindow < lastKnownGlobalTime);
+//        events.removeIf(event -> event.getTimestamp() + timeWindow < lastKnownGlobalTime);
         partialMatches.removeIf(partialMatch -> partialMatch.getEarliestEvent() + timeWindow < lastKnownGlobalTime);
     }
 }

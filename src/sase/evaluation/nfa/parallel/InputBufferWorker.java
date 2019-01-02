@@ -1,6 +1,7 @@
 package sase.evaluation.nfa.parallel;
 
 import sase.base.Event;
+import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 
 import java.util.ArrayList;
@@ -20,8 +21,13 @@ public class InputBufferWorker implements Runnable {
     public void run() {
         while (true) {
             Event newEvent;
+            Match removingCriteria;
             try {
                 newEvent = dataStorage.getEventsFromMain().take(); //TODO: better to take batches instead of one event
+                removingCriteria = dataStorage.getRemovingData().poll();
+                if (removingCriteria != null) {
+                    dataStorage.removeExpiredEvents(removingCriteria);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 throw new RuntimeException("Exception while trying to get event from BlockingQueue");
@@ -39,7 +45,7 @@ public class InputBufferWorker implements Runnable {
     }
 
     private void removeExpiredEvents(Event newEvent) {
-        dataStorage.removeExpiredEvents(newEvent);
+//        dataStorage.removeExpiredEvents(newEvent);
         //TODO: wrong removing!!! Can only remove after taken for comparison against partial match. Should remove when a partial match is received
         //TODO: When a rPM arrives, must check based on all partial match TS. example: got B13_D17. In IB we have C6_C11
         //TODO: It is possible to remove C6 only since it is not possible to get D16 or smaller so B must be B7 or above.

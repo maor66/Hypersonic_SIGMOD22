@@ -432,7 +432,7 @@ public class PatternConfig {
 							 StockEventTypesManager.qtwwEventTypeName),
 								 }, 
 				SlaVerifierTypes.NONE),
-			/*
+
 		new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{ 
 						 StockEventTypesManager.microsoftEventTypeName,
@@ -568,6 +568,7 @@ public class PatternConfig {
 							 StockEventTypesManager.qtwwEventTypeName),
 				 }, 
 				SlaVerifierTypes.NONE),
+          /*
 //		new PatternSpecification("SEQ9", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 //				 new String[][][] {new String[][]{new String[]{ 
 //						 StockEventTypesManager.microsoftEventTypeName,

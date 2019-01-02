@@ -84,7 +84,7 @@ public class EfficientInputBuffer {
 				}
 				currEvent = events.get(0);
 			}
-			Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.bufferRemovals, 
+			Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.bufferRemovals,
 																		 					  numberOfRemovedEvents);
 		}
 		
