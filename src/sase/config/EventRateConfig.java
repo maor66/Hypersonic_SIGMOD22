@@ -14,7 +14,8 @@ public class EventRateConfig {
 		HashMap<String, Double> eventRateHashMap = new HashMap<String, Double>();
 
 		//stocks - selected companies
-		eventRateHashMap.put(StockEventTypesManager.microsoftEventTypeName, 8.695 * tempHack);
+		//Maor: This sets the frequency that is used to determine the order
+		eventRateHashMap.put(StockEventTypesManager.microsoftEventTypeName, 1118.695 * tempHack); //TODO: change!!!! (to 8.695)
 		eventRateHashMap.put(StockEventTypesManager.yahooEventTypeName, 8.422 * tempHack);
 		eventRateHashMap.put(StockEventTypesManager.googleEventTypeName, 8.482 * tempHack);
 		eventRateHashMap.put(StockEventTypesManager.appleEventTypeName, 8.975 * tempHack);

@@ -25,7 +25,7 @@ public class MainConfig {
 	/* Settings for receiving events from the input stream. */
 	// Maor: This two settings determine if the input is taken from a directory or a file
 	public static String[] inputDirsPaths = {
-		//pathConfig.firstInputDirectoryPath,
+//		pathConfig.firstInputDirectoryPath,
 	};
 	public static String[] inputFilesPaths = {
 		pathConfig.firstInputFilePath,

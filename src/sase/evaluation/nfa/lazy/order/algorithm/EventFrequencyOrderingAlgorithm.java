@@ -14,12 +14,18 @@ import sase.pattern.Pattern;
 public class EventFrequencyOrderingAlgorithm implements IOrderingAlgorithm {
 	
 	private class EventTypeComparator implements Comparator<EventType> {
-
+//Maor: This is the frequency comparator
 		@Override
 		public int compare(EventType firstEventType, EventType secondEventType) {
 			Double firstFrequency = EventRateConfig.eventRate.get(firstEventType.getName());
 			Double secondFrequency = EventRateConfig.eventRate.get(secondEventType.getName());
-			return (int)(firstFrequency - secondFrequency);
+			if (firstFrequency - secondFrequency > 0) {
+				return 1;
+			}
+			else if (firstFrequency - secondFrequency < 0) {
+				return -1;
+			}
+			return 0;
 		}
 		
 	}

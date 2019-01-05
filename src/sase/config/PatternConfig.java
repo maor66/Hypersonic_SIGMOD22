@@ -417,6 +417,21 @@ public class PatternConfig {
 	
 	private static final long stockByCompanyPatternTimeWindow = 10;
 	public static final PatternSpecification[] stockByCompanyPatternSpecifications = {
+			new PatternSpecification("SEQ3", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+					new String[][][] {new String[][]{new String[]{
+							StockEventTypesManager.microsoftEventTypeName,
+							StockEventTypesManager.googleEventTypeName,
+							StockEventTypesManager.appleEventTypeName
+					}}},
+					new ConditionSpecification[] {
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.microsoftEventTypeName,
+									StockEventTypesManager.googleEventTypeName),
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.googleEventTypeName,
+									StockEventTypesManager.appleEventTypeName),
+					},
+					SlaVerifierTypes.NONE),
 		new PatternSpecification("SEQ3", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{ 
 						 StockEventTypesManager.microsoftEventTypeName,
@@ -452,6 +467,7 @@ public class PatternConfig {
 							 StockEventTypesManager.qtwwEventTypeName),
 				 }, 
 				SlaVerifierTypes.NONE),
+/*
 		new PatternSpecification("SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{ 
 						 StockEventTypesManager.microsoftEventTypeName,
@@ -568,7 +584,7 @@ public class PatternConfig {
 							 StockEventTypesManager.qtwwEventTypeName),
 				 }, 
 				SlaVerifierTypes.NONE),
-          /*
+
 //		new PatternSpecification("SEQ9", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 //				 new String[][][] {new String[][]{new String[]{ 
 //						 StockEventTypesManager.microsoftEventTypeName,
@@ -649,6 +665,7 @@ public class PatternConfig {
 //							 StockEventTypesManager.xtlbioEventTypeName,
 //							 StockEventTypesManager.quantumEventTypeName),
 //				 }),
+*/
 	};
 	private static final long trafficPatternTimeWindow = 20;
 	public static final PatternSpecification[] trafficPatternSpecifications = {
@@ -709,7 +726,7 @@ public class PatternConfig {
 					 new TrafficSpeedToVehiclesNumberCorrelationConditionSpecification(6,7),
 				 }, 
 				SlaVerifierTypes.NONE),
-				*/
+
 	};
 	private static final long syntheticPatternTimeWindow = 10;
 	public static final PatternSpecification[] syntheticPatternSpecifications = {

@@ -1,10 +1,14 @@
 package sase.pattern.condition.base;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import sase.base.Event;
 import sase.base.EventType;
 import sase.config.MainConfig;
+import sase.evaluation.common.Match;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
 
@@ -32,7 +36,7 @@ public abstract class DoubleEventCondition extends AtomicCondition {
 	public DoubleEventCondition(EventType firstType, EventType secondType) {
 		this(firstType, secondType, null);
 	}
-	
+	public static String condPrint = "";
 	@Override
 	protected boolean actuallyVerify(List<Event> events) {
 		Event firstEvent = null;
@@ -42,7 +46,9 @@ public abstract class DoubleEventCondition extends AtomicCondition {
 				firstEvent = event;
 			else if (event.getType() == eventTypes.get(1))
 				secondEvent = event;
+
 			if (firstEvent != null && secondEvent != null) {
+				condPrint+=("Comparing: "+ firstEvent.toString() + " , " +secondEvent.toString()+"\n");
 				Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.computations);
 				return verifyDoubleEvent(firstEvent, secondEvent);
 			}

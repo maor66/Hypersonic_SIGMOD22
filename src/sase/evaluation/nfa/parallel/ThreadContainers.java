@@ -78,11 +78,11 @@ public class ThreadContainers {
         long stamp = lock.writeLock();
         int numberOfRemovedEvents = 0;
         Event currEvent = inputBufferSubList.get(0);
-//        while (currEvent.getTimestamp() + timeWindow < latest_timestamp) {
+        while (currEvent.getTimestamp() + timeWindow < latest_timestamp) {
             //TODO: This doesn't remove as much events as ilya's algorithm. Using the commented out line improves it but should check if its enough
             // The problem is that I should remove based on the rPM as they indicate what "time" it is for the partial matches, which means that older rPMs won't arrive,
             // (if assuming that OoO can't happen) If I remove based on coming events, I could have a delayed rPM that should have been compared to an already deleted event
-       while (currEvent.getTimestamp() + timeWindow < inputBufferSubList.get(inputBufferSubList.size()-1).getTimestamp()) {
+//       while (currEvent.getTimestamp() + timeWindow < inputBufferSubList.get(inputBufferSubList.size()-1).getTimestamp()) {
             inputBufferSubList.remove(0);
             numberOfRemovedEvents++;
             if (inputBufferSubList.isEmpty()) {

@@ -115,6 +115,8 @@ public abstract class LazyNFA extends NFA {
 			performRegularInstanceLoop(event, instancesToCheck, instancesToAdd, instancesToRemove, matches);
 		}
 		getPendingMatches(matches, instancesToRemove, false);
+
+
 		handleInstanceStorageUpdate(instancesToCheck, instancesToAdd, instancesToRemove);
 		if (instances.shouldStoreEvent(event)) {
 			inputBuffer.store(event);

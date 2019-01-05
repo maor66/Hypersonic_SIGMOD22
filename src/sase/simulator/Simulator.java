@@ -1,5 +1,8 @@
 package sase.simulator;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -24,6 +27,7 @@ import sase.input.EventProducerFactory;
 import sase.multi.MultiPlan;
 import sase.pattern.CompositePattern;
 import sase.pattern.EventTypesManager;
+import sase.pattern.condition.base.DoubleEventCondition;
 import sase.pattern.workload.IWorkloadManager;
 import sase.pattern.workload.PatternWorkloadFactory;
 import sase.specification.SimulationSpecification;
@@ -59,6 +63,7 @@ public class Simulator {
     private StatisticsManager oldStatisticsManager = null;
     
     private int currentStepNumber = 0;
+    private List<Match> foundMatches;
     
 	private void processIncomingEvent(Event event) {
 		if (MainConfig.eventRateMeasurementMode) {
@@ -210,11 +215,11 @@ public class Simulator {
 		if (matches == null) {
 			return;
 		}
+		foundMatches.addAll(matches);
 		for (Match match : matches) {
 			Environment.getEnvironment().getStatisticsManager().updateFractionalStatistic(Statistics.averageLatency,
-																						  match.getDetectionLatency());
+					match.getDetectionLatency());
 			Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.matches);
-			System.out.println(match);
 		}
 	}
 	
@@ -264,6 +269,8 @@ public class Simulator {
     		if (MainConfig.planConstructionOnly) {
     			return;
     		}
+    		foundMatches = new ArrayList<>();
+
     		while (eventProducer.hasMoreEvents()) {
     			if (Environment.getEnvironment().isTimeoutReached(null)) {
     				Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(Statistics.isTimeoutReached, 1);
@@ -296,6 +303,20 @@ public class Simulator {
 				simulationHistory.registerSimulation(currentHistoryId, Environment.getEnvironment().getStatisticsManager());
 			}
     	}
+		try {
+			BufferedWriter writercond = new BufferedWriter(new FileWriter("C:\\Users\\Maor\\Documents\\computation"+this.currentStepNumber+".txt"));
+			writercond.write(DoubleEventCondition.condPrint);
+			writercond.close();
+			DoubleEventCondition.condPrint ="";
+			BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Maor\\Documents\\"+this.currentStepNumber+".txt"));
+			for (Match match : foundMatches){
+				writer.write(match.toString()+"\n");
+			}
+			writer.close();
+			System.out.println("Found " + foundMatches.size() + " matches");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
     
     private void cleanupEvaluationStep() {

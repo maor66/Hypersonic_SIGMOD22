@@ -6,8 +6,10 @@ public class WindowsPathConfig extends PathConfig {
 		companyToRegionDirectoryPath = "C:\\Education\\PhD\\Experiments\\Metadata\\Regions";
 		testInputFilePath = "";
 		firstInputFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_20080205_1.txt";
+//				firstInputFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_short.txt";
+
 		//firstInputFilePath = "C:\\Education\\PhD\\Experiments\\Aarhus Traffic\\traffic.csv";
-		firstInputDirectoryPath = "C:\\Users\\Maor\\Documents\\inputdir";
+		firstInputDirectoryPath = "C:\\Users\\Maor\\Documents\\0802";
 		outputFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_20080201_1out.csv";
 //		selectivityEstimatorsFilePath = "C:\\Education\\PhD\\Experiments\\Metadata\\selectivity.ser";
 		selectivityEstimatorsFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_20080201_1sel.ser";
