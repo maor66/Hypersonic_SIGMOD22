@@ -7,6 +7,8 @@ import java.util.Objects;
 import sase.base.Event;
 import sase.base.EventType;
 import sase.pattern.condition.base.AtomicCondition;
+import sase.simulator.Environment;
+import sase.statistics.Statistics;
 
 public class EventTemporalPositionCondition extends AtomicCondition {
 
@@ -53,12 +55,14 @@ public class EventTemporalPositionCondition extends AtomicCondition {
 		if (targetEvent == null)
 			throw new RuntimeException("Cannot verify condition - the target event was not found.");
 		for (EventType eventType : precedingEventTypes) {
+			Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.timeComparisons);
 			Event precedingEvent = getEventByType(events, eventType);
 			if (isEarlier(targetEvent, precedingEvent)) {
 				return false;
 			}
 		}
 		for (EventType eventType : succeedingEventTypes) {
+			Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.timeComparisons);
 			Event succeedingEvent = getEventByType(events, eventType);
 			if (isEarlier(succeedingEvent, targetEvent)) {
 				return false;

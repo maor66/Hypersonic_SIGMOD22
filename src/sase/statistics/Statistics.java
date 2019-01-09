@@ -6,6 +6,7 @@ public class Statistics {
 	public static final String processingTime = "Processing Time (ms)";
 	public static final String evaluationMechanismCreationTime = "NFA/Tree Creation Time (ms)";
 	public static final String computations = "Number Of Computations";
+	public static final String timeComparisons = "Number of comparison of timestamp";
 	public static final String correlationComputations = "Number Of Correlation Computations";
 	public static final String aggregationComputations = "Number Of Aggregation Computations";
 	public static final String memoryOperations = "Number Of Memory Operations";
@@ -38,6 +39,7 @@ public class Statistics {
 			processingTime,
 			evaluationMechanismCreationTime,
 			computations,
+				timeComparisons,
 			correlationComputations,
 			aggregationComputations,
 			memoryOperations,

@@ -9,6 +9,8 @@ import sase.evaluation.nfa.lazy.elements.EfficientInputBuffer;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
+import sase.simulator.Environment;
+import sase.statistics.Statistics;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +32,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         a++;
         if (a%1000 ==0)
             System.out.println(a);
+        removeExpiredEventsFromAllBuffers();
         TypedNFAState eventState = getStateByEventType(parallelInputBuffer.keySet(), event);
         if (null == eventState) {
             // The event has irrelevent type (not in the query)
@@ -62,7 +65,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private List<Match> findPartialMatchesInCurrentState(TypedNFAState eventState, List<Event> eventList, List<Match> partialMatchList) {
         //TODO: PARALLELIZE: This is the step where a thread receives the event and should do its task (find PMs with comparing to MB)
         List <Match> extraEventPartialMatches = new ArrayList<>();
-        removeExpiredEvents(eventState);
+//        removeExpiredEvents(eventState);
         if (eventState.isInitial()) { // In the first state only, events are forwarded automatically to the next state.
             extraEventPartialMatches.add(new Match(eventList, System.currentTimeMillis()));
         }
@@ -82,8 +85,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private boolean isEventCompatibleWithPartialMatch(TypedNFAState eventState, Match partialMatch, Event event) {
         //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
 
-        return getActualNextTransition(eventState).verifyCondition( //TODO: check if verifying the (non-temporal) condition works with partial events or consider changing the condition
+        return verifyTimeWindowConstraint(partialMatch, event) && getActualNextTransition(eventState).verifyConditionWithTemporalConditionFirst( //TODO: check if verifying the (non-temporal) condition works with partial events or consider changing the condition
                 Stream.concat(partialMatch.getPrimitiveEvents().stream(),List.of(event).stream()).collect(Collectors.toList())); //Combining two lists
+    }
+
+    private boolean verifyTimeWindowConstraint(Match partialMatch, Event event) {
+        return (partialMatch.getLatestEvent() <= event.getTimestamp() + timeWindow) &&
+                (partialMatch.getEarliestEvent() + timeWindow >= event.getTimestamp());
+
     }
 
     private List<Match> sendPartialMatchToNextState(TypedNFAState nextState, List<Match> extraEventPartialMatches) {
@@ -148,7 +157,21 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     {
         List<Event> events = parallelInputBuffer.get(stateToRemoveFrom);
         List<Match> partialMatches = partialMatchBuffer.get(stateToRemoveFrom);
+        int IBoriginalSize = events.size();
+        int MBoriginalSize = partialMatches.size();
         events.removeIf(event -> event.getTimestamp() + timeWindow < lastKnownGlobalTime);
         partialMatches.removeIf(partialMatch -> partialMatch.getEarliestEvent() + timeWindow < lastKnownGlobalTime);
+        Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.bufferRemovals, IBoriginalSize - events.size());
+        Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.instanceDeletions, MBoriginalSize - partialMatches.size());
+
+    }
+    private void removeExpiredEventsFromAllBuffers()
+    {
+        for (NFAState state : states)
+        {
+            if (!state.isRejecting() && !state.isAccepting()) {
+                removeExpiredEvents((TypedNFAState) state);
+            }
+        }
     }
 }

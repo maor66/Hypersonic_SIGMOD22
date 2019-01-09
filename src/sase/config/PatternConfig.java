@@ -432,6 +432,7 @@ public class PatternConfig {
 									StockEventTypesManager.appleEventTypeName),
 					},
 					SlaVerifierTypes.NONE),
+			/*
 		new PatternSpecification("SEQ3", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{ 
 						 StockEventTypesManager.microsoftEventTypeName,
@@ -467,7 +468,7 @@ public class PatternConfig {
 							 StockEventTypesManager.qtwwEventTypeName),
 				 }, 
 				SlaVerifierTypes.NONE),
-/*
+
 		new PatternSpecification("SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{ 
 						 StockEventTypesManager.microsoftEventTypeName,
