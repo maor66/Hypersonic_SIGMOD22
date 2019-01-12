@@ -7,12 +7,18 @@ import java.util.stream.Stream;
 
 import sase.base.Event;
 import sase.base.EventType;
+import sase.simulator.Environment;
+import sase.statistics.Statistics;
 
 public class Match {
 	private final List<Event> primitiveEvents;
 	private final long detectionLatency;
 	
 	public Match(List<Event> primitiveEvents, long latestEventTimestamp) {
+		if (primitiveEvents.size() != 1)
+		{
+			Environment.getEnvironment().getStatisticsManager().incrementDiscreteMemoryStatistic(Statistics.instanceCreations);
+		}
 		this.primitiveEvents = primitiveEvents;
 		this.detectionLatency = System.currentTimeMillis() - latestEventTimestamp;
 	}

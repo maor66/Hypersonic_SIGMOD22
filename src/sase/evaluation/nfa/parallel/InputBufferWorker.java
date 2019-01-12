@@ -33,6 +33,7 @@ public class InputBufferWorker implements Runnable {
                 throw new RuntimeException("Exception while trying to get event from BlockingQueue");
             }
             if (newEvent.isFinisherEvent()) {
+                System.err.println("Finisher evemt");
                 return; //TODO: how to end task?
             }
             if (dataStorage.getEventType() != newEvent.getType()) {

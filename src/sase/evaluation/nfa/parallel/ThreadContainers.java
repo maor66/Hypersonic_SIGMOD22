@@ -9,6 +9,7 @@ import sase.statistics.Statistics;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.locks.StampedLock;
 
 public class ThreadContainers {
@@ -29,19 +30,19 @@ public class ThreadContainers {
         this.timeWindow = timeWindow;
     }
 
-    public List<Event> getInputBufferSubListWithOptimisticLock() {
+    public List<Event>  getInputBufferSubListWithOptimisticLock() {
+        List<Event> listView = new ArrayList<>();
         long stamp = lock.tryOptimisticRead();
-        List<Event> listView = new ArrayList<>(inputBufferSubList); //TODO: copies the list, which can hit performance. A different solution could be to read from the start of the list, this can be done without locking (up to a point)
+        listView.addAll(inputBufferSubList); //TODO: copies the list, which can hit performance. A different solution could be to read from the start of the list, this can be done without locking (up to a point)
         if (!lock.validate(stamp)) {
             stamp = lock.readLock();
             try {
-                listView = new ArrayList<>(inputBufferSubList);
+                listView.addAll(inputBufferSubList);
             } finally {
                 lock.unlockRead(stamp);
             }
         }
         return listView;
-
     }
 
     public void addEventToOwnInputBuffer(Event event) {
@@ -53,8 +54,8 @@ public class ThreadContainers {
         }
     }
 
-    public BlockingQueue<Event> getEventsFromMain() {
-        return eventsFromMain;
+    public LinkedTransferQueue<Event> getEventsFromMain() {
+        return (LinkedTransferQueue<Event>) eventsFromMain;
     }
 
     public BlockingQueue<Match> getRemovingData() {
@@ -77,12 +78,16 @@ public class ThreadContainers {
         long latest_timestamp = removingCriteria.getLatestEvent();
         long stamp = lock.writeLock();
         int numberOfRemovedEvents = 0;
+        if (inputBufferSubList.isEmpty()) {
+            lock.unlock(stamp);
+            return;
+        }
         Event currEvent = inputBufferSubList.get(0);
-        while (currEvent.getTimestamp() + timeWindow < latest_timestamp) {
+//        while (currEvent.getTimestamp() + timeWindow < latest_timestamp) {
             //TODO: This doesn't remove as much events as ilya's algorithm. Using the commented out line improves it but should check if its enough
             // The problem is that I should remove based on the rPM as they indicate what "time" it is for the partial matches, which means that older rPMs won't arrive,
             // (if assuming that OoO can't happen) If I remove based on coming events, I could have a delayed rPM that should have been compared to an already deleted event
-//       while (currEvent.getTimestamp() + timeWindow < inputBufferSubList.get(inputBufferSubList.size()-1).getTimestamp()) {
+       while (currEvent.getTimestamp() + timeWindow < inputBufferSubList.get(inputBufferSubList.size()-1).getTimestamp()) {
             inputBufferSubList.remove(0);
             numberOfRemovedEvents++;
             if (inputBufferSubList.isEmpty()) {
