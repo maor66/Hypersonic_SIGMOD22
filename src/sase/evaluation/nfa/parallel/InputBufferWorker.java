@@ -1,5 +1,6 @@
 package sase.evaluation.nfa.parallel;
 
+import sase.base.ContainsEvent;
 import sase.base.Event;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
@@ -20,8 +21,8 @@ public class InputBufferWorker implements Runnable {
     @Override
     public void run() {
         while (true) {
-            Event newEvent;
-            Match removingCriteria;
+            ContainsEvent newEvent;
+            ContainsEvent removingCriteria;
             try {
                 newEvent = dataStorage.getEventsFromMain().take(); //TODO: better to take batches instead of one event
                 removingCriteria = dataStorage.getRemovingData().poll();
@@ -32,20 +33,20 @@ public class InputBufferWorker implements Runnable {
                 e.printStackTrace();
                 throw new RuntimeException("Exception while trying to get event from BlockingQueue");
             }
-            if (newEvent.isFinisherEvent()) {
+            if (newEvent.isLastInput()) {
                 System.err.println("Finisher evemt");
                 return; //TODO: how to end task?
             }
-            if (dataStorage.getEventType() != newEvent.getType()) {
-                throw new RuntimeException("Got wrong event type in Input Buffer");
-            }
+//            if (dataStorage.getEventType() != newEvent.getType()) {
+//                throw new RuntimeException("Got wrong event type in Input Buffer");
+//            }
             dataStorage.addEventToOwnInputBuffer(newEvent);
             removeExpiredEvents(newEvent);
         }
 //        iterateOnMatchBuffer();
     }
 
-    private void removeExpiredEvents(Event newEvent) {
+    private void removeExpiredEvents(ContainsEvent newEvent) {
 //        dataStorage.removeExpiredEvents(newEvent);
         //TODO: wrong removing!!! Can only remove after taken for comparison against partial match. Should remove when a partial match is received
         //TODO: When a rPM arrives, must check based on all partial match TS. example: got B13_D17. In IB we have C6_C11

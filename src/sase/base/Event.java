@@ -2,7 +2,7 @@ package sase.base;
 
 import sase.pattern.EventTypesManager;
 
-public class Event implements Comparable<Event> {
+public class Event implements Comparable<Event>, ContainsEvent {
 	
 	private static final int signatureSize = 2;
 	private static long eventCounter = 0;
@@ -38,11 +38,7 @@ public class Event implements Comparable<Event> {
 		this(null, null);
 		isFinisherEvent = true;
 	}
-	public boolean isFinisherEvent()
-	{
-		return isFinisherEvent;
-	}
-	
+
 	public EventType getType() {
 		return type;
 	}
@@ -76,11 +72,17 @@ public class Event implements Comparable<Event> {
 	public String getLabel() {
 		return EventTypesManager.getInstance().getEventLabel(this);
 	}
-	
+
+	@Override
 	public long getTimestamp() {
 		return EventTypesManager.getInstance().getEventTimestamp(this);
 	}
-	
+
+	@Override
+	public boolean isLastInput() {
+		return isFinisherEvent;
+	}
+
 	public Object[] getSignature() {
 		return getEventSignature(payload);
 	}
@@ -88,7 +90,8 @@ public class Event implements Comparable<Event> {
 	public long getSystemTimestamp() {
 		return systemTimestamp;
 	}
-	
+
+	@Override
 	public long getSequenceNumber() {
 		return sequenceNumber;
 	}

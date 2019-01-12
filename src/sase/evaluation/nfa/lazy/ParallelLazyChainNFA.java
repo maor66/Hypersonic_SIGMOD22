@@ -1,11 +1,11 @@
 package sase.evaluation.nfa.lazy;
 
+import sase.base.ContainsEvent;
 import sase.base.Event;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
-import sase.evaluation.nfa.lazy.elements.EfficientInputBuffer;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
 import sase.evaluation.nfa.parallel.InputBufferWorker;
 import sase.evaluation.nfa.parallel.ThreadContainers;
@@ -26,6 +26,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private ExecutorService executor;
     private List<ThreadContainers> threadContainers;
     private Map<NFAState, List<InputBufferWorker>> IBWorkers;
+//    private Map<NFAState, List<MatchBufferWorker>> IBWorkers;
     private Map<NFAState, Integer> cyclicInputThreadCounter;
     private static int INPUT_BUFFER_THREADS_PER_STATE = 4;
     private TypedNFAState eventState;
@@ -52,7 +53,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
 //            workerToSendEventTo.getDataStorage().getEventsFromMain().transfer(event); //TODO: change to BlockingQueue.put
 //            TimeUnit.MILLISECONDS.sleep(100);
-            List<Event> events = new ArrayList<>();
+            List<ContainsEvent> events = new ArrayList<>();
             while(!events.contains(event)){
                 events = workerToSendEventTo.getDataStorage().getInputBufferSubListWithOptimisticLock();
             }
@@ -69,7 +70,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     }
 
     private List<Match> verifyMatches(List<Match> matches) {
-        matches.removeIf(match -> match.getLatestEvent() - match.getEarliestEvent() > timeWindow);
+        matches.removeIf(match -> match.getLatestEventTimestamp() - match.getEarliestEvent() > timeWindow);
         return matches;
     }
 
@@ -78,10 +79,11 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     }
 
     private List<Match> findPartialMatchesOnNewPartialMatch(TypedNFAState eventState, Match partialMatch) {
-        List<Event> stateInputBuffer = new ArrayList<>();
+        List<ContainsEvent> stateInputBuffer = new ArrayList<>();
         for (InputBufferWorker worker : IBWorkers.get(eventState)) {
             stateInputBuffer.addAll(worker.getDataStorage().getInputBufferSubListWithOptimisticLock());
         }
+        List<Event> actualEvents = (List<Event>)(List<?>) stateInputBuffer;
 
 //        System.out.print("\nOriginal IB: ");
 //        stateInputBuffer.forEach(System.out::print); System.out.println();
@@ -92,7 +94,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 //        System.out.print("\nslice: ");
 //        slices.forEach(System.out::println);
 //        return findPartialMatchesInCurrentState(eventState,stateInputBuffer, new ArrayList<>(List.of(partialMatch)));
-        return findPartialMatchesInCurrentState(eventState,getSlice(stateInputBuffer, partialMatch, eventState), new ArrayList<>(List.of(partialMatch)));
+        return findPartialMatchesInCurrentState(eventState,getSlice(actualEvents, partialMatch, eventState), new ArrayList<>(List.of(partialMatch)));
     }
 
     private List<Event> getSlice(List<Event> events, Match partialMatch, TypedNFAState eventState) {
@@ -128,9 +130,9 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
         else {
             for (Match partialMatch : partialMatchList) {
-                for (Event event : eventList) { //One of the list is of size 1, so it is actually comparing one object with every other on the list
-                    if (isEventCompatibleWithPartialMatch(eventState, partialMatch, event)) {
-                        extraEventPartialMatches.add(partialMatch.createNewPartialMatchWithEvent(evaluationOrder.getFullEvaluationOrder(), event));
+                for (ContainsEvent event : eventList) { //One of the list is of size 1, so it is actually comparing one object with every other on the list
+                    if (isEventCompatibleWithPartialMatch(eventState, partialMatch, (Event) event)) {
+                        extraEventPartialMatches.add(partialMatch.createNewPartialMatchWithEvent(evaluationOrder.getFullEvaluationOrder(), (Event) event));
                     }
                 }
             }
@@ -156,7 +158,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     }
 
     private boolean verifyTimeWindowConstraint(Match partialMatch, Event event) {
-        return (partialMatch.getLatestEvent() <= event.getTimestamp() + timeWindow) &&
+        return (partialMatch.getLatestEventTimestamp() <= event.getTimestamp() + timeWindow) &&
                 (partialMatch.getEarliestEvent() + timeWindow >= event.getTimestamp());
 
     }

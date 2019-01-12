@@ -5,14 +5,16 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import sase.base.ContainsEvent;
 import sase.base.Event;
 import sase.base.EventType;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
 
-public class Match {
+public class Match implements ContainsEvent{
 	private final List<Event> primitiveEvents;
 	private final long detectionLatency;
+	private  boolean isLastInput = false;
 	
 	public Match(List<Event> primitiveEvents, long latestEventTimestamp) {
 		if (primitiveEvents.size() != 1)
@@ -22,7 +24,13 @@ public class Match {
 		this.primitiveEvents = primitiveEvents;
 		this.detectionLatency = System.currentTimeMillis() - latestEventTimestamp;
 	}
-	
+	public Match()
+	{
+		isLastInput = true;
+		detectionLatency = 0;
+		primitiveEvents = null;
+	}
+
 	public List<Event> getPrimitiveEvents() {
 		return primitiveEvents;
 	}
@@ -82,11 +90,34 @@ public class Match {
 		}
 		return earliestTime;
     }
-	public long getLatestEvent() {
+
+    public Event getLatestEvent()
+	{
 		long latestTime = Integer.MIN_VALUE;
+		Event e = null;
 		for (Event event : primitiveEvents){
 			latestTime = (latestTime < event.getTimestamp()) ? event.getTimestamp() :latestTime;
+			e = event;
 		}
-		return latestTime;
+		return e;
+	}
+
+	public long getLatestEventTimestamp() {
+		return getLatestEvent().getTimestamp();
+	}
+
+	@Override
+	public long getTimestamp() {
+		return getLatestEventTimestamp();
+	}
+
+	@Override
+	public boolean isLastInput() {
+		return false;
+	}
+
+	@Override
+	public long getSequenceNumber() {
+		return getLatestEvent().getSequenceNumber();
 	}
 }
