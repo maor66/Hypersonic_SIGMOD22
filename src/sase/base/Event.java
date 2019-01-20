@@ -97,6 +97,11 @@ public class Event implements Comparable<Event>, ContainsEvent {
 	}
 
 	@Override
+	public long getEarliestTimestamp() { //The earliest timestamp is the same as the event's timestamp
+		return getTimestamp();
+	}
+
+	@Override
 	public String toString() {
 		return String.format("%s%d:%d", type.getName(), sequenceNumber, getTimestamp());
 		/*String result = String.format("%s:", type);

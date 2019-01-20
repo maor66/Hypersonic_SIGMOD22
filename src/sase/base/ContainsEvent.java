@@ -6,4 +6,6 @@ public interface ContainsEvent
     boolean isLastInput();
 
     long getSequenceNumber();
+
+    long getEarliestTimestamp();
 }

@@ -27,7 +27,7 @@
 //        this.eventsFromMain = eventsFromMain;
 //    }
 //
-//    public List<Event>  getInputBufferSubListWithOptimisticLock() {
+//    public List<Event>  getBufferSubListWithOptimisticLock() {
 //        return getBufferSubListWithOptimisticLock(inputBufferSubList);
 //    }
 //
@@ -59,7 +59,7 @@
 //    }
 //
 //
-//    public LinkedTransferQueue<Event> getEventsFromMain() {
+//    public LinkedTransferQueue<Event> getInputQueue() {
 //        return (LinkedTransferQueue<Event>) eventsFromMain;
 //    }
 //
@@ -88,7 +88,7 @@
 //    }
 //
 //    @Override
-//    public void addEventToOwnInputBuffer(Event newEvent) {
+//    public void addEventToOwnBuffer(Event newEvent) {
 //        addToOwnBuffer(newEvent, inputBufferSubList);
 //    }
 //}

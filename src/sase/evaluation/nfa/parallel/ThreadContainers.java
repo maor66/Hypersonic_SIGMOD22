@@ -1,44 +1,73 @@
 package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
-import sase.base.Event;
 import sase.base.EventType;
 import sase.evaluation.common.Match;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.locks.StampedLock;
 
 public class ThreadContainers {
-    private List<ContainsEvent> inputBufferSubList;
-    private BlockingQueue<ContainsEvent> eventsFromMain;
+    private final List<BlockingQueue<ContainsEvent>> inputs;
+    private List<ContainsEvent> bufferSubList;
     private BlockingQueue<ContainsEvent> removingData;
+    private List<BufferWorker> oppositeBufferWorkers;
+    private LinkedHashMap<MatchBufferWorker, BlockingQueue<Match>> nextStateWorkers;
+    private int nextWorkerToSendTo = 0;
     private StampedLock lock;
     private EventType eventType;
     private int sequentialNumber;
     private long timeWindow;
 
-    public ThreadContainers(BlockingQueue<ContainsEvent> eventsFromMain, BlockingQueue<ContainsEvent> removingData, EventType state, long timeWindow) {
-        this.eventsFromMain = eventsFromMain;
+
+    public long getTimeWindow() {
+        return timeWindow;
+    }
+
+    public int getNextWorkerToSendTo() {
+        return nextWorkerToSendTo;
+    }
+    public void updateNextWorkerToSendTo() {
+        nextWorkerToSendTo = (nextStateWorkers.size() == nextWorkerToSendTo) ? 0 : nextWorkerToSendTo + 1;
+    }
+
+    public LinkedHashMap<MatchBufferWorker, BlockingQueue<Match>> getNextStateWorkers() {
+        return nextStateWorkers;
+    }
+
+    public List<BlockingQueue<ContainsEvent>> getInputs() {
+        return inputs;
+    }
+
+    public ThreadContainers(List<BlockingQueue<ContainsEvent>> inputs, BlockingQueue<ContainsEvent> removingData, List<BufferWorker> oppositeBufferWorkers, LinkedHashMap<MatchBufferWorker, BlockingQueue<Match>> nextStateWorkers, EventType state, long timeWindow) {
+        this.inputs = inputs;
         this.removingData = removingData;
         this.eventType = state;
-        inputBufferSubList = new ArrayList<>();
+        bufferSubList = new ArrayList<>();
+        this.oppositeBufferWorkers = oppositeBufferWorkers;
+        this.nextStateWorkers = nextStateWorkers;
         lock = new StampedLock();
         this.timeWindow = timeWindow;
     }
 
-    public List<ContainsEvent>  getInputBufferSubListWithOptimisticLock() {
+    public List<BufferWorker> getOppositeBufferWorkers() {
+        return oppositeBufferWorkers;
+    }
+
+    public List<ContainsEvent> getBufferSubListWithOptimisticLock() {
         List<ContainsEvent> listView = new ArrayList<>();
         long stamp = lock.tryOptimisticRead();
-        listView.addAll(inputBufferSubList); //TODO: copies the list, which can hit performance. A different solution could be to read from the start of the list, this can be done without locking (up to a point)
+        listView.addAll(bufferSubList); //TODO: copies the list, which can hit performance. A different solution could be to read from the start of the list, this can be done without locking (up to a point)
         if (!lock.validate(stamp)) {
             stamp = lock.readLock();
             try {
-                listView.addAll(inputBufferSubList);
+                listView.addAll(bufferSubList);
             } finally {
                 lock.unlockRead(stamp);
             }
@@ -46,17 +75,13 @@ public class ThreadContainers {
         return listView;
     }
 
-    public void addEventToOwnInputBuffer(ContainsEvent event) {
+    public void addEventToOwnBuffer(ContainsEvent event) {
         long stamp = lock.writeLock();
         try {
-            inputBufferSubList.add(event);
+            bufferSubList.add(event);
         } finally {
             lock.unlockWrite(stamp);
         }
-    }
-
-    public LinkedTransferQueue<ContainsEvent> getEventsFromMain() {
-        return (LinkedTransferQueue<ContainsEvent>) eventsFromMain;
     }
 
     public BlockingQueue<ContainsEvent> getRemovingData() {
@@ -75,31 +100,38 @@ public class ThreadContainers {
         return eventType;
     }
 
-    public void removeExpiredEvents(ContainsEvent removingCriteria) {
-        long latest_timestamp = removingCriteria.getTimestamp();
+    public void removeExpiredElements(long removingCriteriaTimeStamp, boolean isBufferSorted) {
+        int numberOfRemovedElements = 0;
         long stamp = lock.writeLock();
-        int numberOfRemovedEvents = 0;
-        if (inputBufferSubList.isEmpty()) {
+        if (bufferSubList.isEmpty()) {
             lock.unlock(stamp);
             return;
         }
-        ContainsEvent currEvent = inputBufferSubList.get(0);
-//        while (currEvent.getTimestamp() + timeWindow < latest_timestamp) {
-        //TODO: This doesn't remove as much events as ilya's algorithm. Using the commented out line improves it but should check if its enough
-        // The problem is that I should remove based on the rPM as they indicate what "time" it is for the partial matches, which means that older rPMs won't arrive,
-        // (if assuming that OoO can't happen) If I remove based on coming events, I could have a delayed rPM that should have been compared to an already deleted event
-        while (currEvent.getTimestamp() + timeWindow < inputBufferSubList.get(inputBufferSubList.size()-1).getTimestamp()) {
-            inputBufferSubList.remove(0);
-            numberOfRemovedEvents++;
-            if (inputBufferSubList.isEmpty()) {
-                break;
+        if (isBufferSorted) { //IB is sorted, while MB isn't
+            ContainsEvent currEvent = bufferSubList.get(0);
+            while (currEvent.getTimestamp() + timeWindow < bufferSubList.get(bufferSubList.size()-1).getTimestamp()) {
+                bufferSubList.remove(0);
+                numberOfRemovedElements++;
+                if (bufferSubList.isEmpty()) {
+                    break;
+                }
+                currEvent = bufferSubList.get(0);
             }
-            currEvent = inputBufferSubList.get(0);
+        }
+        else { //Since the buffer isn't sorted, the iterating order doesn't matter'
+            int beforeRemovalSize = bufferSubList.size();
+            bufferSubList.removeIf(element -> element.getEarliestTimestamp() + timeWindow < removingCriteriaTimeStamp);
+            numberOfRemovedElements = beforeRemovalSize - bufferSubList.size();
         }
         lock.unlock(stamp);
-//        System.out.println("PAR deleted: " + numberOfRemovedEvents); //TODO: delete
-        Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.bufferRemovals,
-                numberOfRemovedEvents);
+        if (isBufferSorted) { //This is not a very good design...
+            Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.bufferRemovals,
+                    numberOfRemovedElements);
+        }
+        else {
+            Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.instanceDeletions,
+                    numberOfRemovedElements);
+        }
     }
 }
 
@@ -190,5 +222,5 @@ public class ThreadContainers {
 //
 //    public abstract <T> void removeExpiredElements(T removingCriteria);
 //
-//    public abstract void addEventToOwnInputBuffer(Event newEvent);
+//    public abstract void addEventToOwnBuffer(Event newEvent);
 //}

@@ -8,6 +8,7 @@ import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
 import sase.evaluation.nfa.parallel.InputBufferWorker;
+import sase.evaluation.nfa.parallel.MatchBufferWorker;
 import sase.evaluation.nfa.parallel.ThreadContainers;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
@@ -16,19 +17,21 @@ import sase.statistics.Statistics;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ParallelLazyChainNFA extends LazyChainNFA {
 
-    private Map<TypedNFAState, List<Event>> parallelInputBuffer;
-    private Map<TypedNFAState, List<Match>> partialMatchBuffer;
+    //    private Map<TypedNFAState, List<Event>> parallelInputBuffer;
+//    private Map<TypedNFAState, List<Match>> partialMatchBuffer;
     private ExecutorService executor;
     private List<ThreadContainers> threadContainers;
     private Map<NFAState, List<InputBufferWorker>> IBWorkers;
-//    private Map<NFAState, List<MatchBufferWorker>> IBWorkers;
+    private Map<NFAState, List<MatchBufferWorker>> MBWorkers;
     private Map<NFAState, Integer> cyclicInputThreadCounter;
     private static int INPUT_BUFFER_THREADS_PER_STATE = 4;
+    private static int MATCH_BUFFER_THREADS_PER_STATE = 6;
     private TypedNFAState eventState;
 
     public ParallelLazyChainNFA(Pattern pattern, EvaluationPlan evaluationPlan, LazyNFANegationTypes negationType) {
@@ -48,14 +51,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         int cyclicCounter = cyclicInputThreadCounter.computeIfPresent(eventState, (key, value) -> ((value + 1) % INPUT_BUFFER_THREADS_PER_STATE));
         InputBufferWorker workerToSendEventTo = IBWorkers.get(eventState).get(cyclicCounter);
         try {
-            while (!workerToSendEventTo.getDataStorage().getEventsFromMain().tryTransfer(event)) {
+            while (!workerToSendEventTo.getDataStorage().getInputQueue().tryTransfer(event)) {
             }//TODO: change to BlockingQueue.put
 
-//            workerToSendEventTo.getDataStorage().getEventsFromMain().transfer(event); //TODO: change to BlockingQueue.put
+//            workerToSendEventTo.getDataStorage().getInputQueue().transfer(event); //TODO: change to BlockingQueue.put
 //            TimeUnit.MILLISECONDS.sleep(100);
             List<ContainsEvent> events = new ArrayList<>();
-            while(!events.contains(event)){
-                events = workerToSendEventTo.getDataStorage().getInputBufferSubListWithOptimisticLock();
+            while (!events.contains(event)) {
+                events = workerToSendEventTo.getDataStorage().getBufferSubListWithOptimisticLock();
             }
             if (!events.contains(event)) {
                 System.err.println("Doesn't contain event");
@@ -81,9 +84,9 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private List<Match> findPartialMatchesOnNewPartialMatch(TypedNFAState eventState, Match partialMatch) {
         List<ContainsEvent> stateInputBuffer = new ArrayList<>();
         for (InputBufferWorker worker : IBWorkers.get(eventState)) {
-            stateInputBuffer.addAll(worker.getDataStorage().getInputBufferSubListWithOptimisticLock());
+            stateInputBuffer.addAll(worker.getDataStorage().getBufferSubListWithOptimisticLock());
         }
-        List<Event> actualEvents = (List<Event>)(List<?>) stateInputBuffer;
+        List<Event> actualEvents = (List<Event>) (List<?>) stateInputBuffer;
 
 //        System.out.print("\nOriginal IB: ");
 //        stateInputBuffer.forEach(System.out::print); System.out.println();
@@ -94,7 +97,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 //        System.out.print("\nslice: ");
 //        slices.forEach(System.out::println);
 //        return findPartialMatchesInCurrentState(eventState,stateInputBuffer, new ArrayList<>(List.of(partialMatch)));
-        return findPartialMatchesInCurrentState(eventState,getSlice(actualEvents, partialMatch, eventState), new ArrayList<>(List.of(partialMatch)));
+        return findPartialMatchesInCurrentState(eventState, getSlice(actualEvents, partialMatch, eventState), new ArrayList<>(List.of(partialMatch)));
     }
 
     private List<Event> getSlice(List<Event> events, Match partialMatch, TypedNFAState eventState) {
@@ -127,12 +130,11 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         removeExpiredEvents(eventState); //This removes the rPMs from the MB
         if (eventState.isInitial()) { // In the first state only, events are forwarded automatically to the next state.
             extraEventPartialMatches.add(new Match(eventList, System.currentTimeMillis()));
-        }
-        else {
+        } else {
             for (Match partialMatch : partialMatchList) {
                 for (ContainsEvent event : eventList) { //One of the list is of size 1, so it is actually comparing one object with every other on the list
                     if (isEventCompatibleWithPartialMatch(eventState, partialMatch, (Event) event)) {
-                        extraEventPartialMatches.add(partialMatch.createNewPartialMatchWithEvent(evaluationOrder.getFullEvaluationOrder(), (Event) event));
+                        extraEventPartialMatches.add(partialMatch.createNewPartialMatchWithEvent((Event) event));
                     }
                 }
             }
@@ -142,7 +144,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     }
 
     private void removeEventsFromIB(TypedNFAState eventState, Match partialMatch) {
-        for (InputBufferWorker worker: IBWorkers.get(eventState)) {
+        for (InputBufferWorker worker : IBWorkers.get(eventState)) {
             try {
                 worker.getDataStorage().getRemovingData().put(partialMatch);
             } catch (InterruptedException e) {
@@ -150,11 +152,12 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             }
         }
     }
+
     private boolean isEventCompatibleWithPartialMatch(TypedNFAState eventState, Match partialMatch, Event event) {
         //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
 
         return verifyTimeWindowConstraint(partialMatch, event) && getActualNextTransition(eventState).verifyConditionWithTemporalConditionFirst( //TODO: check if verifying the (non-temporal) condition works with partial events or consider changing the condition
-                Stream.concat(partialMatch.getPrimitiveEvents().stream(),List.of(event).stream()).collect(Collectors.toList())); //Combining two lists
+                Stream.concat(partialMatch.getPrimitiveEvents().stream(), List.of(event).stream()).collect(Collectors.toList())); //Combining two lists
     }
 
     private boolean verifyTimeWindowConstraint(Match partialMatch, Event event) {
@@ -188,13 +191,31 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         threadContainers = new ArrayList<>();
         IBWorkers = new HashMap<>();
         cyclicInputThreadCounter = new HashMap<>();
-        executor = Executors.newFixedThreadPool(INPUT_BUFFER_THREADS_PER_STATE * states.size()); //TODO: maybe workstealingpool?
+        executor = Executors.newFixedThreadPool((INPUT_BUFFER_THREADS_PER_STATE + MATCH_BUFFER_THREADS_PER_STATE) * states.size()); //TODO: maybe workstealingpool?
+
+        for (TypedNFAState state : getWorkerStates()) {
+            // Construct the workers first so it will be possible to add them as parameters in the ThreadContainer c'tor. Probably should've used a better design pattern (builder?)
+            List<InputBufferWorker> stateIBworkers = new ArrayList<>();
+            List<MatchBufferWorker> stateMBworkers = new ArrayList<>();
+            for (int i = 0; i < INPUT_BUFFER_THREADS_PER_STATE; i++) {
+                stateIBworkers.add(new InputBufferWorker(state));
+            }
+            for (int i = 0; i < MATCH_BUFFER_THREADS_PER_STATE; i++) {
+                stateMBworkers.add(new MatchBufferWorker(state));
+            }
+            IBWorkers.put(state, stateIBworkers);
+            MBWorkers.put(state, stateMBworkers);
+        }
+
         for (NFAState state : states) {
             if (!state.isRejecting() && !state.isAccepting()) {
                 List<InputBufferWorker> stateWorkers = new ArrayList<>();
-                cyclicInputThreadCounter.put(state, -1);
+//                cyclicInputThreadCounter.put(state, -1);
                 for (int i = 0; i < INPUT_BUFFER_THREADS_PER_STATE; i++) {
-                    ThreadContainers threadData = new ThreadContainers(new LinkedTransferQueue<>(), new LinkedBlockingQueue<>(), ((TypedNFAState) state).getEventType(), timeWindow);
+                    ThreadContainers threadData = new ThreadContainers(new ArrayList<BlockingQueue<ContainsEvent>>(List.of(new LinkedTransferQueue<>())),
+                            new LinkedBlockingQueue<>(),
+                            MBWorkers.get(state),
+                            ((TypedNFAState) state).getEventType(), timeWindow);
                     //TODO: using transfer queue for synchronized event sending, should use blockingQueue instead for async commmunication.
                     threadContainers.add(threadData);
                     InputBufferWorker worker = new InputBufferWorker(threadData);
@@ -204,6 +225,11 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 IBWorkers.put(state, stateWorkers);
             }
         }
+    }
+
+    private List<TypedNFAState> getWorkerStates() {
+        List<NFAState> workerStream = states.stream().filter(state -> (!state.isAccepting() && !state.isRejecting())).collect(Collectors.toList());
+        return (List<TypedNFAState>)(List<?>) workerStream;
     }
 
     private void createStateMappings() {
@@ -227,11 +253,10 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         return null;
     }
 
-    private LazyTransition getActualNextTransition(NFAState state)
-    {
-        for (Transition transition: state.getOutgoingTransitions()) {
+    private LazyTransition getActualNextTransition(NFAState state) {
+        for (Transition transition : state.getOutgoingTransitions()) {
             if (transition.getAction() == Transition.Action.TAKE) {
-                return (LazyTransition)transition;
+                return (LazyTransition) transition;
             }
         }
         throw new RuntimeException("No outgoing TAKE transition");

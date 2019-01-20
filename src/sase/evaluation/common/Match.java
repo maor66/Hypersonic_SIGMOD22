@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import sase.base.ContainsEvent;
 import sase.base.Event;
-import sase.base.EventType;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
 
@@ -77,7 +76,7 @@ public class Match implements ContainsEvent{
 		return result;
 	}
 
-	public Match createNewPartialMatchWithEvent(List<EventType> fullEvaluationOrder, Event event) {
+	public Match createNewPartialMatchWithEvent(Event event) {
 		//TODO: latency measurement is probably wrong
 		//TODO: creates partial match by evaluation/frequency order and not by sequence order. not sure if ok
 		return new Match(Stream.concat(primitiveEvents.stream(),List.of(event).stream()).collect(Collectors.toList()), event.getSystemTimestamp()); //Combining two lists)
@@ -119,5 +118,10 @@ public class Match implements ContainsEvent{
 	@Override
 	public long getSequenceNumber() {
 		return getLatestEvent().getSequenceNumber();
+	}
+
+	@Override
+	public long getEarliestTimestamp() {
+		return getEarliestEvent();
 	}
 }
