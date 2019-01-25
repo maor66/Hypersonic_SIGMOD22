@@ -9,16 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MatchBufferWorker extends BufferWorker {
-    private int cyclicInputQueueIndex = -1;
     @Override
-    protected ContainsEvent takeNextInput() throws InterruptedException {
-        int numberOfInputQueues = dataStorage.getInputs().size();
-        cyclicInputQueueIndex = (cyclicInputQueueIndex + 1) % numberOfInputQueues;
-        return takeElementFromQueue(dataStorage.getInputs().get(cyclicInputQueueIndex));
-    }
-
-    @Override
-    protected void iterateOnOppositeBuffer(ContainsEvent newElement) {
+    protected void iterateOnOppositeBuffer(ContainsEvent newElement, List<ContainsEvent> oppositeBufferList) {
         List<ContainsEvent> events = getOppositeBufferList();
         List<Event> actualEvents = (List<Event>)(List<?>) events;
         tryToAddMatchesWithEvents(new ArrayList<>(List.of((Match)newElement)), actualEvents);

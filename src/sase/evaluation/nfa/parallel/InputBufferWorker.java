@@ -10,16 +10,13 @@ import java.util.Collection;
 import java.util.List;
 
 public class InputBufferWorker extends BufferWorker {
-    @Override
-    protected ContainsEvent takeNextInput() throws InterruptedException {
-        return takeElementFromQueue(getDataStorage().getInputs().get(0)); //Only one queue as input
-    }
+
 
     @Override
-    protected void iterateOnOppositeBuffer(ContainsEvent newElement) {
+    protected void iterateOnOppositeBuffer(ContainsEvent newElement, List<ContainsEvent> oppositeBufferList) {
         if (eventState.isInitial()) { // Send automatically to next state
             //TODO: should optimize and send to MB worker in the second state directly from the main thread
-            sendToNextState(new Match(new ArrayList<>((Collection<? extends Event>) List.of(newElement)), System.currentTimeMillis()));
+            sendToNextState(new Match(new ArrayList<>(((List<Event>)(List<?>) List.of(newElement))), System.currentTimeMillis()));
         }
         List<ContainsEvent> partialMatches = getOppositeBufferList();
         List<Match> actualMatches = (List<Match>)(List<?>) partialMatches;
@@ -34,6 +31,7 @@ public class InputBufferWorker extends BufferWorker {
         public InputBufferWorker(TypedNFAState eventState) {
         super(eventState);
     }
+
 //
 //    ThreadContainers dataStorage;
 //

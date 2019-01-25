@@ -10,15 +10,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.locks.StampedLock;
 
 public class ThreadContainers {
-    private final List<BlockingQueue<ContainsEvent>> inputs;
+    private final BlockingQueue<? extends ContainsEvent> input;
+    private final BlockingQueue<Match> nextStateOutput;
     private List<ContainsEvent> bufferSubList;
-    private BlockingQueue<ContainsEvent> removingData;
-    private List<BufferWorker> oppositeBufferWorkers;
-    private LinkedHashMap<MatchBufferWorker, BlockingQueue<Match>> nextStateWorkers;
+    private List<? extends BufferWorker> oppositeBufferWorkers;
     private int nextWorkerToSendTo = 0;
     private StampedLock lock;
     private EventType eventType;
@@ -30,33 +28,21 @@ public class ThreadContainers {
         return timeWindow;
     }
 
-    public int getNextWorkerToSendTo() {
-        return nextWorkerToSendTo;
-    }
-    public void updateNextWorkerToSendTo() {
-        nextWorkerToSendTo = (nextStateWorkers.size() == nextWorkerToSendTo) ? 0 : nextWorkerToSendTo + 1;
+    public BlockingQueue<Match> getNextStateOutput() {
+        return nextStateOutput;
     }
 
-    public LinkedHashMap<MatchBufferWorker, BlockingQueue<Match>> getNextStateWorkers() {
-        return nextStateWorkers;
-    }
-
-    public List<BlockingQueue<ContainsEvent>> getInputs() {
-        return inputs;
-    }
-
-    public ThreadContainers(List<BlockingQueue<ContainsEvent>> inputs, BlockingQueue<ContainsEvent> removingData, List<BufferWorker> oppositeBufferWorkers, LinkedHashMap<MatchBufferWorker, BlockingQueue<Match>> nextStateWorkers, EventType state, long timeWindow) {
-        this.inputs = inputs;
-        this.removingData = removingData;
+    public ThreadContainers(BlockingQueue<? extends ContainsEvent> input, List<? extends BufferWorker> oppositeBufferWorkers, BlockingQueue<Match> nextStateOutput, EventType state, long timeWindow) {
+        this.input = input;
         this.eventType = state;
         bufferSubList = new ArrayList<>();
         this.oppositeBufferWorkers = oppositeBufferWorkers;
-        this.nextStateWorkers = nextStateWorkers;
+        this.nextStateOutput = nextStateOutput;
         lock = new StampedLock();
         this.timeWindow = timeWindow;
     }
 
-    public List<BufferWorker> getOppositeBufferWorkers() {
+    public List<? extends BufferWorker> getOppositeBufferWorkers() {
         return oppositeBufferWorkers;
     }
 
@@ -84,12 +70,12 @@ public class ThreadContainers {
         }
     }
 
-    public BlockingQueue<ContainsEvent> getRemovingData() {
-        return removingData;
-    }
-
     public int getSequentialNumber() {
         return sequentialNumber;
+    }
+
+    public BlockingQueue<? extends ContainsEvent> getInput() {
+        return input;
     }
 
     public StampedLock getLock() {

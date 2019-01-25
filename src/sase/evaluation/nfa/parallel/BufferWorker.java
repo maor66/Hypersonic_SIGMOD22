@@ -9,6 +9,7 @@ import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.stream.Collectors;
@@ -35,11 +36,6 @@ public abstract class BufferWorker implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            ContainsEvent removingCriteria = dataStorage.getRemovingData().poll();
-            if (removingCriteria != null) {
-                dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted());
-            }
-
             if (newElement.isLastInput()) {
                 System.err.println("Finisher input");
                 return; //TODO: how to end task?
@@ -48,14 +44,26 @@ public abstract class BufferWorker implements Runnable {
 //                throw new RuntimeException("Got wrong event type in Input Buffer");
 //            }
             dataStorage.addEventToOwnBuffer(newElement);
-            iterateOnOppositeBuffer(newElement);
+            List<ContainsEvent> oppositeBufferList = getOppositeBufferList();
+            ContainsEvent removingCriteria = getReleventRemovingCriteria(oppositeBufferList);
+            if (removingCriteria != null) {
+                dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted());
+            }
+
+            iterateOnOppositeBuffer(newElement, oppositeBufferList);
         }
     }
 
-    protected abstract ContainsEvent takeNextInput() throws InterruptedException;
-    protected ContainsEvent takeElementFromQueue(BlockingQueue<ContainsEvent> queue) throws InterruptedException {
-        return queue.take();
+    private ContainsEvent getReleventRemovingCriteria(List<ContainsEvent> oppositeBufferList)
+    {
+        //TODO: can be optimized because we already go over the MB when looking for matches, so its possible to calculate latest match at that stage
+        return oppositeBufferList.stream().max(Comparator.comparing(ContainsEvent::getEarliestTimestamp)).orElse(null);
     }
+
+    protected ContainsEvent takeNextInput() throws InterruptedException {
+        return dataStorage.getInput().take();
+    }
+
 
     protected List<ContainsEvent> getOppositeBufferList()
     {
@@ -91,8 +99,7 @@ public abstract class BufferWorker implements Runnable {
     }
 
     protected void sendToNextState(Match newPartialMatchWithEvent) {
-        BlockingQueue<Match> matchesQueue = dataStorage.getNextStateWorkers().get((dataStorage.getNextStateWorkers().keySet().toArray()[dataStorage.getNextWorkerToSendTo()]));
-        dataStorage.updateNextWorkerToSendTo();
+        BlockingQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
         try {
             matchesQueue.put(newPartialMatchWithEvent);
         } catch (InterruptedException e) {
@@ -115,7 +122,7 @@ public abstract class BufferWorker implements Runnable {
         this.dataStorage = dataStorage;
     }
 
-    protected abstract void iterateOnOppositeBuffer(ContainsEvent newElement);
+    protected abstract void iterateOnOppositeBuffer(ContainsEvent newElement, List<ContainsEvent> oppositeBufferList);
 
     protected abstract boolean isBufferSorted();
 }
