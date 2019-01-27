@@ -45,19 +45,34 @@ public abstract class BufferWorker implements Runnable {
 //            }
             dataStorage.addEventToOwnBuffer(newElement);
             List<ContainsEvent> oppositeBufferList = getOppositeBufferList();
+            if (oppositeBufferList.isEmpty()) {
+                continue;
+            }
+            iterateOnOppositeBuffer(newElement, oppositeBufferList);
             ContainsEvent removingCriteria = getReleventRemovingCriteria(oppositeBufferList);
             if (removingCriteria != null) {
-                dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted());
+//                dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted());
+                dataStorage.removeExpiredElements(oppositeBufferList.get(0).getEarliestTimestamp(), isBufferSorted());
             }
-
-            iterateOnOppositeBuffer(newElement, oppositeBufferList);
         }
     }
 
     private ContainsEvent getReleventRemovingCriteria(List<ContainsEvent> oppositeBufferList)
     {
         //TODO: can be optimized because we already go over the MB when looking for matches, so its possible to calculate latest match at that stage
-        return oppositeBufferList.stream().max(Comparator.comparing(ContainsEvent::getEarliestTimestamp)).orElse(null);
+//        return oppositeBufferList.stream().max(Comparator.comparing(ContainsEvent::getEarliestTimestamp)).orElse(null);
+        long latestEarliestTimeStamp = Long.MIN_VALUE;
+        ContainsEvent element = null;
+        for (ContainsEvent ce : oppositeBufferList) {
+            if (ce == null) {
+                System.out.println("ce is null");
+            }
+            if (ce.getEarliestTimestamp() > latestEarliestTimeStamp) {
+                element = ce;
+                latestEarliestTimeStamp = ce.getEarliestTimestamp();
+            }
+        }
+        return element;
     }
 
     protected ContainsEvent takeNextInput() throws InterruptedException {
@@ -78,7 +93,7 @@ public abstract class BufferWorker implements Runnable {
         //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
         //TODO: doesn't have to verify temporal condition first anymore - check if removing doesn't hurt correctness
 
-        return verifyTimeWindowConstraint(partialMatch, event) && getActualNextTransition(eventState).verifyConditionWithTemporalConditionFirst( //TODO: check if verifying the (non-temporal) condition works with partial events or consider changing the condition
+        return verifyTimeWindowConstraint(partialMatch, event) && getActualNextTransition(eventState).verifyCondition( //TODO: check if verifying the (non-temporal) condition works with partial events or consider changing the condition
                 Stream.concat(partialMatch.getPrimitiveEvents().stream(),List.of(event).stream()).collect(Collectors.toList())); //Combining two lists
     }
 
@@ -93,6 +108,10 @@ public abstract class BufferWorker implements Runnable {
     }
 
     private boolean verifyTimeWindowConstraint(Match partialMatch, Event event) {
+        if (partialMatch == null)
+            System.out.println("partial");
+        if (event == null)
+            System.out.println("event");
         return (partialMatch.getLatestEventTimestamp() <= event.getTimestamp() + dataStorage.getTimeWindow()) &&
                 (partialMatch.getEarliestEvent() + dataStorage.getTimeWindow() >= event.getTimestamp());
 
@@ -113,6 +132,10 @@ public abstract class BufferWorker implements Runnable {
         for (Match partialMatch : matches) {
             for (Event event : events) {
                 if (isEventCompatibleWithPartialMatch(eventState, partialMatch, event)) {
+                    Match m = partialMatch.createNewPartialMatchWithEvent(event);
+                    if (m.getLatestEventTimestamp() > m.getEarliestTimestamp() + dataStorage.getTimeWindow()){
+                        System.out.println("time window wrong");
+                    }
                     sendToNextState(partialMatch.createNewPartialMatchWithEvent(event));
                 }
             }

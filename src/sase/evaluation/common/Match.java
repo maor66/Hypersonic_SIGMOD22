@@ -79,6 +79,9 @@ public class Match implements ContainsEvent{
 	public Match createNewPartialMatchWithEvent(Event event) {
 		//TODO: latency measurement is probably wrong
 		//TODO: creates partial match by evaluation/frequency order and not by sequence order. not sure if ok
+		if (primitiveEvents.size() > 5) {
+			System.out.println("too much events");
+		}
 		return new Match(Stream.concat(primitiveEvents.stream(),List.of(event).stream()).collect(Collectors.toList()), event.getSystemTimestamp()); //Combining two lists)
 	}
 
@@ -95,8 +98,10 @@ public class Match implements ContainsEvent{
 		long latestTime = Integer.MIN_VALUE;
 		Event e = null;
 		for (Event event : primitiveEvents){
-			latestTime = (latestTime < event.getTimestamp()) ? event.getTimestamp() :latestTime;
-			e = event;
+			if (latestTime < event.getTimestamp()) {
+				latestTime = event.getTimestamp();
+				e = event;
+			}
 		}
 		return e;
 	}

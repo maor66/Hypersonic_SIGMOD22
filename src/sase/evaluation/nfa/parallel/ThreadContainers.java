@@ -4,8 +4,12 @@ import sase.base.ContainsEvent;
 import sase.base.EventType;
 import sase.evaluation.common.Match;
 import sase.simulator.Environment;
+import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
 import sase.statistics.Statistics;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,10 +21,8 @@ public class ThreadContainers {
     private final BlockingQueue<Match> nextStateOutput;
     private List<ContainsEvent> bufferSubList;
     private List<? extends BufferWorker> oppositeBufferWorkers;
-    private int nextWorkerToSendTo = 0;
     private StampedLock lock;
     private EventType eventType;
-    private int sequentialNumber;
     private long timeWindow;
 
 
@@ -53,6 +55,7 @@ public class ThreadContainers {
         if (!lock.validate(stamp)) {
             stamp = lock.readLock();
             try {
+                listView = new ArrayList<>();
                 listView.addAll(bufferSubList);
             } finally {
                 lock.unlockRead(stamp);
@@ -70,10 +73,6 @@ public class ThreadContainers {
         }
     }
 
-    public int getSequentialNumber() {
-        return sequentialNumber;
-    }
-
     public BlockingQueue<? extends ContainsEvent> getInput() {
         return input;
     }
@@ -88,6 +87,7 @@ public class ThreadContainers {
 
     public void removeExpiredElements(long removingCriteriaTimeStamp, boolean isBufferSorted) {
         int numberOfRemovedElements = 0;
+        List<ContainsEvent> removedEvents = new ArrayList<>();
         long stamp = lock.writeLock();
         if (bufferSubList.isEmpty()) {
             lock.unlock(stamp);
@@ -95,8 +95,8 @@ public class ThreadContainers {
         }
         if (isBufferSorted) { //IB is sorted, while MB isn't
             ContainsEvent currEvent = bufferSubList.get(0);
-            while (currEvent.getTimestamp() + timeWindow < bufferSubList.get(bufferSubList.size()-1).getTimestamp()) {
-                bufferSubList.remove(0);
+            while (currEvent.getTimestamp() + timeWindow < removingCriteriaTimeStamp) {
+                removedEvents.add(bufferSubList.remove(0));
                 numberOfRemovedElements++;
                 if (bufferSubList.isEmpty()) {
                     break;
@@ -113,6 +113,17 @@ public class ThreadContainers {
         if (isBufferSorted) { //This is not a very good design...
             Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.bufferRemovals,
                     numberOfRemovedElements);
+//            try {
+//                BufferedWriter bw = new BufferedWriter(new FileWriter("C:\\Users\\Maor\\Documents\\removelogs\\" + System.nanoTime()));
+//                for (ContainsEvent ce : removedEvents) {
+//                    bw.write("Removed event " + ce + " based on rPM: " + removingCriteriaTimeStamp);
+//                }
+//                bw.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+
+
         }
         else {
             Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.instanceDeletions,

@@ -15,11 +15,9 @@ import sase.pattern.Pattern;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
 
+import java.sql.Time;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,8 +27,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private Map<NFAState, List<InputBufferWorker>> IBWorkers;
     private Map<NFAState, List<MatchBufferWorker>> MBWorkers;
     private Map<TypedNFAState, BlockingQueue<Event>> eventInputQueues;
-    private static int INPUT_BUFFER_THREADS_PER_STATE = 4;
-    private static int MATCH_BUFFER_THREADS_PER_STATE = 6;
+    private static int INPUT_BUFFER_THREADS_PER_STATE = 1;
+    private static int MATCH_BUFFER_THREADS_PER_STATE = 1;
     private BlockingQueue<Match> secondStateInputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Match> completeMatchOutputQueue;
 
@@ -74,13 +72,26 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
     @Override
     public List<Match> getLastMatches() {
-        List<Match> matches = new ArrayList<>();
         try {
-            matches.add(completeMatchOutputQueue.take());
+            TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return matches;
+        Set<Match> matches = new HashSet<>();
+        while (true) {
+//            if (matches.size() == 617 || matches.size() > 605 && completeMatchOutputQueue.size() == 0) break;
+            if (matches.size() == 2431) break;
+            try {
+                Match m = completeMatchOutputQueue.take();
+                matches.add(m);
+//                System.out.println("Match" + matches.size() + ":" + matches.get(matches.size()-1));
+                System.out.println("Match" + matches.size() + ":" + m);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+//        executor.shutdownNow();
+        return new ArrayList<>(matches);
     }
 
 //    private List<Match> verifyMatches(List<Match> matches) {
@@ -202,23 +213,24 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             inputQueue = new LinkedBlockingQueue<>();
             eventInputQueues.put(state, inputQueue);
             outputQueue = new LinkedBlockingQueue<>();
-            ThreadContainers IBthreadData = new ThreadContainers(inputQueue,
-                    MBWorkers.get(state),
-                    outputQueue,
-                    state.getEventType(),
-                    timeWindow);
-            ThreadContainers MBthreadData = new ThreadContainers(MBinputQueue,
-                    IBWorkers.get(state),
-                    outputQueue,
-                    state.getEventType(),
-                    timeWindow);
-            MBinputQueue = outputQueue;
             for (int i = 0; i < INPUT_BUFFER_THREADS_PER_STATE; i++) {
+                //Every worker has an "equal" ThreadContainer but they must be different since each worker should have a unique sub-list
+                ThreadContainers IBthreadData = new ThreadContainers(inputQueue,
+                        MBWorkers.get(state),
+                        outputQueue,
+                        state.getEventType(),
+                        timeWindow);
                 IBWorkers.get(state).get(i).initializeDataStorage(IBthreadData);
             }
             for (int i = 0; i < MATCH_BUFFER_THREADS_PER_STATE; i++) {
-                MBWorkers.get(state).get(i).initializeDataStorage(IBthreadData);
+                ThreadContainers MBthreadData = new ThreadContainers(MBinputQueue,
+                        IBWorkers.get(state),
+                        outputQueue,
+                        state.getEventType(),
+                        timeWindow);
+                MBWorkers.get(state).get(i).initializeDataStorage(MBthreadData);
             }
+            MBinputQueue = outputQueue;
         }
         completeMatchOutputQueue = outputQueue; // The final output queue is that of the final state and the main thread should get the matches from it
 

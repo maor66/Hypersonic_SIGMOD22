@@ -9,7 +9,7 @@ public class WindowsPathConfig extends PathConfig {
 //				firstInputFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_short.txt";
 
 		//firstInputFilePath = "C:\\Education\\PhD\\Experiments\\Aarhus Traffic\\traffic.csv";
-		firstInputDirectoryPath = "C:\\Users\\Maor\\Documents\\0802";
+		firstInputDirectoryPath = "C:\\Users\\Maor\\Documents\\0802less";
 		outputFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_20080201_1out.csv";
 //		selectivityEstimatorsFilePath = "C:\\Education\\PhD\\Experiments\\Metadata\\selectivity.ser";
 		selectivityEstimatorsFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_20080201_1sel.ser";

@@ -441,6 +441,7 @@ public class PatternConfig {
 //                    },
 //                    SlaVerifierTypes.NONE),
 
+
 			new PatternSpecification("SEQ3", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 					new String[][][] {new String[][]{new String[]{
 							StockEventTypesManager.microsoftEventTypeName,
