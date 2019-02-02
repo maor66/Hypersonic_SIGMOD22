@@ -41,7 +41,7 @@ public abstract class AtomicCondition extends Condition {
 			firstEvent = getEventByType(events, firstEventType);
 			EventType secondEventType = ((DoubleEventCondition)this).getRightEventType();
 			secondEvent = getEventByType(events, secondEventType);
-			Boolean success = 
+			Boolean success =
 				Environment.getEnvironment().getPredicateResultsCache().getConditionEvaluationResult(this,
 																									 firstEvent,
 																									 secondEvent);
@@ -51,16 +51,16 @@ public abstract class AtomicCondition extends Condition {
 		}
 		boolean success = actuallyVerify(events);
 		if (MainConfig.conditionSelectivityMeasurementMode) {
-			ConditionSelectivityCollector.getInstance().recordConditionEvaluation(getConditionKey(), success);
+//			ConditionSelectivityCollector.getInstance().recordConditionEvaluation(getConditionKey(), success);
 		}
 		if (MainConfig.isSelectivityMonitoringAllowed) {
 			Environment.getEnvironment().getSelectivityEstimator().registerConditionVerification(this, success);
 		}
 		if (this instanceof DoubleEventCondition) {
-			Environment.getEnvironment().getPredicateResultsCache().recordConditionEvaluation(this,
-																							  firstEvent,
-																							  secondEvent,
-																							  success);
+//			Environment.getEnvironment().getPredicateResultsCache().recordConditionEvaluation(this,
+//																							  firstEvent,
+//																							  secondEvent,
+//																							  success);
 		}
 		return success;
 	}

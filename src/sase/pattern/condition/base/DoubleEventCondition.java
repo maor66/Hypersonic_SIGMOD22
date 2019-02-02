@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.locks.StampedLock;
 
 import sase.base.Event;
 import sase.base.EventType;
@@ -37,6 +38,7 @@ public abstract class DoubleEventCondition extends AtomicCondition {
 		this(firstType, secondType, null);
 	}
 	public static String condPrint = "";
+	public static StampedLock lock = new StampedLock();
 	@Override
 	protected boolean actuallyVerify(List<Event> events) {
 		Event firstEvent = null;
@@ -48,8 +50,21 @@ public abstract class DoubleEventCondition extends AtomicCondition {
 				secondEvent = event;
 
 			if (firstEvent != null && secondEvent != null) {
+//				if (firstEvent.getSequenceNumber() > secondEvent.getSequenceNumber()) {
+//					System.out.println(firstEvent+" ,,, "+ secondEvent);
+//					try{
+//						throw new Exception();
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//						System.out.println(e.getStackTrace()[4]);
+//					}
+//				}
+//				long stamp = lock.writeLock();
 				condPrint+=("Comparing: "+ firstEvent.toString() + " , " +secondEvent.toString()+"\n");
-				Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.computations);
+//				lock.unlockWrite(stamp);
+				if (firstEvent.getSequenceNumber() < secondEvent.getSequenceNumber()) {
+					Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.computations);
+				}
 				return verifyDoubleEvent(firstEvent, secondEvent);
 			}
 		}

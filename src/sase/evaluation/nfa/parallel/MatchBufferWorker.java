@@ -9,7 +9,10 @@ import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class MatchBufferWorker extends BufferWorker {
     @Override
@@ -19,7 +22,8 @@ public class MatchBufferWorker extends BufferWorker {
             return;
         }
         List<Event> actualEvents = (List<Event>)(List<?>) events;
-        tryToAddMatchesWithEvents(new ArrayList<>(List.of((Match)newElement)), getSlice(actualEvents, (Match) newElement, eventState));
+        actualEvents = getSlice(actualEvents, (Match) newElement, eventState);
+        tryToAddMatchesWithEvents(new ArrayList<>(List.of((Match)newElement)), actualEvents);
 //        tryToAddMatchesWithEvents(new ArrayList<>(List.of((Match)newElement)), actualEvents);
     }
 
@@ -34,8 +38,16 @@ public class MatchBufferWorker extends BufferWorker {
         long upperBoundSequenceNumber = (upperBoundEvent != null) ? upperBoundEvent.getSequenceNumber() : Long.MAX_VALUE;
 //        System.out.println("lower "+ lowerBoundEvent);
 //        System.out.println("upper "+ upperBoundEvent);
-        events.removeIf(event -> event.getSequenceNumber() < lowerBoundSequenceNumber || event.getSequenceNumber() > upperBoundSequenceNumber);
-        return events;
+//        System.out.println("rPM: " + partialMatch + "  scoping [" + lowerBoundSequenceNumber +","+upperBoundSequenceNumber+"]");
+//        for (Event e: events) {
+//            if (e.getSequenceNumber() < lowerBoundSequenceNumber || e.getSequenceNumber() > upperBoundSequenceNumber) {
+//            System.out.println("Removing " + e);
+//
+//            }
+//        }
+//        events.removeIf(event -> event.getSequenceNumber() < lowerBoundSequenceNumber || event.getSequenceNumber() > upperBoundSequenceNumber);
+        return events.stream().filter(e -> !(e.getSequenceNumber() < lowerBoundSequenceNumber || e.getSequenceNumber() > upperBoundSequenceNumber)).collect(Collectors.toList());
+
         //Cannot use getSlice since IB is not sorted, must go over all events one-by-one
         //TODO: is it possible to use getSlice for performance? maybe sorting while inserting?
 

@@ -25,7 +25,7 @@ public class StockDeltaOrderingCondition extends DoubleEventCondition {
 
 	@Override
 	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
-//		return true; //TODO: CHANGE1!!!111
+//		return true; //TODO: CHANGE!!!111
 		return calculateDelta(firstEvent) < calculateDelta(secondEvent);
 	}
 	

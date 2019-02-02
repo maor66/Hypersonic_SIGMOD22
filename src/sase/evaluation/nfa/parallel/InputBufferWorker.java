@@ -2,8 +2,12 @@ package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
 import sase.base.Event;
+import sase.base.EventType;
 import sase.evaluation.common.Match;
+import sase.evaluation.nfa.eager.elements.NFAState;
+import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
+import sase.evaluation.nfa.lazy.elements.EvaluationOrder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,15 +15,27 @@ import java.util.List;
 
 public class InputBufferWorker extends BufferWorker {
 
-
+private boolean shouldMatchIncomingEvents;
     @Override
     protected void iterateOnOppositeBuffer(ContainsEvent newElement, List<ContainsEvent> oppositeBufferList) {
         if (eventState.isInitial()) { // Send automatically to next state
             //TODO: should optimize and send to MB worker in the second state directly from the main thread
             sendToNextState(new Match(new ArrayList<>(((List<Event>)(List<?>) List.of(newElement))), System.currentTimeMillis()));
         }
-        List<ContainsEvent> partialMatches = getOppositeBufferList();
+        List<ContainsEvent> partialMatches = oppositeBufferList;
         List<Match> actualMatches = (List<Match>)(List<?>) partialMatches;
+//        for (Match m: actualMatches) {
+//            if (m.getLatestEvent().getSequenceNumber() > newElement.getSequenceNumber()) {
+//                System.out.println("rPm - " + m + " Event - " + newElement);
+//            }
+//        }
+//        if (!shouldMatchIncomingEvents) {
+//            return;
+//        }
+        if (actualMatches.isEmpty()) {
+            return;
+        }
+//        actualMatches.removeIf(match -> match.getLatestEvent().getSequenceNumber() > newElement.getSequenceNumber());
         tryToAddMatchesWithEvents(actualMatches, new ArrayList<>(List.of((Event)newElement)));
     }
 
@@ -28,8 +44,28 @@ public class InputBufferWorker extends BufferWorker {
     protected boolean isBufferSorted() {
         return true;
     }
-        public InputBufferWorker(TypedNFAState eventState) {
+        public InputBufferWorker(TypedNFAState eventState, EvaluationOrder evaluationOrder, List<EventType> supportedEventTypes) {
         super(eventState);
+        List<EventType> evalOrderPrecedingStates = new ArrayList<>();
+        for (EventType eventType : evaluationOrder.getFullEvaluationOrder()) { // Get all preceding events in the evalutation order
+            if (eventType == eventState.getEventType()) {
+                break;
+            }
+            evalOrderPrecedingStates.add(eventType);
+        }
+        for (EventType eventType : evalOrderPrecedingStates) { // Check if any preceding event in the evaluation order is actually succeeding in the sequence order
+            if (isFirstTypeSequencedEarlierThanSecondType(eventState.getEventType(), eventType, supportedEventTypes)) {
+                shouldMatchIncomingEvents = false;
+                System.out.println("event State" + eventState + " calculating: " + shouldMatchIncomingEvents);
+                return;
+            }
+        }
+        shouldMatchIncomingEvents = true;
+        System.out.println("event State" + eventState + " calculating" + shouldMatchIncomingEvents);
+    }
+
+    private boolean isFirstTypeSequencedEarlierThanSecondType(EventType firstType, EventType secondType, List<EventType> supportedEventTypes) {
+        return supportedEventTypes.indexOf(firstType) < supportedEventTypes.indexOf(secondType);
     }
 
 //

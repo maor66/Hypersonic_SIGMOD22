@@ -23,12 +23,18 @@ import java.util.stream.Stream;
 
 public class ParallelLazyChainNFA extends LazyChainNFA {
 
+    //TODO: Features - (1) Add finer granularity of threads per state.
+    //TODO: Features - (2) Add finisher event to indicate EOF that will be propagated to all workers and eventually to the main thread.
+    //TODO: Features - (3) Think if there are useless IB/MB workers, maybe in each state only new events or only new rPM can create matches due to timing constraints.
+    //TODO: Features - (4) General optimization and TODO code
+    //TODO: Features - (5) Calculate actual computation time
+
     private ExecutorService executor;
     private Map<NFAState, List<InputBufferWorker>> IBWorkers;
     private Map<NFAState, List<MatchBufferWorker>> MBWorkers;
     private Map<TypedNFAState, BlockingQueue<Event>> eventInputQueues;
-    private static int INPUT_BUFFER_THREADS_PER_STATE = 1;
-    private static int MATCH_BUFFER_THREADS_PER_STATE = 1;
+    private static int INPUT_BUFFER_THREADS_PER_STATE = 2;
+    private static int MATCH_BUFFER_THREADS_PER_STATE = 2;
     private BlockingQueue<Match> secondStateInputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Match> completeMatchOutputQueue;
 
@@ -79,8 +85,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
         Set<Match> matches = new HashSet<>();
         while (true) {
-//            if (matches.size() == 617 || matches.size() > 605 && completeMatchOutputQueue.size() == 0) break;
-            if (matches.size() == 2431) break;
+            if (matches.size() == 617 || matches.size() > 617 && completeMatchOutputQueue.size() == 0) break;
+//            if (matches.size() == 617) break;
             try {
                 Match m = completeMatchOutputQueue.take();
                 matches.add(m);
@@ -196,7 +202,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             List<InputBufferWorker> stateIBworkers = new ArrayList<>();
             List<MatchBufferWorker> stateMBworkers = new ArrayList<>();
             for (int i = 0; i < INPUT_BUFFER_THREADS_PER_STATE; i++) {
-                stateIBworkers.add(new InputBufferWorker(state));
+                stateIBworkers.add(new InputBufferWorker(state, this.evaluationOrder, this.supportedEventTypes)); //TODO: not necessary the correct sequence order, have to validate it somehow
             }
             for (int i = 0; i < MATCH_BUFFER_THREADS_PER_STATE; i++) {
                 stateMBworkers.add(new MatchBufferWorker(state));
