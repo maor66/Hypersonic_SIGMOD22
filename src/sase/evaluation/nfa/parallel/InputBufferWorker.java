@@ -44,8 +44,8 @@ private boolean shouldMatchIncomingEvents;
     protected boolean isBufferSorted() {
         return true;
     }
-        public InputBufferWorker(TypedNFAState eventState, EvaluationOrder evaluationOrder, List<EventType> supportedEventTypes) {
-        super(eventState);
+        public InputBufferWorker(TypedNFAState eventState, EvaluationOrder evaluationOrder, List<EventType> supportedEventTypes, int finisherInputsToShutdown, int numberOfFinisherInputsToSend) {
+        super(eventState, finisherInputsToShutdown, numberOfFinisherInputsToSend);
         List<EventType> evalOrderPrecedingStates = new ArrayList<>();
         for (EventType eventType : evaluationOrder.getFullEvaluationOrder()) { // Get all preceding events in the evalutation order
             if (eventType == eventState.getEventType()) {

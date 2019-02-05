@@ -457,9 +457,9 @@ public class SimulationConfig {
 		CostModelTypes.THROUGHPUT_LATENCY,
 		0.0),
 		//Maor: Lazy in the 2015 article
-//			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-//						CostModelTypes.THROUGHPUT_LATENCY,
-//						0.0),
+			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+						CostModelTypes.THROUGHPUT_LATENCY,
+						0.0),
 ////			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
 //						CostModelTypes.THROUGHPUT_LATENCY,
 //						0.0),

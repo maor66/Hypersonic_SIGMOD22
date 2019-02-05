@@ -68,6 +68,6 @@ public class MatchBufferWorker extends BufferWorker {
     protected boolean isBufferSorted() {
         return false;
     }
-    public MatchBufferWorker(TypedNFAState eventState) {
-        super(eventState);
+    public MatchBufferWorker(TypedNFAState eventState, int finisherInputsToShutdown, int numberOfFinisherInputsToSend) {
+        super(eventState, finisherInputsToShutdown, numberOfFinisherInputsToSend);
     }}

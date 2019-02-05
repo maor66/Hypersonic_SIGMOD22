@@ -294,7 +294,9 @@ public class Simulator {
     	}
     	finally {
     		//get last matches
-    		recordNewMatches(primaryEvaluationMechanism.getLastMatches());
+				Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.processingTime);
+				recordNewMatches(primaryEvaluationMechanism.getLastMatches());
+				Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.processingTime);
     		if (secondaryEvaluationMechanism != null) {
     			recordNewMatches(secondaryEvaluationMechanism.getLastMatches());
     		}

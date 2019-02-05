@@ -23,7 +23,7 @@ public class Event implements Comparable<Event>, ContainsEvent {
 	protected EventType type;
 	protected final long systemTimestamp;
 	protected Object[] payload;
-	private boolean isFinisherEvent = false;
+	private boolean isLastInput = false;
 
 	public Event(EventType type, Object[] payload) {
 		this.sequenceNumber = eventCounter++;
@@ -36,7 +36,7 @@ public class Event implements Comparable<Event>, ContainsEvent {
 	public Event()
 	{
 		this(null, null);
-		isFinisherEvent = true;
+		isLastInput = true;
 	}
 
 	public EventType getType() {
@@ -78,10 +78,6 @@ public class Event implements Comparable<Event>, ContainsEvent {
 		return EventTypesManager.getInstance().getEventTimestamp(this);
 	}
 
-	@Override
-	public boolean isLastInput() {
-		return isFinisherEvent;
-	}
 
 	public Object[] getSignature() {
 		return getEventSignature(payload);
@@ -100,6 +96,12 @@ public class Event implements Comparable<Event>, ContainsEvent {
 	public long getEarliestTimestamp() { //The earliest timestamp is the same as the event's timestamp
 		return getTimestamp();
 	}
+
+    @Override
+    public boolean isLastInput() {
+        return isLastInput;
+    }
+
 
 	@Override
 	public String toString() {

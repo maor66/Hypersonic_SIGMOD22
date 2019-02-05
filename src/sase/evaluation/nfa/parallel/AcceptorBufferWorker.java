@@ -7,7 +7,7 @@ import java.util.List;
 
 public class AcceptorBufferWorker extends BufferWorker {
     public AcceptorBufferWorker(TypedNFAState eventState) {
-        super(eventState);
+        super(eventState, 0,0 );
     }
 
     @Override

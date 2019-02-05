@@ -1,6 +1,5 @@
 package sase.evaluation.nfa.lazy;
 
-import sase.base.ContainsEvent;
 import sase.base.Event;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.NFAState;
@@ -12,10 +11,7 @@ import sase.evaluation.nfa.parallel.MatchBufferWorker;
 import sase.evaluation.nfa.parallel.ThreadContainers;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
 
-import java.sql.Time;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -34,7 +30,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private Map<NFAState, List<MatchBufferWorker>> MBWorkers;
     private Map<TypedNFAState, BlockingQueue<Event>> eventInputQueues;
     private static int INPUT_BUFFER_THREADS_PER_STATE = 2;
-    private static int MATCH_BUFFER_THREADS_PER_STATE = 2;
+    private static int MATCH_BUFFER_THREADS_PER_STATE = 3;
     private BlockingQueue<Match> secondStateInputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Match> completeMatchOutputQueue;
 
@@ -78,25 +74,46 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
     @Override
     public List<Match> getLastMatches() {
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+            try {
+                for (BlockingQueue<Event> blockingQueue: eventInputQueues.values()) {
+                    for (int i = 0; i < INPUT_BUFFER_THREADS_PER_STATE; i++) {
+                        blockingQueue.put(new Event());
+                    }
+
+                }
+                for (int i = 0; i < MATCH_BUFFER_THREADS_PER_STATE *(MATCH_BUFFER_THREADS_PER_STATE + INPUT_BUFFER_THREADS_PER_STATE); i++) {
+                    secondStateInputQueue.put(new Match());
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
         Set<Match> matches = new HashSet<>();
+        int numberOfEndingMatches = 0;
         while (true) {
-            if (matches.size() == 617 || matches.size() > 617 && completeMatchOutputQueue.size() == 0) break;
+//            if (matches.size() == 2444 || matches.size() > 686668 && completeMatchOutputQueue.size() == 0) break;
 //            if (matches.size() == 617) break;
             try {
                 Match m = completeMatchOutputQueue.take();
-                matches.add(m);
+                if (m.isLastInput()) {
+                    numberOfEndingMatches++;
+                    System.out.println("Finisher " + numberOfEndingMatches);
+                    if (numberOfEndingMatches == MATCH_BUFFER_THREADS_PER_STATE*(MATCH_BUFFER_THREADS_PER_STATE+INPUT_BUFFER_THREADS_PER_STATE)) {
+                        break;
+                    }
+                }
+                else {
+                    matches.add(m);
+                    System.out.println("Match" + matches.size() + ":" + m);
+                }
 //                System.out.println("Match" + matches.size() + ":" + matches.get(matches.size()-1));
-                System.out.println("Match" + matches.size() + ":" + m);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-//        executor.shutdownNow();
+        executor.shutdownNow();
         return new ArrayList<>(matches);
     }
 
@@ -202,10 +219,10 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             List<InputBufferWorker> stateIBworkers = new ArrayList<>();
             List<MatchBufferWorker> stateMBworkers = new ArrayList<>();
             for (int i = 0; i < INPUT_BUFFER_THREADS_PER_STATE; i++) {
-                stateIBworkers.add(new InputBufferWorker(state, this.evaluationOrder, this.supportedEventTypes)); //TODO: not necessary the correct sequence order, have to validate it somehow
+                stateIBworkers.add(new InputBufferWorker(state, this.evaluationOrder, this.supportedEventTypes,1, MATCH_BUFFER_THREADS_PER_STATE)); //TODO: not necessary the correct sequence order, have to validate it somehow
             }
             for (int i = 0; i < MATCH_BUFFER_THREADS_PER_STATE; i++) {
-                stateMBworkers.add(new MatchBufferWorker(state));
+                stateMBworkers.add(new MatchBufferWorker(state, MATCH_BUFFER_THREADS_PER_STATE + INPUT_BUFFER_THREADS_PER_STATE, MATCH_BUFFER_THREADS_PER_STATE ));
             }
             IBWorkers.put(state, stateIBworkers);
             MBWorkers.put(state, stateMBworkers);

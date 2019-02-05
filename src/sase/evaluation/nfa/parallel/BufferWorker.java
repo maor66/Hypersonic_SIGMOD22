@@ -18,13 +18,17 @@ import java.util.stream.Stream;
 public abstract class BufferWorker implements Runnable {
     ThreadContainers dataStorage;
     TypedNFAState eventState;
+    int finisherInputsToShutdown;
+    int numberOfFinisherInputsToSend;
     public ThreadContainers getDataStorage() {
         return dataStorage;
     }
 
-    public BufferWorker(TypedNFAState eventState)
+    public BufferWorker(TypedNFAState eventState, int finisherInputsToShutdown, int numberOfFinisherInputsToSend)
     {
         this.eventState = eventState;
+        this.finisherInputsToShutdown = finisherInputsToShutdown;
+        this.numberOfFinisherInputsToSend = numberOfFinisherInputsToSend;
     }
 
     @Override
@@ -37,8 +41,15 @@ public abstract class BufferWorker implements Runnable {
                 e.printStackTrace();
             }
             if (newElement.isLastInput()) {
-                System.err.println("Finisher input");
-                return; //TODO: how to end task?
+//                System.err.println("Finisher input" + this);
+                finisherInputsToShutdown--;
+                if (finisherInputsToShutdown ==0) {
+                    for (int i = 0; i< numberOfFinisherInputsToSend; i++) {
+                        sendToNextState(new Match());
+                    }
+                    return; //TODO: how to end task?
+                }
+                continue;
             }
 //            if (dataStorage.getEventType() != newEvent.getType()) {
 //                throw new RuntimeException("Got wrong event type in Input Buffer");

@@ -115,10 +115,6 @@ public class Match implements ContainsEvent{
 		return getLatestEventTimestamp();
 	}
 
-	@Override
-	public boolean isLastInput() {
-		return false;
-	}
 
 	@Override
 	public long getSequenceNumber() {
@@ -129,4 +125,10 @@ public class Match implements ContainsEvent{
 	public long getEarliestTimestamp() {
 		return getEarliestEvent();
 	}
+
+    @Override
+    public boolean isLastInput() {
+        return isLastInput;
+    }
+
 }
