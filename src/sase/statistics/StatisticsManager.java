@@ -3,7 +3,6 @@ package sase.statistics;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import sase.config.MainConfig;
@@ -81,7 +80,7 @@ public class StatisticsManager {
 
 	private final CSVWriter writer;
 	private String runDescription;
-	private HashMap<String, AtomicLong> discreteStatistics;
+	private HashMap<String, Long> discreteStatistics;
 	private HashMap<String, Double> fractionalStatistics;
 	private HashMap<String, Long> timeMeasurementsInProgress;
 
@@ -102,9 +101,9 @@ public class StatisticsManager {
 	}
 
 	private void initializeDiscreteStatisticsHashTable() {
-		discreteStatistics = new HashMap<>();
+		discreteStatistics = new HashMap<String, Long>();
 		for (String name : Statistics.getDiscreteOrderedNames()) {
-			discreteStatistics.put(name, new AtomicLong(0));
+			discreteStatistics.put(name, new Long(0));
 		}
 	}
 
@@ -119,16 +118,14 @@ public class StatisticsManager {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
-		discreteStatistics.get(key).addAndGet(valueToAdd);
-//		discreteStatistics.put(key, discreteStatistics.get(key) + valueToAdd);
+		discreteStatistics.put(key, discreteStatistics.get(key) + valueToAdd);
 	}
 
 	public void replaceDiscreteStatistic(String key, long valueToPut) {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
-		discreteStatistics.get(key).set(valueToPut);
-//		discreteStatistics.put(key, valueToPut);
+		discreteStatistics.put(key, valueToPut);
 	}
 
 	public void incrementDiscreteStatistic(String key) {
@@ -143,10 +140,8 @@ public class StatisticsManager {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
-//		if (discreteStatistics.get(key) < newValue) {
-		if (discreteStatistics.get(key).get() < newValue) {
-			discreteStatistics.get(key).set(newValue);
-//		discreteStatistics.put(key, newValue);
+		if (discreteStatistics.get(key) < newValue) {
+			discreteStatistics.put(key, newValue);
 		}
 	}
 
@@ -163,7 +158,7 @@ public class StatisticsManager {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
-		return discreteStatistics.get(key).get();
+		return discreteStatistics.get(key);
 	}
 
 	public void updateFractionalStatistic(String key, double valueToAdd) {
@@ -218,7 +213,7 @@ public class StatisticsManager {
 		String[] fieldsToWrite = new String[discreteStatisticsNames.length + fractionalStatisticsNames.length + 1];
 		fieldsToWrite[0] = runDescription;
 		for (int i = 0; i < discreteStatisticsNames.length; ++i) {
-			fieldsToWrite[i + 1] = Long.toString(discreteStatistics.get(discreteStatisticsNames[i]).get());
+			fieldsToWrite[i + 1] = Long.toString(discreteStatistics.get(discreteStatisticsNames[i]));
 		}
 		for (int i = 0; i < fractionalStatisticsNames.length; ++i) {
 			Double currentValue = fractionalStatistics.get(fractionalStatisticsNames[i]);
@@ -250,7 +245,7 @@ public class StatisticsManager {
 	}
 
 	private Double computeAverageStatisticValue(String numberOfElementsName, Double value) {
-		Long numberOfElements = discreteStatistics.get(numberOfElementsName).get();
+		Long numberOfElements = discreteStatistics.get(numberOfElementsName);
 		if (numberOfElements > 0) {
 			return value / numberOfElements;
 		}

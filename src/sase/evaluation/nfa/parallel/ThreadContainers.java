@@ -4,14 +4,10 @@ import sase.base.ContainsEvent;
 import sase.base.EventType;
 import sase.evaluation.common.Match;
 import sase.simulator.Environment;
-import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
 import sase.statistics.Statistics;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.StampedLock;
@@ -85,18 +81,19 @@ public class ThreadContainers {
         return eventType;
     }
 
-    public void removeExpiredElements(long removingCriteriaTimeStamp, boolean isBufferSorted) {
+    public String removeExpiredElements(long removingCriteriaTimeStamp, boolean isBufferSorted) {
         int numberOfRemovedElements = 0;
-        List<ContainsEvent> removedEvents = new ArrayList<>();
+        String log ="";
         long stamp = lock.writeLock();
         if (bufferSubList.isEmpty()) {
             lock.unlock(stamp);
-            return;
+            return log;
         }
         if (isBufferSorted) { //IB is sorted, while MB isn't
             ContainsEvent currEvent = bufferSubList.get(0);
             while (currEvent.getTimestamp() + timeWindow < removingCriteriaTimeStamp) {
-                removedEvents.add(bufferSubList.remove(0));
+//                log += System.nanoTime() + ": Removed " + (bufferSubList.remove(0)) + "\n";
+                bufferSubList.remove(0);
                 numberOfRemovedElements++;
                 if (bufferSubList.isEmpty()) {
                     break;
@@ -107,6 +104,13 @@ public class ThreadContainers {
         else { //Since the buffer isn't sorted, the iterating order doesn't matter'
             int beforeRemovalSize = bufferSubList.size();
             bufferSubList.removeIf(element -> element.getEarliestTimestamp() + timeWindow < removingCriteriaTimeStamp);
+//            for (Iterator<ContainsEvent> iter = bufferSubList.listIterator(); iter.hasNext(); ) {
+//                ContainsEvent ce = iter.next();
+//                if (ce.getEarliestTimestamp() + timeWindow < removingCriteriaTimeStamp) {
+////                    log += System.nanoTime() + ": Removed " + ce + "\n";
+//                    iter.remove();
+//                }
+//            }
             numberOfRemovedElements = beforeRemovalSize - bufferSubList.size();
         }
         lock.unlock(stamp);
@@ -129,6 +133,7 @@ public class ThreadContainers {
             Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.instanceDeletions,
                     numberOfRemovedElements);
         }
+        return log;
     }
 }
 

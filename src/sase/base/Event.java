@@ -2,6 +2,10 @@ package sase.base;
 
 import sase.pattern.EventTypesManager;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Event implements Comparable<Event>, ContainsEvent {
 	
 	private static final int signatureSize = 2;
@@ -23,6 +27,7 @@ public class Event implements Comparable<Event>, ContainsEvent {
 	protected EventType type;
 	protected final long systemTimestamp;
 	protected Object[] payload;
+	private long timestamp = 0;
 	private boolean isLastInput = false;
 
 	public Event(EventType type, Object[] payload) {
@@ -75,8 +80,22 @@ public class Event implements Comparable<Event>, ContainsEvent {
 
 	@Override
 	public long getTimestamp() {
-		return EventTypesManager.getInstance().getEventTimestamp(this);
+
+		if (timestamp!=0) {
+			return timestamp;
+		}
+		Long l = EventTypesManager.getInstance().getEventTimestamp(this);
+		SimpleDateFormat f = new SimpleDateFormat("yyyyMMddkkmm");
+		try {
+			Date d = f.parse(l.toString());
+			timestamp = d.getTime()/1000/60;
+			return timestamp;
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return 0;
+		}
 	}
+
 
 
 	public Object[] getSignature() {
@@ -105,7 +124,7 @@ public class Event implements Comparable<Event>, ContainsEvent {
 
 	@Override
 	public String toString() {
-		return String.format("%s%d:%d", type.getName(), sequenceNumber, getTimestamp());
+		return String.format("%s%d:%d:%d", type.getName(), sequenceNumber, getTimestamp(),EventTypesManager.getInstance().getEventTimestamp(this));
 		/*String result = String.format("%s:", type);
 		for (int i = 0; i < payload.length; ++i) {
 			result += payload[i];

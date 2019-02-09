@@ -31,7 +31,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private Map<TypedNFAState, BlockingQueue<Event>> eventInputQueues;
     private static int INPUT_BUFFER_THREADS_PER_STATE = 2;
     private static int MATCH_BUFFER_THREADS_PER_STATE = 3;
-    private BlockingQueue<Match> secondStateInputQueue = new LinkedBlockingQueue<>();
+    private BlockingQueue<Match> secondStateInputQueue = new LinkedTransferQueue<>();
     private BlockingQueue<Match> completeMatchOutputQueue;
 
     public ParallelLazyChainNFA(Pattern pattern, EvaluationPlan evaluationPlan, LazyNFANegationTypes negationType) {
@@ -48,10 +48,13 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
         try {
             if (eventState.isInitial()) {
-                secondStateInputQueue.put(new Match(List.of(event), System.currentTimeMillis()));
+                LinkedTransferQueue<Match> transferQueue = (LinkedTransferQueue<Match>) secondStateInputQueue;
+                transferQueue.transfer(new Match(List.of(event), System.currentTimeMillis()));
+//                secondStateInputQueue.put(new Match(List.of(event), System.currentTimeMillis()));
             }
             else {
-                eventInputQueues.get(eventState).put(event);
+                LinkedTransferQueue<Event> transferQueue = (LinkedTransferQueue<Event>) eventInputQueues.get(eventState);
+                transferQueue.transfer(event);
             }
 //            while (!workerToSendEventTo.getDataStorage().getInputQueue().tryTransfer(event)) {
 //            }//TODO: change to BlockingQueue.put
@@ -99,14 +102,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 Match m = completeMatchOutputQueue.take();
                 if (m.isLastInput()) {
                     numberOfEndingMatches++;
-                    System.out.println("Finisher " + numberOfEndingMatches);
+//                    System.out.println("Finisher " + numberOfEndingMatches);
                     if (numberOfEndingMatches == MATCH_BUFFER_THREADS_PER_STATE*(MATCH_BUFFER_THREADS_PER_STATE+INPUT_BUFFER_THREADS_PER_STATE)) {
                         break;
                     }
                 }
                 else {
                     matches.add(m);
-                    System.out.println("Match" + matches.size() + ":" + m);
+//                    System.out.println("Match" + matches.size() + ":" + m);
                 }
 //                System.out.println("Match" + matches.size() + ":" + matches.get(matches.size()-1));
             } catch (InterruptedException e) {
@@ -229,13 +232,13 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
 
         BlockingQueue<Event> inputQueue;
-        BlockingQueue<Match> outputQueue = new LinkedBlockingQueue<>();
+        BlockingQueue<Match> outputQueue = new LinkedTransferQueue<>();
         BlockingQueue<Match> MBinputQueue = secondStateInputQueue;
         for (TypedNFAState state : getWorkerStates()) {
             //TODO: check that iterating on states by the correct order
-            inputQueue = new LinkedBlockingQueue<>();
+            inputQueue = new LinkedTransferQueue<>();
             eventInputQueues.put(state, inputQueue);
-            outputQueue = new LinkedBlockingQueue<>();
+            outputQueue = new LinkedTransferQueue<>();
             for (int i = 0; i < INPUT_BUFFER_THREADS_PER_STATE; i++) {
                 //Every worker has an "equal" ThreadContainer but they must be different since each worker should have a unique sub-list
                 ThreadContainers IBthreadData = new ThreadContainers(inputQueue,

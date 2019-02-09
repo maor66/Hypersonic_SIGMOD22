@@ -7,11 +7,17 @@ import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
+import sase.pattern.condition.base.DoubleEventCondition;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedTransferQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,6 +26,7 @@ public abstract class BufferWorker implements Runnable {
     TypedNFAState eventState;
     int finisherInputsToShutdown;
     int numberOfFinisherInputsToSend;
+    String log;
     public ThreadContainers getDataStorage() {
         return dataStorage;
     }
@@ -47,6 +54,16 @@ public abstract class BufferWorker implements Runnable {
                     for (int i = 0; i< numberOfFinisherInputsToSend; i++) {
                         sendToNextState(new Match());
                     }
+//                    BufferedWriter writercond = null;
+////                    log += System.nanoTime() + ": Finished run";
+//                    try {
+//                        writercond = new BufferedWriter(new FileWriter("C:\\Users\\Maor\\Documents\\lazyCEPlogs\\log"+Thread.currentThread().getName()+"_"+this.getClass().getName()+eventState+".txt"));
+//                        writercond.write(log);
+//                        writercond.close();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+
                     return; //TODO: how to end task?
                 }
                 continue;
@@ -54,17 +71,27 @@ public abstract class BufferWorker implements Runnable {
 //            if (dataStorage.getEventType() != newEvent.getType()) {
 //                throw new RuntimeException("Got wrong event type in Input Buffer");
 //            }
+//            log += System.nanoTime() + ": Got new element: " + newElement + "\n";
             dataStorage.addEventToOwnBuffer(newElement);
             List<ContainsEvent> oppositeBufferList = getOppositeBufferList();
+//            log += System.nanoTime() + ": Iterating on: ";
+//            for (ContainsEvent ce : oppositeBufferList) {
+//                log += ce + ",";
+//            }
+//            log += "\n";
             if (oppositeBufferList.isEmpty()) {
                 continue;
             }
             iterateOnOppositeBuffer(newElement, oppositeBufferList);
+//            log += System.nanoTime() + ": Finished iterating\n";
             ContainsEvent removingCriteria = getReleventRemovingCriteria(oppositeBufferList);
+//            log += System.nanoTime() + ": Removing based on" + removingCriteria + "\n";
             if (removingCriteria != null) {
-                dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted());
+                String s = dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted());
+//                log += s;
 //                dataStorage.removeExpiredElements(oppositeBufferList.get(0).getEarliestTimestamp(), isBufferSorted());
             }
+//            log += System.nanoTime() + ": Finished removing\n\n";
         }
     }
 
@@ -104,7 +131,7 @@ public abstract class BufferWorker implements Runnable {
         //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
         //TODO: doesn't have to verify temporal condition first anymore - check if removing doesn't hurt correctness
 
-        return verifyTimeWindowConstraint(partialMatch, event) && getActualNextTransition(eventState).verifyCondition( //TODO: check if verifying the (non-temporal) condition works with partial events or consider changing the condition
+        return verifyTimeWindowConstraint(partialMatch, event) && getActualNextTransition(eventState).verifyConditionWithTemporalConditionFirst( //TODO: check if verifying the (non-temporal) condition works with partial events or consider changing the condition
                 Stream.concat(partialMatch.getPrimitiveEvents().stream(),List.of(event).stream()).collect(Collectors.toList())); //Combining two lists
     }
 
