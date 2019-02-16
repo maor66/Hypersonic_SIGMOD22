@@ -80,9 +80,10 @@ public class StatisticsManager {
 
 	private final CSVWriter writer;
 	private String runDescription;
-	private HashMap<String, Long> discreteStatistics;
+	private HashMap<String, Long> discreteStatistics; //TODO: should work with AtomicLong to ensure correct statistics
 	private HashMap<String, Double> fractionalStatistics;
 	private HashMap<String, Long> timeMeasurementsInProgress;
+
 
 	private StatisticsManager(CSVWriter writer, String runDescription) throws IOException {
 		this.writer = writer;

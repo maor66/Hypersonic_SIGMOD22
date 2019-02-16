@@ -28,6 +28,7 @@ public class Statistics {
 	public static final String numberOfInputChanges = "Number Of Input Changes";
 	public static final String numberOfUndetectedInputChanges = "Number Of Undetected Input Changes";
 	public static final String numberOfFalseAdaptations = "Number Of False Adaptations";
+	public static final String numberOfSynchronizationActions = "Number Of Synchronization Actions";
 	
 	//fractional statistics
 	public static final String averageLatency = "Average Latency";
@@ -61,6 +62,7 @@ public class Statistics {
 			numberOfInputChanges,
 			numberOfUndetectedInputChanges,
 			numberOfFalseAdaptations,
+			numberOfSynchronizationActions,
 		};
 	}
 	

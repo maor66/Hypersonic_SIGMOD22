@@ -18,10 +18,6 @@ public class InputBufferWorker extends BufferWorker {
 private boolean shouldMatchIncomingEvents;
     @Override
     protected void iterateOnOppositeBuffer(ContainsEvent newElement, List<ContainsEvent> oppositeBufferList) {
-        if (eventState.isInitial()) { // Send automatically to next state
-            //TODO: should optimize and send to MB worker in the second state directly from the main thread
-            sendToNextState(new Match(new ArrayList<>(((List<Event>)(List<?>) List.of(newElement))), System.currentTimeMillis()));
-        }
         List<ContainsEvent> partialMatches = oppositeBufferList;
         List<Match> actualMatches = (List<Match>)(List<?>) partialMatches;
 //        for (Match m: actualMatches) {

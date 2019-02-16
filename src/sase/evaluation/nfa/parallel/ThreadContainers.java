@@ -45,6 +45,7 @@ public class ThreadContainers {
     }
 
     public List<ContainsEvent> getBufferSubListWithOptimisticLock() {
+        Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.numberOfSynchronizationActions);
         List<ContainsEvent> listView = new ArrayList<>();
         long stamp = lock.tryOptimisticRead();
         listView.addAll(bufferSubList); //TODO: copies the list, which can hit performance. A different solution could be to read from the start of the list, this can be done without locking (up to a point)
@@ -61,6 +62,7 @@ public class ThreadContainers {
     }
 
     public void addEventToOwnBuffer(ContainsEvent event) {
+        Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.numberOfSynchronizationActions);
         long stamp = lock.writeLock();
         try {
             bufferSubList.add(event);
@@ -82,6 +84,7 @@ public class ThreadContainers {
     }
 
     public String removeExpiredElements(long removingCriteriaTimeStamp, boolean isBufferSorted) {
+        Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.numberOfSynchronizationActions);
         int numberOfRemovedElements = 0;
         String log ="";
         long stamp = lock.writeLock();
@@ -136,93 +139,3 @@ public class ThreadContainers {
         return log;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//package sase.evaluation.nfa.parallel;
-//
-//import sase.base.Event;
-//import sase.base.EventType;
-//import sase.evaluation.common.Match;
-//import sase.simulator.Environment;
-//import sase.statistics.Statistics;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//import java.util.concurrent.BlockingQueue;
-//import java.util.concurrent.LinkedTransferQueue;
-//import java.util.concurrent.locks.StampedLock;
-//
-//public class ThreadContainers {
-//
-//    protected StampedLock lock;
-//    protected EventType eventType;
-//    protected long timeWindow;
-//
-//    public ThreadContainers(EventType state, long timeWindow) {
-//        this.eventType = state;
-//        lock = new StampedLock();
-//        this.timeWindow = timeWindow;
-//    }
-//
-//    protected <T> List<T> getBufferSubListWithOptimisticLock(List<T> buffer)
-//    {
-//        List<T> listView = new ArrayList<>();
-//        long stamp = lock.tryOptimisticRead();
-//        listView.addAll(buffer); //TODO: copies the list, which can hit performance. A different solution could be to read from the start of the list, this can be done without locking (up to a point)
-//        if (!lock.validate(stamp)) {
-//            stamp = lock.readLock();
-//            try {
-//                listView.addAll(buffer);
-//            } finally {
-//                lock.unlockRead(stamp);
-//            }
-//        }
-//        return listView;
-//    }
-//
-//    protected  <T> void addToOwnBuffer(T element, List<T> buffer)
-//    {
-//        long stamp = lock.writeLock();
-//        try {
-//            buffer.add(element);
-//        }
-//        finally {
-//            lock.unlockWrite(stamp);
-//        }
-//    }
-//
-//    public StampedLock getLock() {
-//        return lock;
-//    }
-//
-//    public EventType getEventType() {
-//        return eventType;
-//    }
-//
-//
-//    public abstract Event takeFromInputQueue();
-//
-//    public abstract Match pollRemovingCriteria();
-//
-//    public abstract <T> void removeExpiredElements(T removingCriteria);
-//
-//    public abstract void addEventToOwnBuffer(Event newEvent);
-//}

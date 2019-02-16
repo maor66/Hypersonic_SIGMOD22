@@ -20,10 +20,13 @@ import java.util.stream.Stream;
 public class ParallelLazyChainNFA extends LazyChainNFA {
 
     //TODO: Features - (1) Add finer granularity of threads per state.
-    //TODO: Features - (2) Add finisher event to indicate EOF that will be propagated to all workers and eventually to the main thread.
     //TODO: Features - (3) Think if there are useless IB/MB workers, maybe in each state only new events or only new rPM can create matches due to timing constraints.
-    //TODO: Features - (4) General optimization and TODO code
-    //TODO: Features - (5) Calculate actual computation time
+    //TODO: Features - (4) send events/rPM as batches to decrease synchronization actions
+    //TODO: Features - (5) calculate number of events/rPM sent between states(and main thread) as a statistic
+    //TODO: Features - (6) Use actual getSlice in MBW, this can be done since every list in received from an IBW is in itself sorted
+
+    //TODO: Article - (1) Add scoping parameters use
+    //TODO: Article - (2) Write about removing technique
 
     private ExecutorService executor;
     private Map<NFAState, List<InputBufferWorker>> IBWorkers;
@@ -68,7 +71,6 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 //            if (!events.contains(event)) {
 //                System.err.println("Doesn't contain event");
 //            }
-            //TODO: add statistics about synchronized(concurrent actually?) actions and locking
         } catch (Exception e) {
             e.printStackTrace();
         }
