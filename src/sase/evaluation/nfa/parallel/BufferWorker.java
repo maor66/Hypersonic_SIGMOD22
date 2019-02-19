@@ -7,17 +7,10 @@ import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
-import sase.pattern.condition.base.DoubleEventCondition;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedTransferQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -73,7 +66,7 @@ public abstract class BufferWorker implements Runnable {
 //            }
 //            log += System.nanoTime() + ": Got new element: " + newElement + "\n";
             dataStorage.addEventToOwnBuffer(newElement);
-            List<ContainsEvent> oppositeBufferList = getOppositeBufferList();
+            List<List<ContainsEvent>> oppositeBufferList = getOppositeBufferList();
 //            log += System.nanoTime() + ": Iterating on: ";
 //            for (ContainsEvent ce : oppositeBufferList) {
 //                log += ce + ",";
@@ -84,7 +77,9 @@ public abstract class BufferWorker implements Runnable {
             }
             iterateOnOppositeBuffer(newElement, oppositeBufferList);
 //            log += System.nanoTime() + ": Finished iterating\n";
-            ContainsEvent removingCriteria = getReleventRemovingCriteria(oppositeBufferList);
+            List<ContainsEvent> combinedOppositeBuffer = new ArrayList<>();
+            oppositeBufferList.forEach(combinedOppositeBuffer::addAll);
+            ContainsEvent removingCriteria = getReleventRemovingCriteria(combinedOppositeBuffer);
 //            log += System.nanoTime() + ": Removing based on" + removingCriteria + "\n";
             if (removingCriteria != null) {
                 String s = dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted());
@@ -118,11 +113,11 @@ public abstract class BufferWorker implements Runnable {
     }
 
 
-    protected List<ContainsEvent> getOppositeBufferList()
+    protected List<List<ContainsEvent>> getOppositeBufferList()
     {
-        List<ContainsEvent> oppositeBuffer = new ArrayList<>();
+        List<List<ContainsEvent>> oppositeBuffer = new ArrayList<>();
         for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
-            oppositeBuffer.addAll(worker.getDataStorage().getBufferSubListWithOptimisticLock());
+            oppositeBuffer.add(worker.getDataStorage().getBufferSubListWithOptimisticLock());
         }
         return oppositeBuffer;
     }
@@ -183,7 +178,7 @@ public abstract class BufferWorker implements Runnable {
         this.dataStorage = dataStorage;
     }
 
-    protected abstract void iterateOnOppositeBuffer(ContainsEvent newElement, List<ContainsEvent> oppositeBufferList);
+    protected abstract void iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList);
 
     protected abstract boolean isBufferSorted();
 }

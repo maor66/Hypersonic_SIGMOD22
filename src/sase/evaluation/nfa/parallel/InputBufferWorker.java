@@ -4,22 +4,24 @@ import sase.base.ContainsEvent;
 import sase.base.Event;
 import sase.base.EventType;
 import sase.evaluation.common.Match;
-import sase.evaluation.nfa.eager.elements.NFAState;
-import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.EvaluationOrder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class InputBufferWorker extends BufferWorker {
 
 private boolean shouldMatchIncomingEvents;
     @Override
-    protected void iterateOnOppositeBuffer(ContainsEvent newElement, List<ContainsEvent> oppositeBufferList) {
-        List<ContainsEvent> partialMatches = oppositeBufferList;
-        List<Match> actualMatches = (List<Match>)(List<?>) partialMatches;
+    protected void iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList) {
+        for (List<ContainsEvent> partialMatchesList: oppositeBufferList) {
+            List<Match> actualMatches = (List<Match>)(List<?>) partialMatchesList;
+            if (actualMatches.isEmpty()) {
+                continue;
+            }
+            tryToAddMatchesWithEvents(actualMatches, new ArrayList<>(List.of((Event)newElement)));
+        }
 //        for (Match m: actualMatches) {
 //            if (m.getLatestEvent().getSequenceNumber() > newElement.getSequenceNumber()) {
 //                System.out.println("rPm - " + m + " Event - " + newElement);
@@ -28,11 +30,9 @@ private boolean shouldMatchIncomingEvents;
 //        if (!shouldMatchIncomingEvents) {
 //            return;
 //        }
-        if (actualMatches.isEmpty()) {
-            return;
-        }
+
 //        actualMatches.removeIf(match -> match.getLatestEvent().getSequenceNumber() > newElement.getSequenceNumber());
-        tryToAddMatchesWithEvents(actualMatches, new ArrayList<>(List.of((Event)newElement)));
+
     }
 
 

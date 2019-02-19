@@ -134,6 +134,15 @@ public class EfficientInputBuffer {
 		}
 		events.get(eventsToStore.get(0).getType()).storeAll(eventsToStore);
 	}
+
+	public void storeAllWithoutCopy(List<Event> eventsToStore) {
+		if (eventsToStore.isEmpty()) {
+			return;
+		}
+		TypeBuffer typeBuffer = events.get(eventsToStore.get(0).getType());
+		typeBuffer.events = eventsToStore;
+	}
+
 	
 	public List<Event> getTypeBuffer(EventType type) {
 		TypeBuffer buffer = events.get(type);

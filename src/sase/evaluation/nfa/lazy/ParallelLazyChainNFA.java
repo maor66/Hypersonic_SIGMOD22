@@ -24,7 +24,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     //TODO: Features - (4) send events/rPM as batches to decrease synchronization actions
     //TODO: Features - (5) calculate number of events/rPM sent between states(and main thread) as a statistic
     //TODO: Features - (6) Use actual getSlice in MBW, this can be done since every list in received from an IBW is in itself sorted
-
+    //TODO: Features - (7) Remove commented-out code
     //TODO: Article - (1) Add scoping parameters use
     //TODO: Article - (2) Write about removing technique
 
