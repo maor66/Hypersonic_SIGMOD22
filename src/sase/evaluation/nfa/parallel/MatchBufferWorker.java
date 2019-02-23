@@ -33,8 +33,8 @@ public class MatchBufferWorker extends BufferWorker {
         //TODO: getting too much results, probably not calculating correctly
         Event lowerBoundEvent = getActualNextTransition(eventState).getActualPrecedingEvent(partialMatch.getPrimitiveEvents());
         Event upperBoundEvent = getActualNextTransition(eventState).getActualSucceedingEvent(partialMatch.getPrimitiveEvents());
-        long lowerBoundSequenceNumber = (lowerBoundEvent != null) ? lowerBoundEvent.getSequenceNumber() : 0;
-        long upperBoundSequenceNumber = (upperBoundEvent != null) ? upperBoundEvent.getSequenceNumber() : Long.MAX_VALUE;
+//        long lowerBoundSequenceNumber = (lowerBoundEvent != null) ? lowerBoundEvent.getSequenceNumber() : 0;
+//        long upperBoundSequenceNumber = (upperBoundEvent != null) ? upperBoundEvent.getSequenceNumber() : Long.MAX_VALUE;
 //        System.out.println("lower "+ lowerBoundEvent);
 //        System.out.println("upper "+ upperBoundEvent);
 //        System.out.println("rPM: " + partialMatch + "  scoping [" + lowerBoundSequenceNumber +","+upperBoundSequenceNumber+"]");
@@ -67,4 +67,5 @@ public class MatchBufferWorker extends BufferWorker {
     }
     public MatchBufferWorker(TypedNFAState eventState, int finisherInputsToShutdown, int numberOfFinisherInputsToSend) {
         super(eventState, finisherInputsToShutdown, numberOfFinisherInputsToSend);
+        threadName = "MatchBufferWorker "+ eventState.getName();
     }}

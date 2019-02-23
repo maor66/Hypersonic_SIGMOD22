@@ -23,7 +23,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     //TODO: Features - (3) Think if there are useless IB/MB workers, maybe in each state only new events or only new rPM can create matches due to timing constraints.
     //TODO: Features - (4) send events/rPM as batches to decrease synchronization actions
     //TODO: Features - (5) calculate number of events/rPM sent between states(and main thread) as a statistic
-    //TODO: Features - (6) Use actual getSlice in MBW, this can be done since every list in received from an IBW is in itself sorted
+    //TODO: Features - (6) Use actual getSlice in MBW -  Implemented but it is possible that this affects the performance negatively, should consider removing
     //TODO: Features - (7) Remove commented-out code
     //TODO: Article - (1) Add scoping parameters use
     //TODO: Article - (2) Write about removing technique
@@ -34,7 +34,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private Map<TypedNFAState, BlockingQueue<Event>> eventInputQueues;
     private static int INPUT_BUFFER_THREADS_PER_STATE = 2;
     private static int MATCH_BUFFER_THREADS_PER_STATE = 3;
-    private BlockingQueue<Match> secondStateInputQueue = new LinkedTransferQueue<>();
+    private BlockingQueue<Match> secondStateInputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Match> completeMatchOutputQueue;
 
     public ParallelLazyChainNFA(Pattern pattern, EvaluationPlan evaluationPlan, LazyNFANegationTypes negationType) {
@@ -51,13 +51,13 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
         try {
             if (eventState.isInitial()) {
-                LinkedTransferQueue<Match> transferQueue = (LinkedTransferQueue<Match>) secondStateInputQueue;
-                transferQueue.transfer(new Match(List.of(event), System.currentTimeMillis()));
+                LinkedBlockingQueue<Match> transferQueue = (LinkedBlockingQueue<Match>) secondStateInputQueue;
+                transferQueue.put(new Match(List.of(event), System.currentTimeMillis()));
 //                secondStateInputQueue.put(new Match(List.of(event), System.currentTimeMillis()));
             }
             else {
-                LinkedTransferQueue<Event> transferQueue = (LinkedTransferQueue<Event>) eventInputQueues.get(eventState);
-                transferQueue.transfer(event);
+                LinkedBlockingQueue<Event> transferQueue = (LinkedBlockingQueue<Event>) eventInputQueues.get(eventState);
+                transferQueue.put(event);
             }
 //            while (!workerToSendEventTo.getDataStorage().getInputQueue().tryTransfer(event)) {
 //            }//TODO: change to BlockingQueue.put
@@ -234,13 +234,13 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
 
         BlockingQueue<Event> inputQueue;
-        BlockingQueue<Match> outputQueue = new LinkedTransferQueue<>();
+        BlockingQueue<Match> outputQueue = new LinkedBlockingQueue<>();
         BlockingQueue<Match> MBinputQueue = secondStateInputQueue;
         for (TypedNFAState state : getWorkerStates()) {
             //TODO: check that iterating on states by the correct order
-            inputQueue = new LinkedTransferQueue<>();
+            inputQueue = new LinkedBlockingQueue<>();
             eventInputQueues.put(state, inputQueue);
-            outputQueue = new LinkedTransferQueue<>();
+            outputQueue = new LinkedBlockingQueue<>();
             for (int i = 0; i < INPUT_BUFFER_THREADS_PER_STATE; i++) {
                 //Every worker has an "equal" ThreadContainer but they must be different since each worker should have a unique sub-list
                 ThreadContainers IBthreadData = new ThreadContainers(inputQueue,

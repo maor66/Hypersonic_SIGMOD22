@@ -60,7 +60,7 @@ public abstract class DoubleEventCondition extends AtomicCondition {
 //					}
 //				}
 //				long stamp = lock.writeLock();
-				condPrint+=("Comparing: "+ firstEvent.toString() + " , " +secondEvent.toString()+"\n");
+//				condPrint+=("Comparing: "+ firstEvent.toString() + " , " +secondEvent.toString()+"\n");
 //				lock.unlockWrite(stamp);
 				if (firstEvent.getSequenceNumber() < secondEvent.getSequenceNumber()) {
 					Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.computations);

@@ -42,6 +42,7 @@ private boolean shouldMatchIncomingEvents;
     }
         public InputBufferWorker(TypedNFAState eventState, EvaluationOrder evaluationOrder, List<EventType> supportedEventTypes, int finisherInputsToShutdown, int numberOfFinisherInputsToSend) {
         super(eventState, finisherInputsToShutdown, numberOfFinisherInputsToSend);
+        threadName = "InputBufferWorker "+ eventState.getName();
         List<EventType> evalOrderPrecedingStates = new ArrayList<>();
         for (EventType eventType : evaluationOrder.getFullEvaluationOrder()) { // Get all preceding events in the evalutation order
             if (eventType == eventState.getEventType()) {
@@ -57,7 +58,7 @@ private boolean shouldMatchIncomingEvents;
             }
         }
         shouldMatchIncomingEvents = true;
-        System.out.println("event State" + eventState + " calculating" + shouldMatchIncomingEvents);
+            System.out.println("event State" + eventState + " calculating" + shouldMatchIncomingEvents);
     }
 
     private boolean isFirstTypeSequencedEarlierThanSecondType(EventType firstType, EventType secondType, List<EventType> supportedEventTypes) {

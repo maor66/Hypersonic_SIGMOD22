@@ -94,7 +94,7 @@ public class ThreadContainers {
         }
         if (isBufferSorted) { //IB is sorted, while MB isn't
             ContainsEvent currEvent = bufferSubList.get(0);
-            while (currEvent.getTimestamp() + timeWindow < removingCriteriaTimeStamp) {
+            while (currEvent.getTimestamp() + timeWindow * 2 < removingCriteriaTimeStamp) {
 //                log += System.nanoTime() + ": Removed " + (bufferSubList.remove(0)) + "\n";
                 bufferSubList.remove(0);
                 numberOfRemovedElements++;
@@ -106,7 +106,7 @@ public class ThreadContainers {
         }
         else { //Since the buffer isn't sorted, the iterating order doesn't matter'
             int beforeRemovalSize = bufferSubList.size();
-            bufferSubList.removeIf(element -> element.getEarliestTimestamp() + timeWindow < removingCriteriaTimeStamp);
+            bufferSubList.removeIf(element -> element.getEarliestTimestamp() + timeWindow * 2 < removingCriteriaTimeStamp);
 //            for (Iterator<ContainsEvent> iter = bufferSubList.listIterator(); iter.hasNext(); ) {
 //                ContainsEvent ce = iter.next();
 //                if (ce.getEarliestTimestamp() + timeWindow < removingCriteriaTimeStamp) {

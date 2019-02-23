@@ -19,6 +19,7 @@ public abstract class BufferWorker implements Runnable {
     TypedNFAState eventState;
     int finisherInputsToShutdown;
     int numberOfFinisherInputsToSend;
+    String threadName;
     String log;
     public ThreadContainers getDataStorage() {
         return dataStorage;
@@ -33,6 +34,7 @@ public abstract class BufferWorker implements Runnable {
 
     @Override
     public void run() {
+        Thread.currentThread().setName(threadName + Thread.currentThread().getName());
         while (true) {
             ContainsEvent newElement = null;
             try {
@@ -165,10 +167,10 @@ public abstract class BufferWorker implements Runnable {
         for (Match partialMatch : matches) {
             for (Event event : events) {
                 if (isEventCompatibleWithPartialMatch(eventState, partialMatch, event)) {
-                    Match m = partialMatch.createNewPartialMatchWithEvent(event);
-                    if (m.getLatestEventTimestamp() > m.getEarliestTimestamp() + dataStorage.getTimeWindow()){
-                        System.out.println("time window wrong");
-                    }
+//                    Match m = partialMatch.createNewPartialMatchWithEvent(event);
+//                    if (m.getLatestEventTimestamp() > m.getEarliestTimestamp() + dataStorage.getTimeWindow()){
+//                        System.out.println("time window wrong");
+//                    }
                     sendToNextState(partialMatch.createNewPartialMatchWithEvent(event));
                 }
             }
