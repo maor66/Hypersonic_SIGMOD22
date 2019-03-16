@@ -33,19 +33,6 @@ public class MatchBufferWorker extends BufferWorker {
         //TODO: getting too much results, probably not calculating correctly
         Event lowerBoundEvent = getActualNextTransition(eventState).getActualPrecedingEvent(partialMatch.getPrimitiveEvents());
         Event upperBoundEvent = getActualNextTransition(eventState).getActualSucceedingEvent(partialMatch.getPrimitiveEvents());
-//        long lowerBoundSequenceNumber = (lowerBoundEvent != null) ? lowerBoundEvent.getSequenceNumber() : 0;
-//        long upperBoundSequenceNumber = (upperBoundEvent != null) ? upperBoundEvent.getSequenceNumber() : Long.MAX_VALUE;
-//        System.out.println("lower "+ lowerBoundEvent);
-//        System.out.println("upper "+ upperBoundEvent);
-//        System.out.println("rPM: " + partialMatch + "  scoping [" + lowerBoundSequenceNumber +","+upperBoundSequenceNumber+"]");
-//        for (Event e: events) {
-//            if (e.getSequenceNumber() < lowerBoundSequenceNumber || e.getSequenceNumber() > upperBoundSequenceNumber) {
-//            System.out.println("Removing " + e);
-//
-//            }
-//        }
-//        events.removeIf(event -> event.getSequenceNumber() < lowerBoundSequenceNumber || event.getSequenceNumber() > upperBoundSequenceNumber);
-//        return events.stream().filter(e -> !(e.getSequenceNumber() < lowerBoundSequenceNumber || e.getSequenceNumber() > upperBoundSequenceNumber)).collect(Collectors.toList());
 
         //Can use the actual getSlice as now the list is sorted (getting it from each IB separately)
         EfficientInputBuffer EIB = new EfficientInputBuffer(new ArrayList<>(List.of((eventState.getEventType()))), 0); //TODO: Time window doesn't matter for this specific use but should pay attention to this

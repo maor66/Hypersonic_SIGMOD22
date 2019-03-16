@@ -49,53 +49,28 @@ public abstract class BufferWorker implements Runnable {
                     for (int i = 0; i< numberOfFinisherInputsToSend; i++) {
                         sendToNextState(new Match());
                     }
-//                    BufferedWriter writercond = null;
-////                    log += System.nanoTime() + ": Finished run";
-//                    try {
-//                        writercond = new BufferedWriter(new FileWriter("C:\\Users\\Maor\\Documents\\lazyCEPlogs\\log"+Thread.currentThread().getName()+"_"+this.getClass().getName()+eventState+".txt"));
-//                        writercond.write(log);
-//                        writercond.close();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-
                     return; //TODO: how to end task?
                 }
                 continue;
             }
-//            if (dataStorage.getEventType() != newEvent.getType()) {
-//                throw new RuntimeException("Got wrong event type in Input Buffer");
-//            }
-//            log += System.nanoTime() + ": Got new element: " + newElement + "\n";
             dataStorage.addEventToOwnBuffer(newElement);
             List<List<ContainsEvent>> oppositeBufferList = getOppositeBufferList();
-//            log += System.nanoTime() + ": Iterating on: ";
-//            for (ContainsEvent ce : oppositeBufferList) {
-//                log += ce + ",";
-//            }
-//            log += "\n";
             if (oppositeBufferList.isEmpty()) {
                 continue;
             }
             iterateOnOppositeBuffer(newElement, oppositeBufferList);
-//            log += System.nanoTime() + ": Finished iterating\n";
             List<ContainsEvent> combinedOppositeBuffer = new ArrayList<>();
             oppositeBufferList.forEach(combinedOppositeBuffer::addAll);
             ContainsEvent removingCriteria = getReleventRemovingCriteria(combinedOppositeBuffer);
-//            log += System.nanoTime() + ": Removing based on" + removingCriteria + "\n";
             if (removingCriteria != null) {
-                String s = dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted());
-//                log += s;
-//                dataStorage.removeExpiredElements(oppositeBufferList.get(0).getEarliestTimestamp(), isBufferSorted());
+                dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted());
             }
-//            log += System.nanoTime() + ": Finished removing\n\n";
         }
     }
 
     private ContainsEvent getReleventRemovingCriteria(List<ContainsEvent> oppositeBufferList)
     {
         //TODO: can be optimized because we already go over the MB when looking for matches, so its possible to calculate latest match at that stage
-//        return oppositeBufferList.stream().max(Comparator.comparing(ContainsEvent::getEarliestTimestamp)).orElse(null);
         long latestEarliestTimeStamp = Long.MIN_VALUE;
         ContainsEvent element = null;
         for (ContainsEvent ce : oppositeBufferList) {
@@ -167,10 +142,6 @@ public abstract class BufferWorker implements Runnable {
         for (Match partialMatch : matches) {
             for (Event event : events) {
                 if (isEventCompatibleWithPartialMatch(eventState, partialMatch, event)) {
-//                    Match m = partialMatch.createNewPartialMatchWithEvent(event);
-//                    if (m.getLatestEventTimestamp() > m.getEarliestTimestamp() + dataStorage.getTimeWindow()){
-//                        System.out.println("time window wrong");
-//                    }
                     sendToNextState(partialMatch.createNewPartialMatchWithEvent(event));
                 }
             }

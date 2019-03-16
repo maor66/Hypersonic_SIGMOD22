@@ -75,10 +75,6 @@ public class ThreadContainers {
         return input;
     }
 
-    public StampedLock getLock() {
-        return lock;
-    }
-
     public EventType getEventType() {
         return eventType;
     }
@@ -107,30 +103,12 @@ public class ThreadContainers {
         else { //Since the buffer isn't sorted, the iterating order doesn't matter'
             int beforeRemovalSize = bufferSubList.size();
             bufferSubList.removeIf(element -> element.getEarliestTimestamp() + timeWindow * 2 < removingCriteriaTimeStamp);
-//            for (Iterator<ContainsEvent> iter = bufferSubList.listIterator(); iter.hasNext(); ) {
-//                ContainsEvent ce = iter.next();
-//                if (ce.getEarliestTimestamp() + timeWindow < removingCriteriaTimeStamp) {
-////                    log += System.nanoTime() + ": Removed " + ce + "\n";
-//                    iter.remove();
-//                }
-//            }
             numberOfRemovedElements = beforeRemovalSize - bufferSubList.size();
         }
         lock.unlock(stamp);
         if (isBufferSorted) { //This is not a very good design...
             Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.bufferRemovals,
                     numberOfRemovedElements);
-//            try {
-//                BufferedWriter bw = new BufferedWriter(new FileWriter("C:\\Users\\Maor\\Documents\\removelogs\\" + System.nanoTime()));
-//                for (ContainsEvent ce : removedEvents) {
-//                    bw.write("Removed event " + ce + " based on rPM: " + removingCriteriaTimeStamp);
-//                }
-//                bw.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-
-
         }
         else {
             Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.instanceDeletions,
