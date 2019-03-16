@@ -3,6 +3,7 @@ package sase.config;
 import sase.multi.sla.SlaVerifierTypes;
 import sase.pattern.creation.PatternTypes;
 import sase.specification.condition.ConditionSpecification;
+import sase.specification.workload.ParallelPatternSpecification;
 import sase.specification.workload.PatternSpecification;
 import sase.user.stocks.StockEventTypesManager;
 import sase.user.stocks.specification.StockDeltaOrderingConditionSpecification;
@@ -417,7 +418,7 @@ public class PatternConfig {
 	
 	private static final long stockByCompanyPatternTimeWindow = 10;
 	public static final PatternSpecification[] stockByCompanyPatternSpecifications = {
-            new PatternSpecification("SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+            new ParallelPatternSpecification("SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
                     new String[][][] {new String[][]{new String[]{
                             StockEventTypesManager.microsoftEventTypeName,
                             StockEventTypesManager.googleEventTypeName,
@@ -439,34 +440,34 @@ public class PatternConfig {
                                     StockEventTypesManager.yahooEventTypeName,
                                     StockEventTypesManager.amznEventTypeName),
                     },
-                    SlaVerifierTypes.NONE),
-			new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
-					new String[][][] {new String[][]{new String[]{
-							StockEventTypesManager.microsoftEventTypeName,
-							StockEventTypesManager.googleEventTypeName,
-							StockEventTypesManager.ciscoEventTypeName,
-							StockEventTypesManager.intelEventTypeName,
-							StockEventTypesManager.yahooEventTypeName,
-							StockEventTypesManager.etfcEventTypeName
-					}}},
-					new ConditionSpecification[] {
-							new StockDeltaOrderingConditionSpecification(
-									StockEventTypesManager.microsoftEventTypeName,
-									StockEventTypesManager.googleEventTypeName),
-							new StockDeltaOrderingConditionSpecification(
-									StockEventTypesManager.googleEventTypeName,
-									StockEventTypesManager.ciscoEventTypeName),
-							new StockDeltaOrderingConditionSpecification(
-									StockEventTypesManager.ciscoEventTypeName,
-									StockEventTypesManager.intelEventTypeName),
-							new StockDeltaOrderingConditionSpecification(
-									StockEventTypesManager.intelEventTypeName,
-									StockEventTypesManager.yahooEventTypeName),
-							new StockDeltaOrderingConditionSpecification(
-									StockEventTypesManager.yahooEventTypeName,
-									StockEventTypesManager.etfcEventTypeName),
-					},
-					SlaVerifierTypes.NONE),
+                    SlaVerifierTypes.NONE, new int[][] {{2,3}, {2,3}, {2,3}, {2,3}}),
+//			new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.microsoftEventTypeName,
+//							StockEventTypesManager.googleEventTypeName,
+//							StockEventTypesManager.ciscoEventTypeName,
+//							StockEventTypesManager.intelEventTypeName,
+//							StockEventTypesManager.yahooEventTypeName,
+//							StockEventTypesManager.etfcEventTypeName
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.microsoftEventTypeName,
+//									StockEventTypesManager.googleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.googleEventTypeName,
+//									StockEventTypesManager.ciscoEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.ciscoEventTypeName,
+//									StockEventTypesManager.intelEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.intelEventTypeName,
+//									StockEventTypesManager.yahooEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.yahooEventTypeName,
+//									StockEventTypesManager.etfcEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
 
 //			new PatternSpecification("SEQ3", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 //					new String[][][] {new String[][]{new String[]{

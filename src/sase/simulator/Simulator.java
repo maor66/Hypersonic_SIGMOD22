@@ -22,6 +22,7 @@ import sase.evaluation.IEvaluationMechanism;
 import sase.evaluation.IEvaluationMechanismInfo;
 import sase.evaluation.IMultiPatternEvaluationMechanism;
 import sase.evaluation.common.Match;
+import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
 import sase.input.EventProducer;
 import sase.input.EventProducerFactory;
 import sase.multi.MultiPlan;
@@ -33,6 +34,8 @@ import sase.pattern.workload.PatternWorkloadFactory;
 import sase.specification.SimulationSpecification;
 import sase.specification.creators.ISimulationSpecificationCreator;
 import sase.specification.creators.SpecificationCreatorFactory;
+import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
+import sase.specification.workload.ParallelPatternSpecification;
 import sase.specification.workload.PatternSpecification;
 import sase.specification.workload.SinglePatternWorkloadSpecification;
 import sase.specification.workload.WorkloadSpecification;
@@ -191,7 +194,20 @@ public class Simulator {
 	}
 
 	private IEvaluationMechanism createNewEvaluationMechanism() {
-		return createNewEvaluationMechanism(null);
+		return createNewEvaluationMechanism((IEvaluationMechanism)null);
+	}
+
+	private IEvaluationMechanism createNewEvaluationMechanism(SimulationSpecification currentSpecification)
+	//This function is mostly a hack to forward info from SimulationConfig into the actual NFA class without going over all the actual flow
+	{
+		IEvaluationMechanism evaluationMechanism = createNewEvaluationMechanism((IEvaluationMechanism)null);
+		if (evaluationMechanism instanceof ParallelLazyChainNFA) {
+			ParallelLazyChainNFA parallelLazyChainNFA = (ParallelLazyChainNFA) evaluationMechanism;
+			// Getting the first item in the list as we should be working only with a single pattern only workload
+			ParallelPatternSpecification parallelPatternSpecification = (ParallelPatternSpecification) currentSpecification.getWorkloadSpecification().getPatternSpecifications().get(0);
+			parallelLazyChainNFA.initallizeThreadAllocation(parallelPatternSpecification.getInputBufferThreadsPerState(), parallelPatternSpecification.getMatchBufferThreadsPerState());
+		}
+		return evaluationMechanism;
 	}
 	
 	private IEvaluationMechanism createNewEvaluationMechanism(IEvaluationMechanism currentEvaluationMechanism) {
@@ -250,7 +266,7 @@ public class Simulator {
     	
     	eventProducer = EventProducerFactory.createEventProducer(workload.getCurrentWorkload(), currentSpecification);
     	
-    	primaryEvaluationMechanism = createNewEvaluationMechanism();
+    	primaryEvaluationMechanism = createNewEvaluationMechanism(currentSpecification);
     	secondaryEvaluationMechanism = null;
     	lastAdaptCheckTimestamp = null;
     	

@@ -12,6 +12,7 @@ import sase.evaluation.nfa.parallel.ThreadContainers;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
 
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ import java.util.stream.Stream;
 
 public class ParallelLazyChainNFA extends LazyChainNFA {
 
-    //TODO: Features - (1) Add finer granularity of threads per state.
+    //TODO: Features - (2) Add support for different types of patterns (AND/OR/NEG)
     //TODO: Features - (3) Think if there are useless IB/MB workers, maybe in each state only new events or only new rPM can create matches due to timing constraints.
     //TODO: Features - (4) send events/rPM as batches to decrease synchronization actions
     //TODO: Features - (5) calculate number of events/rPM sent between states(and main thread) as a statistic
@@ -27,13 +28,18 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     //TODO: Features - (7) Remove commented-out code
     //TODO: Article - (1) Add scoping parameters use
     //TODO: Article - (2) Write about removing technique
+    //TODO: Article - (3) Add optimization of first state (forward only)
+    //TODO: Article - (4) Add implementation detail about finishing input with different amount of threads ("poison pill")
+    //TODO: Article - (5) Should add something about minimum required threads?
 
     private ExecutorService executor;
     private Map<NFAState, List<InputBufferWorker>> IBWorkers;
     private Map<NFAState, List<MatchBufferWorker>> MBWorkers;
     private Map<TypedNFAState, BlockingQueue<Event>> eventInputQueues;
-    private static int INPUT_BUFFER_THREADS_PER_STATE = 2;
-    private static int MATCH_BUFFER_THREADS_PER_STATE = 3;
+    private Map<TypedNFAState, Integer> stateToIBThreads = new HashMap<>();
+    private Map<TypedNFAState, Integer> stateToMBThreads = new HashMap<>();
+//    private static int INPUT_BUFFER_THREADS_PER_STATE = 2;
+//    private static int MATCH_BUFFER_THREADS_PER_STATE = 3;
     private BlockingQueue<Match> secondStateInputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Match> completeMatchOutputQueue;
 
@@ -81,13 +87,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     public List<Match> getLastMatches() {
 
             try {
-                for (BlockingQueue<Event> blockingQueue: eventInputQueues.values()) {
-                    for (int i = 0; i < INPUT_BUFFER_THREADS_PER_STATE; i++) {
-                        blockingQueue.put(new Event());
+                //Put finisher input ("poison pill") in each IB thread
+                for (Map.Entry<TypedNFAState, BlockingQueue<Event>> entry : eventInputQueues.entrySet()) {
+                    for (int i = 0; i < stateToIBThreads.get(entry.getKey()); i++) {
+                        entry.getValue().put(new Event());
                     }
-
                 }
-                for (int i = 0; i < MATCH_BUFFER_THREADS_PER_STATE *(MATCH_BUFFER_THREADS_PER_STATE + INPUT_BUFFER_THREADS_PER_STATE); i++) {
+                // Put finisher input to all MB threads in the first worker thread
+                for (int i = 0; i < stateToMBThreads.get(getWorkerStates().get(0)); i++) {
                     secondStateInputQueue.put(new Match());
                 }
             } catch (InterruptedException e) {
@@ -105,7 +112,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 if (m.isLastInput()) {
                     numberOfEndingMatches++;
 //                    System.out.println("Finisher " + numberOfEndingMatches);
-                    if (numberOfEndingMatches == MATCH_BUFFER_THREADS_PER_STATE*(MATCH_BUFFER_THREADS_PER_STATE+INPUT_BUFFER_THREADS_PER_STATE)) {
+                    TypedNFAState lastWorkerState = getWorkerStates().get(getWorkerStates().size() - 1);
+                    if (numberOfEndingMatches == stateToIBThreads.get(lastWorkerState) + stateToMBThreads.get(lastWorkerState)) {
                         break;
                     }
                 }
@@ -207,28 +215,35 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
     }
 
-    @Override
-    protected void initNFAStructure() {
-        super.initNFAStructure();
-        initializeThreads();
+//    @Override
+//    protected void initNFAStructure() {
+//        super.initNFAStructure();
+//    }
+
+    private TypedNFAState getNextWorkerStateOrNullIfLast(TypedNFAState state)
+    {
+        int indexInWorkerStates = getWorkerStates().indexOf(state);
+        return (indexInWorkerStates == getWorkerStates().size() - 1) ? null : getWorkerStates().get(indexInWorkerStates + 1);
     }
 
     private void initializeThreads() {
         IBWorkers = new HashMap<>();
         MBWorkers = new HashMap<>();
         eventInputQueues = new HashMap<>();
-        executor = Executors.newFixedThreadPool((INPUT_BUFFER_THREADS_PER_STATE + MATCH_BUFFER_THREADS_PER_STATE) * states.size()); //TODO: maybe workstealingpool?
+        executor = Executors.newFixedThreadPool((getTotalNumberOfThreads())); //TODO: maybe workstealingpool?
 
+        int prevTotalThreads = 1;
         for (TypedNFAState state : getWorkerStates()) {
             // Construct the workers first so it will be possible to add them as parameters in the ThreadContainer c'tor. Probably should've used a better design pattern (builder?)
             List<InputBufferWorker> stateIBworkers = new ArrayList<>();
             List<MatchBufferWorker> stateMBworkers = new ArrayList<>();
-            for (int i = 0; i < INPUT_BUFFER_THREADS_PER_STATE; i++) {
-                stateIBworkers.add(new InputBufferWorker(state, this.evaluationOrder, this.supportedEventTypes,1, MATCH_BUFFER_THREADS_PER_STATE)); //TODO: not necessary the correct sequence order, have to validate it somehow
+            for (int i = 0; i < stateToIBThreads.get(state); i++) {
+                stateIBworkers.add(new InputBufferWorker(state, this.evaluationOrder, this.supportedEventTypes,1, stateToMBThreads.getOrDefault(getNextWorkerStateOrNullIfLast(state), 1))); //TODO: not necessary the correct sequence order, have to validate it somehow
             }
-            for (int i = 0; i < MATCH_BUFFER_THREADS_PER_STATE; i++) {
-                stateMBworkers.add(new MatchBufferWorker(state, MATCH_BUFFER_THREADS_PER_STATE + INPUT_BUFFER_THREADS_PER_STATE, MATCH_BUFFER_THREADS_PER_STATE ));
+            for (int i = 0; i < stateToMBThreads.get(state); i++) {
+                stateMBworkers.add(new MatchBufferWorker(state, prevTotalThreads, stateToMBThreads.getOrDefault(getNextWorkerStateOrNullIfLast(state),1)));
             }
+            prevTotalThreads = stateToIBThreads.get(state) + stateToMBThreads.get(state);
             IBWorkers.put(state, stateIBworkers);
             MBWorkers.put(state, stateMBworkers);
         }
@@ -241,7 +256,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             inputQueue = new LinkedBlockingQueue<>();
             eventInputQueues.put(state, inputQueue);
             outputQueue = new LinkedBlockingQueue<>();
-            for (int i = 0; i < INPUT_BUFFER_THREADS_PER_STATE; i++) {
+            for (int i = 0; i < stateToIBThreads.get(state); i++) {
                 //Every worker has an "equal" ThreadContainer but they must be different since each worker should have a unique sub-list
                 ThreadContainers IBthreadData = new ThreadContainers(inputQueue,
                         MBWorkers.get(state),
@@ -250,7 +265,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                         timeWindow);
                 IBWorkers.get(state).get(i).initializeDataStorage(IBthreadData);
             }
-            for (int i = 0; i < MATCH_BUFFER_THREADS_PER_STATE; i++) {
+            for (int i = 0; i <stateToMBThreads.get(state); i++) {
                 ThreadContainers MBthreadData = new ThreadContainers(MBinputQueue,
                         IBWorkers.get(state),
                         outputQueue,
@@ -270,6 +285,17 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 executor.execute(worker);
             }
         }
+    }
+
+    private int getTotalNumberOfThreads() {
+        int threadsSum = 0;
+        for (int threads : stateToIBThreads.values()) {
+            threadsSum+=threads;
+        }
+        for (int threads : stateToMBThreads.values()) {
+            threadsSum+=threads;
+        }
+        return threadsSum;
     }
 
 
@@ -302,6 +328,15 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             }
         }
         throw new RuntimeException("No outgoing TAKE transition");
+    }
+
+    public void initallizeThreadAllocation(List<Integer> inputBufferThreadsPerState, List<Integer> matchBufferThreadsPerState) {
+        int listIndex = 0;
+        for (TypedNFAState state : getWorkerStates()) {
+            stateToIBThreads.put(state, inputBufferThreadsPerState.get(listIndex));
+            stateToMBThreads.put(state, matchBufferThreadsPerState.get(listIndex++));
+        }
+        initializeThreads();
     }
 
 
