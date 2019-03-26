@@ -2,8 +2,10 @@ package sase.base;
 
 import sase.pattern.EventTypesManager;
 
+import java.util.List;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Event implements Comparable<Event>, ContainsEvent {
@@ -20,6 +22,12 @@ public class Event implements Comparable<Event>, ContainsEvent {
 		for (int i = 0; i < signatureSize; ++i) {
 			result[i] = eventPayload[i];
 		}
+		return result;
+	}
+	
+	public static List<Event> asList(Event event) {
+		List result = new ArrayList<Event>();
+		result.add(event);
 		return result;
 	}
 

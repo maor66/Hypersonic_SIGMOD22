@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import sase.config.MainConfig;
+import sase.evaluation.data_parallel.DataParallelEvaluationMechanism;
 
 public class StatisticsManager {
 
@@ -230,6 +231,7 @@ public class StatisticsManager {
 					MainConfig.outputFilePath, e.getMessage()));
 		}
 		if (!isInternalPeriodicReport) {
+			DataParallelEvaluationMechanism.killAllThreads();
 			System.out.println("Evaluation Step Completed.\n");
 		}
 	}

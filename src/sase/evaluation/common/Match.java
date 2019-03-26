@@ -1,5 +1,6 @@
 package sase.evaluation.common;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -32,6 +33,12 @@ public class Match implements ContainsEvent{
 
 	public List<Event> getPrimitiveEvents() {
 		return primitiveEvents;
+	}
+	
+	public static List<Match> asList(Match match) {
+		List result = new ArrayList<Match>();
+		result.add(match);
+		return result;
 	}
 	
 	@Override
@@ -82,7 +89,7 @@ public class Match implements ContainsEvent{
 		if (primitiveEvents.size() > 5) {
 			System.out.println("too much events");
 		}
-		return new Match(Stream.concat(primitiveEvents.stream(),List.of(event).stream()).collect(Collectors.toList()), event.getSystemTimestamp()); //Combining two lists)
+		return new Match(Stream.concat(primitiveEvents.stream(),Event.asList(event).stream()).collect(Collectors.toList()), event.getSystemTimestamp()); //Combining two lists)
 	}
 
     public long getEarliestEvent() {

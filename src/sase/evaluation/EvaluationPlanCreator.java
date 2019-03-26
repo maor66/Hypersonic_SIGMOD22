@@ -39,6 +39,7 @@ import sase.specification.evaluation.EvaluationSpecification;
 import sase.specification.evaluation.FixedLazyNFAEvaluationSpecification;
 import sase.specification.evaluation.MultiPlanEvaluationSpecification;
 import sase.specification.evaluation.TreeEvaluationSpecification;
+import sase.specification.evaluation.ParallelEvaluationSpecification;
 
 public class EvaluationPlanCreator {
 
@@ -66,6 +67,14 @@ public class EvaluationPlanCreator {
 				return createOrderBasedPlan(pattern);
 			case TREE:
 				return createTreeBasedPlan(pattern);
+			case HIRZEL_CHAIN_NFA:
+			case RIP_CHAIN_NFA:
+				switch (((ParallelEvaluationSpecification)specification).internalSpecification.type) {
+					case TREE:
+						return createTreeBasedPlan(pattern);
+					default:
+						return createOrderBasedPlan(pattern);
+				}
 			case MULTI_PATTERN_TREE:
 			case MULTI_PATTERN_MULTI_TREE:
 				throw new RuntimeException("Illegal evaluation structure for single-pattern setting");
@@ -87,15 +96,22 @@ public class EvaluationPlanCreator {
 	}
 	
 	private EvaluationPlan createOrderBasedPlan(Pattern pattern) {
+		
+		// Max: Fix for parallel specifications (Hirzel and RIP)
+		EvaluationSpecification curr_specification = specification;
+		if (specification instanceof ParallelEvaluationSpecification) {
+			curr_specification = ((ParallelEvaluationSpecification)specification).internalSpecification;
+		}
+		
 		// Maor: Here is where the order of the chain is determined
-		if (specification instanceof FixedLazyNFAEvaluationSpecification) {
+		if (curr_specification instanceof FixedLazyNFAEvaluationSpecification) {
 			return createFixedOrderBasedPlan(pattern);
 		}
-		if (!(specification instanceof CostBasedLazyNFAEvaluationSpecification)) {
-			throw new RuntimeException("Unexpected specification type");
+		if (!(curr_specification instanceof CostBasedLazyNFAEvaluationSpecification)) {
+			throw new RuntimeException("Unexpected curr_specification type");
 		}
 		CostBasedLazyNFAEvaluationSpecification costBasedSpecification = 
-												(CostBasedLazyNFAEvaluationSpecification)specification;
+												(CostBasedLazyNFAEvaluationSpecification)curr_specification;
 		IOrderingAlgorithm orderingAlgorithm = 
 				OrderingAlgorithmFactory.createOrderingAlgorithm(costBasedSpecification.orderingAlgorithmType, null);
 		ICostModel costModel = CostModelFactory.createCostModel(costBasedSpecification.costModelType, 

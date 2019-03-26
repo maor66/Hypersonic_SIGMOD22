@@ -2,6 +2,7 @@ package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
 import sase.base.Event;
+import sase.base.EventType;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
@@ -22,7 +23,7 @@ public class MatchBufferWorker extends BufferWorker {
                 return;
             }
             actualEvents = getSlice(actualEvents, (Match) newElement, eventState);
-            tryToAddMatchesWithEvents(new ArrayList<>(List.of((Match) newElement)), actualEvents);
+            tryToAddMatchesWithEvents(new ArrayList<>(Match.asList((Match) newElement)), actualEvents);
         }
     }
 
@@ -35,7 +36,7 @@ public class MatchBufferWorker extends BufferWorker {
         Event upperBoundEvent = getActualNextTransition(eventState).getActualSucceedingEvent(partialMatch.getPrimitiveEvents());
 
         //Can use the actual getSlice as now the list is sorted (getting it from each IB separately)
-        EfficientInputBuffer EIB = new EfficientInputBuffer(new ArrayList<>(List.of((eventState.getEventType()))), 0); //TODO: Time window doesn't matter for this specific use but should pay attention to this
+        EfficientInputBuffer EIB = new EfficientInputBuffer(new ArrayList<>(EventType.asList(eventState.getEventType())), 0); //TODO: Time window doesn't matter for this specific use but should pay attention to this
         EIB.storeAllWithoutCopy(events);
         return EIB.getSlice(eventState.getEventType(), lowerBoundEvent, upperBoundEvent);
     }

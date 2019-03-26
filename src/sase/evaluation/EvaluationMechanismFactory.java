@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import sase.config.MainConfig;
+import sase.evaluation.data_parallel.HirzelEvaluationMechanism;
+import sase.evaluation.data_parallel.RIPEvaluationMechanism;
 import sase.evaluation.nfa.eager.AND_NFA;
 import sase.evaluation.nfa.eager.AND_SEQ_NFA;
 import sase.evaluation.nfa.eager.OR_AND_SEQ_NFA;
@@ -28,7 +30,10 @@ import sase.pattern.Pattern.PatternOperatorTypes;
 import sase.pattern.condition.base.TrivialCondition;
 import sase.simulator.Environment;
 import sase.specification.evaluation.EvaluationSpecification;
+import sase.specification.evaluation.HirzelEvaluationSpecification;
 import sase.specification.evaluation.LazyNFAEvaluationSpecification;
+import sase.specification.evaluation.ParallelEvaluationSpecification;
+import sase.specification.evaluation.RIPEvaluationSpecification;
 import sase.statistics.Statistics;
 
 public class EvaluationMechanismFactory {
@@ -64,6 +69,10 @@ public class EvaluationMechanismFactory {
 					case LAZY_CHAIN_PARALLEL:
 						return new ParallelLazyChainNFA(pattern, evaluationPlan,
                     ((LazyNFAEvaluationSpecification)specification).negationType);
+					case HIRZEL_CHAIN_NFA:
+						return new HirzelEvaluationMechanism(pattern, (HirzelEvaluationSpecification)specification, evaluationPlan);
+					case RIP_CHAIN_NFA:
+						return new RIPEvaluationMechanism(pattern, (RIPEvaluationSpecification)specification, evaluationPlan);
 					case LAZY_TREE:
 						return null;
 					case TREE:

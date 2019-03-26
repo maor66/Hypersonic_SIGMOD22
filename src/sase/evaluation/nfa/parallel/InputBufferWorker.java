@@ -20,7 +20,7 @@ private boolean shouldMatchIncomingEvents;
             if (actualMatches.isEmpty()) {
                 continue;
             }
-            tryToAddMatchesWithEvents(actualMatches, new ArrayList<>(List.of((Event)newElement)));
+            tryToAddMatchesWithEvents(actualMatches, new ArrayList<>(Event.asList((Event)newElement)));
         }
 
     }

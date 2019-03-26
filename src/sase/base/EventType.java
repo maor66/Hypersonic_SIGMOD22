@@ -18,6 +18,12 @@ public class EventType {
 		}
 	}
 	
+	public static List<EventType> asList(EventType et) {
+		List result = new ArrayList<EventType>();
+		result.add(et);
+		return result;
+	}
+	
 	public String getName() {
 		return name;
 	}

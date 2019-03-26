@@ -102,9 +102,10 @@ public abstract class BufferWorker implements Runnable {
     protected boolean isEventCompatibleWithPartialMatch(TypedNFAState eventState, Match partialMatch, Event event) {
         //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
         //TODO: doesn't have to verify temporal condition first anymore - check if removing doesn't hurt correctness
+    	
 
         return verifyTimeWindowConstraint(partialMatch, event) && getActualNextTransition(eventState).verifyConditionWithTemporalConditionFirst( //TODO: check if verifying the (non-temporal) condition works with partial events or consider changing the condition
-                Stream.concat(partialMatch.getPrimitiveEvents().stream(),List.of(event).stream()).collect(Collectors.toList())); //Combining two lists
+                Stream.concat(partialMatch.getPrimitiveEvents().stream(),Event.asList(event).stream()).collect(Collectors.toList())); //Combining two lists
     }
 
     private LazyTransition getActualNextTransition(NFAState state)

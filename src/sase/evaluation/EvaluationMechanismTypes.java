@@ -7,7 +7,9 @@ public enum EvaluationMechanismTypes {
 	TREE,
 	MULTI_PATTERN_TREE,
 	MULTI_PATTERN_MULTI_TREE,
-	LAZY_CHAIN_PARALLEL;
+	LAZY_CHAIN_PARALLEL,
+	HIRZEL_CHAIN_NFA,
+	RIP_CHAIN_NFA;
 
     @Override
 	public String toString() {
@@ -26,6 +28,10 @@ public enum EvaluationMechanismTypes {
 				return "Multi-Pattern Multi-Tree";
 			case LAZY_CHAIN_PARALLEL:
 				return "Parallel chain NFA";
+			case HIRZEL_CHAIN_NFA:
+				return "Hirzel Parallel chain NFA";
+			case RIP_CHAIN_NFA:
+				return "RIP Parallel chain NFA";
 			default: 
 				return "";
 		}

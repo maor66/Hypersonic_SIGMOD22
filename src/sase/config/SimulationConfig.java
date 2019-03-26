@@ -17,6 +17,7 @@ import sase.specification.workload.PatternReorderingSensitivityTypes;
 import sase.specification.workload.PatternSpecification;
 import sase.specification.workload.SinglePatternWorkloadSpecification;
 import sase.specification.workload.WorkloadCreationSpecification;
+import sase.user.stocks.StockEventTypesManager;
 import sase.user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
 import sase.adaptive.monitoring.AdaptationNecessityDetectorTypes;
 import sase.adaptive.monitoring.invariant.compare.InvariantComparerType;
@@ -453,13 +454,17 @@ public class SimulationConfig {
 	public static final EvaluationSpecification[] evaluationSpecifications = {
 
 
-		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-		CostModelTypes.THROUGHPUT_LATENCY,
-		0.0),
-		//Maor: Lazy in the 2015 article
-			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-						CostModelTypes.THROUGHPUT_LATENCY,
-						0.0),
+//		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+//		CostModelTypes.THROUGHPUT_LATENCY,
+//		0.0),
+//		//Maor: Lazy in the 2015 article
+//			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+//						CostModelTypes.THROUGHPUT_LATENCY,
+//						0.0),
+			new HirzelEvaluationSpecification(EvaluationMechanismTypes.HIRZEL_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+					CostModelTypes.THROUGHPUT_LATENCY,
+					0.0), 1, StockEventTypesManager.labelAttributeName),
+//			new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA),
 ////			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
 //						CostModelTypes.THROUGHPUT_LATENCY,
 //						0.0),
