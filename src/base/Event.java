@@ -1,7 +1,10 @@
 package sase.base;
 
 import sase.pattern.EventTypesManager;
+/*
+Event has attributes
 
+ */
 public class Event implements Comparable<Event> {
 	
 	private static final int signatureSize = 2;

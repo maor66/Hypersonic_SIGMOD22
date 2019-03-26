@@ -1,0 +1,198 @@
+@startuml
+
+title __STOCKS's Class Diagram__\n
+
+  package sase.user.stocks {
+    class AverageStocksVectorAggregator {
+        + aggregateVectors()
+    }
+  }
+  
+
+  package sase.user.stocks {
+    class StockEventTypesManager {
+        {static} + labelAttributeName : String
+        {static} + timestampAttributeName : String
+        {static} + labelAttributeIndex : int
+        {static} + timestampAttributeIndex : int
+        {static} + firstStockMeasurementIndex : int
+        {static} + numberOfStockMeasurementIndices : int
+        {static} + highTechCompanyEventTypeName : String
+        {static} + financeCompanyEventTypeName : String
+        {static} + megaLargeCompanyEventTypeName : String
+        {static} + highTechCompanyEventType : EventType
+        {static} + financeCompanyEventType : EventType
+        {static} + megaLargeCompanyEventType : EventType
+        {static} + africanCompanyEventTypeName : String
+        {static} + asianCompanyEventTypeName : String
+        {static} + australianCompanyEventTypeName : String
+        {static} + northAmericanCompanyEventTypeName : String
+        {static} + centralAmericanCompanyEventTypeName : String
+        {static} + southAmericanCompanyEventTypeName : String
+        {static} + europeanCompanyEventTypeName : String
+        {static} + middleEasternCompanyEventTypeName : String
+        {static} + regionEventTypeNames : String[]
+        {static} + africanCompanyEventType : EventType
+        {static} + asianCompanyEventType : EventType
+        {static} + australianCompanyEventType : EventType
+        {static} + northAmericanCompanyEventType : EventType
+        {static} + centralAmericanCompanyEventType : EventType
+        {static} + southAmericanCompanyEventType : EventType
+        {static} + europeanCompanyEventType : EventType
+        {static} + middleEasternCompanyEventType : EventType
+        {static} + microsoftEventTypeName : String
+        {static} + yahooEventTypeName : String
+        {static} + googleEventTypeName : String
+        {static} + appleEventTypeName : String
+        {static} + ciscoEventTypeName : String
+        {static} + intelEventTypeName : String
+        {static} + biduEventTypeName : String
+        {static} + etfcEventTypeName : String
+        {static} + fslrEventTypeName : String
+        {static} + nvdaEventTypeName : String
+        {static} + amznEventTypeName : String
+        {static} + siriEventTypeName : String
+        {static} + brcmEventTypeName : String
+        {static} + amatEventTypeName : String
+        {static} + croxEventTypeName : String
+        {static} + drysEventTypeName : String
+        {static} + qcomEventTypeName : String
+        {static} + spwrEventTypeName : String
+        {static} + sndkEventTypeName : String
+        {static} + amgnEventTypeName : String
+        {static} + ebayEventTypeName : String
+        {static} + largeCompaniesEventTypeNames : String[]
+        {static} + microsoftEventType : EventType
+        {static} + yahooEventType : EventType
+        {static} + googleEventType : EventType
+        {static} + appleEventType : EventType
+        {static} + ciscoEventType : EventType
+        {static} + intelEventType : EventType
+        {static} + biduEventType : EventType
+        {static} + etfcEventType : EventType
+        {static} + fslrEventType : EventType
+        {static} + nvdaEventType : EventType
+        {static} + amznEventType : EventType
+        {static} + siriEventType : EventType
+        {static} + brcmEventType : EventType
+        {static} + amatEventType : EventType
+        {static} + croxEventType : EventType
+        {static} + drysEventType : EventType
+        {static} + qcomEventType : EventType
+        {static} + spwrEventType : EventType
+        {static} + sndkEventType : EventType
+        {static} + amgnEventType : EventType
+        {static} + ebayEventType : EventType
+        {static} + xtexEventTypeName : String
+        {static} + xtlbEventTypeName : String
+        {static} + qtwwEventTypeName : String
+        {static} + cbrxEventTypeName : String
+        {static} + aepiEventTypeName : String
+        {static} + rprxEventTypeName : String
+        {static} + abcbEventTypeName : String
+        {static} + prcpEventTypeName : String
+        {static} + evepEventTypeName : String
+        {static} + mosyEventTypeName : String
+        {static} + bkccEventTypeName : String
+        {static} + bsetEventTypeName : String
+        {static} + sconEventTypeName : String
+        {static} + fsrvEventTypeName : String
+        {static} + wsfsEventTypeName : String
+        {static} + redfEventTypeName : String
+        {static} + ccixEventTypeName : String
+        {static} + cweiEventTypeName : String
+        {static} + chdnEventTypeName : String
+        {static} + stsiEventTypeName : String
+        {static} + mrgeEventTypeName : String
+        {static} + mediumCompaniesEventTypeNames : String[]
+        {static} + xtexEventType : EventType
+        {static} + xtlbEventType : EventType
+        {static} + qtwwEventType : EventType
+        {static} + xbrzEventType : EventType
+        {static} + aepiEventType : EventType
+        {static} + rprxEventType : EventType
+        {static} + abcbEventType : EventType
+        {static} + prcpEventType : EventType
+        {static} + evepEventType : EventType
+        {static} + mosyEventType : EventType
+        {static} + bkccEventType : EventType
+        {static} + bsetEventType : EventType
+        {static} + sconEventType : EventType
+        {static} + fsrvEventType : EventType
+        {static} + wsfsEventType : EventType
+        {static} + redfEventType : EventType
+        {static} + ccixEventType : EventType
+        {static} + cweiEventType : EventType
+        {static} + chdnEventType : EventType
+        {static} + stsiEventType : EventType
+        {static} + mrgeEventType : EventType
+        {static} + townEventTypeName : String
+        {static} + mndoEventTypeName : String
+        {static} + chtpEventTypeName : String
+        {static} + nymxEventTypeName : String
+        {static} + pcyoEventTypeName : String
+        {static} + nlstEventTypeName : String
+        {static} + nbbcEventTypeName : String
+        {static} + clwtEventTypeName : String
+        {static} + pmfgEventTypeName : String
+        {static} + arowEventTypeName : String
+        {static} + isigEventTypeName : String
+        {static} + qbakEventTypeName : String
+        {static} + nrimEventTypeName : String
+        {static} + joezEventTypeName : String
+        {static} + adrdEventTypeName : String
+        {static} + ffnwEventTypeName : String
+        {static} + symxEventTypeName : String
+        {static} + adruEventTypeName : String
+        {static} + ptekEventTypeName : String
+        {static} + kirkEventTypeName : String
+        {static} + nathEventTypeName : String
+        {static} + smallCompaniesEventTypeNames : String[]
+        {static} + townEventType : EventType
+        {static} + mndoEventType : EventType
+        {static} + chtpEventType : EventType
+        {static} + nymxEventType : EventType
+        {static} + pcyoEventType : EventType
+        {static} + nlstEventType : EventType
+        {static} + nbbcEventType : EventType
+        {static} + clwtEventType : EventType
+        {static} + pmfgEventType : EventType
+        {static} + arowEventType : EventType
+        {static} + isigEventType : EventType
+        {static} + qbakEventType : EventType
+        {static} + nrimEventType : EventType
+        {static} + joezEventType : EventType
+        {static} + adrdEventType : EventType
+        {static} + ffnwEventType : EventType
+        {static} + symxEventType : EventType
+        {static} + adruEventType : EventType
+        {static} + ptekEventType : EventType
+        {static} + kirkEventType : EventType
+        {static} + nathEventType : EventType
+        + StockEventTypesManager()
+        # createNameToTypeHash()
+        # createLongNameToShortNameHash()
+        # actuallyInitializeTypes()
+        + getEventLabel()
+        + getEventTimestamp()
+        + convertStringPayloadToObjectPayload()
+        + getAverageEventSize()
+        + getKnownEventTypes()
+        + getLargeCompaniesEventTypes()
+        + getMediumCompaniesEventTypes()
+        + getSmallCompaniesEventTypes()
+        + getKnownEventTypeNames()
+    }
+  }
+  
+
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

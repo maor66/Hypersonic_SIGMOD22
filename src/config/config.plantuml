@@ -1,0 +1,315 @@
+@startuml
+
+title __CONFIG's Class Diagram__\n
+
+  package sase.config {
+    class ConditionConfig {
+        {static} + sequenceOfTwo : ConditionSpecification[]
+        {static} + sequenceOfThree : ConditionSpecification[]
+        {static} + sequenceOfThreeNAEUCA : ConditionSpecification[]
+        {static} + sequenceOfThreeEUASCA : ConditionSpecification[]
+        {static} + sequenceOfThreeEUSAAFR : ConditionSpecification[]
+        {static} + sequenceOfThreeCASAAU : ConditionSpecification[]
+        {static} + sequenceOfThreeEULast : ConditionSpecification[]
+        {static} + sequenceOfFourEager : ConditionSpecification[]
+        {static} + sequenceOfFiveEager : ConditionSpecification[]
+        {static} + sequenceOfFiveNegativeEager : ConditionSpecification[]
+        {static} + sequenceOfSixEager : ConditionSpecification[]
+        {static} + sequenceOfSevenEager : ConditionSpecification[]
+        {static} + sequenceOfEightEager : ConditionSpecification[]
+        {static} + sequenceOfEightNegativeEager : ConditionSpecification[]
+        {static} + sequenceOfFourLazy : ConditionSpecification[]
+        {static} + sequenceOfFiveLazy : ConditionSpecification[]
+        {static} + sequenceOfFiveNegativeLazy : ConditionSpecification[]
+        {static} + sequenceOfSixLazy : ConditionSpecification[]
+        {static} + sequenceOfSevenLazy : ConditionSpecification[]
+        {static} + sequenceOfEightLazy : ConditionSpecification[]
+        {static} + sequenceOfEightNegativeLazy : ConditionSpecification[]
+        {static} + conjunctionOfThree : ConditionSpecification[]
+        {static} + conjunctionOfThreeEUSAAFR : ConditionSpecification[]
+        {static} + conjunctionOfThreeCASAAU : ConditionSpecification[]
+        {static} + disjunctionOfTwoSequencesOfTwo : ConditionSpecification[]
+        {static} + disjunctionOfTwoSequencesOfTwoNACAEUSA : ConditionSpecification[]
+        {static} + disjunctionOfTwoSequencesOfTwoEUASCAME : ConditionSpecification[]
+        {static} + disjunctionOfThreeSequencesOfTwo : ConditionSpecification[]
+        {static} + disjunctionOfFourSequencesOfTwo : ConditionSpecification[]
+        {static} + disjunctionOfTwoSequencesOfThreeEager : ConditionSpecification[]
+        {static} + disjunctionOfTwoSequencesOfFourEager : ConditionSpecification[]
+        {static} + disjunctionOfTwoSequencesOfThreeLazy : ConditionSpecification[]
+        {static} + disjunctionOfTwoSequencesOfFourLazy : ConditionSpecification[]
+        {static} + sequenceOfThreeWithMiddleIteration : ConditionSpecification[]
+        {static} + sequenceOfThreeEquality : ConditionSpecification[]
+        {static} + sequenceOfFourNegativeEqualityLazy : ConditionSpecification[]
+        {static} + sequenceOfThreeEqualityIteration : ConditionSpecification[]
+        {static} + testSequence : ConditionSpecification[]
+        {static} + sequenceOfThreeCongestions : ConditionSpecification[]
+        {static} + sequenceOfFourCongestions : ConditionSpecification[]
+        {static} + sequenceOfFiveCongestions : ConditionSpecification[]
+        {static} + sequenceOfThreeSpeedMeasurementsEager : ConditionSpecification[]
+        {static} + sequenceOfFourSpeedMeasurementsEager : ConditionSpecification[]
+        {static} + sequenceOfFiveSpeedMeasurementsEager : ConditionSpecification[]
+        {static} + sequenceOfThreeSpeedMeasurementsLazy : ConditionSpecification[]
+        {static} + sequenceOfFourSpeedMeasurementsLazy : ConditionSpecification[]
+        {static} + sequenceOfFiveSpeedMeasurementsLazy : ConditionSpecification[]
+        {static} + sequenceOfThreeTransactionsEager : ConditionSpecification[]
+        {static} + sequenceOfFourTransactionsEager : ConditionSpecification[]
+        {static} + sequenceOfFiveTransactionsEager : ConditionSpecification[]
+        {static} + sequenceOfThreeTransactionsLazy : ConditionSpecification[]
+        {static} + sequenceOfFourTransactionsLazy : ConditionSpecification[]
+        {static} + sequenceOfFiveTransactionsLazy : ConditionSpecification[]
+    }
+  }
+  
+
+  package sase.config {
+    class EvaluationOrderConfig {
+        {static} + orderOfTwo : String[]
+        {static} + orderOfThree : String[]
+        {static} + orderOfThreeNAEUCA : String[]
+        {static} + orderOfThreeEUASCA : String[]
+        {static} + orderOfThreeEUSAAFR : String[]
+        {static} + orderOfThreeCASAAU : String[]
+        {static} + orderOfThreeForIteration : String[]
+        {static} + orderOfFour : String[]
+        {static} + orderOfFourNACAEUSA : String[]
+        {static} + orderOfFourEUASCAME : String[]
+        {static} + orderOfFive : String[]
+        {static} + orderOfFiveForNegation : String[]
+        {static} + orderOfSix : String[]
+        {static} + orderOfSeven : String[]
+        {static} + orderOfEight : String[]
+        {static} + orderOfThreeForEqualitySequence : String[]
+        {static} + orderOfFourForEqualityNegation : String[]
+        {static} + orderOfThreeForEqualityIteration : String[]
+        {static} + orderOfThreeCongestions : String[]
+        {static} + orderOfFourCongestions : String[]
+        {static} + orderOfFiveCongestions : String[]
+        {static} + orderOfThreeSpeedMeasurements : String[]
+        {static} + orderOfFourSpeedMeasurements : String[]
+        {static} + orderOfFiveSpeedMeasurements : String[]
+        {static} + orderOfThreeTransactions : String[]
+        {static} + orderOfFourTransactions : String[]
+        {static} + orderOfFiveTransactions : String[]
+    }
+  }
+  
+
+  package sase.config {
+    class EventRateConfig {
+        {static} + eventRate : HashMap<String, Double>
+        {static} - tempHack : double
+        {static} - createEventRateHashMap()
+    }
+  }
+  
+
+  package sase.config {
+    class MainConfig {
+        {static} - pathConfig : PathConfig
+        {static} + debugMode : boolean
+        {static} + eventProducerType : EventProducerTypes
+        {static} + isSyntheticInputEnabled : boolean
+        {static} + eventTypesConverterType : EventTypesConverterTypes
+        {static} + inputDirsPaths : String[]
+        {static} + inputFilesPaths : String[]
+        {static} + eventsPerRead : int
+        {static} + historyLength : int
+        {static} + companyToRegionDirectoryPath : String
+        {static} + lightCongestionThreshold : int
+        {static} + mediumCongestionThreshold : int
+        {static} + severeCongestionThreshold : int
+        {static} + heavyCongestionThreshold : int
+        {static} + outputFilePath : String
+        {static} + periodicallyReportStatistics : boolean
+        {static} + statisticsReportPeriod : int
+        {static} + rarestEventTypeName : String
+        {static} + enableFullDynamicMode : boolean
+        {static} + recognizedEventTypeNames : String[]
+        {static} + eventRatesChangeFrequency : int
+        {static} + eventRateMeasurementMode : boolean
+        {static} + conditionSelectivityMeasurementMode : boolean
+        {static} + selectivityEstimatorsFilePath : String
+        {static} + maxExecutionTime : Long
+        {static} + useSimulationHistory : boolean
+        {static} + planConstructionOnly : boolean
+        {static} + isArrivalRateMonitoringAllowed : boolean
+        {static} + isSelectivityMonitoringAllowed : boolean
+        {static} + adaptationTrialsIntervalToTimeWindowRatio : Double
+        {static} + selectionStrategy : EventSelectionStrategies
+        {static} + printStructureSummary : boolean
+    }
+  }
+  
+
+  package sase.config {
+    class PatternConfig {
+        {static} + sequenceOfThree : PatternSpecification
+        {static} + sequenceOfThreeNAEUCA : PatternSpecification
+        {static} + sequenceOfThreeEUASCA : PatternSpecification
+        {static} + sequenceOfFourEager : PatternSpecification
+        {static} + sequenceOfFiveEager : PatternSpecification
+        {static} + sequenceOfSixEager : PatternSpecification
+        {static} + sequenceOfSevenEager : PatternSpecification
+        {static} + sequenceOfEightEager : PatternSpecification
+        {static} + sequenceOfFourLazy : PatternSpecification
+        {static} + sequenceOfFiveLazy : PatternSpecification
+        {static} + sequenceOfSixLazy : PatternSpecification
+        {static} + sequenceOfSevenLazy : PatternSpecification
+        {static} + sequenceOfEightLazy : PatternSpecification
+        {static} + conjunctionOfTwo : PatternSpecification
+        {static} + conjunctionOfThree : PatternSpecification
+        {static} + conjunctionOfThreeEUSAAFR : PatternSpecification
+        {static} + conjunctionOfThreeCASAAU : PatternSpecification
+        {static} + conjunctionOfFourEager : PatternSpecification
+        {static} + conjunctionOfFiveEager : PatternSpecification
+        {static} + conjunctionOfSixEager : PatternSpecification
+        {static} + conjunctionOfSevenEager : PatternSpecification
+        {static} + conjunctionOfEightEager : PatternSpecification
+        {static} + conjunctionOfFourLazy : PatternSpecification
+        {static} + conjunctionOfFiveLazy : PatternSpecification
+        {static} + conjunctionOfSixLazy : PatternSpecification
+        {static} + conjunctionOfSevenLazy : PatternSpecification
+        {static} + conjunctionOfEightLazy : PatternSpecification
+        {static} + conjunctionOfTwoSequencesEager : PatternSpecification
+        {static} + conjunctionOfFourSequencesEager : PatternSpecification
+        {static} + conjunctionOfTwoSequencesLazy : PatternSpecification
+        {static} + conjunctionOfFourSequencesLazy : PatternSpecification
+        {static} + negativeSequenceOfThree : PatternSpecification
+        {static} + negativeSequenceOfThreeEUFirst : PatternSpecification
+        {static} + negativeSequenceOfThreeEULast : PatternSpecification
+        {static} + negativeConjunctionOfThree : PatternSpecification
+        {static} + negativeSequenceOfFiveEager : PatternSpecification
+        {static} + negativeSequenceOfFiveLazy : PatternSpecification
+        {static} + negativeSequenceOfEightEager : PatternSpecification
+        {static} + negativeSequenceOfEightLazy : PatternSpecification
+        {static} + disjunctionOfTwoSequencesOfTwo : PatternSpecification
+        {static} + disjunctionOfTwoSequencesOfTwoNACAEUSA : PatternSpecification
+        {static} + disjunctionOfTwoSequencesOfTwoEUASCAME : PatternSpecification
+        {static} + disjunctionOfThreeSequencesOfTwo : PatternSpecification
+        {static} + disjunctionOfFourSequencesOfTwo : PatternSpecification
+        {static} + disjunctionOfTwoSequencesOfThreeEager : PatternSpecification
+        {static} + disjunctionOfTwoSequencesOfThreeLazy : PatternSpecification
+        {static} + disjunctionOfTwoSequencesOfFourEager : PatternSpecification
+        {static} + disjunctionOfTwoSequencesOfFourLazy : PatternSpecification
+        {static} + sequenceOfThreeWithIteration : PatternSpecification
+        {static} + sequenceOfThreeWithEquation : PatternSpecification
+        {static} + sequenceOfFourWithNegation : PatternSpecification
+        {static} + sequenceOfThreeWithEquationIteration : PatternSpecification
+        {static} + testSequence : PatternSpecification
+        {static} + sequenceOfThreeCongestions : PatternSpecification
+        {static} + sequenceOfFourCongestions : PatternSpecification
+        {static} + sequenceOfFiveCongestions : PatternSpecification
+        {static} + sequenceOfThreeSpeedMeasurementsEager : PatternSpecification
+        {static} + sequenceOfFourSpeedMeasurementsEager : PatternSpecification
+        {static} + sequenceOfFiveSpeedMeasurementsEager : PatternSpecification
+        {static} + sequenceOfThreeSpeedMeasurementsLazy : PatternSpecification
+        {static} + sequenceOfFourSpeedMeasurementsLazy : PatternSpecification
+        {static} + sequenceOfFiveSpeedMeasurementsLazy : PatternSpecification
+        {static} + sequenceOfThreeTransactionsEager : PatternSpecification
+        {static} + sequenceOfFourTransactionsEager : PatternSpecification
+        {static} + sequenceOfFiveTransactionsEager : PatternSpecification
+        {static} + sequenceOfThreeTransactionsLazy : PatternSpecification
+        {static} + sequenceOfFourTransactionsLazy : PatternSpecification
+        {static} + sequenceOfFiveTransactionsLazy : PatternSpecification
+        {static} - stockByCompanyPatternTimeWindow : long
+        {static} + stockByCompanyPatternSpecifications : PatternSpecification[]
+        {static} - trafficPatternTimeWindow : long
+        {static} + trafficPatternSpecifications : PatternSpecification[]
+        {static} - syntheticPatternTimeWindow : long
+        {static} + syntheticPatternSpecifications : PatternSpecification[]
+    }
+  }
+  
+
+  package sase.config {
+    class SimulationConfig {
+        {static} + specificationCreatorType : SpecificationCreatorTypes
+        {static} + conditionCreatorType : ConditionSpecificationCreatorTypes
+        {static} + conditionSetCreatorType : ConditionSpecificationSetCreatorTypes
+        {static} + timeWindows : long[]
+        {static} + patternSizes : int[]
+        {static} + patternsPerLength : int
+        {static} + timeWindowForPatternGenerator : Long
+        {static} + mainOperatorType : PatternOperatorTypes
+        {static} + negatedEventsNumber : int
+        {static} + negatedConditionProbability : double
+        {static} + iteratedEventsNumber : int
+        {static} + triggerComparisonOperator : ComparisonOperation
+        {static} + iterativeComparisonOperator : ComparisonOperation
+        {static} + terminatorComparisonOperator : ComparisonOperation
+        {static} + numberOfDisjunctions : int
+        {static} + numbersOfConditions : int[]
+        {static} + conditionToEventRatio : Double
+        {static} + correlations : double[]
+        {static} - statisticsMonitoringWindowToTimeWindowRatio : int
+        {static} + inputSpecifications : InputSpecification[]
+        {static} + adaptationSpecifications : AdaptationSpecification[]
+        {static} + workloadCreationSpecifications : WorkloadCreationSpecification[]
+        {static} + evaluationSpecifications : EvaluationSpecification[]
+        {static} + patternSpecifications : PatternSpecification[]
+        {static} - numberOfSyntheticEvents : long
+        {static} - numberOfSyntheticEventTypes : int
+        {static} + specifications : SimulationSpecification[]
+    }
+  }
+  
+
+  package sase.config {
+    class StructureConfig {
+        {static} + sequenceOfThree : String[][][]
+        {static} + sequenceOfThreeNAEUCA : String[][][]
+        {static} + sequenceOfThreeEUASCA : String[][][]
+        {static} + sequenceOfThreeForIteration : String[][][]
+        {static} + sequenceOfThreeEUFirst : String[][][]
+        {static} + sequenceOfThreeEULast : String[][][]
+        {static} + sequenceOfFour : String[][][]
+        {static} + sequenceOfFive : String[][][]
+        {static} + sequenceOfFiveForNegation : String[][][]
+        {static} + sequenceOfSix : String[][][]
+        {static} + sequenceOfSeven : String[][][]
+        {static} + sequenceOfEight : String[][][]
+        {static} + conjunctionOfTwo : String[][][]
+        {static} + conjunctionOfThree : String[][][]
+        {static} + conjunctionOfThreeEUSAAFR : String[][][]
+        {static} + conjunctionOfThreeCASAAU : String[][][]
+        {static} + conjunctionOfFour : String[][][]
+        {static} + conjunctionOfFive : String[][][]
+        {static} + conjunctionOfSix : String[][][]
+        {static} + conjunctionOfSeven : String[][][]
+        {static} + conjunctionOfEight : String[][][]
+        {static} + conjunctionOfTwoSequences : String[][][]
+        {static} + conjunctionOfFourSequences : String[][][]
+        {static} + disjunctionOfTwoSequencesOfTwo : String[][][]
+        {static} + disjunctionOfTwoSequencesOfTwoNACAEUSA : String[][][]
+        {static} + disjunctionOfTwoSequencesOfTwoEUASCAME : String[][][]
+        {static} + disjunctionOfTwoSequencesOfThree : String[][][]
+        {static} + disjunctionOfTwoSequencesOfFour : String[][][]
+        {static} + disjunctionOfThreeSequencesOfTwo : String[][][]
+        {static} + disjunctionOfFourSequencesOfTwo : String[][][]
+        {static} + sequenceOfThreeForEqualitySequence : String[][][]
+        {static} + sequenceOfFourForEqualityNegation : String[][][]
+        {static} + sequenceOfThreeForEqualityIteration : String[][][]
+        {static} + sequenceOfThreeCongestions : String[][][]
+        {static} + sequenceOfFourCongestions : String[][][]
+        {static} + sequenceOfFiveCongestions : String[][][]
+        {static} + sequenceOfThreeSpeedMeasurements : String[][][]
+        {static} + sequenceOfFourSpeedMeasurements : String[][][]
+        {static} + sequenceOfFiveSpeedMeasurements : String[][][]
+        {static} + sequenceOfThreeTransactions : String[][][]
+        {static} + sequenceOfFourTransactions : String[][][]
+        {static} + sequenceOfFiveTransactions : String[][][]
+        {static} + testSequence : String[][][]
+    }
+  }
+  
+
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

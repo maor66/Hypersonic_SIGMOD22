@@ -1,0 +1,2872 @@
+@startuml
+
+title __LAZYCEPGIT's Class Diagram__\n
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.eager {
+        class AND_NFA {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.eager {
+        class AND_SEQ_NFA {
+        }
+      }
+    }
+  }
+  
+
+  package sase.user.traffic {
+    class AarhusTrafficEventTypesConverter {
+    }
+  }
+  
+
+  package sase.user.traffic {
+    class AarhusTrafficEventTypesManager {
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    class AdaptationNecessityDetectorFactory {
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    enum AdaptationNecessityDetectorTypes {
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.adaptation {
+      abstract class AdaptationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.creators {
+        package sase.evaluation.tree.creators.adaptive.zstream {
+          class AdaptiveZStreamTreeTopologyCreator {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.base {
+    class AggregatedEvent {
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.iteration {
+        class AggregatedExternalCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.algo {
+      class AlgoUnitFactory {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.algo {
+      class AlgoUnitSpecification {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.algo {
+      enum AlgoUnitTypes {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.base {
+        abstract class AtomicCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.base {
+    class Attribute {
+    }
+  }
+  
+
+  package sase.aggregator {
+    package sase.aggregator.builtin {
+      class AverageAggregator {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    class AverageStocksVectorAggregator {
+    }
+  }
+  
+
+  package sase.aggregator {
+    package sase.aggregator.builtin {
+      class AverageVectorAggregator {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      package sase.specification.creators.condition {
+        abstract class BasicConditionSpecificationSetCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.sla {
+      class BestPlanSlaVerifier {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.optimizations {
+          class BufferFilter {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.optimizations {
+          class BufferGrouper {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.optimizations {
+          abstract class BufferPreprocessor {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.base {
+        class BufferedEventsRatesCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.base {
+        class CNFCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    class CompositePattern {
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.creation {
+      class CompositePatternCreator {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      abstract class Condition {
+      }
+    }
+  }
+  
+
+  package sase.config {
+    class ConditionConfig {
+    }
+  }
+  
+
+  package sase.statistics {
+    class ConditionSelectivityCollector {
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.condition {
+      abstract class ConditionSpecification {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      package sase.specification.creators.condition {
+        class ConditionSpecificationCreatorFactory {
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      package sase.specification.creators.condition {
+        enum ConditionSpecificationCreatorTypes {
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      package sase.specification.creators.condition {
+        enum ConditionSpecificationSetCreatorTypes {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.elements {
+        package sase.evaluation.tree.elements.node {
+          class ConjunctiveInternalNode {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    class ConstantThresholdAdaptationNecessityDetector {
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.adaptation {
+      class ConstantThresholdAdaptationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.specification {
+      package sase.user.stocks.specification.creators {
+        class CorrelationSelectivityEstimationSetupCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.creators {
+        class CostAwareTree {
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.evaluation {
+      class CostBasedLazyNFAEvaluationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.cost {
+            class CostModelFactory {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.cost {
+            enum CostModelTypes {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      package sase.specification.creators.condition {
+        class CountersConditionSpecificationSetCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.user.speedd.fraud {
+    class CreditCardFraudEventTypesConverter {
+    }
+  }
+  
+
+  package sase.user.speedd.fraud {
+    class CreditCardFraudEventTypesManager {
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      abstract class CrossProductSimulationSpecificationCreator {
+      }
+    }
+  }
+  
+
+  package sase.base {
+    enum Datatype {
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.specification {
+      package sase.user.stocks.specification.creators {
+        class DeltaSelectivityEstimationSetupCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.plan {
+      class DisjunctionEvaluationPlan {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      class DisjunctionTreeEvaluationMechanism {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.base {
+        abstract class DoubleEventCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.condition {
+      abstract class DoubleEventConditionSpecification {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.workload {
+      class DynamicMultiPatternWorkloadManager {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.workload {
+      class DynamicMultiPatternWorkloadSpecification {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.algorithm {
+            class DynamicOrderingAlgorithm {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.elements {
+          class EfficientInputBuffer {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.simulator {
+    class Environment {
+    }
+  }
+  
+
+  package sase.evaluation {
+    class EvaluationMechanismFactory {
+    }
+  }
+  
+
+  package sase.evaluation {
+    enum EvaluationMechanismTypes {
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.elements {
+          class EvaluationOrder {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.config {
+    class EvaluationOrderConfig {
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.plan {
+      abstract class EvaluationPlan {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    class EvaluationPlanCreator {
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.evaluation {
+      abstract class EvaluationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.base {
+    class Event {
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.common {
+      class EventBuffer {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.algorithm {
+            class EventFrequencyOrderingAlgorithm {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.input {
+    abstract class EventProducer {
+    }
+  }
+  
+
+  package sase.input {
+    class EventProducerFactory {
+    }
+  }
+  
+
+  package sase.input {
+    enum EventProducerTypes {
+    }
+  }
+  
+
+  package sase.statistics {
+    class EventRateCollector {
+    }
+  }
+  
+
+  package sase.config {
+    class EventRateConfig {
+    }
+  }
+  
+
+  package sase.base {
+    enum EventSelectionStrategies {
+    }
+  }
+  
+
+  package sase.input {
+    class EventStreamModifierFactory {
+    }
+  }
+  
+
+  package sase.input {
+    enum EventStreamModifierTypes {
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.time {
+        class EventTemporalPositionCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.base {
+    class EventType {
+    }
+  }
+  
+
+  package sase.input {
+    abstract class EventTypesConverter {
+    }
+  }
+  
+
+  package sase.input {
+    enum EventTypesConverterTypes {
+    }
+  }
+  
+
+  package sase.pattern {
+    abstract class EventTypesManager {
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      class ExhaustiveMPTCalculator {
+      }
+    }
+  }
+  
+
+  package sase.adaptive.estimation {
+    class ExponentialHistogramsCounter {
+    }
+  }
+  
+
+  package sase.input {
+    package sase.input.producers {
+      class FileBasedEventProducer {
+      }
+    }
+  }
+  
+
+  package sase.input {
+    package sase.input.producers {
+      class FileEventStreamReader {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.iteration {
+        class FirstValueExternalCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.evaluation {
+      class FixedLazyNFAEvaluationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.algorithm {
+            class FixedOrderingAlgorithm {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      package sase.multi.calculator.local {
+        abstract class GlobalImprovementBasedLocalSearchMPTCalculator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.time {
+        class GlobalTemporalOrderCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.algorithm {
+            package sase.evaluation.nfa.lazy.order.algorithm.adaptive.greedy {
+              class GreedyAdaptiveOrderingAlgorithm {
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.algorithm {
+            class GreedyCostModelOrderingAlgorithm {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.algorithm {
+            package sase.evaluation.nfa.lazy.order.algorithm.adaptive.greedy {
+              class GreedyInvariantCalculator {
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.algorithm {
+            package sase.evaluation.nfa.lazy.order.algorithm.adaptive.greedy {
+              class GreedyInvariantInput {
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.algorithm {
+            abstract class GreedyOrderingAlgorithm {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.algorithm {
+            class GreedySelectivityOrderingAlgorithm {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.iteration {
+        package sase.pattern.condition.iteration.lazy {
+          class GroupByAttributeCondition {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    interface IAdaptationNecessityDetector {
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.algo {
+      interface IAlgoUnit {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      package sase.specification.creators.condition {
+        interface IConditionSpecificationCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      package sase.specification.creators.condition {
+        interface IConditionSpecificationSetCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.cost {
+            interface ICostModel {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    interface IEvaluationMechanism {
+    }
+  }
+  
+
+  package sase.evaluation {
+    interface IEvaluationMechanismInfo {
+    }
+  }
+  
+
+  package sase.adaptive.estimation {
+    interface IEventArrivalRateEstimator {
+    }
+  }
+  
+
+  package sase.input {
+    interface IEventStreamModifier {
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          interface IIncrementalOrderingAlgorithm {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      interface IIncrementalTreeTopologyCreator {
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    package sase.adaptive.monitoring.invariant {
+      interface IInvariantCalculator {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      interface IMPTCalculator {
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    interface IMultiPatternAdaptationNecessityDetector {
+    }
+  }
+  
+
+  package sase.evaluation {
+    interface IMultiPatternEvaluationMechanism {
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          interface IOrderingAlgorithm {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      interface ISimulationSpecificationCreator {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.sla {
+      interface ISlaVerifier {
+      }
+    }
+  }
+  
+
+  package sase.input {
+    package sase.input.producers {
+      interface ISyntheticSelectivityProvider {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      interface ITreeCostModel {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      interface ITreeTopologyCreator {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.workload {
+      interface IWorkloadManager {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.input {
+      abstract class InputSpecification {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.eager {
+        package sase.evaluation.nfa.eager.elements {
+          class Instance {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.eager {
+        package sase.evaluation.nfa.eager.elements {
+          class InstanceStorage {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.elements {
+        package sase.evaluation.tree.elements.node {
+          abstract class InternalNode {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    package sase.adaptive.monitoring.invariant {
+      class Invariant {
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    package sase.adaptive.monitoring.invariant {
+      class InvariantAdaptationNecessityDetector {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.adaptation {
+      class InvariantAdaptationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    package sase.adaptive.monitoring.invariant {
+      package sase.adaptive.monitoring.invariant.compare {
+        abstract class InvariantComparer {
+        }
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    package sase.adaptive.monitoring.invariant {
+      package sase.adaptive.monitoring.invariant.compare {
+        class InvariantComparerFactory {
+        }
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    package sase.adaptive.monitoring.invariant {
+      package sase.adaptive.monitoring.invariant.compare {
+        enum InvariantComparerType {
+        }
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    package sase.adaptive.monitoring.invariant {
+      abstract class InvariantInput {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.iteration {
+        abstract class IteratedEventExternalCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.iteration {
+        abstract class IteratedEventInternalCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.iteration {
+        package sase.pattern.condition.iteration.lazy {
+          abstract class IteratedFilterCondition {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.iteration {
+        package sase.pattern.condition.iteration.eager {
+          abstract class IteratedIncrementalCondition {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.iteration {
+        package sase.pattern.condition.iteration.eager {
+          class IteratedIncrementalDoubleEventCondition {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.iteration {
+        package sase.pattern.condition.iteration.lazy {
+          class IteratedTotalFromIncrementalCondition {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.iteration {
+        package sase.pattern.condition.iteration.eager {
+          class IterationTriggerCondition {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.specification {
+      class IterativeAverageStockCorrelationConditionSpecification {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      package sase.multi.calculator.local {
+        class IterativeImprovementMPTCalculator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.evaluation {
+      class IterativeImprovementMPTEvaluationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.algorithm {
+            class IterativeImprovementOrderingAlgorithm {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.specification {
+      class IterativeValueCmpStockCorrelationConditionSpecification {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        class LazyChainNFA {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.elements {
+          class LazyInstance {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        class LazyMultiChainNFA {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.elements {
+          package sase.evaluation.nfa.lazy.elements.multi {
+            class LazyMultiInstance {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        class LazyMultiPatternTreeNFA {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.elements {
+          package sase.evaluation.nfa.lazy.elements.multi {
+            class LazyMultiState {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        abstract class LazyNFA {
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.evaluation {
+      class LazyNFAEvaluationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        enum LazyNFANegationTypes {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.elements {
+          class LazyTransition {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.elements {
+          enum LazyTransitionType {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.elements {
+        package sase.evaluation.tree.elements.node {
+          class LeafNode {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.config {
+    package sase.config.path {
+      class LinuxPathConfig {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      package sase.multi.calculator.local {
+        abstract class LocalSearchMPTCalculator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.evaluation {
+      class LocalSearchMPTEvaluationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      package sase.multi.calculator.local {
+        package sase.multi.calculator.local.neighborhood {
+          abstract class LocalSearchNeighborhood {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      class MPTCalculatorFactory {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      enum MPTCalculatorTypes {
+      }
+    }
+  }
+  
+
+  package sase.config {
+    class MainConfig {
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.common {
+      class Match {
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    package sase.adaptive.monitoring.invariant {
+      package sase.adaptive.monitoring.invariant.compare {
+        class MinimalRelativeDistanceInvariantComparer {
+        }
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    class MultiPatternGraph {
+    }
+  }
+  
+
+  package sase.multi {
+    class MultiPatternMultiTree {
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.plan {
+      class MultiPatternMultiTreeEvaluationPlan {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    class MultiPatternTree {
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.plan {
+      class MultiPatternTreeEvaluationPlan {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    class MultiPatternTreeNode {
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.workload {
+      class MultiPatternWorkloadManager {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    abstract class MultiPlan {
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.evaluation {
+      class MultiPlanEvaluationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      package sase.multi.calculator.local {
+        package sase.multi.calculator.local.neighborhood {
+          class MultiSetShareNeighborhood {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.multi {
+        class MultiTreeEvaluationMechanism {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.multi {
+        class MultiTreeInstance {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.multi {
+        class MultiTreeInstanceStorage {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      abstract class NFA {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.eager {
+        package sase.evaluation.nfa.eager.elements {
+          class NFAState {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.elements {
+        package sase.evaluation.tree.elements.node {
+          class NSeqInternalNode {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      package sase.multi.calculator.local {
+        package sase.multi.calculator.local.neighborhood {
+          class NeighborhoodFactory {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      package sase.multi.calculator.local {
+        package sase.multi.calculator.local.neighborhood {
+          enum NeighborhoodTypes {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      class NoReorderingMPTCalculator {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      class NoSharingMPTCalculator {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.elements {
+        package sase.evaluation.tree.elements.node {
+          abstract class Node {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.eager {
+        class OR_AND_SEQ_NFA {
+        }
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.algo {
+      class OrderAlgoUnit {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.algo {
+      class OrderAlgoUnitSpecification {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.plan {
+      class OrderEvaluationPlan {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.creators {
+        class OrderedZStreamTreeTopologyCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          class OrderingAlgorithmFactory {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          enum OrderingAlgorithmTypes {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.time {
+        class PairTemporalOrderCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.contiguity {
+        class PairwiseContiguityCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      package sase.multi.calculator.local {
+        package sase.multi.calculator.local.neighborhood {
+          class PairwiseShareNeighborhood {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.contiguity {
+        class PartialContiguityCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.config {
+    package sase.config.path {
+      abstract class PathConfig {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    abstract class Pattern {
+    }
+  }
+  
+
+  package sase.config {
+    class PatternConfig {
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.creation {
+      abstract class PatternCreator {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.workload {
+      enum PatternReorderingSensitivityTypes {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.workload {
+      class PatternSpecification {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.creation {
+      enum PatternTypes {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.workload {
+      class PatternWorkloadFactory {
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    class PerformanceDeltaAdaptationNecessityDetector {
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.adaptation {
+      class PerformanceDeltaAdaptationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    class PlanCreatorBasedAdaptationNecessityDetector {
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.adaptation {
+      class PlanCreatorBasedAdaptationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.simulator {
+    class PredicateResultsCache {
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.algorithm {
+            class RandomOrderingAlgorithm {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      abstract class RandomPatternSpecificationCreator {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.input {
+      class RarestTypeDuplicatorInputSpecification {
+      }
+    }
+  }
+  
+
+  package sase.input {
+    package sase.input.modifiers {
+      class RarestTypeEventStreamModifier {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.eager {
+        class SEQ_NFA {
+        }
+      }
+    }
+  }
+  
+
+  package sase.user.speedd.fraud {
+    class SameCreditCardIDCondition {
+    }
+  }
+  
+
+  package sase.user.speedd.fraud {
+    class SameCreditCardIDConditionSpecification {
+    }
+  }
+  
+
+  package sase.aggregator {
+    abstract class ScalarAggregator {
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      abstract class SelectivityEstimationSetupCreator {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.creators {
+        class SelingerTreeTopologyCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.elements {
+        package sase.evaluation.tree.elements.node {
+          class SeqInternalNode {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    class SharedMultiPatternTreeNode {
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.cost {
+            class SharingDegreeCostModel {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.cost {
+        class SharingDegreeTreeCostModel {
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.input {
+      class ShuffleEventTypesInputSpecification {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    class SimplePattern {
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      package sase.multi.calculator.local {
+        class SimulatedAnnealingMPTCalculator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.evaluation {
+      class SimulatedAnnealingMPTEvaluationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.config {
+    class SimulationConfig {
+    }
+  }
+  
+
+  package sase.simulator {
+    class SimulationHistory {
+    }
+  }
+  
+
+  package sase.specification {
+    class SimulationSpecification {
+    }
+  }
+  
+
+  package sase.simulator {
+    class Simulator {
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.base {
+        abstract class SingleEventCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      class SinglePatternCrossProductSimulationSpecificationCreator {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.workload {
+      class SinglePatternWorkloadManager {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.workload {
+      class SinglePatternWorkloadSpecification {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.sla {
+      class SlaAwarePattern {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.sla {
+      class SlaVerifierFactory {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.sla {
+      enum SlaVerifierTypes {
+      }
+    }
+  }
+  
+
+  package sase.adaptive.estimation {
+    class SlidingWindowEventArrivalRateEstimator {
+    }
+  }
+  
+
+  package sase.adaptive.estimation {
+    class SlidingWindowSelectivityEstimator {
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      class SpecificationCreatorFactory {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      enum SpecificationCreatorTypes {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.common {
+      class State {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      package sase.multi.calculator.local {
+        package sase.multi.calculator.local.neighborhood {
+          class StateSwapNeighborhood {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.adaptive.estimation {
+    class StaticEventArrivalRateEstimator {
+    }
+  }
+  
+
+  package sase.statistics {
+    class Statistics {
+    }
+  }
+  
+
+  package sase.statistics {
+    class StatisticsManager {
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.condition {
+      class StockAverageCorrelationCondition {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.condition {
+      class StockCorrelationCondition {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.specification {
+      package sase.user.stocks.specification.creators {
+        class StockCorrelationConditionCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.specification {
+      class StockCorrelationConditionSpecification {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.condition {
+      class StockCorrelationIterationTriggerCondition {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.specification {
+      package sase.user.stocks.specification.creators {
+        class StockDeltaConditionCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.condition {
+      class StockDeltaOrderingCondition {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.specification {
+      class StockDeltaOrderingConditionSpecification {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    class StockEventTypesManager {
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.condition {
+      class StockFirstValueCmpCondition {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.specification {
+      class StockFirstValueCmpConditionSpecification {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.specification {
+      package sase.user.stocks.specification.creators {
+        class StockMultiPatternSpecificationCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.specification {
+      package sase.user.stocks.specification.creators {
+        class StockPatternSpecificationCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.condition {
+      class StockRangeCondition {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.condition {
+      class StockSameCompanyCondition {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.condition {
+      class StockValueCmpIterationTriggerCondition {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.converters {
+      class StocksByCompanyEventTypesConverter {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.converters {
+      class StocksByIndustryEventTypesConverter {
+      }
+    }
+  }
+  
+
+  package sase.user.stocks {
+    package sase.user.stocks.converters {
+      class StocksByRegionEventTypesConverter {
+      }
+    }
+  }
+  
+
+  package sase.config {
+    class StructureConfig {
+    }
+  }
+  
+
+  package sase.user.synthetic {
+    class SyntheticCondition {
+    }
+  }
+  
+
+  package sase.user.synthetic {
+    class SyntheticConditionSpecification {
+    }
+  }
+  
+
+  package sase.input {
+    package sase.input.producers {
+      class SyntheticEventProducer {
+      }
+    }
+  }
+  
+
+  package sase.user.synthetic {
+    class SyntheticEventTypesConverter {
+    }
+  }
+  
+
+  package sase.user.synthetic {
+    class SyntheticEventTypesManager {
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.input {
+      class SyntheticInputSpecification {
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.calculator {
+      package sase.multi.calculator.local {
+        class TabuSearchMPTCalculator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.evaluation {
+      class TabuSearchMPTEvaluationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.cost {
+            class ThroughputCostModel {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.cost {
+            class ThroughputLatencyCostModel {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.cost {
+        class ThroughputLatencyTreeCostModel {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.cost {
+        class ThroughputTreeCostModel {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      class TopologyCreatorFactory {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      enum TopologyCreatorTypes {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      class TopologyCreatorUtils {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.contiguity {
+        class TotalContiguityCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.user.speedd.traffic {
+    class TrafficEventTypesManager {
+    }
+  }
+  
+
+  package sase.user.speedd.traffic {
+    class TrafficSameVehicleIDConditionSpecification {
+    }
+  }
+  
+
+  package sase.user.speedd.traffic {
+    class TrafficSimilarVehicleIDCondition {
+    }
+  }
+  
+
+  package sase.user.speedd.traffic {
+    class TrafficSpeedEventTypesConverter {
+    }
+  }
+  
+
+  package sase.user.traffic {
+    class TrafficSpeedToVehiclesNumberCorrelationCondition {
+    }
+  }
+  
+
+  package sase.user.traffic {
+    class TrafficSpeedToVehiclesNumberCorrelationConditionSpecification {
+    }
+  }
+  
+
+  package sase.user.trams {
+    class TramCongestionEventTypesConverter {
+    }
+  }
+  
+
+  package sase.user.trams {
+    class TramCongestionIntersectionCondition {
+    }
+  }
+  
+
+  package sase.user.trams {
+    class TramCongestionIntersectionConditionSpecification {
+    }
+  }
+  
+
+  package sase.user.trams {
+    class TramEventTypesManager {
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.eager {
+        package sase.evaluation.nfa.eager.elements {
+          class Transition {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.multi {
+    package sase.multi.algo {
+      class TreeAlgoUnit {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.algo {
+      class TreeAlgoUnitSpecification {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      class TreeCostModelFactory {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      enum TreeCostModelTypes {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      class TreeEvaluationMechanism {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.plan {
+      class TreeEvaluationPlan {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.evaluation {
+      class TreeEvaluationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.elements {
+        class TreeInstance {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.elements {
+        class TreeInstanceStorage {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.creators {
+        package sase.evaluation.tree.creators.adaptive.zstream {
+          class TreeInvariantCalculator {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.creators {
+        package sase.evaluation.tree.creators.adaptive.zstream {
+          class TreeInvariantInput {
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.creators {
+      package sase.specification.creators.condition {
+        class TriplesConditionSpecificationSetCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    class TrivialAdaptationNecessityDetector {
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.adaptation {
+      class TrivialAdaptationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.condition {
+      package sase.pattern.condition.base {
+        class TrivialCondition {
+        }
+      }
+    }
+  }
+  
+
+  package sase.input {
+    package sase.input.modifiers {
+      class TrivialEventStreamModifier {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.input {
+      class TrivialInputSpecification {
+      }
+    }
+  }
+  
+
+  package sase.adaptive.monitoring {
+    package sase.adaptive.monitoring.invariant {
+      package sase.adaptive.monitoring.invariant.compare {
+        class TrivialInvariantComparer {
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.nfa {
+      package sase.evaluation.nfa.lazy {
+        package sase.evaluation.nfa.lazy.order {
+          package sase.evaluation.nfa.lazy.order.algorithm {
+            class TrivialOrderingAlgorithm {
+            }
+          }
+        }
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.creators {
+        class TrivialTreeTopologyCreator {
+        }
+      }
+    }
+  }
+  
+
+  package sase.input {
+    package sase.input.modifiers {
+      class TypeShuffleEventStreamModifier {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    class UnaryPattern {
+    }
+  }
+  
+
+  package sase.aggregator {
+    class VectorAggregator {
+    }
+  }
+  
+
+  package sase.config {
+    package sase.config.path {
+      class WindowsPathConfig {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.workload {
+      class WorkloadCreationSpecification {
+      }
+    }
+  }
+  
+
+  package sase.pattern {
+    package sase.pattern.workload {
+      enum WorkloadManagerTypes {
+      }
+    }
+  }
+  
+
+  package sase.specification {
+    package sase.specification.workload {
+      class WorkloadSpecification {
+      }
+    }
+  }
+  
+
+  package sase.evaluation {
+    package sase.evaluation.tree {
+      package sase.evaluation.tree.creators {
+        class ZStreamTreeTopologyCreator {
+        }
+      }
+    }
+  }
+  
+
+  AdaptiveZStreamTreeTopologyCreator -up-|> ITreeTopologyCreator
+  BasicConditionSpecificationSetCreator -up-|> IConditionSpecificationSetCreator
+  BestPlanSlaVerifier -up-|> ISlaVerifier
+  ConstantThresholdAdaptationNecessityDetector -up-|> IMultiPatternAdaptationNecessityDetector
+  CrossProductSimulationSpecificationCreator -up-|> ISimulationSpecificationCreator
+  DisjunctionTreeEvaluationMechanism -up-|> IEvaluationMechanism
+  DisjunctionTreeEvaluationMechanism -up-|> IEvaluationMechanismInfo
+  DynamicMultiPatternWorkloadManager -up-|> IWorkloadManager
+  DynamicOrderingAlgorithm -up-|> IOrderingAlgorithm
+  Event -up-|> Comparable
+  EventFrequencyOrderingAlgorithm -up-|> IOrderingAlgorithm
+  ExhaustiveMPTCalculator -up-|> IMPTCalculator
+  FixedOrderingAlgorithm -up-|> IOrderingAlgorithm
+  GreedyAdaptiveOrderingAlgorithm -up-|> IOrderingAlgorithm
+  GreedyCostModelOrderingAlgorithm -up-|> IIncrementalOrderingAlgorithm
+  GreedyInvariantCalculator -up-|> IInvariantCalculator
+  GreedyOrderingAlgorithm -up-|> IIncrementalOrderingAlgorithm
+  GreedySelectivityOrderingAlgorithm -up-|> IIncrementalOrderingAlgorithm
+  InvariantAdaptationNecessityDetector -up-|> IAdaptationNecessityDetector
+  InvariantComparer o-- ComparisonType : comparisonType
+  IterativeImprovementOrderingAlgorithm -up-|> IOrderingAlgorithm
+  LazyMultiPatternTreeNFA -up-|> IMultiPatternEvaluationMechanism
+  LocalSearchMPTCalculator -up-|> IMPTCalculator
+  MultiPatternTreeNode o-- MultiPatternTreeNode : parent
+  MultiPatternWorkloadManager -up-|> IWorkloadManager
+  MultiTreeEvaluationMechanism -up-|> IMultiPatternEvaluationMechanism
+  NFA -up-|> IEvaluationMechanism
+  NFA -up-|> IEvaluationMechanismInfo
+  NoReorderingMPTCalculator -up-|> IMPTCalculator
+  NoSharingMPTCalculator -up-|> IMPTCalculator
+  OrderAlgoUnit -up-|> IAlgoUnit
+  OrderedZStreamTreeTopologyCreator -up-|> ITreeTopologyCreator
+  Pattern o-- PatternOperatorTypes : type
+  PerformanceDeltaAdaptationNecessityDetector -up-|> IAdaptationNecessityDetector
+  PlanCreatorBasedAdaptationNecessityDetector -up-|> IAdaptationNecessityDetector
+  RandomOrderingAlgorithm -up-|> IOrderingAlgorithm
+  RandomPatternSpecificationCreator -up-|> ISimulationSpecificationCreator
+  RarestTypeEventStreamModifier -up-|> IEventStreamModifier
+  SelectivityEstimationSetupCreator -up-|> ISimulationSpecificationCreator
+  SelingerTreeTopologyCreator -up-|> IIncrementalTreeTopologyCreator
+  SharingDegreeCostModel -up-|> ICostModel
+  SharingDegreeTreeCostModel -up-|> ITreeCostModel
+  SinglePatternCrossProductSimulationSpecificationCreator -up-|> ISimulationSpecificationCreator
+  SinglePatternWorkloadManager -up-|> IWorkloadManager
+  SlidingWindowEventArrivalRateEstimator -up-|> IEventArrivalRateEstimator
+  StaticEventArrivalRateEstimator -up-|> IEventArrivalRateEstimator
+  StockCorrelationConditionCreator -up-|> IConditionSpecificationCreator
+  StockDeltaConditionCreator -up-|> IConditionSpecificationCreator
+  StockFirstValueCmpCondition o-- ComparisonOperation : operation
+  StockMultiPatternSpecificationCreator -up-|> ISimulationSpecificationCreator
+  SyntheticEventProducer -up-|> ISyntheticSelectivityProvider
+  ThroughputCostModel -up-|> ICostModel
+  ThroughputLatencyCostModel -up-|> ICostModel
+  ThroughputLatencyTreeCostModel -up-|> ITreeCostModel
+  ThroughputTreeCostModel -up-|> ITreeCostModel
+  Transition o-- Action : action
+  TreeAlgoUnit -up-|> IAlgoUnit
+  TreeEvaluationMechanism -up-|> IEvaluationMechanism
+  TreeEvaluationMechanism -up-|> IEvaluationMechanismInfo
+  TreeInvariantCalculator -up-|> IInvariantCalculator
+  TreeInvariantInput o-- TreeInvariantInput : leftPairOfLeaves
+  TreeInvariantInput o-- TreeInvariantInput : rightPairOfLeaves
+  TrivialAdaptationNecessityDetector -up-|> IAdaptationNecessityDetector
+  TrivialEventStreamModifier -up-|> IEventStreamModifier
+  TrivialOrderingAlgorithm -up-|> IOrderingAlgorithm
+  TrivialTreeTopologyCreator -up-|> ITreeTopologyCreator
+  TypeShuffleEventStreamModifier -up-|> IEventStreamModifier
+  ZStreamTreeTopologyCreator -up-|> ITreeTopologyCreator
+
+
+right footer
+
+
+PlantUML diagram generated by SketchIt! (https://bitbucket.org/pmesmeur/sketch.it)
+For more information about this tool, please contact philippe.mesmeur@gmail.com
+endfooter
+
+@enduml

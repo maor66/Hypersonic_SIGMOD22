@@ -60,7 +60,7 @@ public class Simulator {
     
     private int currentStepNumber = 0;
     
-	private void processIncomingEvent(Event event) {
+    private void processIncomingEvent(Event event) {
 		if (MainConfig.eventRateMeasurementMode) {
     		eventRateEstimator.recordEvent(event);
 		}
