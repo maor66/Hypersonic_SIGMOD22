@@ -2,9 +2,9 @@
 
 title __LAZYCEPGIT's Class Diagram__\n
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.eager {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.eager {
         class AND_NFA {
         }
       }
@@ -12,9 +12,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.eager {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.eager {
         class AND_SEQ_NFA {
         }
       }
@@ -22,42 +22,42 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.user.traffic {
+  package sase.sase.user.traffic {
     class AarhusTrafficEventTypesConverter {
     }
   }
   
 
-  package sase.user.traffic {
+  package sase.sase.user.traffic {
     class AarhusTrafficEventTypesManager {
     }
   }
   
 
-  package sase.adaptive.monitoring {
+  package sase.sase.adaptive.monitoring {
     class AdaptationNecessityDetectorFactory {
     }
   }
   
 
-  package sase.adaptive.monitoring {
+  package sase.sase.adaptive.monitoring {
     enum AdaptationNecessityDetectorTypes {
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.adaptation {
+  package sase.sase.specification {
+    package sase.sase.specification.adaptation {
       abstract class AdaptationSpecification {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.creators {
-        package sase.evaluation.tree.creators.adaptive.zstream {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.creators {
+        package sase.sase.evaluation.tree.creators.sase.adaptive.zstream {
           class AdaptiveZStreamTreeTopologyCreator {
           }
         }
@@ -66,15 +66,15 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.base {
+  package sase.sase.base {
     class AggregatedEvent {
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.iteration {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.iteration {
         class AggregatedExternalCondition {
         }
       }
@@ -82,33 +82,33 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.multi {
-    package sase.multi.algo {
+  package sase.sase.multi {
+    package sase.sase.multi.algo {
       class AlgoUnitFactory {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.algo {
+  package sase.sase.specification {
+    package sase.sase.specification.algo {
       class AlgoUnitSpecification {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.algo {
+  package sase.sase.multi {
+    package sase.sase.multi.algo {
       enum AlgoUnitTypes {
       }
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.base {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.sase.base {
         abstract class AtomicCondition {
         }
       }
@@ -116,37 +116,37 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.base {
+  package sase.sase.base {
     class Attribute {
     }
   }
   
 
-  package sase.aggregator {
-    package sase.aggregator.builtin {
+  package sase.sase.aggregator {
+    package sase.sase.aggregator.builtin {
       class AverageAggregator {
       }
     }
   }
   
 
-  package sase.user.stocks {
+  package sase.sase.user.stocks {
     class AverageStocksVectorAggregator {
     }
   }
   
 
-  package sase.aggregator {
-    package sase.aggregator.builtin {
+  package sase.sase.aggregator {
+    package sase.sase.aggregator.builtin {
       class AverageVectorAggregator {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
-      package sase.specification.creators.condition {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
+      package sase.sase.specification.creators.condition {
         abstract class BasicConditionSpecificationSetCreator {
         }
       }
@@ -154,18 +154,18 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.multi {
-    package sase.multi.sla {
+  package sase.sase.multi {
+    package sase.sase.multi.sla {
       class BestPlanSlaVerifier {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.optimizations {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.optimizations {
           class BufferFilter {
           }
         }
@@ -174,10 +174,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.optimizations {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.optimizations {
           class BufferGrouper {
           }
         }
@@ -186,10 +186,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.optimizations {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.optimizations {
           abstract class BufferPreprocessor {
           }
         }
@@ -198,9 +198,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.base {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.sase.base {
         class BufferedEventsRatesCondition {
         }
       }
@@ -208,9 +208,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.base {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.sase.base {
         class CNFCondition {
         }
       }
@@ -218,51 +218,51 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
+  package sase.sase.pattern {
     class CompositePattern {
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.creation {
+  package sase.sase.pattern {
+    package sase.sase.pattern.creation {
       class CompositePatternCreator {
       }
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
       abstract class Condition {
       }
     }
   }
   
 
-  package sase.config {
+  package sase.sase.config {
     class ConditionConfig {
     }
   }
   
 
-  package sase.statistics {
+  package sase.sase.statistics {
     class ConditionSelectivityCollector {
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.condition {
+  package sase.sase.specification {
+    package sase.sase.specification.condition {
       abstract class ConditionSpecification {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
-      package sase.specification.creators.condition {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
+      package sase.sase.specification.creators.condition {
         class ConditionSpecificationCreatorFactory {
         }
       }
@@ -270,9 +270,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
-      package sase.specification.creators.condition {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
+      package sase.sase.specification.creators.condition {
         enum ConditionSpecificationCreatorTypes {
         }
       }
@@ -280,9 +280,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
-      package sase.specification.creators.condition {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
+      package sase.sase.specification.creators.condition {
         enum ConditionSpecificationSetCreatorTypes {
         }
       }
@@ -290,10 +290,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.elements {
-        package sase.evaluation.tree.elements.node {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.elements {
+        package sase.sase.evaluation.tree.elements.node {
           class ConjunctiveInternalNode {
           }
         }
@@ -302,23 +302,23 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.adaptive.monitoring {
+  package sase.sase.adaptive.monitoring {
     class ConstantThresholdAdaptationNecessityDetector {
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.adaptation {
+  package sase.sase.specification {
+    package sase.sase.specification.adaptation {
       class ConstantThresholdAdaptationSpecification {
       }
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.specification {
-      package sase.user.stocks.specification.creators {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.sase.specification {
+      package sase.sase.user.stocks.sase.specification.creators {
         class CorrelationSelectivityEstimationSetupCreator {
         }
       }
@@ -326,9 +326,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.creators {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.creators {
         class CostAwareTree {
         }
       }
@@ -336,19 +336,19 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.evaluation {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.evaluation {
       class CostBasedLazyNFAEvaluationSpecification {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.cost {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.cost {
             class CostModelFactory {
             }
           }
@@ -358,11 +358,11 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.cost {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.cost {
             enum CostModelTypes {
             }
           }
@@ -372,9 +372,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
-      package sase.specification.creators.condition {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
+      package sase.sase.specification.creators.condition {
         class CountersConditionSpecificationSetCreator {
         }
       }
@@ -382,35 +382,35 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.user.speedd.fraud {
+  package sase.sase.user.speedd.fraud {
     class CreditCardFraudEventTypesConverter {
     }
   }
   
 
-  package sase.user.speedd.fraud {
+  package sase.sase.user.speedd.fraud {
     class CreditCardFraudEventTypesManager {
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
       abstract class CrossProductSimulationSpecificationCreator {
       }
     }
   }
   
 
-  package sase.base {
+  package sase.sase.base {
     enum Datatype {
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.specification {
-      package sase.user.stocks.specification.creators {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.sase.specification {
+      package sase.sase.user.stocks.sase.specification.creators {
         class DeltaSelectivityEstimationSetupCreator {
         }
       }
@@ -418,25 +418,25 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.plan {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.plan {
       class DisjunctionEvaluationPlan {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
       class DisjunctionTreeEvaluationMechanism {
       }
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.base {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.sase.base {
         abstract class DoubleEventCondition {
         }
       }
@@ -444,35 +444,35 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.condition {
+  package sase.sase.specification {
+    package sase.sase.specification.condition {
       abstract class DoubleEventConditionSpecification {
       }
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.workload {
+  package sase.sase.pattern {
+    package sase.sase.pattern.workload {
       class DynamicMultiPatternWorkloadManager {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.workload {
+  package sase.sase.specification {
+    package sase.sase.specification.workload {
       class DynamicMultiPatternWorkloadSpecification {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.algorithm {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.algorithm {
             class DynamicOrderingAlgorithm {
             }
           }
@@ -482,10 +482,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.elements {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.elements {
           class EfficientInputBuffer {
           }
         }
@@ -494,28 +494,28 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.simulator {
+  package sase.sase.simulator {
     class Environment {
     }
   }
   
 
-  package sase.evaluation {
+  package sase.sase.evaluation {
     class EvaluationMechanismFactory {
     }
   }
   
 
-  package sase.evaluation {
+  package sase.sase.evaluation {
     enum EvaluationMechanismTypes {
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.elements {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.elements {
           class EvaluationOrder {
           }
         }
@@ -524,53 +524,53 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.config {
+  package sase.sase.config {
     class EvaluationOrderConfig {
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.plan {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.plan {
       abstract class EvaluationPlan {
       }
     }
   }
   
 
-  package sase.evaluation {
+  package sase.sase.evaluation {
     class EvaluationPlanCreator {
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.evaluation {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.evaluation {
       abstract class EvaluationSpecification {
       }
     }
   }
   
 
-  package sase.base {
+  package sase.sase.base {
     class Event {
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.common {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.common {
       class EventBuffer {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.algorithm {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.algorithm {
             class EventFrequencyOrderingAlgorithm {
             }
           }
@@ -580,57 +580,57 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.input {
+  package sase.sase.input {
     abstract class EventProducer {
     }
   }
   
 
-  package sase.input {
+  package sase.sase.input {
     class EventProducerFactory {
     }
   }
   
 
-  package sase.input {
+  package sase.sase.input {
     enum EventProducerTypes {
     }
   }
   
 
-  package sase.statistics {
+  package sase.sase.statistics {
     class EventRateCollector {
     }
   }
   
 
-  package sase.config {
+  package sase.sase.config {
     class EventRateConfig {
     }
   }
   
 
-  package sase.base {
+  package sase.sase.base {
     enum EventSelectionStrategies {
     }
   }
   
 
-  package sase.input {
+  package sase.sase.input {
     class EventStreamModifierFactory {
     }
   }
   
 
-  package sase.input {
+  package sase.sase.input {
     enum EventStreamModifierTypes {
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.time {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.time {
         class EventTemporalPositionCondition {
         }
       }
@@ -638,63 +638,63 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.base {
+  package sase.sase.base {
     class EventType {
     }
   }
   
 
-  package sase.input {
+  package sase.sase.input {
     abstract class EventTypesConverter {
     }
   }
   
 
-  package sase.input {
+  package sase.sase.input {
     enum EventTypesConverterTypes {
     }
   }
   
 
-  package sase.pattern {
+  package sase.sase.pattern {
     abstract class EventTypesManager {
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
       class ExhaustiveMPTCalculator {
       }
     }
   }
   
 
-  package sase.adaptive.estimation {
+  package sase.sase.adaptive.estimation {
     class ExponentialHistogramsCounter {
     }
   }
   
 
-  package sase.input {
-    package sase.input.producers {
+  package sase.sase.input {
+    package sase.sase.input.producers {
       class FileBasedEventProducer {
       }
     }
   }
   
 
-  package sase.input {
-    package sase.input.producers {
+  package sase.sase.input {
+    package sase.sase.input.producers {
       class FileEventStreamReader {
       }
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.iteration {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.iteration {
         class FirstValueExternalCondition {
         }
       }
@@ -702,19 +702,19 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.evaluation {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.evaluation {
       class FixedLazyNFAEvaluationSpecification {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.algorithm {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.algorithm {
             class FixedOrderingAlgorithm {
             }
           }
@@ -724,9 +724,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
-      package sase.multi.calculator.local {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
+      package sase.sase.multi.calculator.local {
         abstract class GlobalImprovementBasedLocalSearchMPTCalculator {
         }
       }
@@ -734,9 +734,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.time {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.time {
         class GlobalTemporalOrderCondition {
         }
       }
@@ -744,12 +744,12 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.algorithm {
-            package sase.evaluation.nfa.lazy.order.algorithm.adaptive.greedy {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.algorithm {
+            package sase.sase.evaluation.nfa.lazy.order.algorithm.sase.adaptive.greedy {
               class GreedyAdaptiveOrderingAlgorithm {
               }
             }
@@ -760,11 +760,11 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.algorithm {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.algorithm {
             class GreedyCostModelOrderingAlgorithm {
             }
           }
@@ -774,12 +774,12 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.algorithm {
-            package sase.evaluation.nfa.lazy.order.algorithm.adaptive.greedy {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.algorithm {
+            package sase.sase.evaluation.nfa.lazy.order.algorithm.sase.adaptive.greedy {
               class GreedyInvariantCalculator {
               }
             }
@@ -790,12 +790,12 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.algorithm {
-            package sase.evaluation.nfa.lazy.order.algorithm.adaptive.greedy {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.algorithm {
+            package sase.sase.evaluation.nfa.lazy.order.algorithm.sase.adaptive.greedy {
               class GreedyInvariantInput {
               }
             }
@@ -806,11 +806,11 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.algorithm {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.algorithm {
             abstract class GreedyOrderingAlgorithm {
             }
           }
@@ -820,11 +820,11 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.algorithm {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.algorithm {
             class GreedySelectivityOrderingAlgorithm {
             }
           }
@@ -834,10 +834,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.iteration {
-        package sase.pattern.condition.iteration.lazy {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.iteration {
+        package sase.sase.pattern.condition.iteration.lazy {
           class GroupByAttributeCondition {
           }
         }
@@ -846,23 +846,23 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.adaptive.monitoring {
+  package sase.sase.adaptive.monitoring {
     interface IAdaptationNecessityDetector {
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.algo {
+  package sase.sase.multi {
+    package sase.sase.multi.algo {
       interface IAlgoUnit {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
-      package sase.specification.creators.condition {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
+      package sase.sase.specification.creators.condition {
         interface IConditionSpecificationCreator {
         }
       }
@@ -870,9 +870,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
-      package sase.specification.creators.condition {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
+      package sase.sase.specification.creators.condition {
         interface IConditionSpecificationSetCreator {
         }
       }
@@ -880,11 +880,11 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.cost {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.cost {
             interface ICostModel {
             }
           }
@@ -894,34 +894,34 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
+  package sase.sase.evaluation {
     interface IEvaluationMechanism {
     }
   }
   
 
-  package sase.evaluation {
+  package sase.sase.evaluation {
     interface IEvaluationMechanismInfo {
     }
   }
   
 
-  package sase.adaptive.estimation {
+  package sase.sase.adaptive.estimation {
     interface IEventArrivalRateEstimator {
     }
   }
   
 
-  package sase.input {
+  package sase.sase.input {
     interface IEventStreamModifier {
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
           interface IIncrementalOrderingAlgorithm {
           }
         }
@@ -930,46 +930,46 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
       interface IIncrementalTreeTopologyCreator {
       }
     }
   }
   
 
-  package sase.adaptive.monitoring {
-    package sase.adaptive.monitoring.invariant {
+  package sase.sase.adaptive.monitoring {
+    package sase.sase.adaptive.monitoring.invariant {
       interface IInvariantCalculator {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
       interface IMPTCalculator {
       }
     }
   }
   
 
-  package sase.adaptive.monitoring {
+  package sase.sase.adaptive.monitoring {
     interface IMultiPatternAdaptationNecessityDetector {
     }
   }
   
 
-  package sase.evaluation {
+  package sase.sase.evaluation {
     interface IMultiPatternEvaluationMechanism {
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
           interface IOrderingAlgorithm {
           }
         }
@@ -978,66 +978,66 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
       interface ISimulationSpecificationCreator {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.sla {
+  package sase.sase.multi {
+    package sase.sase.multi.sla {
       interface ISlaVerifier {
       }
     }
   }
   
 
-  package sase.input {
-    package sase.input.producers {
+  package sase.sase.input {
+    package sase.sase.input.producers {
       interface ISyntheticSelectivityProvider {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
       interface ITreeCostModel {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
       interface ITreeTopologyCreator {
       }
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.workload {
+  package sase.sase.pattern {
+    package sase.sase.pattern.workload {
       interface IWorkloadManager {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.input {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.input {
       abstract class InputSpecification {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.eager {
-        package sase.evaluation.nfa.eager.elements {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.eager {
+        package sase.sase.evaluation.nfa.eager.elements {
           class Instance {
           }
         }
@@ -1046,10 +1046,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.eager {
-        package sase.evaluation.nfa.eager.elements {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.eager {
+        package sase.sase.evaluation.nfa.eager.elements {
           class InstanceStorage {
           }
         }
@@ -1058,10 +1058,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.elements {
-        package sase.evaluation.tree.elements.node {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.elements {
+        package sase.sase.evaluation.tree.elements.node {
           abstract class InternalNode {
           }
         }
@@ -1070,33 +1070,33 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.adaptive.monitoring {
-    package sase.adaptive.monitoring.invariant {
+  package sase.sase.adaptive.monitoring {
+    package sase.sase.adaptive.monitoring.invariant {
       class Invariant {
       }
     }
   }
   
 
-  package sase.adaptive.monitoring {
-    package sase.adaptive.monitoring.invariant {
+  package sase.sase.adaptive.monitoring {
+    package sase.sase.adaptive.monitoring.invariant {
       class InvariantAdaptationNecessityDetector {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.adaptation {
+  package sase.sase.specification {
+    package sase.sase.specification.adaptation {
       class InvariantAdaptationSpecification {
       }
     }
   }
   
 
-  package sase.adaptive.monitoring {
-    package sase.adaptive.monitoring.invariant {
-      package sase.adaptive.monitoring.invariant.compare {
+  package sase.sase.adaptive.monitoring {
+    package sase.sase.adaptive.monitoring.invariant {
+      package sase.sase.adaptive.monitoring.invariant.compare {
         abstract class InvariantComparer {
         }
       }
@@ -1104,9 +1104,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.adaptive.monitoring {
-    package sase.adaptive.monitoring.invariant {
-      package sase.adaptive.monitoring.invariant.compare {
+  package sase.sase.adaptive.monitoring {
+    package sase.sase.adaptive.monitoring.invariant {
+      package sase.sase.adaptive.monitoring.invariant.compare {
         class InvariantComparerFactory {
         }
       }
@@ -1114,9 +1114,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.adaptive.monitoring {
-    package sase.adaptive.monitoring.invariant {
-      package sase.adaptive.monitoring.invariant.compare {
+  package sase.sase.adaptive.monitoring {
+    package sase.sase.adaptive.monitoring.invariant {
+      package sase.sase.adaptive.monitoring.invariant.compare {
         enum InvariantComparerType {
         }
       }
@@ -1124,17 +1124,17 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.adaptive.monitoring {
-    package sase.adaptive.monitoring.invariant {
+  package sase.sase.adaptive.monitoring {
+    package sase.sase.adaptive.monitoring.invariant {
       abstract class InvariantInput {
       }
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.iteration {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.iteration {
         abstract class IteratedEventExternalCondition {
         }
       }
@@ -1142,9 +1142,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.iteration {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.iteration {
         abstract class IteratedEventInternalCondition {
         }
       }
@@ -1152,10 +1152,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.iteration {
-        package sase.pattern.condition.iteration.lazy {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.iteration {
+        package sase.sase.pattern.condition.iteration.lazy {
           abstract class IteratedFilterCondition {
           }
         }
@@ -1164,10 +1164,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.iteration {
-        package sase.pattern.condition.iteration.eager {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.iteration {
+        package sase.sase.pattern.condition.iteration.eager {
           abstract class IteratedIncrementalCondition {
           }
         }
@@ -1176,10 +1176,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.iteration {
-        package sase.pattern.condition.iteration.eager {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.iteration {
+        package sase.sase.pattern.condition.iteration.eager {
           class IteratedIncrementalDoubleEventCondition {
           }
         }
@@ -1188,10 +1188,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.iteration {
-        package sase.pattern.condition.iteration.lazy {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.iteration {
+        package sase.sase.pattern.condition.iteration.lazy {
           class IteratedTotalFromIncrementalCondition {
           }
         }
@@ -1200,10 +1200,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.iteration {
-        package sase.pattern.condition.iteration.eager {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.iteration {
+        package sase.sase.pattern.condition.iteration.eager {
           class IterationTriggerCondition {
           }
         }
@@ -1212,17 +1212,17 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.specification {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.sase.specification {
       class IterativeAverageStockCorrelationConditionSpecification {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
-      package sase.multi.calculator.local {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
+      package sase.sase.multi.calculator.local {
         class IterativeImprovementMPTCalculator {
         }
       }
@@ -1230,19 +1230,19 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.evaluation {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.evaluation {
       class IterativeImprovementMPTEvaluationSpecification {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.algorithm {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.algorithm {
             class IterativeImprovementOrderingAlgorithm {
             }
           }
@@ -1252,17 +1252,17 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.specification {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.sase.specification {
       class IterativeValueCmpStockCorrelationConditionSpecification {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
         class LazyChainNFA {
         }
       }
@@ -1270,10 +1270,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.elements {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.elements {
           class LazyInstance {
           }
         }
@@ -1282,9 +1282,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
         class LazyMultiChainNFA {
         }
       }
@@ -1292,11 +1292,11 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.elements {
-          package sase.evaluation.nfa.lazy.elements.multi {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.elements {
+          package sase.sase.evaluation.nfa.lazy.elements.sase.multi {
             class LazyMultiInstance {
             }
           }
@@ -1306,9 +1306,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
         class LazyMultiPatternTreeNFA {
         }
       }
@@ -1316,11 +1316,11 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.elements {
-          package sase.evaluation.nfa.lazy.elements.multi {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.elements {
+          package sase.sase.evaluation.nfa.lazy.elements.sase.multi {
             class LazyMultiState {
             }
           }
@@ -1330,9 +1330,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
         abstract class LazyNFA {
         }
       }
@@ -1340,17 +1340,17 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.evaluation {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.evaluation {
       class LazyNFAEvaluationSpecification {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
         enum LazyNFANegationTypes {
         }
       }
@@ -1358,10 +1358,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.elements {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.elements {
           class LazyTransition {
           }
         }
@@ -1370,10 +1370,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.elements {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.elements {
           enum LazyTransitionType {
           }
         }
@@ -1382,10 +1382,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.elements {
-        package sase.evaluation.tree.elements.node {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.elements {
+        package sase.sase.evaluation.tree.elements.node {
           class LeafNode {
           }
         }
@@ -1394,17 +1394,17 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.config {
-    package sase.config.path {
+  package sase.sase.config {
+    package sase.sase.config.path {
       class LinuxPathConfig {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
-      package sase.multi.calculator.local {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
+      package sase.sase.multi.calculator.local {
         abstract class LocalSearchMPTCalculator {
         }
       }
@@ -1412,18 +1412,18 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.evaluation {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.evaluation {
       class LocalSearchMPTEvaluationSpecification {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
-      package sase.multi.calculator.local {
-        package sase.multi.calculator.local.neighborhood {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
+      package sase.sase.multi.calculator.local {
+        package sase.sase.multi.calculator.local.neighborhood {
           abstract class LocalSearchNeighborhood {
           }
         }
@@ -1432,39 +1432,39 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
       class MPTCalculatorFactory {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
       enum MPTCalculatorTypes {
       }
     }
   }
   
 
-  package sase.config {
+  package sase.sase.config {
     class MainConfig {
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.common {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.common {
       class Match {
       }
     }
   }
   
 
-  package sase.adaptive.monitoring {
-    package sase.adaptive.monitoring.invariant {
-      package sase.adaptive.monitoring.invariant.compare {
+  package sase.sase.adaptive.monitoring {
+    package sase.sase.adaptive.monitoring.invariant {
+      package sase.sase.adaptive.monitoring.invariant.compare {
         class MinimalRelativeDistanceInvariantComparer {
         }
       }
@@ -1472,72 +1472,72 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.multi {
+  package sase.sase.multi {
     class MultiPatternGraph {
     }
   }
   
 
-  package sase.multi {
+  package sase.sase.multi {
     class MultiPatternMultiTree {
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.plan {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.plan {
       class MultiPatternMultiTreeEvaluationPlan {
       }
     }
   }
   
 
-  package sase.multi {
+  package sase.sase.multi {
     class MultiPatternTree {
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.plan {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.plan {
       class MultiPatternTreeEvaluationPlan {
       }
     }
   }
   
 
-  package sase.multi {
+  package sase.sase.multi {
     class MultiPatternTreeNode {
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.workload {
+  package sase.sase.pattern {
+    package sase.sase.pattern.workload {
       class MultiPatternWorkloadManager {
       }
     }
   }
   
 
-  package sase.multi {
+  package sase.sase.multi {
     abstract class MultiPlan {
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.evaluation {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.evaluation {
       class MultiPlanEvaluationSpecification {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
-      package sase.multi.calculator.local {
-        package sase.multi.calculator.local.neighborhood {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
+      package sase.sase.multi.calculator.local {
+        package sase.sase.multi.calculator.local.neighborhood {
           class MultiSetShareNeighborhood {
           }
         }
@@ -1546,9 +1546,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.multi {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.sase.multi {
         class MultiTreeEvaluationMechanism {
         }
       }
@@ -1556,9 +1556,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.multi {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.sase.multi {
         class MultiTreeInstance {
         }
       }
@@ -1566,9 +1566,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.multi {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.sase.multi {
         class MultiTreeInstanceStorage {
         }
       }
@@ -1576,18 +1576,18 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
       abstract class NFA {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.eager {
-        package sase.evaluation.nfa.eager.elements {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.eager {
+        package sase.sase.evaluation.nfa.eager.elements {
           class NFAState {
           }
         }
@@ -1596,10 +1596,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.elements {
-        package sase.evaluation.tree.elements.node {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.elements {
+        package sase.sase.evaluation.tree.elements.node {
           class NSeqInternalNode {
           }
         }
@@ -1608,10 +1608,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
-      package sase.multi.calculator.local {
-        package sase.multi.calculator.local.neighborhood {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
+      package sase.sase.multi.calculator.local {
+        package sase.sase.multi.calculator.local.neighborhood {
           class NeighborhoodFactory {
           }
         }
@@ -1620,10 +1620,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
-      package sase.multi.calculator.local {
-        package sase.multi.calculator.local.neighborhood {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
+      package sase.sase.multi.calculator.local {
+        package sase.sase.multi.calculator.local.neighborhood {
           enum NeighborhoodTypes {
           }
         }
@@ -1632,26 +1632,26 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
       class NoReorderingMPTCalculator {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
       class NoSharingMPTCalculator {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.elements {
-        package sase.evaluation.tree.elements.node {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.elements {
+        package sase.sase.evaluation.tree.elements.node {
           abstract class Node {
           }
         }
@@ -1660,9 +1660,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.eager {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.eager {
         class OR_AND_SEQ_NFA {
         }
       }
@@ -1670,33 +1670,33 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.multi {
-    package sase.multi.algo {
+  package sase.sase.multi {
+    package sase.sase.multi.algo {
       class OrderAlgoUnit {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.algo {
+  package sase.sase.specification {
+    package sase.sase.specification.algo {
       class OrderAlgoUnitSpecification {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.plan {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.plan {
       class OrderEvaluationPlan {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.creators {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.creators {
         class OrderedZStreamTreeTopologyCreator {
         }
       }
@@ -1704,10 +1704,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
           class OrderingAlgorithmFactory {
           }
         }
@@ -1716,10 +1716,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
           enum OrderingAlgorithmTypes {
           }
         }
@@ -1728,9 +1728,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.time {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.time {
         class PairTemporalOrderCondition {
         }
       }
@@ -1738,9 +1738,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.contiguity {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.contiguity {
         class PairwiseContiguityCondition {
         }
       }
@@ -1748,10 +1748,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
-      package sase.multi.calculator.local {
-        package sase.multi.calculator.local.neighborhood {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
+      package sase.sase.multi.calculator.local {
+        package sase.sase.multi.calculator.local.neighborhood {
           class PairwiseShareNeighborhood {
           }
         }
@@ -1760,9 +1760,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.contiguity {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.contiguity {
         class PartialContiguityCondition {
         }
       }
@@ -1770,105 +1770,105 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.config {
-    package sase.config.path {
+  package sase.sase.config {
+    package sase.sase.config.path {
       abstract class PathConfig {
       }
     }
   }
   
 
-  package sase.pattern {
+  package sase.sase.pattern {
     abstract class Pattern {
     }
   }
   
 
-  package sase.config {
+  package sase.sase.config {
     class PatternConfig {
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.creation {
+  package sase.sase.pattern {
+    package sase.sase.pattern.creation {
       abstract class PatternCreator {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.workload {
+  package sase.sase.specification {
+    package sase.sase.specification.workload {
       enum PatternReorderingSensitivityTypes {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.workload {
+  package sase.sase.specification {
+    package sase.sase.specification.workload {
       class PatternSpecification {
       }
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.creation {
+  package sase.sase.pattern {
+    package sase.sase.pattern.creation {
       enum PatternTypes {
       }
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.workload {
+  package sase.sase.pattern {
+    package sase.sase.pattern.workload {
       class PatternWorkloadFactory {
       }
     }
   }
   
 
-  package sase.adaptive.monitoring {
+  package sase.sase.adaptive.monitoring {
     class PerformanceDeltaAdaptationNecessityDetector {
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.adaptation {
+  package sase.sase.specification {
+    package sase.sase.specification.adaptation {
       class PerformanceDeltaAdaptationSpecification {
       }
     }
   }
   
 
-  package sase.adaptive.monitoring {
+  package sase.sase.adaptive.monitoring {
     class PlanCreatorBasedAdaptationNecessityDetector {
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.adaptation {
+  package sase.sase.specification {
+    package sase.sase.specification.adaptation {
       class PlanCreatorBasedAdaptationSpecification {
       }
     }
   }
   
 
-  package sase.simulator {
+  package sase.sase.simulator {
     class PredicateResultsCache {
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.algorithm {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.algorithm {
             class RandomOrderingAlgorithm {
             }
           }
@@ -1878,33 +1878,33 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
       abstract class RandomPatternSpecificationCreator {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.input {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.input {
       class RarestTypeDuplicatorInputSpecification {
       }
     }
   }
   
 
-  package sase.input {
-    package sase.input.modifiers {
+  package sase.sase.input {
+    package sase.sase.input.modifiers {
       class RarestTypeEventStreamModifier {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.eager {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.eager {
         class SEQ_NFA {
         }
       }
@@ -1912,35 +1912,35 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.user.speedd.fraud {
+  package sase.sase.user.speedd.fraud {
     class SameCreditCardIDCondition {
     }
   }
   
 
-  package sase.user.speedd.fraud {
+  package sase.sase.user.speedd.fraud {
     class SameCreditCardIDConditionSpecification {
     }
   }
   
 
-  package sase.aggregator {
+  package sase.sase.aggregator {
     abstract class ScalarAggregator {
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
       abstract class SelectivityEstimationSetupCreator {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.creators {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.creators {
         class SelingerTreeTopologyCreator {
         }
       }
@@ -1948,10 +1948,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.elements {
-        package sase.evaluation.tree.elements.node {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.elements {
+        package sase.sase.evaluation.tree.elements.node {
           class SeqInternalNode {
           }
         }
@@ -1960,17 +1960,17 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.multi {
+  package sase.sase.multi {
     class SharedMultiPatternTreeNode {
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.cost {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.cost {
             class SharingDegreeCostModel {
             }
           }
@@ -1980,9 +1980,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.cost {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.cost {
         class SharingDegreeTreeCostModel {
         }
       }
@@ -1990,23 +1990,23 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.input {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.input {
       class ShuffleEventTypesInputSpecification {
       }
     }
   }
   
 
-  package sase.pattern {
+  package sase.sase.pattern {
     class SimplePattern {
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
-      package sase.multi.calculator.local {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
+      package sase.sase.multi.calculator.local {
         class SimulatedAnnealingMPTCalculator {
         }
       }
@@ -2014,41 +2014,41 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.evaluation {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.evaluation {
       class SimulatedAnnealingMPTEvaluationSpecification {
       }
     }
   }
   
 
-  package sase.config {
+  package sase.sase.config {
     class SimulationConfig {
     }
   }
   
 
-  package sase.simulator {
+  package sase.sase.simulator {
     class SimulationHistory {
     }
   }
   
 
-  package sase.specification {
+  package sase.sase.specification {
     class SimulationSpecification {
     }
   }
   
 
-  package sase.simulator {
+  package sase.sase.simulator {
     class Simulator {
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.base {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.sase.base {
         abstract class SingleEventCondition {
         }
       }
@@ -2056,94 +2056,94 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
       class SinglePatternCrossProductSimulationSpecificationCreator {
       }
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.workload {
+  package sase.sase.pattern {
+    package sase.sase.pattern.workload {
       class SinglePatternWorkloadManager {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.workload {
+  package sase.sase.specification {
+    package sase.sase.specification.workload {
       class SinglePatternWorkloadSpecification {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.sla {
+  package sase.sase.multi {
+    package sase.sase.multi.sla {
       class SlaAwarePattern {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.sla {
+  package sase.sase.multi {
+    package sase.sase.multi.sla {
       class SlaVerifierFactory {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.sla {
+  package sase.sase.multi {
+    package sase.sase.multi.sla {
       enum SlaVerifierTypes {
       }
     }
   }
   
 
-  package sase.adaptive.estimation {
+  package sase.sase.adaptive.estimation {
     class SlidingWindowEventArrivalRateEstimator {
     }
   }
   
 
-  package sase.adaptive.estimation {
+  package sase.sase.adaptive.estimation {
     class SlidingWindowSelectivityEstimator {
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
       class SpecificationCreatorFactory {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
       enum SpecificationCreatorTypes {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.common {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.common {
       class State {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
-      package sase.multi.calculator.local {
-        package sase.multi.calculator.local.neighborhood {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
+      package sase.sase.multi.calculator.local {
+        package sase.sase.multi.calculator.local.neighborhood {
           class StateSwapNeighborhood {
           }
         }
@@ -2152,43 +2152,43 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.adaptive.estimation {
+  package sase.sase.adaptive.estimation {
     class StaticEventArrivalRateEstimator {
     }
   }
   
 
-  package sase.statistics {
+  package sase.sase.statistics {
     class Statistics {
     }
   }
   
 
-  package sase.statistics {
+  package sase.sase.statistics {
     class StatisticsManager {
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.condition {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.condition {
       class StockAverageCorrelationCondition {
       }
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.condition {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.condition {
       class StockCorrelationCondition {
       }
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.specification {
-      package sase.user.stocks.specification.creators {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.sase.specification {
+      package sase.sase.user.stocks.sase.specification.creators {
         class StockCorrelationConditionCreator {
         }
       }
@@ -2196,25 +2196,25 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.specification {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.sase.specification {
       class StockCorrelationConditionSpecification {
       }
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.condition {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.condition {
       class StockCorrelationIterationTriggerCondition {
       }
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.specification {
-      package sase.user.stocks.specification.creators {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.sase.specification {
+      package sase.sase.user.stocks.sase.specification.creators {
         class StockDeltaConditionCreator {
         }
       }
@@ -2222,47 +2222,47 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.condition {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.condition {
       class StockDeltaOrderingCondition {
       }
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.specification {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.sase.specification {
       class StockDeltaOrderingConditionSpecification {
       }
     }
   }
   
 
-  package sase.user.stocks {
+  package sase.sase.user.stocks {
     class StockEventTypesManager {
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.condition {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.condition {
       class StockFirstValueCmpCondition {
       }
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.specification {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.sase.specification {
       class StockFirstValueCmpConditionSpecification {
       }
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.specification {
-      package sase.user.stocks.specification.creators {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.sase.specification {
+      package sase.sase.user.stocks.sase.specification.creators {
         class StockMultiPatternSpecificationCreator {
         }
       }
@@ -2270,9 +2270,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.specification {
-      package sase.user.stocks.specification.creators {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.sase.specification {
+      package sase.sase.user.stocks.sase.specification.creators {
         class StockPatternSpecificationCreator {
         }
       }
@@ -2280,103 +2280,103 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.condition {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.condition {
       class StockRangeCondition {
       }
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.condition {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.condition {
       class StockSameCompanyCondition {
       }
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.condition {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.condition {
       class StockValueCmpIterationTriggerCondition {
       }
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.converters {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.converters {
       class StocksByCompanyEventTypesConverter {
       }
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.converters {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.converters {
       class StocksByIndustryEventTypesConverter {
       }
     }
   }
   
 
-  package sase.user.stocks {
-    package sase.user.stocks.converters {
+  package sase.sase.user.stocks {
+    package sase.sase.user.stocks.converters {
       class StocksByRegionEventTypesConverter {
       }
     }
   }
   
 
-  package sase.config {
+  package sase.sase.config {
     class StructureConfig {
     }
   }
   
 
-  package sase.user.synthetic {
+  package sase.sase.user.synthetic {
     class SyntheticCondition {
     }
   }
   
 
-  package sase.user.synthetic {
+  package sase.sase.user.synthetic {
     class SyntheticConditionSpecification {
     }
   }
   
 
-  package sase.input {
-    package sase.input.producers {
+  package sase.sase.input {
+    package sase.sase.input.producers {
       class SyntheticEventProducer {
       }
     }
   }
   
 
-  package sase.user.synthetic {
+  package sase.sase.user.synthetic {
     class SyntheticEventTypesConverter {
     }
   }
   
 
-  package sase.user.synthetic {
+  package sase.sase.user.synthetic {
     class SyntheticEventTypesManager {
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.input {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.input {
       class SyntheticInputSpecification {
       }
     }
   }
   
 
-  package sase.multi {
-    package sase.multi.calculator {
-      package sase.multi.calculator.local {
+  package sase.sase.multi {
+    package sase.sase.multi.calculator {
+      package sase.sase.multi.calculator.local {
         class TabuSearchMPTCalculator {
         }
       }
@@ -2384,19 +2384,19 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.evaluation {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.evaluation {
       class TabuSearchMPTEvaluationSpecification {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.cost {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.cost {
             class ThroughputCostModel {
             }
           }
@@ -2406,11 +2406,11 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.cost {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.cost {
             class ThroughputLatencyCostModel {
             }
           }
@@ -2420,9 +2420,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.cost {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.cost {
         class ThroughputLatencyTreeCostModel {
         }
       }
@@ -2430,9 +2430,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.cost {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.cost {
         class ThroughputTreeCostModel {
         }
       }
@@ -2440,33 +2440,33 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
       class TopologyCreatorFactory {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
       enum TopologyCreatorTypes {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
       class TopologyCreatorUtils {
       }
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.contiguity {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.contiguity {
         class TotalContiguityCondition {
         }
       }
@@ -2474,70 +2474,70 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.user.speedd.traffic {
+  package sase.sase.user.speedd.traffic {
     class TrafficEventTypesManager {
     }
   }
   
 
-  package sase.user.speedd.traffic {
+  package sase.sase.user.speedd.traffic {
     class TrafficSameVehicleIDConditionSpecification {
     }
   }
   
 
-  package sase.user.speedd.traffic {
+  package sase.sase.user.speedd.traffic {
     class TrafficSimilarVehicleIDCondition {
     }
   }
   
 
-  package sase.user.speedd.traffic {
+  package sase.sase.user.speedd.traffic {
     class TrafficSpeedEventTypesConverter {
     }
   }
   
 
-  package sase.user.traffic {
+  package sase.sase.user.traffic {
     class TrafficSpeedToVehiclesNumberCorrelationCondition {
     }
   }
   
 
-  package sase.user.traffic {
+  package sase.sase.user.traffic {
     class TrafficSpeedToVehiclesNumberCorrelationConditionSpecification {
     }
   }
   
 
-  package sase.user.trams {
+  package sase.sase.user.trams {
     class TramCongestionEventTypesConverter {
     }
   }
   
 
-  package sase.user.trams {
+  package sase.sase.user.trams {
     class TramCongestionIntersectionCondition {
     }
   }
   
 
-  package sase.user.trams {
+  package sase.sase.user.trams {
     class TramCongestionIntersectionConditionSpecification {
     }
   }
   
 
-  package sase.user.trams {
+  package sase.sase.user.trams {
     class TramEventTypesManager {
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.eager {
-        package sase.evaluation.nfa.eager.elements {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.eager {
+        package sase.sase.evaluation.nfa.eager.elements {
           class Transition {
           }
         }
@@ -2546,65 +2546,65 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.multi {
-    package sase.multi.algo {
+  package sase.sase.multi {
+    package sase.sase.multi.algo {
       class TreeAlgoUnit {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.algo {
+  package sase.sase.specification {
+    package sase.sase.specification.algo {
       class TreeAlgoUnitSpecification {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
       class TreeCostModelFactory {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
       enum TreeCostModelTypes {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
       class TreeEvaluationMechanism {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.plan {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.plan {
       class TreeEvaluationPlan {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.evaluation {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.evaluation {
       class TreeEvaluationSpecification {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.elements {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.elements {
         class TreeInstance {
         }
       }
@@ -2612,9 +2612,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.elements {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.elements {
         class TreeInstanceStorage {
         }
       }
@@ -2622,10 +2622,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.creators {
-        package sase.evaluation.tree.creators.adaptive.zstream {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.creators {
+        package sase.sase.evaluation.tree.creators.sase.adaptive.zstream {
           class TreeInvariantCalculator {
           }
         }
@@ -2634,10 +2634,10 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.creators {
-        package sase.evaluation.tree.creators.adaptive.zstream {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.creators {
+        package sase.sase.evaluation.tree.creators.sase.adaptive.zstream {
           class TreeInvariantInput {
           }
         }
@@ -2646,9 +2646,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.specification {
-    package sase.specification.creators {
-      package sase.specification.creators.condition {
+  package sase.sase.specification {
+    package sase.sase.specification.creators {
+      package sase.sase.specification.creators.condition {
         class TriplesConditionSpecificationSetCreator {
         }
       }
@@ -2656,23 +2656,23 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.adaptive.monitoring {
+  package sase.sase.adaptive.monitoring {
     class TrivialAdaptationNecessityDetector {
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.adaptation {
+  package sase.sase.specification {
+    package sase.sase.specification.adaptation {
       class TrivialAdaptationSpecification {
       }
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.condition {
-      package sase.pattern.condition.base {
+  package sase.sase.pattern {
+    package sase.sase.pattern.condition {
+      package sase.sase.pattern.condition.sase.base {
         class TrivialCondition {
         }
       }
@@ -2680,25 +2680,25 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.input {
-    package sase.input.modifiers {
+  package sase.sase.input {
+    package sase.sase.input.modifiers {
       class TrivialEventStreamModifier {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.input {
+  package sase.sase.specification {
+    package sase.sase.specification.sase.input {
       class TrivialInputSpecification {
       }
     }
   }
   
 
-  package sase.adaptive.monitoring {
-    package sase.adaptive.monitoring.invariant {
-      package sase.adaptive.monitoring.invariant.compare {
+  package sase.sase.adaptive.monitoring {
+    package sase.sase.adaptive.monitoring.invariant {
+      package sase.sase.adaptive.monitoring.invariant.compare {
         class TrivialInvariantComparer {
         }
       }
@@ -2706,11 +2706,11 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.nfa {
-      package sase.evaluation.nfa.lazy {
-        package sase.evaluation.nfa.lazy.order {
-          package sase.evaluation.nfa.lazy.order.algorithm {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.nfa {
+      package sase.sase.evaluation.nfa.lazy {
+        package sase.sase.evaluation.nfa.lazy.order {
+          package sase.sase.evaluation.nfa.lazy.order.algorithm {
             class TrivialOrderingAlgorithm {
             }
           }
@@ -2720,9 +2720,9 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.creators {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.creators {
         class TrivialTreeTopologyCreator {
         }
       }
@@ -2730,61 +2730,61 @@ title __LAZYCEPGIT's Class Diagram__\n
   }
   
 
-  package sase.input {
-    package sase.input.modifiers {
+  package sase.sase.input {
+    package sase.sase.input.modifiers {
       class TypeShuffleEventStreamModifier {
       }
     }
   }
   
 
-  package sase.pattern {
+  package sase.sase.pattern {
     class UnaryPattern {
     }
   }
   
 
-  package sase.aggregator {
+  package sase.sase.aggregator {
     class VectorAggregator {
     }
   }
   
 
-  package sase.config {
-    package sase.config.path {
+  package sase.sase.config {
+    package sase.sase.config.path {
       class WindowsPathConfig {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.workload {
+  package sase.sase.specification {
+    package sase.sase.specification.workload {
       class WorkloadCreationSpecification {
       }
     }
   }
   
 
-  package sase.pattern {
-    package sase.pattern.workload {
+  package sase.sase.pattern {
+    package sase.sase.pattern.workload {
       enum WorkloadManagerTypes {
       }
     }
   }
   
 
-  package sase.specification {
-    package sase.specification.workload {
+  package sase.sase.specification {
+    package sase.sase.specification.workload {
       class WorkloadSpecification {
       }
     }
   }
   
 
-  package sase.evaluation {
-    package sase.evaluation.tree {
-      package sase.evaluation.tree.creators {
+  package sase.sase.evaluation {
+    package sase.sase.evaluation.tree {
+      package sase.sase.evaluation.tree.creators {
         class ZStreamTreeTopologyCreator {
         }
       }
