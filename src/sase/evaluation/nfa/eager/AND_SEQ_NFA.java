@@ -76,10 +76,10 @@ public class AND_SEQ_NFA extends AND_NFA {
 	}
 	
 	private void addContiguityConstraints() {
-		switch (sase.pattern.getType()) {
+		switch (pattern.getType()) {
 			case SEQ:
 				addPairwiseContiguityConstraints();
-				if (!sase.pattern.isActuallyComposite()) {
+				if (!pattern.isActuallyComposite()) {
 					break;
 				}
 				//otherwise, continue to the AND case
@@ -99,12 +99,12 @@ public class AND_SEQ_NFA extends AND_NFA {
 	}
 	
 	private void addPairwiseContiguityConstraints() {
-		if (sase.pattern.getType() != PatternOperatorTypes.SEQ || sase.pattern.getEventTypes().size() < 2) {
+		if (pattern.getType() != PatternOperatorTypes.SEQ || pattern.getEventTypes().size() < 2) {
 			return;
 		}
-		CNFCondition mainCondition = (CNFCondition) sase.pattern.getCondition();
+		CNFCondition mainCondition = (CNFCondition) pattern.getCondition();
 		UnaryPattern prevPattern = null;
-		for (Pattern pattern : sase.pattern.getNestedPatterns()) {
+		for (Pattern pattern : pattern.getNestedPatterns()) {
 			if (pattern.getType() == PatternOperatorTypes.NEG) {
 				continue;
 			}
@@ -122,7 +122,7 @@ public class AND_SEQ_NFA extends AND_NFA {
 	}
 	
 	private void addTotalContiguityConstraints() {
-		((CNFCondition) sase.pattern.getCondition()).addAtomicCondition(new TotalContiguityCondition());
+		((CNFCondition) pattern.getCondition()).addAtomicCondition(new TotalContiguityCondition());
 	}
 	
 	private boolean isSequenceOrderViolation(EventType candidateType, List<EventType> nextTypes) {
@@ -171,7 +171,7 @@ public class AND_SEQ_NFA extends AND_NFA {
 				positiveTypes.add(eventType);
 			}
 		}
-		CNFCondition positiveCondition = condition.getConditionExcludingTypes(sase.pattern.getNegativeEventTypes());
+		CNFCondition positiveCondition = condition.getConditionExcludingTypes(pattern.getNegativeEventTypes());
 		recursiveBuildStatesSubTree(rootState, positiveTypes, positiveCondition);
 	}
 
@@ -284,7 +284,7 @@ public class AND_SEQ_NFA extends AND_NFA {
 		Match initialMatch = instance.getMatch();
 		if (initialMatch == null)
 			return null;
-		CNFCondition mainCondition = (CNFCondition) sase.pattern.getCondition();
+		CNFCondition mainCondition = (CNFCondition) pattern.getCondition();
 		for (EventType negativeEventType : negativeTypes) {
 			if (!(verifySingleNegativeEventType(initialMatch, mainCondition, negativeEventType))) {
 				return null;

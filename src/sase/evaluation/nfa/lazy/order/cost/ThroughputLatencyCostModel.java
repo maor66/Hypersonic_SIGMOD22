@@ -39,7 +39,7 @@ public class ThroughputLatencyCostModel extends ThroughputCostModel implements I
 		if (indexOfLastType == -1 || throughputToLatencyRatio == 0) {
 			return costByThroughputModel;//no latency penalty here
 		}
-		Double latencyFromLastEventInstanceMatching = indexOfLastType == 0 ? 0 :
+		Double latencyFromLastEventInstanceMatching = indexOfLastType == 0 ? 0.0 :
 													  costsOfLastOrderStates.get(order.get(indexOfLastType - 1));
 		List<EventType> delayedProcessedEventTypes;
 		if (indexOfLastType == order.size() - 1) {
