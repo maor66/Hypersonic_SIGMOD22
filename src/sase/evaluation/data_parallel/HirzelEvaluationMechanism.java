@@ -64,7 +64,16 @@ public final class HirzelEvaluationMechanism extends DataParallelEvaluationMecha
 		// Find the relevant attribute value
 		String attribute_value = (String)event.getAttributeValue(attribute).toString();
 		// Select a thread id by attribute value
+		
 		int id = attribute_value.hashCode() % num_of_threads;
+		
+		// MAX : THIS CODE IS FOR THE HIRZEL TEST CASE!
+//		int id = attribute_value.hashCode() % (num_of_threads - 1);
+//		
+//		if (attribute_value.equals("GOOG") || attribute_value.equals("AAPL") || attribute_value.equals("MSFT") ) {
+//			id = num_of_threads - 1;
+//		}
+		
 		// Add to thread blocking queue
 		((ParallelThread)threads[id]).thread_input.add(new EvaluationInput(event, canStartInstance));
 		// get all results from out queue and return them as a list of matches
@@ -79,7 +88,9 @@ public final class HirzelEvaluationMechanism extends DataParallelEvaluationMecha
 		// TODO: No idea what this does...
 		List res = new ArrayList<Match>();
 		for (int i = 0; i < num_of_threads; ++i) {
+			lock.lock();
 			res.addAll(threads[i].machine.validateTimeWindow(currentTime));
+			lock.unlock();
 		}
 		return res;
 	}
