@@ -8,6 +8,7 @@ import sase.specification.workload.PatternSpecification;
 import sase.user.stocks.StockEventTypesManager;
 import sase.user.stocks.specification.StockCorrelationConditionSpecification;
 import sase.user.stocks.specification.StockDeltaOrderingConditionSpecification;
+import sase.user.stocks.specification.StockSameCompanyNameFirstLetterConditionSpecification;
 import sase.user.synthetic.SyntheticConditionSpecification;
 import sase.user.traffic.TrafficSpeedToVehiclesNumberCorrelationConditionSpecification;
 
@@ -419,45 +420,44 @@ public class PatternConfig {
 	
 	private static final long stockByCompanyPatternTimeWindow = 10;
 	public static final PatternSpecification[] stockByCompanyPatternSpecifications = {
-            new ParallelPatternSpecification("SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
-                    new String[][][] {new String[][]{new String[]{
-                            StockEventTypesManager.microsoftEventTypeName,
-                            StockEventTypesManager.googleEventTypeName,
-                            StockEventTypesManager.appleEventTypeName,
-                            StockEventTypesManager.yahooEventTypeName,
-                            StockEventTypesManager.amznEventTypeName
-                    }}},
-                    new ConditionSpecification[] {
-                            new StockDeltaOrderingConditionSpecification(
-                                    StockEventTypesManager.microsoftEventTypeName,
-                                    StockEventTypesManager.googleEventTypeName),
-                            new StockDeltaOrderingConditionSpecification(
-                                    StockEventTypesManager.googleEventTypeName,
-                                    StockEventTypesManager.appleEventTypeName),
-                            new StockDeltaOrderingConditionSpecification(
-                                    StockEventTypesManager.appleEventTypeName,
-                                    StockEventTypesManager.yahooEventTypeName),
-                            new StockDeltaOrderingConditionSpecification(
-                                    StockEventTypesManager.yahooEventTypeName,
-                                    StockEventTypesManager.amznEventTypeName),
-                    },
-                    SlaVerifierTypes.NONE, new int[][] {{2,3}, {2,3}, {2,3}, {2,3}}),
-			// MAX : This is the pattern specification for testing Hirzel!
-//            new PatternSpecification("HIRZEL_TEST", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
-//				new String[][][]{new String[][] {
-//					new String[] {
-//						StockEventTypesManager.microsoftEventTypeName,
-//						StockEventTypesManager.appleEventTypeName,
-//						StockEventTypesManager.googleEventTypeName,
-//					}}},
-//            		new ConditionSpecification[] {
-//        				new StockCorrelationConditionSpecification(StockEventTypesManager.microsoftEventTypeName, 
-//        						StockEventTypesManager.appleEventTypeName,
-//        						0.9),
-//        				new StockCorrelationConditionSpecification(StockEventTypesManager.appleEventTypeName, 
-//        						StockEventTypesManager.googleEventTypeName,
-//        						0.9) },
-//            		SlaVerifierTypes.NONE),
+//            new ParallelPatternSpecification("SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//                    new String[][][] {new String[][]{new String[]{
+//                            StockEventTypesManager.microsoftEventTypeName,
+//                            StockEventTypesManager.googleEventTypeName,
+//                            StockEventTypesManager.appleEventTypeName,
+//                            StockEventTypesManager.yahooEventTypeName,
+//                            StockEventTypesManager.amznEventTypeName
+//                    }}},
+//                    new ConditionSpecification[] {
+//                            new StockDeltaOrderingConditionSpecification(
+//                                    StockEventTypesManager.microsoftEventTypeName,
+//                                    StockEventTypesManager.googleEventTypeName),
+//                            new StockDeltaOrderingConditionSpecification(
+//                                    StockEventTypesManager.googleEventTypeName,
+//                                    StockEventTypesManager.appleEventTypeName),
+//                            new StockDeltaOrderingConditionSpecification(
+//                                    StockEventTypesManager.appleEventTypeName,
+//                                    StockEventTypesManager.yahooEventTypeName),
+//                            new StockDeltaOrderingConditionSpecification(
+//                                    StockEventTypesManager.yahooEventTypeName,
+//                                    StockEventTypesManager.amznEventTypeName),
+//                    },
+//                    SlaVerifierTypes.NONE, new int[][] {{2,3}, {2,3}, {2,3}, {2,3}}),
+            //////////////////////////////////////////////////////////////
+            // MAX : This is second test for Hirzel!
+            new PatternSpecification("HIRZEL_TEST", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+				new String[][][]{new String[][] {
+					new String[] {
+						StockEventTypesManager.northAmericanCompanyEventTypeName,
+						StockEventTypesManager.europeanCompanyEventTypeName,
+						StockEventTypesManager.asianCompanyEventTypeName,
+					}}},
+            		new ConditionSpecification[] {
+        				new StockSameCompanyNameFirstLetterConditionSpecification(StockEventTypesManager.northAmericanCompanyEventTypeName, 
+        						StockEventTypesManager.europeanCompanyEventTypeName),
+        				new StockSameCompanyNameFirstLetterConditionSpecification(StockEventTypesManager.europeanCompanyEventTypeName, 
+        						StockEventTypesManager.asianCompanyEventTypeName) },
+            		SlaVerifierTypes.NONE),
             //////////////////////////////////////////////////////////////
 //			new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 //					new String[][][] {new String[][]{new String[]{

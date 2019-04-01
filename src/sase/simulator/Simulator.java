@@ -22,6 +22,7 @@ import sase.evaluation.IEvaluationMechanism;
 import sase.evaluation.IEvaluationMechanismInfo;
 import sase.evaluation.IMultiPatternEvaluationMechanism;
 import sase.evaluation.common.Match;
+import sase.evaluation.data_parallel.DataParallelEvaluationMechanism;
 import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
 import sase.input.EventProducer;
 import sase.input.EventProducerFactory;
@@ -346,6 +347,7 @@ public class Simulator {
     	if (MainConfig.debugMode) {
     		return;
     	}
+		DataParallelEvaluationMechanism.killAllThreads();
     	System.gc();
     }
     

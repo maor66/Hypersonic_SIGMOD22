@@ -116,14 +116,14 @@ public class StatisticsManager {
 		}
 	}
 
-	public void updateDiscreteStatistic(String key, long valueToAdd) {
+	public synchronized void updateDiscreteStatistic(String key, long valueToAdd) {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
 		discreteStatistics.put(key, discreteStatistics.get(key) + valueToAdd);
 	}
 
-	public void replaceDiscreteStatistic(String key, long valueToPut) {
+	public synchronized void replaceDiscreteStatistic(String key, long valueToPut) {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
@@ -138,7 +138,7 @@ public class StatisticsManager {
 		updateDiscreteStatistic(key, -1);
 	}
 
-	public void updateDiscreteIfBigger(String key, long newValue) {
+	public synchronized void updateDiscreteIfBigger(String key, long newValue) {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
@@ -156,47 +156,46 @@ public class StatisticsManager {
 		updateDiscreteMemoryStatistic(key, 1);
 	}
 
-	public long getDiscreteStatistic(String key) {
+	public synchronized long getDiscreteStatistic(String key) {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
 		return discreteStatistics.get(key);
 	}
 
-	public void updateFractionalStatistic(String key, double valueToAdd) {
+	public synchronized void updateFractionalStatistic(String key, double valueToAdd) {
 		if (!(fractionalStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
 		fractionalStatistics.put(key, fractionalStatistics.get(key) + valueToAdd);
 	}
 
-	public void replaceFractionalStatistic(String key, double valueToPut) {
+	public synchronized void replaceFractionalStatistic(String key, double valueToPut) {
 		if (!(fractionalStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
 		fractionalStatistics.put(key, valueToPut);
 	}
 
-	public void startMeasuringTime(String timeStatisticKey) {
+	public synchronized void startMeasuringTime(String timeStatisticKey) {
 		if (!discreteStatistics.containsKey(timeStatisticKey) && !fractionalStatistics.containsKey(timeStatisticKey)) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", timeStatisticKey));
 		}
 		timeMeasurementsInProgress.put(timeStatisticKey, System.currentTimeMillis());
 	}
 
-	public boolean isTimeMeasuredForStatistic(String timeStatisticKey) {
+	public synchronized boolean isTimeMeasuredForStatistic(String timeStatisticKey) {
 		return timeMeasurementsInProgress.containsKey(timeStatisticKey);
 	}
 
-	public void stopMeasuringTime(String timeStatisticKey) {
+	public synchronized void stopMeasuringTime(String timeStatisticKey) {
 		if (!isTimeMeasuredForStatistic(timeStatisticKey)) {
 			throw new RuntimeException(String.format("No time measurement was started: %s", timeStatisticKey));
 		}
 		long delta = System.currentTimeMillis() - timeMeasurementsInProgress.remove(timeStatisticKey);
 		if (discreteStatistics.containsKey(timeStatisticKey)) {
 			updateDiscreteStatistic(timeStatisticKey, delta);
-		}
-		else {
+		} else {
 			updateFractionalStatistic(timeStatisticKey, delta);
 		}
 	}
@@ -231,7 +230,6 @@ public class StatisticsManager {
 					MainConfig.outputFilePath, e.getMessage()));
 		}
 		if (!isInternalPeriodicReport) {
-			DataParallelEvaluationMechanism.killAllThreads();
 			System.out.println("Evaluation Step Completed.\n");
 		}
 	}
@@ -247,7 +245,7 @@ public class StatisticsManager {
 		return value;
 	}
 
-	private Double computeAverageStatisticValue(String numberOfElementsName, Double value) {
+	private synchronized Double computeAverageStatisticValue(String numberOfElementsName, Double value) {
 		Long numberOfElements = discreteStatistics.get(numberOfElementsName);
 		if (numberOfElements > 0) {
 			return value / numberOfElements;

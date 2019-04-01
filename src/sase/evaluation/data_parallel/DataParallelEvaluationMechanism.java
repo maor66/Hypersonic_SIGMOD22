@@ -14,6 +14,7 @@ import sase.evaluation.EvaluationPlanCreator;
 import sase.evaluation.IEvaluationMechanism;
 import sase.evaluation.IEvaluationMechanismInfo;
 import sase.evaluation.common.Match;
+import sase.evaluation.data_parallel.DataParallelEvaluationMechanism.EvaluationInput;
 import sase.evaluation.data_parallel.DataParallelEvaluationMechanism.ParallelThread;
 import sase.evaluation.nfa.NFA;
 import sase.evaluation.plan.EvaluationPlan;
@@ -49,7 +50,8 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	// class to run threads
 	public class ParallelThread extends Thread {
 		public IEvaluationMechanism machine;
-		protected BlockingQueue<EvaluationInput> thread_input = new LinkedBlockingQueue<>();
+		protected BlockingQueue<EvaluationInput> threadInput = new LinkedBlockingQueue<>();
+		public Lock threadLock = new ReentrantLock();
 		
 		public void run() {
 			// TODO: implement code to be run for each thread
@@ -61,34 +63,31 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	}
 	
 	// output queue for all threads
-	protected BlockingQueue<Match> thread_output = new LinkedBlockingQueue<>();
+	protected BlockingQueue<Match> threadOutput = new LinkedBlockingQueue<>();
+	
+	private void SetUpThreads(IEvaluationMechanism mechanism) {
+		for (int i = 0; i < num_of_threads; ++i) {
+			threads[i] = new ParallelThread();
+			threads[i].machine = mechanism; 
+		}
+	}
 	
 	public DataParallelEvaluationMechanism(Pattern pattern, ParallelEvaluationSpecification specification, EvaluationPlan evaluationPlan) {
 		// TODO: do something with pattern and internal evaluation specification to create n threads 
-		DataParallelEvaluationMechanism.singleton = this;
 		num_of_threads = specification.num_of_threeads;
 		threads = new ParallelThread[num_of_threads];
 		// Build evaluation mechanism for internal nfa from specification
 		EvaluationSpecification internalSpecification = specification.internalSpecification;
 		switch (internalSpecification.type) {
 			case EAGER:
-				for (int i = 0; i < num_of_threads; ++i) {
-					threads[i] = new ParallelThread();
-					threads[i].machine = new AND_SEQ_NFA(pattern); 
-				}
+				SetUpThreads(new AND_SEQ_NFA(pattern));
 				break;
 			case LAZY_CHAIN:
-				for (int i = 0; i < num_of_threads; ++i) {
-					threads[i] = new ParallelThread();
-					threads[i].machine = new LazyChainNFA(pattern, evaluationPlan, 
-							((LazyNFAEvaluationSpecification)internalSpecification).negationType);
-				}
+				SetUpThreads(new LazyChainNFA(pattern, evaluationPlan, 
+							((LazyNFAEvaluationSpecification)internalSpecification).negationType));
 				break;
 			case TREE:
-				for (int i = 0; i < num_of_threads; ++i) {
-					threads[i] = new ParallelThread();
-					threads[i].machine = new TreeEvaluationMechanism(pattern, evaluationPlan); 
-				}
+				SetUpThreads(new TreeEvaluationMechanism(pattern, evaluationPlan));
 				break;
 			case LAZY_TREE:
 			case MULTI_PATTERN_TREE:
@@ -96,6 +95,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 			default:
 				throw new RuntimeException("Illegal specification for NFA/Tree");
 		}
+		DataParallelEvaluationMechanism.singleton = this;
 	}
 	
 	public static void killAllThreads() {
