@@ -51,10 +51,45 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	public class ParallelThread extends Thread {
 		public IEvaluationMechanism machine;
 		protected BlockingQueue<EvaluationInput> threadInput = new LinkedBlockingQueue<>();
-		public Lock threadLock = new ReentrantLock();
 		
 		public void run() {
-			// TODO: implement code to be run for each thread
+			// Specific Hirzel code to run
+			EvaluationInput evalInput = null;
+			Event event = null;
+			boolean canStartInstance = false;
+			List<Match> result;
+			while (!interrupted()) {
+				try {
+					evalInput = threadInput.take();
+				} catch (InterruptedException e) {
+					processEvent(evalInput, event, canStartInstance);
+					return;
+				} finally {
+					processEvent(evalInput, event, canStartInstance);
+				}
+			}
+			return;
+		}
+		
+		protected void processEvent(EvaluationInput evalInput, Event event, boolean canStartInstance) {
+			event = evalInput.event;
+			canStartInstance = evalInput.canStartInstance;
+			// if yes, run processNewEvent of nfa
+			lock.lock();
+			List<Match> result = machine.validateTimeWindow(event.getTimestamp());
+			if (result == null) {
+				result = machine.processNewEvent(event, canStartInstance);
+			} else {
+				List<Match> resProcessNewEvent = machine.processNewEvent(event, canStartInstance);
+				if (resProcessNewEvent != null)
+					result.addAll(resProcessNewEvent);
+			}
+			
+			// add result of processNewEvent to out queue
+			if (result != null) {
+				threadOutput.addAll(result);
+			}
+			lock.unlock();
 		}
 		
 		public void cancel() {
@@ -65,10 +100,26 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	// output queue for all threads
 	protected BlockingQueue<Match> threadOutput = new LinkedBlockingQueue<>();
 	
-	private void SetUpThreads(IEvaluationMechanism mechanism) {
+	private void SetUpThreads(Pattern pattern, EvaluationPlan evaluationPlan, EvaluationSpecification internalSpecification) {
 		for (int i = 0; i < num_of_threads; ++i) {
 			threads[i] = new ParallelThread();
-			threads[i].machine = mechanism; 
+			switch (internalSpecification.type) {
+				case EAGER:
+					threads[i].machine = new AND_SEQ_NFA(pattern);
+					break;
+				case LAZY_CHAIN:
+					threads[i].machine = new LazyChainNFA(pattern, evaluationPlan, 
+							((LazyNFAEvaluationSpecification)internalSpecification).negationType);
+					break;
+				case TREE:
+					threads[i].machine = new TreeEvaluationMechanism(pattern, evaluationPlan);
+					break;
+				case LAZY_TREE:
+				case MULTI_PATTERN_TREE:
+				case MULTI_PATTERN_MULTI_TREE:
+				default:
+					throw new RuntimeException("Illegal specification for NFA/Tree");
+			}
 		}
 	}
 	
@@ -78,23 +129,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 		threads = new ParallelThread[num_of_threads];
 		// Build evaluation mechanism for internal nfa from specification
 		EvaluationSpecification internalSpecification = specification.internalSpecification;
-		switch (internalSpecification.type) {
-			case EAGER:
-				SetUpThreads(new AND_SEQ_NFA(pattern));
-				break;
-			case LAZY_CHAIN:
-				SetUpThreads(new LazyChainNFA(pattern, evaluationPlan, 
-							((LazyNFAEvaluationSpecification)internalSpecification).negationType));
-				break;
-			case TREE:
-				SetUpThreads(new TreeEvaluationMechanism(pattern, evaluationPlan));
-				break;
-			case LAZY_TREE:
-			case MULTI_PATTERN_TREE:
-			case MULTI_PATTERN_MULTI_TREE:
-			default:
-				throw new RuntimeException("Illegal specification for NFA/Tree");
-		}
+		SetUpThreads(pattern, evaluationPlan, internalSpecification);
 		DataParallelEvaluationMechanism.singleton = this;
 	}
 	

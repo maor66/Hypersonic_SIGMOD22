@@ -22,58 +22,12 @@ public final class HirzelEvaluationMechanism extends DataParallelEvaluationMecha
 	// For Hirzel algorithm implementation we need to choose an attribute!
 	private String attribute;
 	
-	public class HirzelThread extends ParallelThread {
-		protected void processEvent(EvaluationInput evalInput, Event event, boolean canStartInstance) {
-			event = evalInput.event;
-			canStartInstance = evalInput.canStartInstance;
-			// if yes, run processNewEvent of nfa
-			threadLock.lock();
-			List<Match> result = machine.validateTimeWindow(event.getTimestamp());
-			if (result == null) {
-				result = machine.processNewEvent(event, canStartInstance);
-			} else {
-				List<Match> resProcessNewEvent = machine.processNewEvent(event, canStartInstance);
-				if (resProcessNewEvent != null)
-					result.addAll(resProcessNewEvent);
-			}
-			
-			threadLock.unlock();
-			// add result of processNewEvent to out queue
-			if (result != null) {
-				threadOutput.addAll(result);
-			}
-		}
-	}
-	
 	public HirzelEvaluationMechanism(Pattern pattern, HirzelEvaluationSpecification specification, EvaluationPlan evaluationPlan) {
 		super(pattern, specification, evaluationPlan);
 		this.attribute = specification.attribute;
 
 		// Create threads
 		for (int i = 0; i < num_of_threads; ++i) {
-			IEvaluationMechanism machine = threads[i].machine;
-			threads[i] = new HirzelThread() {		
-				@Override
-				public void run() {
-					// Specific Hirzel code to run
-					EvaluationInput evalInput = null;
-					Event event = null;
-					boolean canStartInstance = false;
-					List<Match> result;
-					while (!interrupted()) {
-						try {
-							evalInput = threadInput.take();
-						} catch (InterruptedException e) {
-							processEvent(evalInput, event, canStartInstance);
-							return;
-						} finally {
-							processEvent(evalInput, event, canStartInstance);
-						}
-					}
-					return;
-				}
-			};
-			threads[i].machine = machine;
 			threads[i].start();
 		}
 	}
@@ -100,25 +54,14 @@ public final class HirzelEvaluationMechanism extends DataParallelEvaluationMecha
 
 	@Override
 	public List<Match> validateTimeWindow(long currentTime) {
-		// Locks termporarily removed until fixed concurrency issues
 		List res = new ArrayList<Match>();
-//		for (int i = 0; i < num_of_threads; ++i) {
-//			try {
-//				res.addAll(threads[i].machine.validateTimeWindow(currentTime));	
-//			} finally {
-//			}
-//		}
 		return res;
 	}
 
 	@Override
 	public void completeCreation(List<Pattern> patterns) {
-		// Locks termporarily removed until fixed concurrency issues
 		for (int i = 0; i < num_of_threads; ++i) {
-			try {
-				threads[i].machine.completeCreation(patterns);
-			} finally {
-			}
+			threads[i].machine.completeCreation(patterns);
 		}
 	}
 
@@ -127,7 +70,9 @@ public final class HirzelEvaluationMechanism extends DataParallelEvaluationMecha
 		// TODO Auto-generated method stub
 		List res = new ArrayList<Match>();
 		for (int i = 0; i < num_of_threads; ++i) {
+			lock.lock();
 			res.addAll(threads[i].machine.getLastMatches());
+			lock.unlock();
 		}
 		return res;
 	}
@@ -137,7 +82,9 @@ public final class HirzelEvaluationMechanism extends DataParallelEvaluationMecha
 		// TODO Auto-generated method stub
 		long size = 0;
 		for (int i = 0; i < num_of_threads; ++i) {
+			lock.lock();
 			size += threads[i].machine.size();
+			lock.unlock();
 		}
 		return size;
 	}
