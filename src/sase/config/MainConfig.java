@@ -20,7 +20,7 @@ public class MainConfig {
 	/* Settings for creating and preprocessing primitive events arriving on the input stream. */
 	public static final EventProducerTypes eventProducerType = EventProducerTypes.FILE_BASED;
 	public static final boolean isSyntheticInputEnabled = (eventProducerType == EventProducerTypes.SYNTHETIC);
-	public static final EventTypesConverterTypes eventTypesConverterType = EventTypesConverterTypes.STOCK_BY_REGION;
+	public static final EventTypesConverterTypes eventTypesConverterType = EventTypesConverterTypes.STOCK_BY_COMPANY;
 	
 	/* Settings for receiving events from the input stream. */
 	// Maor: This two settings determine if the input is taken from a directory or a file

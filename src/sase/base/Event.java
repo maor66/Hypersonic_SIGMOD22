@@ -51,6 +51,19 @@ public class Event implements Comparable<Event>, ContainsEvent {
 		this(null, null);
 		isLastInput = true;
 	}
+	
+	private Event(Event event) {
+		this.sequenceNumber = event.sequenceNumber;
+		this.type = event.type;
+		this.systemTimestamp = event.systemTimestamp;
+		this.payload = event.payload.clone();
+		this.timestamp = event.timestamp;
+		this.isLastInput = event.isLastInput;
+	}
+	
+	public Event clone() {
+		return new Event(this);
+	}
 
 	public EventType getType() {
 		return type;

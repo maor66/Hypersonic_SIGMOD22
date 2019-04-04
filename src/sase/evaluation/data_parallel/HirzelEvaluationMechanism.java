@@ -19,11 +19,15 @@ public final class HirzelEvaluationMechanism extends DataParallelEvaluationMecha
 		String attributeValue = (String)evaluationInput.event.getAttributeValue(attribute).toString();
 		// Select a thread id by attribute value
 		
-//		int id = attributeValue.hashCode() % num_of_threads;
+		int id = attributeValue.hashCode() % numOfThreads;
 		
 		// MAX : THIS CODE IS FOR THE HIRZEL TEST CASE!
-		String firstLetter = attributeValue.substring(0, 1);
-		int id = firstLetter.hashCode() % num_of_threads;
+		// TO ENABLE IT: please go to MainConfig and set eventTypesConverterType to
+		// EventTypesConverterTypes.STOCK_BY_REGION
+		// Also go to PatternConfig and in stockByCompanyPatternSpecifications comment all
+		// Except the lines under MAX comment
+//		String firstLetter = attributeValue.substring(0, 1);
+//		int id = firstLetter.hashCode() % numOfThreads;
 		
 		// Add to thread blocking queue
 		((ParallelThread)threads[id]).threadInput.add(evaluationInput);

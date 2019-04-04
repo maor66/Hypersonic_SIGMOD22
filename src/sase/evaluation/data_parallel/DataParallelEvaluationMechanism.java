@@ -27,7 +27,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 
 	private static final long timeToWaitForThreads = 10;
 	
-	protected int num_of_threads;
+	protected int numOfThreads;
 	protected ParallelThread threads[];
 	
 	public static DataParallelEvaluationMechanism singleton = null;
@@ -92,7 +92,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	protected BlockingQueue<Match> threadOutput = new LinkedBlockingQueue<Match>();
 	
 	private void SetUpThreads(Pattern pattern, EvaluationPlan evaluationPlan, EvaluationSpecification internalSpecification) {
-		for (int i = 0; i < num_of_threads; ++i) {
+		for (int i = 0; i < numOfThreads; ++i) {
 			threads[i] = new ParallelThread();
 			switch (internalSpecification.type) {
 				case EAGER:
@@ -115,15 +115,15 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	}
 	
 	public DataParallelEvaluationMechanism(Pattern pattern, ParallelEvaluationSpecification specification, EvaluationPlan evaluationPlan) {
-		num_of_threads = specification.num_of_threeads;
-		threads = new ParallelThread[num_of_threads];
+		numOfThreads = specification.num_of_threeads;
+		threads = new ParallelThread[numOfThreads];
 		// Build evaluation mechanism for internal nfa from specification
 		EvaluationSpecification internalSpecification = specification.internalSpecification;
 		SetUpThreads(pattern, evaluationPlan, internalSpecification);
 		DataParallelEvaluationMechanism.singleton = this;
 
 		// Create threads
-		for (int i = 0; i < num_of_threads; ++i) {
+		for (int i = 0; i < numOfThreads; ++i) {
 			threads[i].start();
 		}
 	}
@@ -147,7 +147,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 
 	@Override
 	public void completeCreation(List<Pattern> patterns) {
-		for (int i = 0; i < num_of_threads; ++i) {
+		for (int i = 0; i < numOfThreads; ++i) {
 			threads[i].machine.completeCreation(patterns);
 		}
 	}
@@ -172,7 +172,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 		}
 		
 		List<Match> res = new ArrayList<Match>();
-		for (int i = 0; i < num_of_threads; ++i) {
+		for (int i = 0; i < numOfThreads; ++i) {
 			synchronized(threads[i].machine) {
 				res.addAll(threads[i].machine.getLastMatches());
 			}
@@ -204,7 +204,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 
 	@Override
 	public void removeConflictingInstances(List<Match> matches) {
-		for (int i = 0; i < num_of_threads; ++i) {
+		for (int i = 0; i < numOfThreads; ++i) {
 			synchronized(threads[i].machine) {
 				threads[i].machine.removeConflictingInstances(matches);
 			}
