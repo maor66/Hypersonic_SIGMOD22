@@ -6,12 +6,12 @@ public abstract class ParallelEvaluationSpecification extends EvaluationSpecific
 	
 	// Specification for thread NFA
 	public EvaluationSpecification internalSpecification;
-	public int num_of_threeads;
+	public int numOfThreeads;
 	
-	public ParallelEvaluationSpecification(EvaluationMechanismTypes type, EvaluationSpecification internalSpecification, int num_of_threads) {
+	public ParallelEvaluationSpecification(EvaluationMechanismTypes type, EvaluationSpecification internalSpecification, int numOfThreads) {
 		super(type);
 		this.internalSpecification = internalSpecification;
-		this.num_of_threeads = num_of_threads;
+		this.numOfThreeads = numOfThreads;
 	}
 
 }

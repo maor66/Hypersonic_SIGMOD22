@@ -33,6 +33,7 @@ import sase.specification.evaluation.EvaluationSpecification;
 import sase.specification.evaluation.HirzelEvaluationSpecification;
 import sase.specification.evaluation.LazyNFAEvaluationSpecification;
 import sase.specification.evaluation.ParallelEvaluationSpecification;
+import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
 import sase.specification.evaluation.RIPEvaluationSpecification;
 import sase.statistics.Statistics;
 
@@ -67,8 +68,7 @@ public class EvaluationMechanismFactory {
 						return new LazyChainNFA(pattern, evaluationPlan, 
 												((LazyNFAEvaluationSpecification)specification).negationType);
 					case LAZY_CHAIN_PARALLEL:
-						return new ParallelLazyChainNFA(pattern, evaluationPlan,
-                    ((LazyNFAEvaluationSpecification)specification).negationType);
+						return new ParallelLazyChainNFA(pattern, evaluationPlan, (ParallelLazyNFAEvaluationSpecification)specification);
 					case HIRZEL_CHAIN_NFA:
 						return new HirzelEvaluationMechanism(pattern, (HirzelEvaluationSpecification)specification, evaluationPlan);
 					case RIP_CHAIN_NFA:

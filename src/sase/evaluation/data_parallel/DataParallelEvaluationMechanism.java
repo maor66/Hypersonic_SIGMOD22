@@ -115,7 +115,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	}
 	
 	public DataParallelEvaluationMechanism(Pattern pattern, ParallelEvaluationSpecification specification, EvaluationPlan evaluationPlan) {
-		numOfThreads = specification.num_of_threeads;
+		numOfThreads = specification.numOfThreeads;
 		threads = new ParallelThread[numOfThreads];
 		// Build evaluation mechanism for internal nfa from specification
 		EvaluationSpecification internalSpecification = specification.internalSpecification;

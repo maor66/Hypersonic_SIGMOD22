@@ -420,7 +420,7 @@ public class PatternConfig {
 	
 	private static final long stockByCompanyPatternTimeWindow = 10;
 	public static final PatternSpecification[] stockByCompanyPatternSpecifications = {
-            new ParallelPatternSpecification("SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+            new PatternSpecification("SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
                     new String[][][] {new String[][]{new String[]{
                             StockEventTypesManager.microsoftEventTypeName,
                             StockEventTypesManager.googleEventTypeName,
@@ -442,7 +442,7 @@ public class PatternConfig {
                                     StockEventTypesManager.yahooEventTypeName,
                                     StockEventTypesManager.amznEventTypeName),
                     },
-                    SlaVerifierTypes.NONE, new int[][] {{2,3}, {2,3}, {2,3}, {2,3}}),
+                    SlaVerifierTypes.NONE),
             //////////////////////////////////////////////////////////////
             // MAX : This is second test for Hirzel!
 //            new PatternSpecification("HIRZEL_TEST", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,

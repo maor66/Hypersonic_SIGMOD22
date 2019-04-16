@@ -1,22 +1,28 @@
 package sase.evaluation.nfa.lazy;
 
 import sase.base.Event;
+import sase.base.EventType;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
+import sase.evaluation.nfa.lazy.order.cost.CostModelFactory;
+import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
+import sase.evaluation.nfa.lazy.order.cost.ICostModel;
 import sase.evaluation.nfa.parallel.InputBufferWorker;
 import sase.evaluation.nfa.parallel.MatchBufferWorker;
 import sase.evaluation.nfa.parallel.ThreadContainers;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
+import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
 
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 
 public class ParallelLazyChainNFA extends LazyChainNFA {
 
@@ -40,9 +46,19 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private Map<TypedNFAState, Integer> stateToMBThreads = new HashMap<>();
     private BlockingQueue<Match> secondStateInputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Match> completeMatchOutputQueue;
+    private int numOfThreads;
+    private CostModelTypes costModelType;
+    private Double tlr;
+    private List<EventType> eventTypes;
+    private Pattern pattern;
 
-    public ParallelLazyChainNFA(Pattern pattern, EvaluationPlan evaluationPlan, LazyNFANegationTypes negationType) {
-        super(pattern, evaluationPlan, negationType);
+    public ParallelLazyChainNFA(Pattern pattern, EvaluationPlan evaluationPlan, ParallelLazyNFAEvaluationSpecification specification) {
+        super(pattern, evaluationPlan, specification.negationType);
+        this.numOfThreads = specification.numOfThreads;
+        this.costModelType = specification.costModelType;
+        tlr = specification.throughputToLatencyRatio;
+        this.eventTypes = (List<EventType>) pattern.getEventTypes();
+        this.pattern = pattern;
     }
 
     @Override
@@ -112,6 +128,12 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
         executor.shutdownNow();
         return new ArrayList<>(matches);
+    }
+    
+    @Override
+    public void completeCreation(List<Pattern> patterns) {
+    	super.completeCreation(patterns);
+    	initallizeThreadAllocation();
     }
 
     private TypedNFAState getNextWorkerStateOrNullIfLast(TypedNFAState state)
@@ -215,9 +237,60 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         return null;
     }
 
-    public void initallizeThreadAllocation(List<Integer> inputBufferThreadsPerState, List<Integer> matchBufferThreadsPerState) {
+    public void initallizeThreadAllocation() {
+    	// MAX : fixing this to calculate num of threads without getting it as input    	
+    	ICostModel costModel = CostModelFactory.createCostModel(costModelType, new Object[] { eventTypes, tlr});
+    	// Cost of all the automata
+    	List<TypedNFAState> nfaStates = getWorkerStates();
+    	List<Double> costOfStates = new ArrayList<>();
+    	Double sumOfLastState = null;
+		List<EventType> eventTypesSoFar = new ArrayList<>();
+    	for (TypedNFAState state : nfaStates) {
+			eventTypesSoFar.add(state.getEventType());
+    		if (costOfStates.isEmpty()) {
+    			Double firstCost = costModel.getOrderCost(pattern, eventTypesSoFar); 
+    			costOfStates.add(firstCost);
+    			sumOfLastState = firstCost;
+    			continue;
+    		} else {
+    			// This is sum of costs till count's state. Need to calculate
+    			Double sumCosts = costModel.getOrderCost(pattern, eventTypesSoFar);
+    			costOfStates.add(sumCosts - sumOfLastState);
+    			sumOfLastState = sumCosts;
+    		}
+    	}
+    	double totalCost = 0;
+    	for (int i = 0; i < costOfStates.size(); ++i) {
+    		totalCost += costOfStates.get(i);
+    	}
+    	// Calculate num of threads per state based on costs
+    	List<Integer> inputBufferThreadsPerState = new ArrayList<>();
+    	List<Integer> matchBufferThreadsPerState = new ArrayList<>();
+    	int count = 0;
+    	int threadsLeft = numOfThreads;
+    	for (TypedNFAState state : nfaStates) {
+    		int numOfThreadsForState = (int)(costOfStates.get(count++) / totalCost * numOfThreads);
+    		if (numOfThreadsForState < 2) {
+    			// We need at least 2 threads. One for input and one for match buffer
+    			numOfThreadsForState = 2;
+    		}
+    		inputBufferThreadsPerState.add(numOfThreadsForState / 2);
+    		matchBufferThreadsPerState.add(numOfThreadsForState - numOfThreadsForState / 2);
+    		threadsLeft -= numOfThreadsForState;
+    	}
+    	
+    	if (threadsLeft != 0) {
+    		// Need to divide the rest of the threads between the buffers
+    		// I don't know what is the best way to do this so I will just add them somehow till Maor decides otherwise
+    		// Usually this number should be below zero because we gave free threads to first states
+    		inputBufferThreadsPerState.set(inputBufferThreadsPerState.size() - 1, inputBufferThreadsPerState.get(inputBufferThreadsPerState.size() - 1) + threadsLeft / 2);
+    		matchBufferThreadsPerState.set(matchBufferThreadsPerState.size() - 1, matchBufferThreadsPerState.get(inputBufferThreadsPerState.size() - 1) + (threadsLeft - threadsLeft / 2));
+    		// This should not happen but there could be a situation where we somehow reached 0 or negative threads.
+    		// Might need a smarter algorithm for fixing this or for thread allocation in general
+    	}
+    	
         int listIndex = 0;
-        for (TypedNFAState state : getWorkerStates()) {
+        for (TypedNFAState state : nfaStates) {
             stateToIBThreads.put(state, inputBufferThreadsPerState.get(listIndex));
             stateToMBThreads.put(state, matchBufferThreadsPerState.get(listIndex++));
         }

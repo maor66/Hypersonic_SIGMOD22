@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParallelPatternSpecification extends PatternSpecification {
+	// Max : This class is unnecessary and I removed its use. Will need to remove it from code completely in the future
     private List<Integer> inputBufferThreadsPerState = new ArrayList<>();
     private List<Integer> matchBufferThreadsPerState = new ArrayList<>();
     public ParallelPatternSpecification(String name, PatternTypes type, Long timeWindow, String[][][] structure, String[] negatedEventNames, String[] iteratedEventNames, ConditionSpecification[] conditions, SlaVerifierTypes verifierType, int [][] threadsPerState) {
