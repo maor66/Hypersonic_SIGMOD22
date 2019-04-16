@@ -95,23 +95,28 @@ public class EvaluationPlanCreator {
 		return nestedPlans;
 	}
 	
+	private EvaluationSpecification getRealSpecification() {
+		EvaluationSpecification currSpecification = specification;
+		if (specification instanceof ParallelEvaluationSpecification) {
+			currSpecification = ((ParallelEvaluationSpecification)specification).internalSpecification;
+		}
+		return currSpecification;
+	}
+	
 	private EvaluationPlan createOrderBasedPlan(Pattern pattern) {
 		
 		// Max: Fix for parallel specifications (Hirzel and RIP)
-		EvaluationSpecification curr_specification = specification;
-		if (specification instanceof ParallelEvaluationSpecification) {
-			curr_specification = ((ParallelEvaluationSpecification)specification).internalSpecification;
-		}
+		EvaluationSpecification currSpecification = getRealSpecification();
 		
 		// Maor: Here is where the order of the chain is determined
-		if (curr_specification instanceof FixedLazyNFAEvaluationSpecification) {
+		if (currSpecification instanceof FixedLazyNFAEvaluationSpecification) {
 			return createFixedOrderBasedPlan(pattern);
 		}
-		if (!(curr_specification instanceof CostBasedLazyNFAEvaluationSpecification)) {
-			throw new RuntimeException("Unexpected curr_specification type");
+		if (!(currSpecification instanceof CostBasedLazyNFAEvaluationSpecification)) {
+			throw new RuntimeException("Unexpected currSpecification type");
 		}
 		CostBasedLazyNFAEvaluationSpecification costBasedSpecification = 
-												(CostBasedLazyNFAEvaluationSpecification)curr_specification;
+												(CostBasedLazyNFAEvaluationSpecification)currSpecification;
 		IOrderingAlgorithm orderingAlgorithm = 
 				OrderingAlgorithmFactory.createOrderingAlgorithm(costBasedSpecification.orderingAlgorithmType, null);
 		ICostModel costModel = CostModelFactory.createCostModel(costBasedSpecification.costModelType, 
@@ -121,7 +126,7 @@ public class EvaluationPlanCreator {
 	}
 	
 	private EvaluationPlan createFixedOrderBasedPlan(Pattern pattern) {
-		FixedLazyNFAEvaluationSpecification fixedOrderSpecification = (FixedLazyNFAEvaluationSpecification)specification;
+		FixedLazyNFAEvaluationSpecification fixedOrderSpecification = (FixedLazyNFAEvaluationSpecification)getRealSpecification();
 		List<EventType> evaluationOrder = 
 							EventTypesManager.getInstance().convertNamesToTypes(fixedOrderSpecification.evaluationOrder);
 		if (pattern.getEventTypes().size() != evaluationOrder.size()) {
@@ -161,10 +166,13 @@ public class EvaluationPlanCreator {
 	}
 	
 	private EvaluationPlan createTreeBasedPlan(Pattern pattern) {
-		if (!(specification instanceof TreeEvaluationSpecification)) {
+		// Max: Fix for parallel specifications (Hirzel and RIP)
+		EvaluationSpecification currSpecification = getRealSpecification();
+		
+		if (!(currSpecification instanceof TreeEvaluationSpecification)) {
 			throw new RuntimeException("Unexpected specification type");
 		}
-		TreeEvaluationSpecification treeSpecification = (TreeEvaluationSpecification)specification;
+		TreeEvaluationSpecification treeSpecification = (TreeEvaluationSpecification)currSpecification;
 		ITreeTopologyCreator topologyCreator = 
 				TopologyCreatorFactory.createTopologyCreator(treeSpecification.topologyCreatorType);
 		ITreeCostModel costModel = TreeCostModelFactory.createTreeCostModel(
@@ -188,10 +196,12 @@ public class EvaluationPlanCreator {
 	private EvaluationPlan createMultiPatternPlan(List<Pattern> patterns, 
 												  EvaluationMechanismTypes multiPatternMechanismType,
 												  IEvaluationMechanism currentEvaluationMechanism) {
-		if (!(specification instanceof MultiPlanEvaluationSpecification)) {
+		// Max: Fix for parallel specifications (Hirzel and RIP)
+		EvaluationSpecification currSpecification = getRealSpecification();
+		if (!(currSpecification instanceof MultiPlanEvaluationSpecification)) {
 			throw new RuntimeException("Unexpected specification type");
 		}
-		MultiPlanEvaluationSpecification mptSpecification = (MultiPlanEvaluationSpecification)specification;
+		MultiPlanEvaluationSpecification mptSpecification = (MultiPlanEvaluationSpecification)currSpecification;
 		IMPTCalculator mptCalculator = MPTCalculatorFactory.createMPTCalculator(mptSpecification);
 		MultiPlan multiPlan = (currentEvaluationMechanism == null) ?
 				mptCalculator.calculateMultiPlan(new MultiPatternGraph(patterns)) :
