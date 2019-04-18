@@ -19,6 +19,7 @@ import sase.specification.workload.SinglePatternWorkloadSpecification;
 import sase.specification.workload.WorkloadCreationSpecification;
 import sase.user.stocks.StockEventTypesManager;
 import sase.user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
+import javafx.util.Pair;
 import sase.adaptive.monitoring.AdaptationNecessityDetectorTypes;
 import sase.adaptive.monitoring.invariant.compare.InvariantComparerType;
 import sase.base.Event; //this dummy import is needed to avoid the annoying 'unused warning suppression' message
@@ -456,7 +457,7 @@ public class SimulationConfig {
 
 		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 		CostModelTypes.THROUGHPUT_LATENCY,
-		0.0, Runtime.getRuntime().availableProcessors()),
+		0.0, Runtime.getRuntime().availableProcessors() * 100, new Pair<Integer, Integer>(2, 3)),
 //		//Maor: Lazy in the 2015 article
 //			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //						CostModelTypes.THROUGHPUT_LATENCY,
@@ -709,7 +710,7 @@ public class SimulationConfig {
 		new SimulationSpecification(new SinglePatternWorkloadSpecification(PatternConfig.testSequence),
 				new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.DYNAMIC,
 															CostModelTypes.THROUGHPUT_LATENCY,
-															0.0, Runtime.getRuntime().availableProcessors())),
+															0.0, Runtime.getRuntime().availableProcessors(), new Pair<Integer, Integer>(1, 1))),
 		new SimulationSpecification(new SinglePatternWorkloadSpecification(PatternConfig.testSequence),
 									new TreeEvaluationSpecification(TopologyCreatorTypes.SELINGER, 
 																	TreeCostModelTypes.THROUGHPUT_LATENCY, 0.0)),

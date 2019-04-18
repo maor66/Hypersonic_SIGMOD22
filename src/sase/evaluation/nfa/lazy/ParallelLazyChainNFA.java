@@ -23,6 +23,8 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javafx.util.Pair;
+
 
 public class ParallelLazyChainNFA extends LazyChainNFA {
 
@@ -51,6 +53,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private Double tlr;
     private List<EventType> eventTypes;
     private Pattern pattern;
+    private Pair<Integer, Integer> inputMatchThreadRatio;
     
     private class NotEnoughThreadsException extends Exception {
     	public NotEnoughThreadsException(String message) {
@@ -65,6 +68,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         tlr = specification.throughputToLatencyRatio;
         this.eventTypes = (List<EventType>) pattern.getEventTypes();
         this.pattern = pattern;
+        this.inputMatchThreadRatio = specification.inputMatchThreadRatio;
     }
 
     @Override
@@ -243,18 +247,25 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         return null;
     }
 
+    private void threadNumCalculation(int minThreadsPerState, List<Integer> inputBufferThreadsPerState,
+    		List<Integer> matchBufferThreadsPerState, int numOfThreadsForState) {
+    	int numOfInputBufferThreads = numOfThreadsForState * inputMatchThreadRatio.getKey() / (inputMatchThreadRatio.getKey() + inputMatchThreadRatio.getValue());
+    	// num of input buffer threads can't be 0
+    	numOfInputBufferThreads = Math.max(numOfInputBufferThreads, 1);
+    	inputBufferThreadsPerState.add(numOfInputBufferThreads);
+		matchBufferThreadsPerState.add(numOfThreadsForState - numOfInputBufferThreads);
+    }
+    
     private void DivideThreads(List<TypedNFAState> nfaStates, List<Double> costOfStates, double totalCost,
     		List<Integer> inputBufferThreadsPerState, List<Integer> matchBufferThreadsPerState) throws NotEnoughThreadsException {
     	int count = 0;
     	int threadsLeft = numOfThreads;
+    	int minThreadsPerState = 2;
     	for (TypedNFAState state : nfaStates) {
     		int numOfThreadsForState = (int)(costOfStates.get(count++) / totalCost * numOfThreads);
-    		if (numOfThreadsForState < 2) {
-    			// We need at least 2 threads. One for input and one for match buffer
-    			numOfThreadsForState = 2;
-    		}
-    		inputBufferThreadsPerState.add(numOfThreadsForState / 2);
-    		matchBufferThreadsPerState.add(numOfThreadsForState - numOfThreadsForState / 2);
+			// We need at least 2 threads. One for input and one for match buffer
+    		numOfThreadsForState = Math.max(numOfThreadsForState, minThreadsPerState);
+    		threadNumCalculation(minThreadsPerState, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
     		threadsLeft -= numOfThreadsForState;
     	}
     	
@@ -274,8 +285,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     		if (numOfThreadsForState == 1) {
     			inputBufferThreadsPerState.add(numOfThreadsForState);
     		} else {
-    			inputBufferThreadsPerState.add(numOfThreadsForState / 2);
-        		matchBufferThreadsPerState.add(numOfThreadsForState - numOfThreadsForState / 2);
+    			threadNumCalculation(minThreadsPerState, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
     		}
     		threadsLeft -= numOfThreadsForState;
     	}
