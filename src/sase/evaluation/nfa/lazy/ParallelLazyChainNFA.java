@@ -55,7 +55,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private Pattern pattern;
     private Pair<Integer, Integer> inputMatchThreadRatio;
     
-    private class NotEnoughThreadsException extends Exception {
+    private class NotEnoughThreadsException extends RuntimeException {
     	public NotEnoughThreadsException(String message) {
     		super(message);
     	}
@@ -143,6 +143,12 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     @Override
     public void completeCreation(List<Pattern> patterns) {
     	super.completeCreation(patterns);
+    	// Check if we have enough threads to work with
+    	List<TypedNFAState> nfaStates = getWorkerStates();
+    	if (nfaStates.size() * 2 > numOfThreads) {
+    		String res = String.format("Not enough threads passed. Need at least %d threads", nfaStates.size() * 2);
+    		throw new NotEnoughThreadsException(res);
+    	}
     	initallizeThreadAllocation();
     }
 
@@ -256,8 +262,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 		matchBufferThreadsPerState.add(numOfThreadsForState - numOfInputBufferThreads);
     }
     
-    private void DivideThreads(List<TypedNFAState> nfaStates, List<Double> costOfStates, double totalCost,
-    		List<Integer> inputBufferThreadsPerState, List<Integer> matchBufferThreadsPerState) throws NotEnoughThreadsException {
+    private void threadBalancing(List<TypedNFAState> nfaStates, List<Double> costOfStates, double totalCost,
+    		List<Integer> inputBufferThreadsPerState, List<Integer> matchBufferThreadsPerState) {
     	int count = 0;
     	int threadsLeft = numOfThreads;
     	int minThreadsPerState = 2;
@@ -274,8 +280,24 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     	}
     	
     	if (threadsLeft < 0) {
-    		String res = String.format("Not enough threads passed. Need at least %d threads", nfaStates.size() * 2);
-    		throw new NotEnoughThreadsException(res);
+    		// Impossible. Do stupid thread balancing
+    		System.out.println("Not enough threads for smart balancing. Dividing equally");
+    		inputBufferThreadsPerState.clear();
+    		matchBufferThreadsPerState.clear();
+    		threadsLeft = numOfThreads;
+    		for (TypedNFAState state : nfaStates) {
+    			inputBufferThreadsPerState.add(numOfThreads / nfaStates.size() / 2);
+    			matchBufferThreadsPerState.add(numOfThreads / nfaStates.size() / 2);
+    			threadsLeft -= 2 * (numOfThreads / nfaStates.size() / 2);
+        	}
+    		if (threadsLeft > 0) {
+    			int inputThreads = (int)Math.ceil(threadsLeft / 2);
+    			inputBufferThreadsPerState.set(inputBufferThreadsPerState.size() - 1,
+    					inputBufferThreadsPerState.get(inputBufferThreadsPerState.size() - 1) + inputThreads);
+    			matchBufferThreadsPerState.set(inputBufferThreadsPerState.size() - 1,
+    					matchBufferThreadsPerState.get(inputBufferThreadsPerState.size() - 1) + threadsLeft - inputThreads);
+    		}
+    		return;
     	}
     	
     	// Need to divide the rest of the threads to states by ratio
@@ -320,12 +342,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     	List<Integer> inputBufferThreadsPerState = new ArrayList<>();
     	List<Integer> matchBufferThreadsPerState = new ArrayList<>();
     	
-    	try {
-			DivideThreads(nfaStates, costOfStates, totalCost, inputBufferThreadsPerState, matchBufferThreadsPerState);
-		} catch (NotEnoughThreadsException e) {
-			e.printStackTrace();
-			return;
-		}
+    	threadBalancing(nfaStates, costOfStates, totalCost, inputBufferThreadsPerState, matchBufferThreadsPerState);
     	
         int listIndex = 0;
         for (TypedNFAState state : nfaStates) {

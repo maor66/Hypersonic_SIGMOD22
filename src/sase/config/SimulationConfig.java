@@ -457,7 +457,7 @@ public class SimulationConfig {
 
 		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 		CostModelTypes.THROUGHPUT_LATENCY,
-		0.0, Runtime.getRuntime().availableProcessors() * 100, new Pair<Integer, Integer>(2, 3)),
+		0.0, Runtime.getRuntime().availableProcessors(), new Pair<Integer, Integer>(2, 3)),
 //		//Maor: Lazy in the 2015 article
 //			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //						CostModelTypes.THROUGHPUT_LATENCY,
