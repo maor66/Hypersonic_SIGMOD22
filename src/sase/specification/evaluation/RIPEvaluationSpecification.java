@@ -13,5 +13,15 @@ public final class RIPEvaluationSpecification extends ParallelEvaluationSpecific
 		this.eventsPerThread = eventsPerThread;
 		this.windowSize = windowSize;
 	}
-
+	
+	@Override
+	public String getShortDescription() {
+		return String.format("%s|%d|%d", type, eventsPerThread, windowSize);
+	}
+	
+	@Override
+	public String getLongDescription() {
+		return String.format("%s (ordering algorithm %s, events per thread %d, window size %d)",
+				 			 type, eventsPerThread, windowSize);
+	}
 }

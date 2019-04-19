@@ -11,4 +11,14 @@ public final class HirzelEvaluationSpecification extends ParallelEvaluationSpeci
 		super(type, specification, num_of_threads);
 		this.attribute = attribute;
 	}
+	
+	@Override
+	public String getShortDescription() {
+		return String.format("%s|%s", type, attribute);
+	}
+	
+	@Override
+	public String getLongDescription() {
+		return String.format("%s (attribute %s)", type, attribute);
+	}
 }
