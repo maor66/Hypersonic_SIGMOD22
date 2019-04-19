@@ -15,7 +15,9 @@ import sase.evaluation.nfa.parallel.MatchBufferWorker;
 import sase.evaluation.nfa.parallel.ThreadContainers;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
+import sase.simulator.Environment;
 import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
+import sase.statistics.Statistics;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -299,6 +301,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     		}
     		return;
     	}
+    	
+    	Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(Statistics.isSmartBalancing, 1);
     	
     	// Need to divide the rest of the threads to states by ratio
     	count = nfaStates.size();
