@@ -47,6 +47,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	public class ParallelThread extends Thread {
 		public IEvaluationMechanism machine;
 		protected BlockingQueue<EvaluationInput> threadInput = new LinkedBlockingQueue<EvaluationInput>();
+		protected BlockingQueue<Long> eventSizes = new LinkedBlockingQueue<>();
 		
 		public void run() {
 			// Specific Hirzel code to run
@@ -81,6 +82,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 			if (result != null) {
 				threadOutput.addAll(result);
 			}
+			eventSizes.add(machine.size());
 		}
 		
 		public void cancel() {
@@ -191,9 +193,16 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 
 	@Override
 	public long size() {
-		//ILYA: You have to add a new feature in order to efficiently implement this method.
-		//		Talk to me and I'll tell you what to do.
-		return (long)0;
+		long size = 0;
+		for (ParallelThread parallelThread : threads) {
+			Long res = null;
+			res = parallelThread.eventSizes.poll();
+			if (res != null) {
+				size += res;
+			}
+			parallelThread.eventSizes.clear();
+		}
+		return size;
 	}
 
 	@Override
