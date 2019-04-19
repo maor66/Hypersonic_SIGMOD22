@@ -44,11 +44,11 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private Map<NFAState, List<InputBufferWorker>> IBWorkers;
     private Map<NFAState, List<MatchBufferWorker>> MBWorkers;
     private Map<TypedNFAState, BlockingQueue<Event>> eventInputQueues;
-    private Map<TypedNFAState, Integer> stateToIBThreads = new HashMap<>();
-    private Map<TypedNFAState, Integer> stateToMBThreads = new HashMap<>();
+    protected Map<TypedNFAState, Integer> stateToIBThreads = new HashMap<>();
+    protected Map<TypedNFAState, Integer> stateToMBThreads = new HashMap<>();
     private BlockingQueue<Match> secondStateInputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Match> completeMatchOutputQueue;
-    private int numOfThreads;
+    protected int numOfThreads;
     private CostModelTypes costModelType;
     private Double tlr;
     private List<EventType> eventTypes;
@@ -158,7 +158,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         return (indexInWorkerStates == getWorkerStates().size() - 1) ? null : getWorkerStates().get(indexInWorkerStates + 1);
     }
 
-    private void initializeThreads() {
+    protected void initializeThreads() {
         IBWorkers = new HashMap<>();
         MBWorkers = new HashMap<>();
         eventInputQueues = new HashMap<>();
@@ -237,7 +237,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 .collect(Collectors.toList());
         return (List<TypedNFAState>)(List<?>) workerStream;
     }
-    private List<TypedNFAState> getWorkerStates() {
+    protected List<TypedNFAState> getWorkerStates() {
         //events on the initial state are going directly to the match buffer of the second state, so need for them
         List<NFAState> workerStream = states.stream().filter(state -> (!state.isAccepting() && !state.isRejecting() && !state.isInitial()))
                 .collect(Collectors.toList());

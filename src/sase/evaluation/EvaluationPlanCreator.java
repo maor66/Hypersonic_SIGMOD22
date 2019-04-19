@@ -64,6 +64,7 @@ public class EvaluationPlanCreator {
 		switch (specification.type) {
 			case LAZY_CHAIN:
 			case LAZY_CHAIN_PARALLEL:
+			case LAZY_CHAIN_PARALLEL_DUMMY:
 				return createOrderBasedPlan(pattern);
 			case TREE:
 				return createTreeBasedPlan(pattern);
