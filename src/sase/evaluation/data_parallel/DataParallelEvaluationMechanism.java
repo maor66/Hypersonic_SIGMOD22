@@ -47,7 +47,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	public class ParallelThread extends Thread {
 		public IEvaluationMechanism machine;
 		protected BlockingQueue<EvaluationInput> threadInput = new LinkedBlockingQueue<EvaluationInput>();
-		protected BlockingQueue<Long> eventSizes = new LinkedBlockingQueue<>();
+		volatile long maxSize = 0;
 		
 		public void run() {
 			// Specific Hirzel code to run
@@ -80,9 +80,10 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 			}
 			// add result of processNewEvent to out queue
 			if (result != null) {
+				Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.numberOfSynchronizationActions);
 				threadOutput.addAll(result);
 			}
-			eventSizes.add(machine.size());
+			maxSize = Math.max(maxSize, machine.size());
 		}
 		
 		public void cancel() {
@@ -195,12 +196,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	public long size() {
 		long size = 0;
 		for (ParallelThread parallelThread : threads) {
-			Long res = null;
-			res = parallelThread.eventSizes.poll();
-			if (res != null) {
-				size += res;
-			}
-			parallelThread.eventSizes.clear();
+			size += parallelThread.maxSize;
 		}
 		return size;
 	}

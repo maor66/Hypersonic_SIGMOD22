@@ -4,9 +4,9 @@ import sase.evaluation.EvaluationMechanismTypes;
 import sase.evaluation.nfa.lazy.order.OrderingAlgorithmTypes;
 import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
 
-public class ParallelDummyEvaluationSpecification extends CostBasedLazyNFAEvaluationSpecification {
+public class ParallelBasicEvaluationSpecification extends CostBasedLazyNFAEvaluationSpecification {
 
-	public ParallelDummyEvaluationSpecification(OrderingAlgorithmTypes orderingAlgorithmType,
+	public ParallelBasicEvaluationSpecification(OrderingAlgorithmTypes orderingAlgorithmType,
 			CostModelTypes costModelType, Double throughputToLatencyRatio) {
 		super(orderingAlgorithmType, costModelType, throughputToLatencyRatio);
 		this.type = EvaluationMechanismTypes.LAZY_CHAIN_PARALLEL_DUMMY;

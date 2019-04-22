@@ -10,8 +10,10 @@ import sase.evaluation.data_parallel.DataParallelEvaluationMechanism.EvaluationI
 import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
 import sase.pattern.condition.base.AtomicCondition;
+import sase.simulator.Environment;
 import sase.specification.evaluation.ParallelEvaluationSpecification;
 import sase.specification.evaluation.RIPEvaluationSpecification;
+import sase.statistics.Statistics;
 
 public final class RIPEvaluationMechanism extends DataParallelEvaluationMechanism {
 	
@@ -71,5 +73,6 @@ public final class RIPEvaluationMechanism extends DataParallelEvaluationMechanis
 		}
 		currThread = newCurrThread;
 		threads[currThread].threadInput.add(new EvaluationInput(evaluationInput.event, evaluationInput.canStartInstance));
+		Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.numberOfSynchronizationActions);
 	}
 }

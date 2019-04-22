@@ -1,18 +1,17 @@
 package sase.specification.evaluation;
 
-import javafx.util.Pair;
 import sase.evaluation.EvaluationMechanismTypes;
-import sase.evaluation.nfa.lazy.LazyNFANegationTypes;
 import sase.evaluation.nfa.lazy.order.OrderingAlgorithmTypes;
 import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
 
 public class ParallelLazyNFAEvaluationSpecification extends CostBasedLazyNFAEvaluationSpecification {
 
 	public int numOfThreads;
-	public Pair<Integer, Integer> inputMatchThreadRatio;
+	// This should be between 0 and 1. The number indicates what percentage of threads will go to input threads
+	public double inputMatchThreadRatio;
 	
     public ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes orderingAlgorithmType, CostModelTypes costModelType, Double throughputToLatencyRatio, 
-    		int numOfThreads, Pair<Integer, Integer> inputMatchThreadRatio) {
+    		int numOfThreads, double inputMatchThreadRatio) {
         super(orderingAlgorithmType, costModelType, throughputToLatencyRatio);
         this.type = EvaluationMechanismTypes.LAZY_CHAIN_PARALLEL;
         this.numOfThreads = numOfThreads;

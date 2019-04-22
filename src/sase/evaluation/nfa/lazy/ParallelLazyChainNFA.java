@@ -55,7 +55,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private Double tlr;
     private List<EventType> eventTypes;
     private Pattern pattern;
-    private Pair<Integer, Integer> inputMatchThreadRatio;
+    private double inputMatchThreadRatio;
     
     private class NotEnoughThreadsException extends RuntimeException {
     	public NotEnoughThreadsException(String message) {
@@ -145,12 +145,6 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     @Override
     public void completeCreation(List<Pattern> patterns) {
     	super.completeCreation(patterns);
-    	// Check if we have enough threads to work with
-    	List<TypedNFAState> nfaStates = getWorkerStates();
-    	if (nfaStates.size() * 2 > numOfThreads) {
-    		String res = String.format("Not enough threads passed. Need at least %d threads", nfaStates.size() * 2);
-    		throw new NotEnoughThreadsException(res);
-    	}
     	initallizeThreadAllocation();
     }
 
@@ -257,14 +251,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
     private void threadNumCalculation(int minThreadsPerState, List<Integer> inputBufferThreadsPerState,
     		List<Integer> matchBufferThreadsPerState, int numOfThreadsForState) {
-    	int numOfInputBufferThreads = numOfThreadsForState * inputMatchThreadRatio.getKey() / (inputMatchThreadRatio.getKey() + inputMatchThreadRatio.getValue());
+    	int numOfInputBufferThreads = (int) (numOfThreadsForState * inputMatchThreadRatio);
     	// num of input buffer threads can't be 0
     	numOfInputBufferThreads = Math.max(numOfInputBufferThreads, 1);
     	inputBufferThreadsPerState.add(numOfInputBufferThreads);
 		matchBufferThreadsPerState.add(numOfThreadsForState - numOfInputBufferThreads);
     }
     
-    private void threadBalancing(List<TypedNFAState> nfaStates, List<Double> costOfStates, double totalCost,
+    private void balanceThreads(List<TypedNFAState> nfaStates, List<Double> costOfStates, double totalCost,
     		List<Integer> inputBufferThreadsPerState, List<Integer> matchBufferThreadsPerState) {
     	int count = 0;
     	int threadsLeft = numOfThreads;
@@ -288,9 +282,13 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     		matchBufferThreadsPerState.clear();
     		threadsLeft = numOfThreads;
     		for (TypedNFAState state : nfaStates) {
-    			inputBufferThreadsPerState.add(numOfThreads / nfaStates.size() / 2);
-    			matchBufferThreadsPerState.add(numOfThreads / nfaStates.size() / 2);
-    			threadsLeft -= 2 * (numOfThreads / nfaStates.size() / 2);
+    			int numOfThreadsForInput = (int) (numOfThreads / nfaStates.size() * inputMatchThreadRatio);
+    			numOfThreadsForInput = Math.max(numOfThreadsForInput, 1);
+    			inputBufferThreadsPerState.add(numOfThreadsForInput);
+    			int numOfThreadsForMatch = numOfThreads / nfaStates.size() - numOfThreadsForInput;
+    			numOfThreadsForInput = Math.max(numOfThreadsForMatch, 1);
+    			matchBufferThreadsPerState.add(numOfThreadsForMatch);
+    			threadsLeft -= numOfThreadsForInput + numOfThreadsForMatch;
         	}
     		if (threadsLeft > 0) {
     			int inputThreads = (int)Math.ceil(threadsLeft / 2);
@@ -318,10 +316,15 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     }
     
     public void initallizeThreadAllocation() {
+    	// Check if we have enough threads to work with
+    	List<TypedNFAState> nfaStates = getWorkerStates();
+    	if (nfaStates.size() * 2 > numOfThreads) {
+    		String res = String.format("Not enough threads passed. Need at least %d threads", nfaStates.size() * 2);
+    		throw new NotEnoughThreadsException(res);
+    	}
     	// MAX : fixing this to calculate num of threads without getting it as input    	
     	ICostModel costModel = CostModelFactory.createCostModel(costModelType, new Object[] { eventTypes, tlr});
     	// Cost of all the automata
-    	List<TypedNFAState> nfaStates = getWorkerStates();
     	List<Double> costOfStates = new ArrayList<>();
     	Double sumOfLastState = null;
 		List<EventType> eventTypesSoFar = new ArrayList<>();
@@ -346,7 +349,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     	List<Integer> inputBufferThreadsPerState = new ArrayList<>();
     	List<Integer> matchBufferThreadsPerState = new ArrayList<>();
     	
-    	threadBalancing(nfaStates, costOfStates, totalCost, inputBufferThreadsPerState, matchBufferThreadsPerState);
+    	balanceThreads(nfaStates, costOfStates, totalCost, inputBufferThreadsPerState, matchBufferThreadsPerState);
     	
         int listIndex = 0;
         for (TypedNFAState state : nfaStates) {

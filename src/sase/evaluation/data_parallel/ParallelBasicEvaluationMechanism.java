@@ -12,30 +12,19 @@ import sase.evaluation.nfa.lazy.order.OrderingAlgorithmTypes;
 import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
-import sase.specification.evaluation.ParallelDummyEvaluationSpecification;
+import sase.specification.evaluation.ParallelBasicEvaluationSpecification;
 import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
 
 // Dummy class for testing Maor's algorithm compared to trivial solution.
 // One input and one match thread will be created for each state
-public class ParallelDummyEvaluationMechanism extends ParallelLazyChainNFA {
+public class ParallelBasicEvaluationMechanism extends ParallelLazyChainNFA {
 
-	public ParallelDummyEvaluationMechanism(Pattern pattern, EvaluationPlan evaluationPlan,
-			ParallelDummyEvaluationSpecification specification) {
+	public ParallelBasicEvaluationMechanism(Pattern pattern, EvaluationPlan evaluationPlan,
+			ParallelBasicEvaluationSpecification specification) {
 		super(pattern, evaluationPlan, new ParallelLazyNFAEvaluationSpecification(specification.orderingAlgorithmType,
 				specification.costModelType,
-				specification.throughputToLatencyRatio, 0, null));
+				specification.throughputToLatencyRatio, 0, 0));
 	}
-	
-	@Override
-	public void completeCreation(List<Pattern> patterns) {
-		// Hack to do completeCreation of parent of parent
-		try {
-			super.completeCreation(patterns);
-		} catch(RuntimeException e) {
-			// do nothing...
-		}
-		initallizeThreadAllocation();
-    }
 	
 	@Override
 	public void initallizeThreadAllocation() {

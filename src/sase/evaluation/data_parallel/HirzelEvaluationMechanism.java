@@ -2,7 +2,9 @@ package sase.evaluation.data_parallel;
 
 import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
+import sase.simulator.Environment;
 import sase.specification.evaluation.HirzelEvaluationSpecification;
+import sase.statistics.Statistics;
 
 public final class HirzelEvaluationMechanism extends DataParallelEvaluationMechanism {
 	// For Hirzel algorithm implementation we need to choose an attribute!
@@ -30,6 +32,7 @@ public final class HirzelEvaluationMechanism extends DataParallelEvaluationMecha
 //		int id = firstLetter.hashCode() % numOfThreads;
 		
 		// Add to thread blocking queue
+		Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.numberOfSynchronizationActions);
 		((ParallelThread)threads[id]).threadInput.add(evaluationInput);
 	}
 
