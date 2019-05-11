@@ -21,7 +21,7 @@ public final class RIPEvaluationSpecification extends ParallelEvaluationSpecific
 	
 	@Override
 	public String getLongDescription() {
-		return String.format("%s (ordering algorithm %s, events per thread %d, window size %d)",
+		return String.format("ordering algorithm %s, events per thread %d, window size %d",
 				 			 type, eventsPerThread, windowSize);
 	}
 }
