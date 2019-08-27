@@ -3,7 +3,7 @@ package sase.evaluation.data_parallel;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.util.Pair;
+
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.LazyChainNFA;
 import sase.evaluation.nfa.lazy.LazyNFANegationTypes;

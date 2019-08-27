@@ -19,7 +19,6 @@ import sase.specification.workload.SinglePatternWorkloadSpecification;
 import sase.specification.workload.WorkloadCreationSpecification;
 import sase.user.stocks.StockEventTypesManager;
 import sase.user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
-import javafx.util.Pair;
 import sase.adaptive.monitoring.AdaptationNecessityDetectorTypes;
 import sase.adaptive.monitoring.invariant.compare.InvariantComparerType;
 import sase.base.Event; //this dummy import is needed to avoid the annoying 'unused warning suppression' message
@@ -455,12 +454,12 @@ public class SimulationConfig {
 	public static final EvaluationSpecification[] evaluationSpecifications = {
 
 
-//		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-//		CostModelTypes.THROUGHPUT_LATENCY,
-//		0.0, Runtime.getRuntime().availableProcessors(), 0.5),
-//		new ParallelBasicEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-//		CostModelTypes.THROUGHPUT_LATENCY,
-//		0.0),
+		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+		CostModelTypes.THROUGHPUT_LATENCY,
+		0.0, Runtime.getRuntime().availableProcessors(), 0.5),
+		new ParallelBasicEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+		CostModelTypes.THROUGHPUT_LATENCY,
+		0.0),
 //		//Maor: Lazy in the 2015 article
 			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 						CostModelTypes.THROUGHPUT_LATENCY,
@@ -468,9 +467,10 @@ public class SimulationConfig {
 			new HirzelEvaluationSpecification(EvaluationMechanismTypes.HIRZEL_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 					CostModelTypes.THROUGHPUT_LATENCY,
 					0.0), Runtime.getRuntime().availableProcessors(), StockEventTypesManager.labelAttributeName),
-//			new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-//					CostModelTypes.THROUGHPUT_LATENCY,
-//					0.0), Runtime.getRuntime().availableProcessors(), 20000, 1), 
+			new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+					CostModelTypes.THROUGHPUT_LATENCY,
+					0.0), Runtime.getRuntime().availableProcessors(), 20000, 1),
+		
 ////			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
 //						CostModelTypes.THROUGHPUT_LATENCY,
 //						0.0),

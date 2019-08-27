@@ -25,7 +25,6 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javafx.util.Pair;
 
 
 public class ParallelLazyChainNFA extends LazyChainNFA {
@@ -71,6 +70,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         this.eventTypes = (List<EventType>) pattern.getEventTypes();
         this.pattern = pattern;
         this.inputMatchThreadRatio = specification.inputMatchThreadRatio;
+        System.out.println("Processors: " + Runtime.getRuntime().availableProcessors());
     }
 
     @Override
