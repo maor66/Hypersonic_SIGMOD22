@@ -319,7 +319,7 @@ public class Simulator {
 //				writer.write(match.toString()+"\n");
 //			}
 //			writer.close();
-//			System.out.println("Found " + foundMatches.size() + " matches");
+			System.out.println("Found " + foundMatches.size() + " matches");
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
