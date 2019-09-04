@@ -85,7 +85,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             if (eventState.isInitial()) {
                 LinkedBlockingQueue<Match> transferQueue = (LinkedBlockingQueue<Match>) secondStateInputQueue;
                 transferQueue.put(new Match(Event.asList(event), System.currentTimeMillis()));
-                secondStateInputQueue.put(new Match(Event.asList(event), System.currentTimeMillis()));
+//                secondStateInputQueue.put(new Match(Event.asList(event), System.currentTimeMillis()));
             }
             else {
                 LinkedBlockingQueue<Event> transferQueue = (LinkedBlockingQueue<Event>) eventInputQueues.get(eventState);

@@ -8,6 +8,9 @@ import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -20,7 +23,9 @@ public abstract class BufferWorker implements Runnable {
     int finisherInputsToShutdown;
     int numberOfFinisherInputsToSend;
     String threadName;
-    String log;
+    String log = "";
+    long ID;
+    int loopCounter;
     public ThreadContainers getDataStorage() {
         return dataStorage;
     }
@@ -32,9 +37,22 @@ public abstract class BufferWorker implements Runnable {
         this.numberOfFinisherInputsToSend = numberOfFinisherInputsToSend;
     }
 
+    private void writeLog()
+    {
+        try {
+            BufferedWriter logWriter = new BufferedWriter(new FileWriter("C:\\Users\\Maor\\Documents\\compHyb" + ID + ".txt"));
+            logWriter.write(log);
+            logWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void run() {
         Thread.currentThread().setName(threadName + Thread.currentThread().getName());
+        ID =  Thread.currentThread().getId();
+        loopCounter = 0;
         while (true) {
             ContainsEvent newElement = null;
             try {
@@ -49,10 +67,12 @@ public abstract class BufferWorker implements Runnable {
                     for (int i = 0; i< numberOfFinisherInputsToSend; i++) {
                         sendToNextState(new Match());
                     }
+                    writeLog();
                     return; //TODO: how to end task?
                 }
                 continue;
             }
+//            log += "Adding to my buffer" +  newElement + "\n";
             dataStorage.addEventToOwnBuffer(newElement);
             List<List<ContainsEvent>> oppositeBufferList = getOppositeBufferList();
             if (oppositeBufferList.isEmpty()) {
@@ -92,9 +112,16 @@ public abstract class BufferWorker implements Runnable {
 
     protected List<List<ContainsEvent>> getOppositeBufferList()
     {
+//        log+= "Getting buffers. loop " + loopCounter + "\n";
         List<List<ContainsEvent>> oppositeBuffer = new ArrayList<>();
         for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
-            oppositeBuffer.add(worker.getDataStorage().getBufferSubListWithOptimisticLock());
+//            log += "Getting from worker " + worker.ID + "\n";
+            var a = worker.getDataStorage().getBufferSubListWithOptimisticLock();
+            for (var b : a) {
+//                log+= "Got element " + b + "\n";
+            }
+            oppositeBuffer.add(a);
+//            oppositeBuffer.add(worker.getDataStorage().getBufferSubListWithOptimisticLock());
         }
         return oppositeBuffer;
     }
@@ -102,10 +129,16 @@ public abstract class BufferWorker implements Runnable {
     protected boolean isEventCompatibleWithPartialMatch(TypedNFAState eventState, Match partialMatch, Event event) {
         //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
         //TODO: doesn't have to verify temporal condition first anymore - check if removing doesn't hurt correctness
-    	
 
-        return verifyTimeWindowConstraint(partialMatch, event) && getActualNextTransition(eventState).verifyConditionWithTemporalConditionFirst( //TODO: check if verifying the (non-temporal) condition works with partial events or consider changing the condition
-                Stream.concat(partialMatch.getPrimitiveEvents().stream(),Event.asList(event).stream()).collect(Collectors.toList())); //Combining two lists
+        //TODO: complicated condition instead of return for debugging reasons
+        log+= loopCounter+ ": " + partialMatch +", " + event + "\n";
+        if (verifyTimeWindowConstraint(partialMatch, event)) {
+            return getActualNextTransition(eventState).verifyConditionWithTemporalConditionFirst(
+                    Stream.concat(partialMatch.getPrimitiveEvents().stream(),Event.asList(event).stream()).collect(Collectors.toList()));
+        }
+        return false;
+//        return verifyTimeWindowConstraint(partialMatch, event) && getActualNextTransition(eventState).verifyConditionWithTemporalConditionFirst( //TODO: check if verifying the (non-temporal) condition works with partial events or consider changing the condition
+//                Stream.concat(partialMatch.getPrimitiveEvents().stream(),Event.asList(event).stream()).collect(Collectors.toList())); //Combining two lists
     }
 
     private LazyTransition getActualNextTransition(NFAState state)
@@ -140,8 +173,11 @@ public abstract class BufferWorker implements Runnable {
 
     protected void tryToAddMatchesWithEvents(List<Match> matches, List<Event> events)
     {
+        loopCounter++;
+//        log += "Starting loop " + loopCounter + "has " + events.size() + " events and " + matches.size() + " matches\n";
         for (Match partialMatch : matches) {
             for (Event event : events) {
+//                log+= "In loop " + loopCounter + "Event" + event + " partial match " + partialMatch;
                 if (isEventCompatibleWithPartialMatch(eventState, partialMatch, event)) {
                     sendToNextState(partialMatch.createNewPartialMatchWithEvent(event));
                 }
