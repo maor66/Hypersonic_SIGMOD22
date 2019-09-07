@@ -84,6 +84,19 @@ public class StatisticsManager {
 	private HashMap<String, Long> discreteStatistics; //TODO: should work with AtomicLong to ensure correct statistics
 	private HashMap<String, Double> fractionalStatistics;
 	private HashMap<String, Long> timeMeasurementsInProgress;
+	private ThreadLocal<Long> timestampComparison = new ThreadLocal<>(){
+		@Override
+		protected Long initialValue(){
+			return 0L;
+		}
+	};
+	public void incrementThreadLocal() {
+		timestampComparison.set(timestampComparison.get() + 1 );
+	}
+
+	public Long getThreadLocal() {
+		return timestampComparison.get();
+	}
 
 
 	private StatisticsManager(CSVWriter writer, String runDescription) throws IOException {
@@ -116,14 +129,14 @@ public class StatisticsManager {
 		}
 	}
 
-	public synchronized void updateDiscreteStatistic(String key, long valueToAdd) {
+	public  void updateDiscreteStatistic(String key, long valueToAdd) {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
 		discreteStatistics.put(key, discreteStatistics.get(key) + valueToAdd);
 	}
 
-	public synchronized void replaceDiscreteStatistic(String key, long valueToPut) {
+	public  void replaceDiscreteStatistic(String key, long valueToPut) {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
@@ -138,7 +151,7 @@ public class StatisticsManager {
 		updateDiscreteStatistic(key, -1);
 	}
 
-	public synchronized void updateDiscreteIfBigger(String key, long newValue) {
+	public  void updateDiscreteIfBigger(String key, long newValue) {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
@@ -156,39 +169,39 @@ public class StatisticsManager {
 		updateDiscreteMemoryStatistic(key, 1);
 	}
 
-	public synchronized long getDiscreteStatistic(String key) {
+	public  long getDiscreteStatistic(String key) {
 		if (!(discreteStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
 		return discreteStatistics.get(key);
 	}
 
-	public synchronized void updateFractionalStatistic(String key, double valueToAdd) {
+	public  void updateFractionalStatistic(String key, double valueToAdd) {
 		if (!(fractionalStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
 		fractionalStatistics.put(key, fractionalStatistics.get(key) + valueToAdd);
 	}
 
-	public synchronized void replaceFractionalStatistic(String key, double valueToPut) {
+	public  void replaceFractionalStatistic(String key, double valueToPut) {
 		if (!(fractionalStatistics.containsKey(key))) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
 		}
 		fractionalStatistics.put(key, valueToPut);
 	}
 
-	public synchronized void startMeasuringTime(String timeStatisticKey) {
+	public  void startMeasuringTime(String timeStatisticKey) {
 		if (!discreteStatistics.containsKey(timeStatisticKey) && !fractionalStatistics.containsKey(timeStatisticKey)) {
 			throw new RuntimeException(String.format("Unknown statistic identifier: %s", timeStatisticKey));
 		}
 		timeMeasurementsInProgress.put(timeStatisticKey, System.currentTimeMillis());
 	}
 
-	public synchronized boolean isTimeMeasuredForStatistic(String timeStatisticKey) {
+	public  boolean isTimeMeasuredForStatistic(String timeStatisticKey) {
 		return timeMeasurementsInProgress.containsKey(timeStatisticKey);
 	}
 
-	public synchronized void stopMeasuringTime(String timeStatisticKey) {
+	public  void stopMeasuringTime(String timeStatisticKey) {
 		if (!isTimeMeasuredForStatistic(timeStatisticKey)) {
 			throw new RuntimeException(String.format("No time measurement was started: %s", timeStatisticKey));
 		}
@@ -245,7 +258,7 @@ public class StatisticsManager {
 		return value;
 	}
 
-	private synchronized Double computeAverageStatisticValue(String numberOfElementsName, Double value) {
+	private  Double computeAverageStatisticValue(String numberOfElementsName, Double value) {
 		Long numberOfElements = discreteStatistics.get(numberOfElementsName);
 		if (numberOfElements > 0) {
 			return value / numberOfElements;

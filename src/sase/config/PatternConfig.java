@@ -418,7 +418,7 @@ public class PatternConfig {
 	
 	
 	
-	private static final long stockByCompanyPatternTimeWindow = 10;
+	private static final long stockByCompanyPatternTimeWindow = 50;
 	public static final PatternSpecification[] stockByCompanyPatternSpecifications = {
 //            new PatternSpecification("SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 //                    new String[][][] {new String[][]{new String[]{
@@ -562,11 +562,11 @@ public class PatternConfig {
 					 new StockDeltaOrderingConditionSpecification(
 							 StockEventTypesManager.intelEventTypeName,
 							 StockEventTypesManager.qtwwEventTypeName),
-				 }, 
+				 },
 				SlaVerifierTypes.NONE),
 
 		new PatternSpecification("SEQ7", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
-				 new String[][][] {new String[][]{new String[]{ 
+				 new String[][][] {new String[][]{new String[]{
 						 StockEventTypesManager.microsoftEventTypeName,
 						 StockEventTypesManager.googleEventTypeName,
 						 StockEventTypesManager.appleEventTypeName,

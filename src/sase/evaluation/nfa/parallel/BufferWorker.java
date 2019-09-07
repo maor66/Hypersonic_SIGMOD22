@@ -7,14 +7,16 @@ import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
+import sase.simulator.Environment;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class BufferWorker implements Runnable {
+public abstract class BufferWorker implements Callable<ThreadContainers.ParallelStatistics> {
     ThreadContainers dataStorage;
     TypedNFAState eventState;
     int finisherInputsToShutdown;
@@ -33,7 +35,7 @@ public abstract class BufferWorker implements Runnable {
     }
 
     @Override
-    public void run() {
+    public ThreadContainers.ParallelStatistics call() {
         Thread.currentThread().setName(threadName + Thread.currentThread().getName());
         while (true) {
             ContainsEvent newElement = null;
@@ -49,7 +51,7 @@ public abstract class BufferWorker implements Runnable {
                     for (int i = 0; i< numberOfFinisherInputsToSend; i++) {
                         sendToNextState(new Match());
                     }
-                    return; //TODO: how to end task?
+                    return dataStorage.statistics; //TODO: how to end task?
                 }
                 continue;
             }

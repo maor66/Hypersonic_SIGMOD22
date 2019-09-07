@@ -273,38 +273,38 @@ public class Simulator {
     		if (MainConfig.planConstructionOnly) {
     			return;
     		}
-    		foundMatches = new ArrayList<>();
+			foundMatches = new ArrayList<>();
+			Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.processingTime);
 
-    		while (eventProducer.hasMoreEvents()) {
-    			if (Environment.getEnvironment().isTimeoutReached(null)) {
-    				Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(Statistics.isTimeoutReached, 1);
-    				return;
-    			}
-	    		Event event = eventProducer.getNextEvent(); // Maor: this is actually the event, each executions reads the next event from the file
-	    		if (event == null) {
-	    			break;
-	    		}
-	    		Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.processingTime);
+			while (eventProducer.hasMoreEvents()) {
+				if (Environment.getEnvironment().isTimeoutReached(null)) {
+					Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(Statistics.isTimeoutReached, 1);
+					return;
+				}
+				Event event = eventProducer.getNextEvent(); // Maor: this is actually the event, each executions reads the next event from the file
+				if (event == null) {
+					break;
+				}
 	    		processIncomingEvent(event);
-	    		Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.processingTime);
 	    		long memoryUsage = secondaryEvaluationMechanism == null ?
 	    											primaryEvaluationMechanism.size() :
 	    											primaryEvaluationMechanism.size() + secondaryEvaluationMechanism.size();
-	    		Environment.getEnvironment().getStatisticsManager().recordPeakMemoryUsage(memoryUsage);
-	    		if (MainConfig.periodicallyReportStatistics) {
-	    			StatisticsManager.attemptPeriodicUpdate();
-	    		}
-    		}
-    	}
+				Environment.getEnvironment().getStatisticsManager().recordPeakMemoryUsage(memoryUsage);
+				if (MainConfig.periodicallyReportStatistics) {
+					StatisticsManager.attemptPeriodicUpdate();
+				}
+			}
+		}
     	finally {
-    		//get last matches
-				Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.processingTime);
-				recordNewMatches(primaryEvaluationMechanism.getLastMatches());
-				Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.processingTime);
-    		if (secondaryEvaluationMechanism != null) {
-    			recordNewMatches(secondaryEvaluationMechanism.getLastMatches());
-    		}
-    		Environment.getEnvironment().getStatisticsManager().reportStatistics();
+			//get last matches
+//			Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.processingTime);
+			recordNewMatches(primaryEvaluationMechanism.getLastMatches());
+//			Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.processingTime);
+			if (secondaryEvaluationMechanism != null) {
+				recordNewMatches(secondaryEvaluationMechanism.getLastMatches());
+			}
+			Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.processingTime);
+			Environment.getEnvironment().getStatisticsManager().reportStatistics();
 			if (MainConfig.useSimulationHistory) {
 				simulationHistory.registerSimulation(currentHistoryId, Environment.getEnvironment().getStatisticsManager());
 			}

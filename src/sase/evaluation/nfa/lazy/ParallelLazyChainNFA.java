@@ -55,6 +55,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private List<EventType> eventTypes;
     private Pattern pattern;
     private double inputMatchThreadRatio;
+    private List<Future<ThreadContainers.ParallelStatistics>> threadStatistics = new ArrayList<>();
     
     private class NotEnoughThreadsException extends RuntimeException {
     	public NotEnoughThreadsException(String message) {
@@ -85,7 +86,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             if (eventState.isInitial()) {
                 LinkedBlockingQueue<Match> transferQueue = (LinkedBlockingQueue<Match>) secondStateInputQueue;
                 transferQueue.put(new Match(Event.asList(event), System.currentTimeMillis()));
-                secondStateInputQueue.put(new Match(Event.asList(event), System.currentTimeMillis()));
+//                secondStateInputQueue.put(new Match(Event.asList(event), System.currentTimeMillis()));
             }
             else {
                 LinkedBlockingQueue<Event> transferQueue = (LinkedBlockingQueue<Event>) eventInputQueues.get(eventState);
@@ -138,6 +139,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 e.printStackTrace();
             }
         }
+
         executor.shutdownNow();
         return new ArrayList<>(matches);
     }
@@ -207,10 +209,10 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         for (TypedNFAState state : getWorkerStates()) {
             for (InputBufferWorker worker : IBWorkers.get(state)) {
-                executor.execute(worker);
+                threadStatistics.add(executor.submit(worker));
             }
             for (MatchBufferWorker worker: MBWorkers.get(state)) {
-                executor.execute(worker);
+                threadStatistics.add(executor.submit(worker));
             }
         }
     }

@@ -7,6 +7,7 @@ import sase.simulator.Environment;
 import sase.statistics.Statistics;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -20,8 +21,37 @@ public class ThreadContainers {
     private StampedLock lock;
     private EventType eventType;
     private long timeWindow;
+    ParallelStatistics statistics;
 
+    public enum StatisticsType {
+        computations ,
+         syncActions,
+         timestampComparison,
+         bufferInsertions,
+         bufferRemovals
+    };
 
+    public class ParallelStatistics {
+
+        private HashMap<StatisticsType, Integer> values;
+
+        public HashMap<StatisticsType, Integer> getValues() {
+            return values;
+        }
+
+        public ParallelStatistics()
+        {
+            values = new HashMap<>();
+            for (StatisticsType type :  StatisticsType.values()) {
+                values.put(type,0);
+            }
+        }
+
+        public void incrementStatistic(StatisticsType type) {
+            values.put(type, values.get(type) + 1);
+        }
+
+    }
     public long getTimeWindow() {
         return timeWindow;
     }

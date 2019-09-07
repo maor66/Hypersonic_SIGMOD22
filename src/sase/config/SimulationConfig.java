@@ -469,7 +469,7 @@ public class SimulationConfig {
 					0.0), Runtime.getRuntime().availableProcessors(), StockEventTypesManager.labelAttributeName),
 			new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 					CostModelTypes.THROUGHPUT_LATENCY,
-					0.0), Runtime.getRuntime().availableProcessors(), 20000, 1),
+					0.0), Runtime.getRuntime().availableProcessors(), 200, 1),
 		
 ////			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
 //						CostModelTypes.THROUGHPUT_LATENCY,
