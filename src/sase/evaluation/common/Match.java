@@ -19,7 +19,7 @@ public class Match implements ContainsEvent{
 	public Match(List<Event> primitiveEvents, long latestEventTimestamp) {
 		if (primitiveEvents.size() != 1)
 		{
-			Environment.getEnvironment().getStatisticsManager().incrementDiscreteMemoryStatistic(Statistics.instanceCreations);
+			Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.parallelPartialMatchesCreations);
 		}
 		this.primitiveEvents = primitiveEvents;
 		this.detectionLatency = System.currentTimeMillis() - latestEventTimestamp;

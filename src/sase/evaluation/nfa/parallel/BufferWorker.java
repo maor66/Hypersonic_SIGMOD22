@@ -7,7 +7,7 @@ import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
-import sase.simulator.Environment;
+
 
 import java.util.ArrayList;
 import java.util.List;

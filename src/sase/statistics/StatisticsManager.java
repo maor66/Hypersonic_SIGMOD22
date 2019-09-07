@@ -84,6 +84,12 @@ public class StatisticsManager {
 	private HashMap<String, Long> discreteStatistics; //TODO: should work with AtomicLong to ensure correct statistics
 	private HashMap<String, Double> fractionalStatistics;
 	private HashMap<String, Long> timeMeasurementsInProgress;
+
+	public HashMap<Thread, HashMap<String, Long>> getParallelStatistics() {
+		return parallelStatistics;
+	}
+
+	private HashMap<Thread, HashMap<String, Long>> parallelStatistics = new HashMap<>();
 	private ThreadLocal<Long> timestampComparison = new ThreadLocal<>(){
 		@Override
 		protected Long initialValue(){
@@ -98,6 +104,35 @@ public class StatisticsManager {
 		return timestampComparison.get();
 	}
 
+	public void incrementParallelStatistic(String key) {
+		if (!MainConfig.statisticsDebugMode) {
+			return;
+		}
+		updateParallelStatistic(key, 1);
+	}
+
+	public void updateParallelStatistic(String key, long valueToAdd)
+	{
+		if (!MainConfig.statisticsDebugMode) {
+			return;
+		}
+		Thread currThread = Thread.currentThread();
+		if (!parallelStatistics.containsKey(currThread)) { //This thread hasn't entered any statistic yet
+			initializeNewThreadStatistics(currThread);
+		}
+		HashMap<String, Long> currThreadStatistics = parallelStatistics.get(currThread);
+		if (!(currThreadStatistics.containsKey(key))) {
+			throw new RuntimeException(String.format("Unknown statistic identifier: %s", key));
+		}
+		currThreadStatistics.put(key, currThreadStatistics.get(key) + valueToAdd);
+	}
+
+	private void initializeNewThreadStatistics(Thread currThread) {
+		parallelStatistics.put(currThread, new HashMap<>());
+		for (String key : Statistics.getDiscreteOrderedNames()) { //TODO: only using discrete statistics
+			parallelStatistics.get(currThread).put(key, 0L);
+		}
+	}
 
 	private StatisticsManager(CSVWriter writer, String runDescription) throws IOException {
 		this.writer = writer;
@@ -128,6 +163,7 @@ public class StatisticsManager {
 			fractionalStatistics.put(name, new Double(0));
 		}
 	}
+
 
 	public  void updateDiscreteStatistic(String key, long valueToAdd) {
 		if (!(discreteStatistics.containsKey(key))) {

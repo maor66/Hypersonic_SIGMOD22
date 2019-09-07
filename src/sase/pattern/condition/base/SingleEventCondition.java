@@ -25,6 +25,7 @@ public abstract class SingleEventCondition extends AtomicCondition {
 		for (Event event : events) {
 			if (event.getType() == type) {
 				Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.computations);
+				Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.parallelComputations);
 				return verifySingleEvent(event);
 			}
 		}

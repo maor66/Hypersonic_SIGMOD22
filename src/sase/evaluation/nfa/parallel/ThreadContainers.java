@@ -75,11 +75,12 @@ public class ThreadContainers {
     }
 
     public List<ContainsEvent> getBufferSubListWithOptimisticLock() {
-        Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.numberOfSynchronizationActions);
+        Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
         List<ContainsEvent> listView = new ArrayList<>();
         long stamp = lock.tryOptimisticRead();
         listView.addAll(bufferSubList); //TODO: copies the list, which can hit performance. A different solution could be to read from the start of the list, this can be done without locking (up to a point)
         if (!lock.validate(stamp)) {
+            Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.failedOptimisticReads);
             stamp = lock.readLock();
             try {
                 listView = new ArrayList<>();
@@ -88,11 +89,14 @@ public class ThreadContainers {
                 lock.unlockRead(stamp);
             }
         }
+        else {
+            Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.successfulOptimisticReads);
+        }
         return listView;
     }
 
     public void addEventToOwnBuffer(ContainsEvent event) {
-        Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.numberOfSynchronizationActions);
+        Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
         long stamp = lock.writeLock();
         try {
             bufferSubList.add(event);
@@ -110,7 +114,7 @@ public class ThreadContainers {
     }
 
     public String removeExpiredElements(long removingCriteriaTimeStamp, boolean isBufferSorted) {
-        Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.numberOfSynchronizationActions);
+        Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
         int numberOfRemovedElements = 0;
         String log ="";
         long stamp = lock.writeLock();
@@ -137,11 +141,11 @@ public class ThreadContainers {
         }
         lock.unlock(stamp);
         if (isBufferSorted) { //This is not a very good design...
-            Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.bufferRemovals,
+            Environment.getEnvironment().getStatisticsManager().updateParallelStatistic(Statistics.parallelBufferRemovals,
                     numberOfRemovedElements);
         }
         else {
-            Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.instanceDeletions,
+            Environment.getEnvironment().getStatisticsManager().updateParallelStatistic(Statistics.parallelPartialMatchesDeleltions,
                     numberOfRemovedElements);
         }
         return log;

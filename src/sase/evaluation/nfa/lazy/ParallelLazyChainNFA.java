@@ -91,6 +91,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             else {
                 LinkedBlockingQueue<Event> transferQueue = (LinkedBlockingQueue<Event>) eventInputQueues.get(eventState);
                 transferQueue.put(event);
+                Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.parallelBufferInsertions);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -139,8 +140,15 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 e.printStackTrace();
             }
         }
-
+        HashMap<Thread, HashMap<String, Long>> parallelStatistics = Environment.getEnvironment().getStatisticsManager().getParallelStatistics();
+        for (Map.Entry<Thread, HashMap<String, Long>> entry : parallelStatistics.entrySet()) {
+            System.out.println("Thread "+ entry.getKey() + " has "+ entry.getValue());
+            for (Map.Entry <String, Long> e: entry.getValue().entrySet()) {
+                Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(e.getKey(), e.getValue());
+            }
+        }
         executor.shutdownNow();
+
         return new ArrayList<>(matches);
     }
     
