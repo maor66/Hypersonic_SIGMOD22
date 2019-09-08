@@ -2,6 +2,7 @@ package sase.evaluation.nfa.lazy;
 
 import sase.base.Event;
 import sase.base.EventType;
+import sase.config.MainConfig;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
@@ -56,6 +57,18 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private Pattern pattern;
     private double inputMatchThreadRatio;
     private List<Future<ThreadContainers.ParallelStatistics>> threadStatistics = new ArrayList<>();
+
+    private class PrintMatchTimerTask extends TimerTask {
+
+        Set<Match> matches;
+        PrintMatchTimerTask(Set<Match> matches) {
+            this.matches = matches;
+        }
+        @Override
+        public void run() {
+            System.out.println("Match: " + matches.size());
+        }
+    }
     
     private class NotEnoughThreadsException extends RuntimeException {
     	public NotEnoughThreadsException(String message) {
@@ -120,6 +133,10 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         Set<Match> matches = new HashSet<>();
         int numberOfEndingMatches = 0;
+        Timer printTimer = new Timer();
+        if (MainConfig.parallelDebugMode) {
+            printTimer.scheduleAtFixedRate(new PrintMatchTimerTask(matches),0, 20*1000);
+        }
         while (true) {
             try {
                 Match m = completeMatchOutputQueue.take();
@@ -133,9 +150,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 }
                 else {
                     matches.add(m);
-//                    System.out.println("Match" + matches.size() + ":" + m);
                 }
-//                System.out.println("Match" + matches.size() + ":" + matches.get(matches.size()-1));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -146,6 +161,9 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             for (Map.Entry <String, Long> e: entry.getValue().entrySet()) {
                 Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(e.getKey(), e.getValue());
             }
+        }
+        if (MainConfig.parallelDebugMode) {
+            printTimer.cancel();
         }
         executor.shutdownNow();
 

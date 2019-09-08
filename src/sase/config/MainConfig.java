@@ -19,6 +19,8 @@ public class MainConfig {
 
 	public static final boolean statisticsDebugMode = true;
 
+	public static final boolean parallelDebugMode = true;
+
 
 	/* Settings for creating and preprocessing primitive events arriving on the input stream. */
 	public static final EventProducerTypes eventProducerType = EventProducerTypes.FILE_BASED;

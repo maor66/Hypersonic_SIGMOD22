@@ -86,9 +86,6 @@ public class Match implements ContainsEvent{
 	public Match createNewPartialMatchWithEvent(Event event) {
 		//TODO: latency measurement is probably wrong
 		//TODO: creates partial match by evaluation/frequency order and not by sequence order. not sure if ok
-		if (primitiveEvents.size() > 5) {
-			System.out.println("too much events");
-		}
 		return new Match(Stream.concat(primitiveEvents.stream(),Event.asList(event).stream()).collect(Collectors.toList()), event.getSystemTimestamp()); //Combining two lists)
 	}
 

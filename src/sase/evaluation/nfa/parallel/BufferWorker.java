@@ -2,14 +2,19 @@ package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
 import sase.base.Event;
+import sase.config.MainConfig;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
+import sase.simulator.Environment;
+import sase.statistics.Statistics;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -23,6 +28,9 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
     int numberOfFinisherInputsToSend;
     String threadName;
     String log;
+    private int numberOfHandledItems = 0;
+    private int numberOfOppositeItems = 0;
+
     public ThreadContainers getDataStorage() {
         return dataStorage;
     }
@@ -36,11 +44,12 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
 
     @Override
     public ThreadContainers.ParallelStatistics call() {
-        Thread.currentThread().setName(threadName + Thread.currentThread().getName());
+        Thread.currentThread().setName(threadName + " " + Thread.currentThread().getName());
         while (true) {
             ContainsEvent newElement = null;
             try {
                 newElement = takeNextInput();
+                numberOfHandledItems++;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -50,6 +59,10 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
                 if (finisherInputsToShutdown ==0) {
                     for (int i = 0; i< numberOfFinisherInputsToSend; i++) {
                         sendToNextState(new Match());
+                    }
+                    if (MainConfig.parallelDebugMode) {
+                        System.out.println("Thread " + Thread.currentThread().getName() +" " +Thread.currentThread().getId() + " has finished at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
+                        " Handled " + numberOfHandledItems + " items and compared to " + numberOfOppositeItems+" opposite items");
                     }
                     return dataStorage.statistics; //TODO: how to end task?
                 }
@@ -88,6 +101,7 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
     }
 
     protected ContainsEvent takeNextInput() throws InterruptedException {
+        Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
         return dataStorage.getInput().take();
     }
 
@@ -98,6 +112,7 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
         for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
             oppositeBuffer.add(worker.getDataStorage().getBufferSubListWithOptimisticLock());
         }
+        numberOfOppositeItems += oppositeBuffer.size();
         return oppositeBuffer;
     }
 
