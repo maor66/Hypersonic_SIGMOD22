@@ -16,7 +16,7 @@ public class EfficientInputBuffer {
 
 	private class TypeBuffer {
 		
-		private static final int initialSize = 10000;
+		private static final int initialSize = 10;
 		
 		private EventType type;
 		private List<Event> events;
@@ -57,20 +57,19 @@ public class EfficientInputBuffer {
 				return fromAbove ? midIndex : Math.max(midIndex - 1, 0);
 			}
 		}
-		
 		public List<Event> getSlice(Long startNumber, Long endNumber) {
 			if (events.isEmpty())
 				return events;
-			int startIndex = startNumber == null ? 
+			int startIndex = startNumber == null ?
 					0 : getIndexWithClosestTimestamp(startNumber, true);
-			int endIndex = endNumber == null ? 
+			int endIndex = endNumber == null ?
 					events.size() : getIndexWithClosestTimestamp(endNumber, true);
 			if (startIndex > endIndex)
 				return new ArrayList<Event>();
 			List<Event> result = events.subList(startIndex, endIndex);
 			return result;
 		}
-		
+
 		public void refresh(Long currentTime) {
 			if (events.isEmpty())
 				return;
@@ -87,7 +86,7 @@ public class EfficientInputBuffer {
 			Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(Statistics.bufferRemovals,
 																		 					  numberOfRemovedEvents);
 		}
-		
+
 		public int numberOfEvents() {
 			return events.size();
 		}
@@ -95,24 +94,24 @@ public class EfficientInputBuffer {
 		public EventType getType() {
 			return type;
 		}
-		
+
 		public List<Event> getAllEvents() {
 			return events;
 		}
-	}
 
+	}
 	private HashMap<EventType, TypeBuffer> events;
+
 	private long timeWindow;
-	
 	public EfficientInputBuffer(Pattern pattern) {
 		this(pattern, false);
 	}
-	
+
 	public EfficientInputBuffer(Pattern pattern, boolean negativeOnly) {
-		this(negativeOnly ? ((CompositePattern)pattern).getNegativeEventTypes() : pattern.getEventTypes(), 
+		this(negativeOnly ? ((CompositePattern)pattern).getNegativeEventTypes() : pattern.getEventTypes(),
 			 pattern.getTimeWindow());
 	}
-	
+
 	public EfficientInputBuffer(List<EventType> targetEventTypes, long timeWindow) {
 		this.timeWindow = timeWindow;
 		events = new HashMap<EventType, TypeBuffer>();
@@ -123,11 +122,35 @@ public class EfficientInputBuffer {
 			addTypeBuffer(eventType);
 		}
 	}
-	
+
 	public void store(Event event) {
 		events.get(event.getType()).store(event);
 	}
-	
+
+	public  int getIndexWithClosestTimestampWindow(EventType eventType, Long timestamp, boolean fromAbove) {
+		int minIndex = 0, maxIndex = events.get(eventType).getAllEvents().size() - 1;
+		int midIndex = (maxIndex + minIndex) / 2;
+		Long currTimestamp = null;
+		while (maxIndex >= minIndex)
+		{
+			midIndex = (maxIndex + minIndex) / 2;
+			Event currEvent = events.get(eventType).getAllEvents().get(midIndex);
+			currTimestamp = currEvent.getTimestamp();
+			if (currTimestamp == timestamp)
+				return midIndex;
+			if (currTimestamp < timestamp)
+				minIndex = midIndex + 1;
+			else
+				maxIndex = midIndex - 1;
+		}
+		if (currTimestamp < timestamp) {
+			return fromAbove ? Math.min(midIndex + 1, events.get(eventType).getAllEvents().size()) : midIndex;
+		}
+		else {
+			return fromAbove ? midIndex : Math.max(midIndex - 1, 0);
+		}
+	}
+
 	public void storeAll(List<Event> eventsToStore) {
 		if (eventsToStore.isEmpty()) {
 			return;

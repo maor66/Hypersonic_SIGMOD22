@@ -21,6 +21,7 @@ import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
 import sase.statistics.Statistics;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -57,6 +58,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private Pattern pattern;
     private double inputMatchThreadRatio;
     private List<Future<ThreadContainers.ParallelStatistics>> threadStatistics = new ArrayList<>();
+    private long mainThreadIdleTime = 0;
 
     private class PrintMatchTimerTask extends TimerTask {
 
@@ -86,15 +88,23 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         this.inputMatchThreadRatio = specification.inputMatchThreadRatio;
         System.out.println("Processors: " + Runtime.getRuntime().availableProcessors());
     }
-
+    static boolean flag = true;
     @Override
     public List<Match> processNewEvent(Event event, boolean canStartInstance) {
+
+        if (flag)
+        {
+            System.out.println("Starting at "+ new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+            flag = false;
+        }
+            long time = System.nanoTime();
 
         TypedNFAState eventState = getStateByEventType(getWorkerAndInitialState(), event);
         if (null == eventState) {
             // The event has irrelevent type (not in the query)
             return null;
         }
+
         try {
             if (eventState.isInitial()) {
                 LinkedBlockingQueue<Match> transferQueue = (LinkedBlockingQueue<Match>) secondStateInputQueue;
@@ -109,12 +119,18 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        mainThreadIdleTime+= System.nanoTime() - time;
+
         return null;
     }
 
     @Override
     public List<Match> getLastMatches() {
 
+        if (MainConfig.parallelDebugMode) {
+            System.out.println("Starting poison pill at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+            System.out.println("Main thread idle time is "+ mainThreadIdleTime/1000000);
+        }
             try {
                 //Put finisher input ("poison pill") in each IB thread
                 for (Map.Entry<TypedNFAState, BlockingQueue<Event>> entry : eventInputQueues.entrySet()) {
@@ -129,7 +145,9 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
+        if (MainConfig.parallelDebugMode) {
+            System.out.println("Finished poison pill at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+        }
 
         Set<Match> matches = new HashSet<>();
         int numberOfEndingMatches = 0;
@@ -141,6 +159,9 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             try {
                 Match m = completeMatchOutputQueue.take();
                 if (m.isLastInput()) {
+                    if (MainConfig.parallelDebugMode) {
+                        System.out.println("Recieved posion pill at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+                    }
                     numberOfEndingMatches++;
 //                    System.out.println("Finisher " + numberOfEndingMatches);
                     TypedNFAState lastWorkerState = getWorkerStates().get(getWorkerStates().size() - 1);
@@ -159,7 +180,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         for (Map.Entry<Thread, HashMap<String, Long>> entry : parallelStatistics.entrySet()) {
             System.out.println("Thread "+ entry.getKey() + " has "+ entry.getValue());
             for (Map.Entry <String, Long> e: entry.getValue().entrySet()) {
-                Environment.getEnvironment().getStatisticsManager().updateDiscreteMemoryStatistic(e.getKey(), e.getValue());
+                Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(e.getKey(), e.getValue());
             }
         }
         if (MainConfig.parallelDebugMode) {
@@ -194,7 +215,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             List<InputBufferWorker> stateIBworkers = new ArrayList<>();
             List<MatchBufferWorker> stateMBworkers = new ArrayList<>();
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
-                stateIBworkers.add(new InputBufferWorker(state, this.evaluationOrder, this.supportedEventTypes,1, stateToMBThreads.getOrDefault(getNextWorkerStateOrNullIfLast(state), 1))); //TODO: not necessary the correct sequence order, have to validate it somehow
+                stateIBworkers.add(new InputBufferWorker(state, this.evaluationOrder, this.fullCondition.getEventTypes(),1, stateToMBThreads.getOrDefault(getNextWorkerStateOrNullIfLast(state), 1))); //TODO: not necessary the correct sequence order, have to validate it somehow
             }
             for (int i = 0; i < stateToMBThreads.get(state); i++) {
                 stateMBworkers.add(new MatchBufferWorker(state, prevTotalThreads, stateToMBThreads.getOrDefault(getNextWorkerStateOrNullIfLast(state),1)));

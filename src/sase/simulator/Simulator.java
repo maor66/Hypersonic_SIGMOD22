@@ -26,6 +26,8 @@ import sase.evaluation.data_parallel.DataParallelEvaluationMechanism;
 import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
 import sase.input.EventProducer;
 import sase.input.EventProducerFactory;
+import sase.input.producers.FileBasedEventProducer;
+import sase.input.producers.FileEventStreamReader;
 import sase.multi.MultiPlan;
 import sase.pattern.CompositePattern;
 import sase.pattern.EventTypesManager;
@@ -269,6 +271,7 @@ public class Simulator {
     		oldStatisticsManager.reportStatistics();
     		return;
     	}
+    	long processTime =0;
     	try {
     		if (MainConfig.planConstructionOnly) {
     			return;
@@ -277,15 +280,20 @@ public class Simulator {
 			Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.processingTime);
 
 			while (eventProducer.hasMoreEvents()) {
+
 				if (Environment.getEnvironment().isTimeoutReached(null)) {
 					Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(Statistics.isTimeoutReached, 1);
 					return;
 				}
+				long time = System.nanoTime();
+
 				Event event = eventProducer.getNextEvent(); // Maor: this is actually the event, each executions reads the next event from the file
+				processTime += System.nanoTime() - time;
 				if (event == null) {
 					break;
 				}
-	    		processIncomingEvent(event);
+
+				processIncomingEvent(event);
 	    		long memoryUsage = secondaryEvaluationMechanism == null ?
 	    											primaryEvaluationMechanism.size() :
 	    											primaryEvaluationMechanism.size() + secondaryEvaluationMechanism.size();
@@ -294,6 +302,8 @@ public class Simulator {
 					StatisticsManager.attemptPeriodicUpdate();
 				}
 			}
+			System.out.println("Simulator starts after " + processTime/1000000 + " FileBasedEventProducer read time " + FileBasedEventProducer.ReadTime/1000000+ " FileEventStreamReader read time " + FileEventStreamReader.readTime/1000000);
+
 		}
     	finally {
 			//get last matches

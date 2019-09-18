@@ -20,6 +20,7 @@ public class FileEventStreamReader {
 	private int currentFileIndex;
 	private boolean hasMoreEvents;
 	private BufferedReader reader;
+	public static  long readTime = 0;
 	
 	public FileEventStreamReader(String[] inputDirsPaths, String[] inputFilesPaths, int eventsPerRead) {
 		if (inputDirsPaths.length == 0 && inputFilesPaths.length == 0) {
@@ -95,8 +96,22 @@ public class FileEventStreamReader {
 	}
 	
 	private String[] parseLine(String line) {
-		return line.split(",");
-	}
+		List<String> stringSplit = new ArrayList<>();
+		long time = System.nanoTime();
+
+			int pos = 0, end;
+			while ((end = line.indexOf(',', pos)) >= 0) {
+				stringSplit.add(line.substring(pos, end));
+				pos = end + 1;
+			}
+		String [] lines = stringSplit.toArray(new String[0]);
+
+		readTime += System.nanoTime() - time;
+
+		return lines;
+		}
+//		String [] lines =  line.split(",");
+
 	
 	public String[] getRawEvent() {
 		try {

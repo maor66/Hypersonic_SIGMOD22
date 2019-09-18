@@ -7,6 +7,7 @@ import sase.specification.SimulationSpecification;
 public class FileBasedEventProducer extends EventProducer {
 	
 	private FileEventStreamReader fileEventStreamReader;
+	public static long ReadTime = 0;
 
 	public FileBasedEventProducer(SimulationSpecification simulationSpecification) {
 		super(simulationSpecification);
@@ -22,7 +23,9 @@ public class FileBasedEventProducer extends EventProducer {
 		}
 		boolean eventsCreated = false;
 		while (!eventsCreated) {
+			long time = System.nanoTime();
 			String[] rawEvent = fileEventStreamReader.getRawEvent();
+			ReadTime += System.nanoTime() - time;
 			if (rawEvent == null) {
 				return false;
 			}

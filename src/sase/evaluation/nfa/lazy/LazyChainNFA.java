@@ -29,7 +29,7 @@ public class LazyChainNFA extends LazyNFA {
 
 	protected final LazyNFANegationTypes negationType;
 	protected final EvaluationOrder evaluationOrder;
-	private final CNFCondition fullCondition;
+	protected final CNFCondition fullCondition;
 	private final GlobalTemporalOrderCondition globalTemporalOrderCondition;
 	
 	public LazyChainNFA(Pattern pattern, EvaluationPlan evaluationPlan, LazyNFANegationTypes negationType) {

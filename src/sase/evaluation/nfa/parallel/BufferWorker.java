@@ -30,6 +30,15 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
     String log;
     private int numberOfHandledItems = 0;
     private int numberOfOppositeItems = 0;
+    public  long idleTime = 0;
+    public long iteratingBufferTime = 0;
+    public long sliceTime = 0;
+    public long sliceTimeActual = 0;
+    public long sendMatchingTime = 0;
+    protected boolean canCreateMatches= true;
+    public long actualCalcTime = 0;
+    private LazyTransition transition;
+    private long windowverifyTime = 0;
 
     public ThreadContainers getDataStorage() {
         return dataStorage;
@@ -40,6 +49,7 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
         this.eventState = eventState;
         this.finisherInputsToShutdown = finisherInputsToShutdown;
         this.numberOfFinisherInputsToSend = numberOfFinisherInputsToSend;
+        transition = getActualNextTransition(eventState);
     }
 
     @Override
@@ -48,7 +58,9 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
         while (true) {
             ContainsEvent newElement = null;
             try {
+                long time = System.nanoTime();
                 newElement = takeNextInput();
+                idleTime += System.nanoTime() - time;
                 numberOfHandledItems++;
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -62,7 +74,9 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
                     }
                     if (MainConfig.parallelDebugMode) {
                         System.out.println("Thread " + Thread.currentThread().getName() +" " +Thread.currentThread().getId() + " has finished at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
-                        " Handled " + numberOfHandledItems + " items and compared to " + numberOfOppositeItems+" opposite items");
+                        " Handled " + numberOfHandledItems + " items and compared to " + numberOfOppositeItems+" opposite items. Idle time "+ idleTime/1000000 + " Sync Idle time " + dataStorage.idleTimeSync/1000000+
+                                " Iterating buffer time " + iteratingBufferTime/1000000+ " Slice time "+ sliceTime/1000000+ " Actual Slice time "+ sliceTimeActual/1000000+ " Send sync time " + sendMatchingTime/1000000 +
+                        " Calculation time "+ actualCalcTime/1000000 + " Window verify time "+ windowverifyTime/1000000);
                     }
                     return dataStorage.statistics; //TODO: how to end task?
                 }
@@ -73,7 +87,11 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
             if (oppositeBufferList.isEmpty()) {
                 continue;
             }
-            iterateOnOppositeBuffer(newElement, oppositeBufferList);
+            long time = System.nanoTime();
+            if (canCreateMatches) {
+                iterateOnOppositeBuffer(newElement, oppositeBufferList);
+            }
+             iteratingBufferTime += System.nanoTime() - time;
             List<ContainsEvent> combinedOppositeBuffer = new ArrayList<>();
             oppositeBufferList.forEach(combinedOppositeBuffer::addAll);
             ContainsEvent removingCriteria = getReleventRemovingCriteria(combinedOppositeBuffer);
@@ -116,13 +134,18 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
         return oppositeBuffer;
     }
 
-    protected boolean isEventCompatibleWithPartialMatch(TypedNFAState eventState, Match partialMatch, Event event) {
+    protected boolean isEventCompatibleWithPartialMatch(Match partialMatch, List<Event> partialMatchEvents, Event event) {
         //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
         //TODO: doesn't have to verify temporal condition first anymore - check if removing doesn't hurt correctness
-    	
 
-        return verifyTimeWindowConstraint(partialMatch, event) && getActualNextTransition(eventState).verifyConditionWithTemporalConditionFirst( //TODO: check if verifying the (non-temporal) condition works with partial events or consider changing the condition
-                Stream.concat(partialMatch.getPrimitiveEvents().stream(),Event.asList(event).stream()).collect(Collectors.toList())); //Combining two lists
+//        if(!verifyTimeWindowConstraint(partialMatch, event)) return false;
+        long time = System.nanoTime();
+        boolean res = transition.verifyCondition(partialMatchEvents);
+        windowverifyTime+= System.nanoTime() - time;
+        if (!res)  return false;
+        return verifyTimeWindowConstraint(partialMatch, event);
+//        actualCalcTime += System.nanoTime() - time;
+
     }
 
     private LazyTransition getActualNextTransition(NFAState state)
@@ -136,19 +159,20 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
     }
 
     private boolean verifyTimeWindowConstraint(Match partialMatch, Event event) {
-        if (partialMatch == null)
-            System.out.println("partial");
-        if (event == null)
-            System.out.println("event");
-        return (partialMatch.getLatestEventTimestamp() <= event.getTimestamp() + dataStorage.getTimeWindow()) &&
-                (partialMatch.getEarliestEvent() + dataStorage.getTimeWindow() >= event.getTimestamp());
+//        long time = System.nanoTime();
 
+        boolean res = (partialMatch.getLatestEventTimestamp() <= event.getTimestamp() + dataStorage.getTimeWindow()) &&
+                (partialMatch.getEarliestEvent() + dataStorage.getTimeWindow() >= event.getTimestamp());
+//        windowverifyTime += System.nanoTime() - time;
+return res;
     }
 
     protected void sendToNextState(Match newPartialMatchWithEvent) {
         BlockingQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
         try {
+            long time = System.nanoTime();
             matchesQueue.put(newPartialMatchWithEvent);
+            sendMatchingTime += System.nanoTime() - time;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -158,10 +182,13 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
     protected void tryToAddMatchesWithEvents(List<Match> matches, List<Event> events)
     {
         for (Match partialMatch : matches) {
+            List<Event> partialMatchEvents = new ArrayList<>(partialMatch.getPrimitiveEvents());
             for (Event event : events) {
-                if (isEventCompatibleWithPartialMatch(eventState, partialMatch, event)) {
+                partialMatchEvents.add(event);
+                if (isEventCompatibleWithPartialMatch(partialMatch, partialMatchEvents,event)) {
                     sendToNextState(partialMatch.createNewPartialMatchWithEvent(event));
                 }
+                partialMatchEvents.remove(partialMatchEvents.size()-1);
             }
         }
     }

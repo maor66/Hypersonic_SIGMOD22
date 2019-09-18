@@ -60,6 +60,11 @@ public class Event implements Comparable<Event>, ContainsEvent {
 		this.timestamp = event.timestamp;
 		this.isLastInput = event.isLastInput;
 	}
+	public  Event(long timestamp) {
+		this.timestamp = timestamp;
+		this.systemTimestamp = 0;
+		this.sequenceNumber =0;
+	}
 	
 	public Event clone() {
 		return new Event(this);

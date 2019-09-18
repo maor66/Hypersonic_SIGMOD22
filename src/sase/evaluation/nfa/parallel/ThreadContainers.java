@@ -22,6 +22,7 @@ public class ThreadContainers {
     private EventType eventType;
     private long timeWindow;
     ParallelStatistics statistics;
+    public long idleTimeSync = 0;
 
     public enum StatisticsType {
         computations ,
@@ -77,6 +78,7 @@ public class ThreadContainers {
     public List<ContainsEvent> getBufferSubListWithOptimisticLock() {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
         List<ContainsEvent> listView = new ArrayList<>();
+        long startingTime = System.nanoTime();
         long stamp = lock.tryOptimisticRead();
         listView.addAll(bufferSubList); //TODO: copies the list, which can hit performance. A different solution could be to read from the start of the list, this can be done without locking (up to a point)
         if (!lock.validate(stamp)) {
@@ -92,14 +94,17 @@ public class ThreadContainers {
         else {
             Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.successfulOptimisticReads);
         }
+        idleTimeSync += System.nanoTime() - startingTime;
         return listView;
     }
 
     public void addEventToOwnBuffer(ContainsEvent event) {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
+        long startingTime = System.nanoTime();
         long stamp = lock.writeLock();
         try {
             bufferSubList.add(event);
+            idleTimeSync += System.nanoTime() - startingTime;
         } finally {
             lock.unlockWrite(stamp);
         }
@@ -117,6 +122,7 @@ public class ThreadContainers {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
         int numberOfRemovedElements = 0;
         String log ="";
+        long startingTime = System.nanoTime();
         long stamp = lock.writeLock();
         if (bufferSubList.isEmpty()) {
             lock.unlock(stamp);
@@ -124,7 +130,7 @@ public class ThreadContainers {
         }
         if (isBufferSorted) { //IB is sorted, while MB isn't
             ContainsEvent currEvent = bufferSubList.get(0);
-            while (currEvent.getTimestamp() + timeWindow * 2 < removingCriteriaTimeStamp) {
+            while (currEvent.getTimestamp() + timeWindow  < removingCriteriaTimeStamp) {
 //                log += System.nanoTime() + ": Removed " + (bufferSubList.remove(0)) + "\n";
                 bufferSubList.remove(0);
                 numberOfRemovedElements++;
@@ -136,10 +142,11 @@ public class ThreadContainers {
         }
         else { //Since the buffer isn't sorted, the iterating order doesn't matter'
             int beforeRemovalSize = bufferSubList.size();
-            bufferSubList.removeIf(element -> element.getEarliestTimestamp() + timeWindow * 2 < removingCriteriaTimeStamp);
+            bufferSubList.removeIf(element -> element.getEarliestTimestamp() + timeWindow  < removingCriteriaTimeStamp);
             numberOfRemovedElements = beforeRemovalSize - bufferSubList.size();
         }
         lock.unlock(stamp);
+        idleTimeSync += System.nanoTime() - startingTime;
         if (isBufferSorted) { //This is not a very good design...
             Environment.getEnvironment().getStatisticsManager().updateParallelStatistic(Statistics.parallelBufferRemovals,
                     numberOfRemovedElements);

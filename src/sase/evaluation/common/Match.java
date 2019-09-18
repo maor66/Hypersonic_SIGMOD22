@@ -15,7 +15,9 @@ public class Match implements ContainsEvent{
 	private final List<Event> primitiveEvents;
 	private final long detectionLatency;
 	private  boolean isLastInput = false;
-	
+private Event lastestEvent = null;
+private long earliestEvent = 0;
+
 	public Match(List<Event> primitiveEvents, long latestEventTimestamp) {
 		if (primitiveEvents.size() != 1)
 		{
@@ -86,19 +88,28 @@ public class Match implements ContainsEvent{
 	public Match createNewPartialMatchWithEvent(Event event) {
 		//TODO: latency measurement is probably wrong
 		//TODO: creates partial match by evaluation/frequency order and not by sequence order. not sure if ok
-		return new Match(Stream.concat(primitiveEvents.stream(),Event.asList(event).stream()).collect(Collectors.toList()), event.getSystemTimestamp()); //Combining two lists)
+		List<Event> list = new ArrayList(primitiveEvents);
+		list.add(event);
+		return new Match(list, event.getSystemTimestamp());
 	}
 
     public long getEarliestEvent() {
+		if (earliestEvent != 0) {
+			return  earliestEvent;
+		}
 		long earliestTime = Long.MAX_VALUE;
 		for (Event event : primitiveEvents){
 			earliestTime = (earliestTime > event.getTimestamp()) ? event.getTimestamp() :earliestTime;
 		}
+		earliestEvent = earliestTime;
 		return earliestTime;
     }
 
     public Event getLatestEvent()
 	{
+		if (lastestEvent != null) {
+			return lastestEvent;
+		}
 		long latestTime = Integer.MIN_VALUE;
 		Event e = null;
 		for (Event event : primitiveEvents){
@@ -107,6 +118,7 @@ public class Match implements ContainsEvent{
 				e = event;
 			}
 		}
+		lastestEvent = e;
 		return e;
 	}
 
