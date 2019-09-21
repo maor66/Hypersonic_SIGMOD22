@@ -16,7 +16,7 @@ public class EfficientInputBuffer {
 
 	private class TypeBuffer {
 		
-		private static final int initialSize = 10;
+		private static final int initialSize = 10000;
 		
 		private EventType type;
 		private List<Event> events;

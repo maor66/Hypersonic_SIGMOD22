@@ -11,6 +11,7 @@ import sase.evaluation.nfa.lazy.elements.LazyTransition;
 import sase.evaluation.nfa.lazy.order.cost.CostModelFactory;
 import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
 import sase.evaluation.nfa.lazy.order.cost.ICostModel;
+import sase.evaluation.nfa.parallel.BufferWorker;
 import sase.evaluation.nfa.parallel.InputBufferWorker;
 import sase.evaluation.nfa.parallel.MatchBufferWorker;
 import sase.evaluation.nfa.parallel.ThreadContainers;
@@ -59,6 +60,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private double inputMatchThreadRatio;
     private List<Future<ThreadContainers.ParallelStatistics>> threadStatistics = new ArrayList<>();
     private long mainThreadIdleTime = 0;
+    public static ConcurrentHashMap<Thread, Boolean> finishedThreads = new ConcurrentHashMap<>();
 
     private class PrintMatchTimerTask extends TimerTask {
 
@@ -68,7 +70,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
         @Override
         public void run() {
-            System.out.println("Match: " + matches.size());
+            System.out.println("Match: " + matches.size()+ "Finished threads " + finishedThreads.keySet().size() );
         }
     }
     
@@ -186,11 +188,21 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         if (MainConfig.parallelDebugMode) {
             printTimer.cancel();
         }
-        executor.shutdownNow();
+//        for (BufferWorker worker : IBWorkers.values()) {
+        printWorkersStatistics(IBWorkers.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
+        printWorkersStatistics(MBWorkers.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
+
 
         return new ArrayList<>(matches);
     }
-    
+
+    private void printWorkersStatistics(List<? extends BufferWorker> workers) {
+        workers.forEach(worker ->   System.out.println("Thread " + Thread.currentThread().getName() +" " +Thread.currentThread().getId() + " has finished at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
+                " Handled " + worker.numberOfHandledItems + " items and compared to " + worker.numberOfOppositeItems+" opposite items. Idle time "+ worker.idleTime/1000000 + " Sync Idle time " + worker.getDataStorage().idleTimeSync/1000000+
+                " Iterating buffer time " + worker.iteratingBufferTime/1000000+ " Slice time "+ worker.sliceTime/1000000+ " Actual Slice time "+ worker.sliceTimeActual/1000000+ " Send sync time " + worker.sendMatchingTime/1000000 +
+                " Calculation time "+ worker.actualCalcTime/1000000 + " Window verify time "+ worker.windowverifyTime/1000000));
+    }
+
     @Override
     public void completeCreation(List<Pattern> patterns) {
     	super.completeCreation(patterns);

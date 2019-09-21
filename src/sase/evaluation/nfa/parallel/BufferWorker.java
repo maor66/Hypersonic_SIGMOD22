@@ -7,6 +7,7 @@ import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
+import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
@@ -28,8 +29,8 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
     int numberOfFinisherInputsToSend;
     String threadName;
     String log;
-    private int numberOfHandledItems = 0;
-    private int numberOfOppositeItems = 0;
+    public int numberOfHandledItems = 0;
+    public int numberOfOppositeItems = 0;
     public  long idleTime = 0;
     public long iteratingBufferTime = 0;
     public long sliceTime = 0;
@@ -38,7 +39,7 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
     protected boolean canCreateMatches= true;
     public long actualCalcTime = 0;
     private LazyTransition transition;
-    private long windowverifyTime = 0;
+    public long windowverifyTime = 0;
 
     public ThreadContainers getDataStorage() {
         return dataStorage;
@@ -78,7 +79,9 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
                                 " Iterating buffer time " + iteratingBufferTime/1000000+ " Slice time "+ sliceTime/1000000+ " Actual Slice time "+ sliceTimeActual/1000000+ " Send sync time " + sendMatchingTime/1000000 +
                         " Calculation time "+ actualCalcTime/1000000 + " Window verify time "+ windowverifyTime/1000000);
                     }
-                    return dataStorage.statistics; //TODO: how to end task?
+                    ParallelLazyChainNFA.finishedThreads.put(Thread.currentThread(), true);
+                    continue;
+//                    return dataStorage.statistics; //TODO: how to end task?
                 }
                 continue;
             }
