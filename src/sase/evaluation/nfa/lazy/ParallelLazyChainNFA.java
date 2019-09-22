@@ -21,10 +21,14 @@ import sase.simulator.Environment;
 import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
 import sase.statistics.Statistics;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,7 +64,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private double inputMatchThreadRatio;
     private List<Future<ThreadContainers.ParallelStatistics>> threadStatistics = new ArrayList<>();
     private long mainThreadIdleTime = 0;
-    public static ConcurrentHashMap<Thread, Boolean> finishedThreads = new ConcurrentHashMap<>();
+    private CopyOnWriteArrayList<BufferWorker> finishedThreads = new CopyOnWriteArrayList<>();
+    private AtomicBoolean isFinishedWithInput = new AtomicBoolean(false);
 
     private class PrintMatchTimerTask extends TimerTask {
 
@@ -70,14 +75,19 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
         @Override
         public void run() {
-            System.out.println("Match: " + matches.size()+ "Finished threads " + finishedThreads.keySet().size() );
+            System.out.println("Match: " + matches.size()+ " Finished threads " + finishedThreads.size());
+            finishedThreads.forEach(bufferWorker -> System.out.print(bufferWorker.thread.getName()+ ", "));
+
+            getAllWorkers().forEach(worker -> System.out.print(worker.thread.getName() + " Thread state " + worker.thread.getState() + ", "));
+            System.out.println("\n");
+
         }
     }
-    
+
     private class NotEnoughThreadsException extends RuntimeException {
-    	public NotEnoughThreadsException(String message) {
-    		super(message);
-    	}
+        public NotEnoughThreadsException(String message) {
+            super(message);
+        }
     }
 
     public ParallelLazyChainNFA(Pattern pattern, EvaluationPlan evaluationPlan, ParallelLazyNFAEvaluationSpecification specification) {
@@ -99,7 +109,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             System.out.println("Starting at "+ new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
             flag = false;
         }
-            long time = System.nanoTime();
+        long time = System.nanoTime();
 
         TypedNFAState eventState = getStateByEventType(getWorkerAndInitialState(), event);
         if (null == eventState) {
@@ -129,75 +139,105 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     @Override
     public List<Match> getLastMatches() {
 
+        isFinishedWithInput.set(true);
         if (MainConfig.parallelDebugMode) {
-            System.out.println("Starting poison pill at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-            System.out.println("Main thread idle time is "+ mainThreadIdleTime/1000000);
+            System.out.println("Starting poison pill at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+            System.out.println("Main thread idle time is " + mainThreadIdleTime / 1000000);
         }
-            try {
-                //Put finisher input ("poison pill") in each IB thread
-                for (Map.Entry<TypedNFAState, BlockingQueue<Event>> entry : eventInputQueues.entrySet()) {
-                    for (int i = 0; i < stateToIBThreads.get(entry.getKey()); i++) {
-                        entry.getValue().put(new Event());
-                    }
-                }
-                // Put finisher input to all MB threads in the first worker thread
-                for (int i = 0; i < stateToMBThreads.get(getWorkerStates().get(0)); i++) {
-                    secondStateInputQueue.put(new Match());
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        if (MainConfig.parallelDebugMode) {
-            System.out.println("Finished poison pill at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-        }
+//        try {
+//            //Put finisher input ("poison pill") in each IB thread
+//            for (Map.Entry<TypedNFAState, BlockingQueue<Event>> entry : eventInputQueues.entrySet()) {
+//                for (int i = 0; i < stateToIBThreads.get(entry.getKey()); i++) {
+//                    entry.getValue().put(new Event());
+//                }
+//            }
+//            // Put finisher input to all MB threads in the first worker thread
+//            for (int i = 0; i < stateToMBThreads.get(getWorkerStates().get(0)); i++) {
+//                secondStateInputQueue.put(new Match());
+//            }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        if (MainConfig.parallelDebugMode) {
+//            System.out.println("Finished poison pill at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+//        }
 
         Set<Match> matches = new HashSet<>();
         int numberOfEndingMatches = 0;
         Timer printTimer = new Timer();
         if (MainConfig.parallelDebugMode) {
-            printTimer.scheduleAtFixedRate(new PrintMatchTimerTask(matches),0, 20*1000);
+            printTimer.scheduleAtFixedRate(new PrintMatchTimerTask(matches), 0, 20 * 1000);
         }
         while (true) {
+            Match m = null;
             try {
-                Match m = completeMatchOutputQueue.take();
-                if (m.isLastInput()) {
-                    if (MainConfig.parallelDebugMode) {
-                        System.out.println("Recieved posion pill at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-                    }
-                    numberOfEndingMatches++;
-//                    System.out.println("Finisher " + numberOfEndingMatches);
-                    TypedNFAState lastWorkerState = getWorkerStates().get(getWorkerStates().size() - 1);
-                    if (numberOfEndingMatches == stateToIBThreads.get(lastWorkerState) + stateToMBThreads.get(lastWorkerState)) {
-                        break;
-                    }
-                }
-                else {
-                    matches.add(m);
-                }
+                m = completeMatchOutputQueue.poll(5, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
-        HashMap<Thread, HashMap<String, Long>> parallelStatistics = Environment.getEnvironment().getStatisticsManager().getParallelStatistics();
-        for (Map.Entry<Thread, HashMap<String, Long>> entry : parallelStatistics.entrySet()) {
-            System.out.println("Thread "+ entry.getKey() + " has "+ entry.getValue());
-            for (Map.Entry <String, Long> e: entry.getValue().entrySet()) {
-                Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(e.getKey(), e.getValue());
+            if (m == null) {
+                if (finishedThreads.size() == this.numOfThreads) {
+                    break;
+                }
+            }
+//                if (m.isLastInput()) {
+//                    if (MainConfig.parallelDebugMode) {
+//                        System.out.println("Recieved posion pill at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+//                    }
+//                    numberOfEndingMatches++;
+////                    System.out.println("Finisher " + numberOfEndingMatches);
+//                    TypedNFAState lastWorkerState = getWorkerStates().get(getWorkerStates().size() - 1);
+//                    if (numberOfEndingMatches == stateToIBThreads.get(lastWorkerState) + stateToMBThreads.get(lastWorkerState)) {
+//                        break;
+//                    }
+//                }
+            else {
+                matches.add(m);
             }
         }
-        if (MainConfig.parallelDebugMode) {
-            printTimer.cancel();
-        }
+            HashMap<Thread, HashMap<String, Long>> parallelStatistics = Environment.getEnvironment().getStatisticsManager().getParallelStatistics();
+            for (Map.Entry<Thread, HashMap<String, Long>> entry : parallelStatistics.entrySet()) {
+                System.out.println("Thread " + entry.getKey() + " has " + entry.getValue());
+                for (Map.Entry<String, Long> e : entry.getValue().entrySet()) {
+                    Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(e.getKey(), e.getValue());
+                }
+            }
+            if (MainConfig.parallelDebugMode) {
+                printTimer.cancel();
+            }
 //        for (BufferWorker worker : IBWorkers.values()) {
-        printWorkersStatistics(IBWorkers.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
-        printWorkersStatistics(MBWorkers.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
+            printWorkersStatistics();
+//        List<BufferWorker> containers = IBWorkers.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+//        containers.addAll(MBWorkers.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
 
-
-        return new ArrayList<>(matches);
+//        for (BufferWorker worker : containers) {
+//            try {
+//                BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Maor\\Documents\\removals" +worker.toString()+ System.currentTimeMillis() + ".txt"));
+//                writer.write(worker.getDataStorage().printRemovals);
+//                BufferedWriter finalWriter = writer;
+//                containers.stream().forEach(bufferWorker -> {
+//                    try {
+//                        finalWriter.write(bufferWorker.getDataStorage().printRemovals);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                });
+//                writer.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+            return new ArrayList<>(matches);
     }
 
-    private void printWorkersStatistics(List<? extends BufferWorker> workers) {
-        workers.forEach(worker ->   System.out.println("Thread " + Thread.currentThread().getName() +" " +Thread.currentThread().getId() + " has finished at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
+    private List<? extends BufferWorker> getAllWorkers()
+    {
+        List <BufferWorker> allWorkers = MBWorkers.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        allWorkers.addAll(IBWorkers.values().stream().flatMap(Collection::stream).collect(Collectors.toList()));
+        return allWorkers;
+    }
+
+    private void printWorkersStatistics() {
+        getAllWorkers().forEach(worker ->   System.out.println("Thread " + Thread.currentThread().getName() +" " +Thread.currentThread().getId() + " has finished at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
                 " Handled " + worker.numberOfHandledItems + " items and compared to " + worker.numberOfOppositeItems+" opposite items. Idle time "+ worker.idleTime/1000000 + " Sync Idle time " + worker.getDataStorage().idleTimeSync/1000000+
                 " Iterating buffer time " + worker.iteratingBufferTime/1000000+ " Slice time "+ worker.sliceTime/1000000+ " Actual Slice time "+ worker.sliceTimeActual/1000000+ " Send sync time " + worker.sendMatchingTime/1000000 +
                 " Calculation time "+ worker.actualCalcTime/1000000 + " Window verify time "+ worker.windowverifyTime/1000000));
@@ -205,8 +245,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
     @Override
     public void completeCreation(List<Pattern> patterns) {
-    	super.completeCreation(patterns);
-    	initallizeThreadAllocation();
+        super.completeCreation(patterns);
+        initallizeThreadAllocation();
     }
 
     private TypedNFAState getNextWorkerStateOrNullIfLast(TypedNFAState state)
@@ -222,19 +262,31 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         executor = Executors.newFixedThreadPool((getTotalNumberOfThreads())); //TODO: maybe workstealingpool?
 
         int prevTotalThreads = 1;
+        TypedNFAState previousState = null;
         for (TypedNFAState state : getWorkerStates()) {
             // Construct the workers first so it will be possible to add them as parameters in the ThreadContainer c'tor. Probably should've used a better design pattern (builder?)
             List<InputBufferWorker> stateIBworkers = new ArrayList<>();
             List<MatchBufferWorker> stateMBworkers = new ArrayList<>();
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
-                stateIBworkers.add(new InputBufferWorker(state, this.evaluationOrder, this.fullCondition.getEventTypes(),1, stateToMBThreads.getOrDefault(getNextWorkerStateOrNullIfLast(state), 1))); //TODO: not necessary the correct sequence order, have to validate it somehow
+                stateIBworkers.add(new InputBufferWorker(state, this.evaluationOrder, this.fullCondition.getEventTypes(),1,
+                        stateToMBThreads.getOrDefault(getNextWorkerStateOrNullIfLast(state), 1), isFinishedWithInput, finishedThreads)); //TODO: not necessary the correct sequence order, have to validate it somehow
             }
             for (int i = 0; i < stateToMBThreads.get(state); i++) {
-                stateMBworkers.add(new MatchBufferWorker(state, prevTotalThreads, stateToMBThreads.getOrDefault(getNextWorkerStateOrNullIfLast(state),1)));
+                List<BufferWorker> workersNeededToFinish;
+                if (previousState == null) {
+                    workersNeededToFinish = null;
+                }
+                else {
+                    workersNeededToFinish = new ArrayList<>(IBWorkers.get(previousState));
+                    workersNeededToFinish.addAll(MBWorkers.get(previousState));
+                }
+                stateMBworkers.add(new MatchBufferWorker(state, prevTotalThreads, stateToMBThreads.getOrDefault(getNextWorkerStateOrNullIfLast(state),1),
+                        isFinishedWithInput, finishedThreads, workersNeededToFinish));
             }
             prevTotalThreads = stateToIBThreads.get(state) + stateToMBThreads.get(state);
             IBWorkers.put(state, stateIBworkers);
             MBWorkers.put(state, stateMBworkers);
+            previousState = state;
         }
 
         BlockingQueue<Event> inputQueue;
@@ -268,10 +320,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         for (TypedNFAState state : getWorkerStates()) {
             for (InputBufferWorker worker : IBWorkers.get(state)) {
-                threadStatistics.add(executor.submit(worker));
+//                Thread t = new Thread(worker);
+//                t.start();
+                executor.submit(worker);
             }
             for (MatchBufferWorker worker: MBWorkers.get(state)) {
-                threadStatistics.add(executor.submit(worker));
+//                Thread t = new Thread(worker);
+//                t.start();
+                executor.submit(worker);
             }
         }
     }
@@ -311,107 +367,107 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     }
 
     private void threadNumCalculation(int minThreadsPerState, List<Integer> inputBufferThreadsPerState,
-    		List<Integer> matchBufferThreadsPerState, int numOfThreadsForState) {
-    	int numOfInputBufferThreads = (int) (numOfThreadsForState * inputMatchThreadRatio);
-    	// num of input buffer threads can't be 0
-    	numOfInputBufferThreads = Math.max(numOfInputBufferThreads, 1);
-    	inputBufferThreadsPerState.add(numOfInputBufferThreads);
-		matchBufferThreadsPerState.add(numOfThreadsForState - numOfInputBufferThreads);
+                                      List<Integer> matchBufferThreadsPerState, int numOfThreadsForState) {
+        int numOfInputBufferThreads = (int) (numOfThreadsForState * inputMatchThreadRatio);
+        // num of input buffer threads can't be 0
+        numOfInputBufferThreads = Math.max(numOfInputBufferThreads, 1);
+        inputBufferThreadsPerState.add(numOfInputBufferThreads);
+        matchBufferThreadsPerState.add(numOfThreadsForState - numOfInputBufferThreads);
     }
-    
+
     private void balanceThreads(List<TypedNFAState> nfaStates, List<Double> costOfStates, double totalCost,
-    		List<Integer> inputBufferThreadsPerState, List<Integer> matchBufferThreadsPerState) {
-    	int count = 0;
-    	int threadsLeft = numOfThreads;
-    	int minThreadsPerState = 2;
-    	for (TypedNFAState state : nfaStates) {
-    		int numOfThreadsForState = (int)(costOfStates.get(count++) / totalCost * numOfThreads);
-			// We need at least 2 threads. One for input and one for match buffer
-    		numOfThreadsForState = Math.max(numOfThreadsForState, minThreadsPerState);
-    		threadNumCalculation(minThreadsPerState, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
-    		threadsLeft -= numOfThreadsForState;
-    	}
-    	
-    	if (threadsLeft == 0) {
-    		return;
-    	}
-    	
-    	if (threadsLeft < 0) {
-    		// Impossible. Do stupid thread balancing
-    		System.out.println("Not enough threads for smart balancing. Dividing equally");
-    		inputBufferThreadsPerState.clear();
-    		matchBufferThreadsPerState.clear();
-    		threadsLeft = numOfThreads;
-    		for (TypedNFAState state : nfaStates) {
-    			int numOfThreadsForInput = (int) (numOfThreads / nfaStates.size() * inputMatchThreadRatio);
-    			numOfThreadsForInput = Math.max(numOfThreadsForInput, 1);
-    			inputBufferThreadsPerState.add(numOfThreadsForInput);
-    			int numOfThreadsForMatch = numOfThreads / nfaStates.size() - numOfThreadsForInput;
-    			numOfThreadsForInput = Math.max(numOfThreadsForMatch, 1);
-    			matchBufferThreadsPerState.add(numOfThreadsForMatch);
-    			threadsLeft -= numOfThreadsForInput + numOfThreadsForMatch;
-        	}
-    		if (threadsLeft > 0) {
-    			int inputThreads = (int)Math.ceil(threadsLeft / 2);
-    			inputBufferThreadsPerState.set(inputBufferThreadsPerState.size() - 1,
-    					inputBufferThreadsPerState.get(inputBufferThreadsPerState.size() - 1) + inputThreads);
-    			matchBufferThreadsPerState.set(inputBufferThreadsPerState.size() - 1,
-    					matchBufferThreadsPerState.get(inputBufferThreadsPerState.size() - 1) + threadsLeft - inputThreads);
-    		}
-    		return;
-    	}
-    	
-    	Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(Statistics.isSmartBalancing, 1);
-    	
-    	// Need to divide the rest of the threads to states by ratio
-    	count = nfaStates.size();
-    	while (threadsLeft > 0) {
-    		int numOfThreadsForState = (int)(Math.ceil(costOfStates.get(--count) / totalCost * threadsLeft));
-    		if (numOfThreadsForState == 1) {
-    			inputBufferThreadsPerState.add(numOfThreadsForState);
-    		} else {
-    			threadNumCalculation(minThreadsPerState, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
-    		}
-    		threadsLeft -= numOfThreadsForState;
-    	}
+                                List<Integer> inputBufferThreadsPerState, List<Integer> matchBufferThreadsPerState) {
+        int count = 0;
+        int threadsLeft = numOfThreads;
+        int minThreadsPerState = 2;
+        for (TypedNFAState state : nfaStates) {
+            int numOfThreadsForState = (int)(costOfStates.get(count++) / totalCost * numOfThreads);
+            // We need at least 2 threads. One for input and one for match buffer
+            numOfThreadsForState = Math.max(numOfThreadsForState, minThreadsPerState);
+            threadNumCalculation(minThreadsPerState, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
+            threadsLeft -= numOfThreadsForState;
+        }
+
+        if (threadsLeft == 0) {
+            return;
+        }
+
+        if (threadsLeft < 0) {
+            // Impossible. Do stupid thread balancing
+            System.out.println("Not enough threads for smart balancing. Dividing equally");
+            inputBufferThreadsPerState.clear();
+            matchBufferThreadsPerState.clear();
+            threadsLeft = numOfThreads;
+            for (TypedNFAState state : nfaStates) {
+                int numOfThreadsForInput = (int) (numOfThreads / nfaStates.size() * inputMatchThreadRatio);
+                numOfThreadsForInput = Math.max(numOfThreadsForInput, 1);
+                inputBufferThreadsPerState.add(numOfThreadsForInput);
+                int numOfThreadsForMatch = numOfThreads / nfaStates.size() - numOfThreadsForInput;
+                numOfThreadsForInput = Math.max(numOfThreadsForMatch, 1);
+                matchBufferThreadsPerState.add(numOfThreadsForMatch);
+                threadsLeft -= numOfThreadsForInput + numOfThreadsForMatch;
+            }
+            if (threadsLeft > 0) {
+                int inputThreads = (int)Math.ceil(threadsLeft / 2);
+                inputBufferThreadsPerState.set(inputBufferThreadsPerState.size() - 1,
+                        inputBufferThreadsPerState.get(inputBufferThreadsPerState.size() - 1) + inputThreads);
+                matchBufferThreadsPerState.set(inputBufferThreadsPerState.size() - 1,
+                        matchBufferThreadsPerState.get(inputBufferThreadsPerState.size() - 1) + threadsLeft - inputThreads);
+            }
+            return;
+        }
+
+        Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(Statistics.isSmartBalancing, 1);
+
+        // Need to divide the rest of the threads to states by ratio
+        count = nfaStates.size();
+        while (threadsLeft > 0) {
+            int numOfThreadsForState = (int)(Math.ceil(costOfStates.get(--count) / totalCost * threadsLeft));
+            if (numOfThreadsForState == 1) {
+                inputBufferThreadsPerState.add(numOfThreadsForState);
+            } else {
+                threadNumCalculation(minThreadsPerState, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
+            }
+            threadsLeft -= numOfThreadsForState;
+        }
     }
-    
+
     public void initallizeThreadAllocation() {
-    	// Check if we have enough threads to work with
-    	List<TypedNFAState> nfaStates = getWorkerStates();
-    	if (nfaStates.size() * 2 > numOfThreads) {
-    		String res = String.format("Not enough threads passed. Need at least %d threads", nfaStates.size() * 2);
-    		throw new NotEnoughThreadsException(res);
-    	}
-    	// MAX : fixing this to calculate num of threads without getting it as input    	
-    	ICostModel costModel = CostModelFactory.createCostModel(costModelType, new Object[] { eventTypes, tlr});
-    	// Cost of all the automata
-    	List<Double> costOfStates = new ArrayList<>();
-    	Double sumOfLastState = null;
-		List<EventType> eventTypesSoFar = new ArrayList<>();
-    	for (TypedNFAState state : nfaStates) {
-			eventTypesSoFar.add(state.getEventType());
-    		if (costOfStates.isEmpty()) {
-    			Double firstCost = costModel.getOrderCost(pattern, eventTypesSoFar); 
-    			costOfStates.add(firstCost);
-    			sumOfLastState = firstCost;
-    			continue;
-    		}
-    		// This is sum of costs till count's state. Need to calculate
-			Double sumCosts = costModel.getOrderCost(pattern, eventTypesSoFar);
-			costOfStates.add(sumCosts - sumOfLastState);
-			sumOfLastState = sumCosts;
-    	}
-    	double totalCost = 0;
-    	for (int i = 0; i < costOfStates.size(); ++i) {
-    		totalCost += costOfStates.get(i);
-    	}
-    	// Calculate num of threads per state based on costs
-    	List<Integer> inputBufferThreadsPerState = new ArrayList<>();
-    	List<Integer> matchBufferThreadsPerState = new ArrayList<>();
-    	
-    	balanceThreads(nfaStates, costOfStates, totalCost, inputBufferThreadsPerState, matchBufferThreadsPerState);
-    	
+        // Check if we have enough threads to work with
+        List<TypedNFAState> nfaStates = getWorkerStates();
+        if (nfaStates.size() * 2 > numOfThreads) {
+            String res = String.format("Not enough threads passed. Need at least %d threads", nfaStates.size() * 2);
+            throw new NotEnoughThreadsException(res);
+        }
+        // MAX : fixing this to calculate num of threads without getting it as input
+        ICostModel costModel = CostModelFactory.createCostModel(costModelType, new Object[] { eventTypes, tlr});
+        // Cost of all the automata
+        List<Double> costOfStates = new ArrayList<>();
+        Double sumOfLastState = null;
+        List<EventType> eventTypesSoFar = new ArrayList<>();
+        for (TypedNFAState state : nfaStates) {
+            eventTypesSoFar.add(state.getEventType());
+            if (costOfStates.isEmpty()) {
+                Double firstCost = costModel.getOrderCost(pattern, eventTypesSoFar);
+                costOfStates.add(firstCost);
+                sumOfLastState = firstCost;
+                continue;
+            }
+            // This is sum of costs till count's state. Need to calculate
+            Double sumCosts = costModel.getOrderCost(pattern, eventTypesSoFar);
+            costOfStates.add(sumCosts - sumOfLastState);
+            sumOfLastState = sumCosts;
+        }
+        double totalCost = 0;
+        for (int i = 0; i < costOfStates.size(); ++i) {
+            totalCost += costOfStates.get(i);
+        }
+        // Calculate num of threads per state based on costs
+        List<Integer> inputBufferThreadsPerState = new ArrayList<>();
+        List<Integer> matchBufferThreadsPerState = new ArrayList<>();
+
+        balanceThreads(nfaStates, costOfStates, totalCost, inputBufferThreadsPerState, matchBufferThreadsPerState);
+
         int listIndex = 0;
         for (TypedNFAState state : nfaStates) {
             stateToIBThreads.put(state, inputBufferThreadsPerState.get(listIndex));

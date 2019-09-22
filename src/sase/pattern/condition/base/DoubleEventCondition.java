@@ -66,7 +66,8 @@ public abstract class DoubleEventCondition extends AtomicCondition {
 					Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.parallelComputations);
 					Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.computations);
 				}
-//				for (long i=0;i < (long)(21999); i++);
+//				for (long j=0; j < 10; j++) {
+//				for (long i=0;i < (long)(219999999); i++); }
 				return verifyDoubleEvent(firstEvent, secondEvent);
 			}
 		}

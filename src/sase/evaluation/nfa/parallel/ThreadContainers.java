@@ -23,13 +23,15 @@ public class ThreadContainers {
     private long timeWindow;
     ParallelStatistics statistics;
     public long idleTimeSync = 0;
+    private long lastRemovingCriteria = 0;
+    public String printRemovals = "";
 
     public enum StatisticsType {
         computations ,
-         syncActions,
-         timestampComparison,
-         bufferInsertions,
-         bufferRemovals
+        syncActions,
+        timestampComparison,
+        bufferInsertions,
+        bufferRemovals
     };
 
     public class ParallelStatistics {
@@ -118,7 +120,10 @@ public class ThreadContainers {
         return eventType;
     }
 
-    public String removeExpiredElements(long removingCriteriaTimeStamp, boolean isBufferSorted) {
+    public String removeExpiredElements(long removingCriteriaTimeStamp, boolean isBufferSorted, ContainsEvent removingCriteria) {
+//        if (removingCriteriaTimeStamp < lastRemovingCriteria) {
+//            System.out.println("Current criteria: " + removingCriteriaTimeStamp + "last criteria " + lastRemovingCriteria);
+//        }
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
         int numberOfRemovedElements = 0;
         String log ="";
@@ -130,8 +135,9 @@ public class ThreadContainers {
         }
         if (isBufferSorted) { //IB is sorted, while MB isn't
             ContainsEvent currEvent = bufferSubList.get(0);
-            while (currEvent.getTimestamp() + timeWindow  < removingCriteriaTimeStamp) {
+            while (currEvent.getTimestamp() + timeWindow   < removingCriteriaTimeStamp) {
 //                log += System.nanoTime() + ": Removed " + (bufferSubList.remove(0)) + "\n";
+//                printRemovals += bufferSubList.remove(0) + ", ";
                 bufferSubList.remove(0);
                 numberOfRemovedElements++;
                 if (bufferSubList.isEmpty()) {
@@ -142,11 +148,18 @@ public class ThreadContainers {
         }
         else { //Since the buffer isn't sorted, the iterating order doesn't matter'
             int beforeRemovalSize = bufferSubList.size();
-            bufferSubList.removeIf(element -> element.getEarliestTimestamp() + timeWindow  < removingCriteriaTimeStamp);
+//            for (ContainsEvent ce : bufferSubList) {
+//                if (ce.getEarliestTimestamp() + timeWindow  < removingCriteriaTimeStamp) {
+////                    printRemovals+= ce + ", ";
+//                }
+//            }
+            bufferSubList.removeIf(element -> element.getEarliestTimestamp() + timeWindow   < removingCriteriaTimeStamp);
             numberOfRemovedElements = beforeRemovalSize - bufferSubList.size();
         }
         lock.unlock(stamp);
-        idleTimeSync += System.nanoTime() - startingTime;
+//        if (numberOfRemovedElements > 0)
+//            printRemovals += removingCriteria + "\n";
+            idleTimeSync += System.nanoTime() - startingTime;
         if (isBufferSorted) { //This is not a very good design...
             Environment.getEnvironment().getStatisticsManager().updateParallelStatistic(Statistics.parallelBufferRemovals,
                     numberOfRemovedElements);
@@ -155,6 +168,7 @@ public class ThreadContainers {
             Environment.getEnvironment().getStatisticsManager().updateParallelStatistic(Statistics.parallelPartialMatchesDeleltions,
                     numberOfRemovedElements);
         }
+//                lastRemovingCriteria =removingCriteriaTimeStamp;
         return log;
     }
 }

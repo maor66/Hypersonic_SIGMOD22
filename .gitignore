@@ -1,2 +1,16 @@
 *.class
 /.metadata/
+
+.idea/
+
+out/production/lazycepnew812/
+
+dependencies/au/com/bytecode/opencsv/bean/package.html
+
+dependencies/au/com/bytecode/opencsv/package.html
+
+dependencies/dependencies.iml
+
+dependencies/org/apache/commons/math3/geometry/partitioning/utilities/doc-files/OrderedTuple.png
+
+lazycepnew812.iml

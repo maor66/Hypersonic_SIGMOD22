@@ -7,9 +7,9 @@ import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
-import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
 import sase.simulator.Environment;
+import sase.specification.SimulationSpecification;
 import sase.statistics.Statistics;
 
 
@@ -17,15 +17,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class BufferWorker implements Callable<ThreadContainers.ParallelStatistics> {
+public abstract class BufferWorker implements Runnable {
+//public abstract class BufferWorker implements Callable<ThreadContainers.ParallelStatistics> {
     ThreadContainers dataStorage;
     TypedNFAState eventState;
-    int finisherInputsToShutdown;
+    public int finisherInputsToShutdown;
     int numberOfFinisherInputsToSend;
     String threadName;
     String log;
@@ -40,50 +43,52 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
     public long actualCalcTime = 0;
     private LazyTransition transition;
     public long windowverifyTime = 0;
+    public Thread thread;
+    protected final CopyOnWriteArrayList<BufferWorker> finishedWorkers;
+    protected AtomicBoolean isMainFinished;
+
+
 
     public ThreadContainers getDataStorage() {
         return dataStorage;
     }
 
-    public BufferWorker(TypedNFAState eventState, int finisherInputsToShutdown, int numberOfFinisherInputsToSend)
+    public BufferWorker(TypedNFAState eventState, int finisherInputsToShutdown, int numberOfFinisherInputsToSend, AtomicBoolean isMainFinished, CopyOnWriteArrayList<BufferWorker> finishedWorkers)
     {
         this.eventState = eventState;
         this.finisherInputsToShutdown = finisherInputsToShutdown;
         this.numberOfFinisherInputsToSend = numberOfFinisherInputsToSend;
         transition = getActualNextTransition(eventState);
+        this.isMainFinished = isMainFinished;
+        this.finishedWorkers = finishedWorkers;
     }
 
     @Override
-    public ThreadContainers.ParallelStatistics call() {
-        Thread.currentThread().setName(threadName + " " + Thread.currentThread().getName());
+//    public ThreadContainers.ParallelStatistics call() {
+    public void run() {
+        thread = Thread.currentThread();
+        thread.setName(threadName + " " + Thread.currentThread().getName());
         while (true) {
             ContainsEvent newElement = null;
             try {
                 long time = System.nanoTime();
                 newElement = takeNextInput();
+                if (newElement == null) {
+                    System.out.println("waiting "+ threadName);
+                    if (isPreviousStateFinished()) {
+                        idleTime += System.nanoTime() - time;
+                        finishRun();
+                        return;
+//                        return dataStorage.statistics;
+                    }
+                    else {
+                        continue;
+                    }
+                }
                 idleTime += System.nanoTime() - time;
                 numberOfHandledItems++;
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            }
-            if (newElement.isLastInput()) {
-//                System.err.println("Finisher input" + this);
-                finisherInputsToShutdown--;
-                if (finisherInputsToShutdown ==0) {
-                    for (int i = 0; i< numberOfFinisherInputsToSend; i++) {
-                        sendToNextState(new Match());
-                    }
-                    if (MainConfig.parallelDebugMode) {
-                        System.out.println("Thread " + Thread.currentThread().getName() +" " +Thread.currentThread().getId() + " has finished at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
-                        " Handled " + numberOfHandledItems + " items and compared to " + numberOfOppositeItems+" opposite items. Idle time "+ idleTime/1000000 + " Sync Idle time " + dataStorage.idleTimeSync/1000000+
-                                " Iterating buffer time " + iteratingBufferTime/1000000+ " Slice time "+ sliceTime/1000000+ " Actual Slice time "+ sliceTimeActual/1000000+ " Send sync time " + sendMatchingTime/1000000 +
-                        " Calculation time "+ actualCalcTime/1000000 + " Window verify time "+ windowverifyTime/1000000);
-                    }
-                    ParallelLazyChainNFA.finishedThreads.put(Thread.currentThread(), true);
-                    continue;
-//                    return dataStorage.statistics; //TODO: how to end task?
-                }
-                continue;
             }
             dataStorage.addEventToOwnBuffer(newElement);
             List<List<ContainsEvent>> oppositeBufferList = getOppositeBufferList();
@@ -91,18 +96,30 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
                 continue;
             }
             long time = System.nanoTime();
-            if (canCreateMatches) {
+//            if (canCreateMatches) {
                 iterateOnOppositeBuffer(newElement, oppositeBufferList);
-            }
-             iteratingBufferTime += System.nanoTime() - time;
+//            }
+            iteratingBufferTime += System.nanoTime() - time;
             List<ContainsEvent> combinedOppositeBuffer = new ArrayList<>();
             oppositeBufferList.forEach(combinedOppositeBuffer::addAll);
             ContainsEvent removingCriteria = getReleventRemovingCriteria(combinedOppositeBuffer);
             if (removingCriteria != null) {
-                dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted());
+                dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted(), removingCriteria);
             }
         }
     }
+
+    private void finishRun() {
+        finishedWorkers.add(this);
+        if (MainConfig.parallelDebugMode) {
+            System.out.println("Thread " + Thread.currentThread().getName() +" " +Thread.currentThread().getId() + " has finished at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
+                    " Handled " + numberOfHandledItems + " items and compared to " + numberOfOppositeItems+" opposite items. Idle time "+ idleTime/1000000 + " Sync Idle time " + dataStorage.idleTimeSync/1000000+
+                    " Iterating buffer time " + iteratingBufferTime/1000000+ " Slice time "+ sliceTime/1000000+ " Actual Slice time "+ sliceTimeActual/1000000+ " Send sync time " + sendMatchingTime/1000000 +
+                    " Calculation time "+ actualCalcTime/1000000 + " Window verify time "+ windowverifyTime/1000000);
+        }
+    }
+
+    protected abstract boolean isPreviousStateFinished();
 
     private ContainsEvent getReleventRemovingCriteria(List<ContainsEvent> oppositeBufferList)
     {
@@ -123,9 +140,8 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
 
     protected ContainsEvent takeNextInput() throws InterruptedException {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
-        return dataStorage.getInput().take();
+        return dataStorage.getInput().poll(1, TimeUnit.SECONDS);
     }
-
 
     protected List<List<ContainsEvent>> getOppositeBufferList()
     {
@@ -143,6 +159,14 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
 
 //        if(!verifyTimeWindowConstraint(partialMatch, event)) return false;
         long time = System.nanoTime();
+//String c;
+//    if (partialMatch.getPrimitiveEvents().size() == 1) {
+//        c = event.toString()+ " , " + partialMatch.getPrimitiveEvents().get(0).toString();
+//    }
+//    else {
+//        c = partialMatch.getPrimitiveEvents().get(0).toString()+ " , " + event.toString();
+//    }
+//        getDataStorage().printRemovals +=("Comparing: "+ c +"\n");
         boolean res = transition.verifyCondition(partialMatchEvents);
         windowverifyTime+= System.nanoTime() - time;
         if (!res)  return false;
@@ -167,14 +191,21 @@ public abstract class BufferWorker implements Callable<ThreadContainers.Parallel
         boolean res = (partialMatch.getLatestEventTimestamp() <= event.getTimestamp() + dataStorage.getTimeWindow()) &&
                 (partialMatch.getEarliestEvent() + dataStorage.getTimeWindow() >= event.getTimestamp());
 //        windowverifyTime += System.nanoTime() - time;
-return res;
+        return res;
     }
 
     protected void sendToNextState(Match newPartialMatchWithEvent) {
         BlockingQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
         try {
             long time = System.nanoTime();
-            matchesQueue.put(newPartialMatchWithEvent);
+//            matchesQueue.put(newPartialMatchWithEvent);
+            boolean isSent = false;
+            while (!isSent) {
+                isSent = matchesQueue.offer(newPartialMatchWithEvent, 1, TimeUnit.SECONDS);
+                if (!isSent) {
+                    System.out.println("Blocked on sending at " + threadName);
+                }
+            }
             sendMatchingTime += System.nanoTime() - time;
         } catch (InterruptedException e) {
             e.printStackTrace();

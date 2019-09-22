@@ -2,21 +2,21 @@ package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
 import sase.base.Event;
-import sase.base.EventType;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
-import sase.evaluation.nfa.lazy.elements.EfficientInputBuffer;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collector;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MatchBufferWorker extends BufferWorker {
+
+    private List<BufferWorker> workersNeededToFinish;
+
     @Override
     protected void iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList) {
         for (List<ContainsEvent> eventsList : oppositeBufferList) {
@@ -127,7 +127,21 @@ public class MatchBufferWorker extends BufferWorker {
     protected boolean isBufferSorted() {
         return false;
     }
-    public MatchBufferWorker(TypedNFAState eventState, int finisherInputsToShutdown, int numberOfFinisherInputsToSend) {
-        super(eventState, finisherInputsToShutdown, numberOfFinisherInputsToSend);
+    public MatchBufferWorker(TypedNFAState eventState, int finisherInputsToShutdown, int numberOfFinisherInputsToSend, AtomicBoolean isMainFinished, CopyOnWriteArrayList<BufferWorker> finishedWorkers, List<BufferWorker> workersNeededToFinish) {
+        super(eventState, finisherInputsToShutdown, numberOfFinisherInputsToSend, isMainFinished, finishedWorkers);
         threadName = "MatchBufferWorker "+ eventState.getName();
-    }}
+        this.workersNeededToFinish = workersNeededToFinish;
+    }
+
+    @Override
+    protected boolean isPreviousStateFinished() {
+        if (workersNeededToFinish == null) //First MBWorker (second state) -> Need to check if main thread finished
+            return isMainFinished.get();
+        for (BufferWorker worker: workersNeededToFinish) {
+            if (finishedWorkers.indexOf(worker) == -1) {
+                return false;
+            }
+        }
+        return true;
+    }
+}

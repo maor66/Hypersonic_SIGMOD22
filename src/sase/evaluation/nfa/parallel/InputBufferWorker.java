@@ -9,33 +9,22 @@ import sase.evaluation.nfa.lazy.elements.EvaluationOrder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class InputBufferWorker extends BufferWorker {
 
 private boolean shouldMatchIncomingEvents;
-    @Override
-    protected void iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList) {
 
-        for (List<ContainsEvent> partialMatchesList: oppositeBufferList) {
-            long time = System.nanoTime();
-            List<Match> actualMatches = (List<Match>)(List<?>) partialMatchesList;
-            if (actualMatches.isEmpty()) {
-                continue;
-            }
-            List <Event> a = new ArrayList(Event.asList((Event) newElement));
-            actualCalcTime = System.nanoTime() -time;
-            tryToAddMatchesWithEvents(actualMatches,a);
-        }
-
-    }
 
 
     @Override
     protected boolean isBufferSorted() {
         return true;
     }
-        public InputBufferWorker(TypedNFAState eventState, EvaluationOrder evaluationOrder, List<EventType> supportedEventTypes, int finisherInputsToShutdown, int numberOfFinisherInputsToSend) {
-            super(eventState, finisherInputsToShutdown, numberOfFinisherInputsToSend);
+        public InputBufferWorker(TypedNFAState eventState, EvaluationOrder evaluationOrder, List<EventType> supportedEventTypes, int finisherInputsToShutdown,
+                                 int numberOfFinisherInputsToSend, AtomicBoolean isMainFinished, CopyOnWriteArrayList<BufferWorker> finishedWorkers) {
+            super(eventState, finisherInputsToShutdown, numberOfFinisherInputsToSend, isMainFinished, finishedWorkers);
             canCreateMatches = true;
             threadName = "InputBufferWorker "+ eventState.getName();
             EventType prevEventType = evaluationOrder.getFullEvaluationOrder().get(evaluationOrder.getFullEvaluationOrder().indexOf(eventState.getEventType())-1);
@@ -64,4 +53,25 @@ private boolean shouldMatchIncomingEvents;
     private boolean isFirstTypeSequencedEarlierThanSecondType(EventType firstType, EventType secondType, List<EventType> supportedEventTypes) {
         return supportedEventTypes.indexOf(firstType) < supportedEventTypes.indexOf(secondType);
     }
+
+    @Override
+    protected boolean isPreviousStateFinished() {
+        return isMainFinished.get();
+    }
+    @Override
+    protected void iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList) {
+
+        for (List<ContainsEvent> partialMatchesList: oppositeBufferList) {
+            long time = System.nanoTime();
+            List<Match> actualMatches = (List<Match>)(List<?>) partialMatchesList;
+            if (actualMatches.isEmpty()) {
+                continue;
+            }
+            List <Event> a = new ArrayList(Event.asList((Event) newElement));
+            actualCalcTime = System.nanoTime() -time;
+            tryToAddMatchesWithEvents(actualMatches,a);
+        }
+
+    }
+
 }
