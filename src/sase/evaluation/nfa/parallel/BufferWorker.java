@@ -96,9 +96,9 @@ public abstract class BufferWorker implements Runnable {
                 continue;
             }
             long time = System.nanoTime();
-//            if (canCreateMatches) {
+            if (canCreateMatches) {
                 iterateOnOppositeBuffer(newElement, oppositeBufferList);
-//            }
+            }
             iteratingBufferTime += System.nanoTime() - time;
             List<ContainsEvent> combinedOppositeBuffer = new ArrayList<>();
             oppositeBufferList.forEach(combinedOppositeBuffer::addAll);
@@ -149,6 +149,7 @@ public abstract class BufferWorker implements Runnable {
         for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
             oppositeBuffer.add(worker.getDataStorage().getBufferSubListWithOptimisticLock());
         }
+
         numberOfOppositeItems += oppositeBuffer.size();
         return oppositeBuffer;
     }

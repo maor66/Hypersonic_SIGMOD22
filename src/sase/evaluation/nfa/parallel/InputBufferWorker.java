@@ -63,6 +63,7 @@ private boolean shouldMatchIncomingEvents;
 
         for (List<ContainsEvent> partialMatchesList: oppositeBufferList) {
             long time = System.nanoTime();
+            numberOfOppositeItems += partialMatchesList.size();
             List<Match> actualMatches = (List<Match>)(List<?>) partialMatchesList;
             if (actualMatches.isEmpty()) {
                 continue;

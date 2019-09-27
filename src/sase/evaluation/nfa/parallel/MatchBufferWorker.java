@@ -26,6 +26,7 @@ public class MatchBufferWorker extends BufferWorker {
             }
             long time = System.nanoTime();
             actualEvents = getSlice(actualEvents, (Match) newElement, eventState);
+            numberOfOppositeItems += actualEvents.size();
             sliceTime += System.nanoTime() - time;
             List<Match> m = new ArrayList<>(Match.asList((Match)newElement));
             actualCalcTime += System.nanoTime() - time;
