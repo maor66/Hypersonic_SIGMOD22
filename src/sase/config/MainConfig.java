@@ -17,7 +17,7 @@ public class MainConfig {
 	/* A flag indicating whether code testing is currently in process. */
 	public static final boolean debugMode = false;
 
-	public static final boolean statisticsDebugMode = true;
+	public static final boolean statisticsDebugMode = false;
 
 	public static final boolean parallelDebugMode = true;
 

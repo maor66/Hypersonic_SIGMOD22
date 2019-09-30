@@ -25,20 +25,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class BufferWorker implements Runnable {
-//public abstract class BufferWorker implements Callable<ThreadContainers.ParallelStatistics> {
     ThreadContainers dataStorage;
     TypedNFAState eventState;
     public int finisherInputsToShutdown;
     int numberOfFinisherInputsToSend;
     String threadName;
-    String log;
-    public int numberOfHandledItems = 0;
-    public int numberOfOppositeItems = 0;
-    public  long idleTime = 0;
-    public long iteratingBufferTime = 0;
-    public long sliceTime = 0;
-    public long sliceTimeActual = 0;
-    public long sendMatchingTime = 0;
     protected boolean canCreateMatches= true;
     public long actualCalcTime = 0;
     private LazyTransition transition;
@@ -64,42 +55,33 @@ public abstract class BufferWorker implements Runnable {
     }
 
     @Override
-//    public ThreadContainers.ParallelStatistics call() {
     public void run() {
         thread = Thread.currentThread();
         thread.setName(threadName + " " + Thread.currentThread().getName());
         while (true) {
             ContainsEvent newElement = null;
+
             try {
-                long time = System.nanoTime();
                 newElement = takeNextInput();
                 if (newElement == null) {
-                    System.out.println("waiting "+ threadName);
                     if (isPreviousStateFinished()) {
-                        idleTime += System.nanoTime() - time;
                         finishRun();
                         return;
-//                        return dataStorage.statistics;
                     }
                     else {
                         continue;
                     }
                 }
-                idleTime += System.nanoTime() - time;
-                numberOfHandledItems++;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
             dataStorage.addEventToOwnBuffer(newElement);
             List<List<ContainsEvent>> oppositeBufferList = getOppositeBufferList();
             if (oppositeBufferList.isEmpty()) {
                 continue;
             }
-            long time = System.nanoTime();
-            if (canCreateMatches) {
-                iterateOnOppositeBuffer(newElement, oppositeBufferList);
-            }
-            iteratingBufferTime += System.nanoTime() - time;
+            iterateOnOppositeBuffer(newElement, oppositeBufferList);
             List<ContainsEvent> combinedOppositeBuffer = new ArrayList<>();
             oppositeBufferList.forEach(combinedOppositeBuffer::addAll);
             ContainsEvent removingCriteria = getReleventRemovingCriteria(combinedOppositeBuffer);
@@ -111,12 +93,6 @@ public abstract class BufferWorker implements Runnable {
 
     private void finishRun() {
         finishedWorkers.add(this);
-        if (MainConfig.parallelDebugMode) {
-            System.out.println("Thread " + Thread.currentThread().getName() +" " +Thread.currentThread().getId() + " has finished at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
-                    " Handled " + numberOfHandledItems + " items and compared to " + numberOfOppositeItems+" opposite items. Idle time "+ idleTime/1000000 + " Sync Idle time " + dataStorage.idleTimeSync/1000000+
-                    " Iterating buffer time " + iteratingBufferTime/1000000+ " Slice time "+ sliceTime/1000000+ " Actual Slice time "+ sliceTimeActual/1000000+ " Send sync time " + sendMatchingTime/1000000 +
-                    " Calculation time "+ actualCalcTime/1000000 + " Window verify time "+ windowverifyTime/1000000);
-        }
     }
 
     protected abstract boolean isPreviousStateFinished();
@@ -150,7 +126,6 @@ public abstract class BufferWorker implements Runnable {
             oppositeBuffer.add(worker.getDataStorage().getBufferSubListWithOptimisticLock());
         }
 
-        numberOfOppositeItems += oppositeBuffer.size();
         return oppositeBuffer;
     }
 
@@ -158,22 +133,7 @@ public abstract class BufferWorker implements Runnable {
         //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
         //TODO: doesn't have to verify temporal condition first anymore - check if removing doesn't hurt correctness
 
-//        if(!verifyTimeWindowConstraint(partialMatch, event)) return false;
-        long time = System.nanoTime();
-//String c;
-//    if (partialMatch.getPrimitiveEvents().size() == 1) {
-//        c = event.toString()+ " , " + partialMatch.getPrimitiveEvents().get(0).toString();
-//    }
-//    else {
-//        c = partialMatch.getPrimitiveEvents().get(0).toString()+ " , " + event.toString();
-//    }
-//        getDataStorage().printRemovals +=("Comparing: "+ c +"\n");
-        boolean res = transition.verifyCondition(partialMatchEvents);
-        windowverifyTime+= System.nanoTime() - time;
-        if (!res)  return false;
-        return verifyTimeWindowConstraint(partialMatch, event);
-//        actualCalcTime += System.nanoTime() - time;
-
+        return transition.verifyCondition(partialMatchEvents) && verifyTimeWindowConstraint(partialMatch, event);
     }
 
     private LazyTransition getActualNextTransition(NFAState state)
@@ -187,27 +147,15 @@ public abstract class BufferWorker implements Runnable {
     }
 
     private boolean verifyTimeWindowConstraint(Match partialMatch, Event event) {
-//        long time = System.nanoTime();
 
-        boolean res = (partialMatch.getLatestEventTimestamp() <= event.getTimestamp() + dataStorage.getTimeWindow()) &&
+        return (partialMatch.getLatestEventTimestamp() <= event.getTimestamp() + dataStorage.getTimeWindow()) &&
                 (partialMatch.getEarliestEvent() + dataStorage.getTimeWindow() >= event.getTimestamp());
-//        windowverifyTime += System.nanoTime() - time;
-        return res;
     }
 
     protected void sendToNextState(Match newPartialMatchWithEvent) {
         BlockingQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
         try {
-            long time = System.nanoTime();
-//            matchesQueue.put(newPartialMatchWithEvent);
-            boolean isSent = false;
-            while (!isSent) {
-                isSent = matchesQueue.offer(newPartialMatchWithEvent, 1, TimeUnit.SECONDS);
-                if (!isSent) {
-                    System.out.println("Blocked on sending at " + threadName);
-                }
-            }
-            sendMatchingTime += System.nanoTime() - time;
+            matchesQueue.put(newPartialMatchWithEvent);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

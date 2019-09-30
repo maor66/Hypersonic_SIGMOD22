@@ -24,17 +24,12 @@ public class MatchBufferWorker extends BufferWorker {
             if (actualEvents.isEmpty()) {
                 return;
             }
-            long time = System.nanoTime();
             actualEvents = getSlice(actualEvents, (Match) newElement, eventState);
-            numberOfOppositeItems += actualEvents.size();
-            sliceTime += System.nanoTime() - time;
-            List<Match> m = new ArrayList<>(Match.asList((Match)newElement));
-            actualCalcTime += System.nanoTime() - time;
-            tryToAddMatchesWithEvents(m, actualEvents);
+            tryToAddMatchesWithEvents(new ArrayList<>(Match.asList((Match)newElement)), actualEvents);
         }
     }
 
-    public int getIndexWithClosestValue(List<Event> events, long desiredValue, boolean getLower, boolean comapreBySequence) {
+    public int getIndexWithClosestValue(List<Event> events, long desiredValue, boolean getLower, boolean compareBySequence) {
         int minIndex = 0, maxIndex = events.size() - 1;
         int midIndex;
         long currValue;
@@ -42,9 +37,9 @@ public class MatchBufferWorker extends BufferWorker {
         {
             midIndex = (maxIndex + minIndex) / 2;
             Event currEvent = events.get(midIndex);
-            currValue = (comapreBySequence) ? currEvent.getSequenceNumber() : currEvent.getTimestamp();
+            currValue = (compareBySequence) ? currEvent.getSequenceNumber() : currEvent.getTimestamp();
             if (currValue == desiredValue)
-                return (comapreBySequence) ? midIndex : findOutermostIndexWithSameKey(events, desiredValue, getLower, midIndex);
+                return (compareBySequence) ? midIndex : findOutermostIndexWithSameKey(events, desiredValue, getLower, midIndex);
             if (currValue < desiredValue)
                 minIndex = midIndex + 1;
             else
@@ -73,18 +68,11 @@ public class MatchBufferWorker extends BufferWorker {
             return events;
         }
 
-        //TODO: getting too much results, probably not calculating correctly
         Event lowerBoundEvent = getActualNextTransition(eventState).getActualPrecedingEvent(partialMatch.getPrimitiveEvents());
         Event upperBoundEvent = getActualNextTransition(eventState).getActualSucceedingEvent(partialMatch.getPrimitiveEvents());
         int lowerIndex, upperIndex;
 
-        //Can use the actual getSlice as now the list is sorted (getting it from each IB separately)
-//        EfficientInputBuffer EIB = new EfficientInputBuffer(eventState.getEventType(), events.size());
-//        EIB.storeAllWithoutCopy(events);
         if (lowerBoundEvent == null) {
-//            lowerBoundEvent = getBoundByWindow(events, partialMatch, true);
-//            lowerBoundEvent = events.get(Collections.binarySearch(events, new Event(partialMatch.getLatestEvent().getTimestamp() - dataStorage.getTimeWindow()),c));
-//            lowerBoundEvent = events.get(EIB.getIndexWithClosestTimestampWindow(eventState.getEventType(),partialMatch.getLatestEventTimestamp() - dataStorage.getTimeWindow(), false));
             lowerIndex = getIndexWithClosestValue(events,partialMatch.getLatestEventTimestamp() - dataStorage.getTimeWindow(), true, false);
         }
         else {
@@ -92,27 +80,12 @@ public class MatchBufferWorker extends BufferWorker {
         }
 
         if (upperBoundEvent == null) {
-//            upperBoundEvent = getBoundByWindow(events, partialMatch, false);
-//            upperBoundEvent = events.get(EIB.getIndexWithClosestTimestampWindow(eventState.getEventType(),partialMatch.getEarliestTimestamp()+ dataStorage.getTimeWindow(), false));
             upperIndex = getIndexWithClosestValue(events, partialMatch.getEarliestTimestamp()+ dataStorage.getTimeWindow(), false, false);
         }
         else {
             upperIndex = getIndexWithClosestValue(events, upperBoundEvent.getSequenceNumber(), false, true);
         }
         return events.subList(lowerIndex, upperIndex);
-//        return EIB.getSlice(eventState.getEventType(), lowerBoundEvent, upperBoundEvent);
-    }
-
-    private Event getBoundByWindow(List<Event> events, Match partialMatch, boolean isLowerBound) {
-        long boundTimestamp = (isLowerBound) ? partialMatch.getLatestEventTimestamp() : partialMatch.getEarliestTimestamp();
-        int direction = (isLowerBound) ? 1 : -1;
-        boundTimestamp += dataStorage.getTimeWindow() * direction * -1;
-        int startpos = (isLowerBound) ? 0 : events.size()-1;
-        while (direction * boundTimestamp > direction * events.get(startpos).getTimestamp()) {
-            startpos += direction;
-        }
-        return (startpos !=0 && startpos != events.size()-1) ? events.get(startpos+ direction*-1) : null;
-
     }
 
     private LazyTransition getActualNextTransition(NFAState state) {
