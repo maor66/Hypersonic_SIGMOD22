@@ -100,11 +100,12 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         this.inputMatchThreadRatio = specification.inputMatchThreadRatio;
         System.out.println("Processors: " + Runtime.getRuntime().availableProcessors());
     }
-
+    
     @Override
     public List<Match> processNewEvent(Event event, boolean canStartInstance) {
 
         TypedNFAState eventState = getStateByEventType(getWorkerAndInitialState(), event);
+
         if (null == eventState) {
             // The event has irrelevent type (not in the query)
             return null;
@@ -133,6 +134,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         if (MainConfig.parallelDebugMode) {
             System.out.println("Starting poison pill at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
             System.out.println("Main thread idle time is " + mainThreadIdleTime / 1000000);
+            System.out.println(("Actual thread used " + getAllWorkers().size()));
         }
 
         Set<Match> matches = new HashSet<>();
@@ -151,7 +153,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             }
 
             if (m == null) {
-                if (finishedThreads.size() == this.numOfThreads) {
+                if (finishedThreads.size() == this.getAllWorkers().size()) {
                     break;
                 }
             }

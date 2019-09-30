@@ -487,30 +487,30 @@ public class PatternConfig {
 					},
 					SlaVerifierTypes.NONE),
 
-//			new PatternSpecification("SEQ3", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
-//					new String[][][] {new String[][]{new String[]{
-//							StockEventTypesManager.microsoftEventTypeName,
-//							StockEventTypesManager.googleEventTypeName,
-//							StockEventTypesManager.appleEventTypeName
-//					}}},
-//					new ConditionSpecification[] {
-//							new StockDeltaOrderingConditionSpecification(
-//									StockEventTypesManager.microsoftEventTypeName,
-//									StockEventTypesManager.googleEventTypeName),
-//							new StockDeltaOrderingConditionSpecification(
-//									StockEventTypesManager.googleEventTypeName,
-//									StockEventTypesManager.appleEventTypeName),
-//					},
-//					SlaVerifierTypes.NONE),
+			new PatternSpecification("SEQ3", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+					new String[][][] {new String[][]{new String[]{
+							StockEventTypesManager.microsoftEventTypeName,
+							StockEventTypesManager.googleEventTypeName,
+							StockEventTypesManager.appleEventTypeName
+					}}},
+					new ConditionSpecification[] {
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.microsoftEventTypeName,
+									StockEventTypesManager.googleEventTypeName),
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.googleEventTypeName,
+									StockEventTypesManager.appleEventTypeName),
+					},
+					SlaVerifierTypes.NONE),
 
 
-/*
+
 
 		new PatternSpecification("SEQ3", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
-				 new String[][][] {new String[][]{new String[]{ 
+				 new String[][][] {new String[][]{new String[]{
 						 StockEventTypesManager.microsoftEventTypeName,
 						 StockEventTypesManager.ciscoEventTypeName,
-						 StockEventTypesManager.qtwwEventTypeName 
+						 StockEventTypesManager.qtwwEventTypeName
 				 }}},
 				 new ConditionSpecification[] {
 					 new StockDeltaOrderingConditionSpecification(
@@ -519,7 +519,7 @@ public class PatternConfig {
 					 new StockDeltaOrderingConditionSpecification(
 							 StockEventTypesManager.ciscoEventTypeName,
 							 StockEventTypesManager.qtwwEventTypeName),
-								 }, 
+								 },
 				SlaVerifierTypes.NONE),
 
 		new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
