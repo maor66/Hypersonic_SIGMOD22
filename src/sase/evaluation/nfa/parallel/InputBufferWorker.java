@@ -42,17 +42,25 @@ private boolean shouldMatchIncomingEvents;
         return isMainFinished.get();
     }
     @Override
-    protected void iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList) {
+    protected ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList) {
 
-        for (List<ContainsEvent> partialMatchesList: oppositeBufferList) {
-            List<Match> actualMatches = (List<Match>)(List<?>) partialMatchesList;
-            if (actualMatches.isEmpty()) {
-                continue;
+        long latestEarliestTimeStamp = Long.MIN_VALUE;
+        Match latest = null;
+
+        for (List<ContainsEvent> partialMatchesList : oppositeBufferList) {
+            for (Match match : ((List<Match>) (List<?>) partialMatchesList)) {
+                if (match.getEarliestTimestamp() > latestEarliestTimeStamp) {
+                    latest = match;
+                    latestEarliestTimeStamp = match.getEarliestTimestamp();
+                }
+                List<Event> partialMatchEvents = new ArrayList<>(match.getPrimitiveEvents());
+
+                checkAndSendToNextState((Event) newElement, partialMatchEvents, match);
             }
-            List <Event> a = new ArrayList(Event.asList((Event) newElement));
-            tryToAddMatchesWithEvents(actualMatches,a);
         }
 
+        return latest;
     }
+
 
 }

@@ -18,15 +18,31 @@ public class MatchBufferWorker extends BufferWorker {
     private List<BufferWorker> workersNeededToFinish;
 
     @Override
-    protected void iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList) {
+    protected ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList) {
+        long latestEarliestTimeStamp = Long.MIN_VALUE;
+        Event latestEvent = null;
+        Match match = (Match) newElement;
+        List<Event> partialMatchEvents = new ArrayList<>(match.getPrimitiveEvents());
+
         for (List<ContainsEvent> eventsList : oppositeBufferList) {
             List<Event> actualEvents = (List<Event>) (List<?>) eventsList;
             if (actualEvents.isEmpty()) {
-                return;
+               continue;
             }
+
+            Event latestEventInSubList = actualEvents.get(actualEvents.size() - 1);
+            if (latestEventInSubList.getTimestamp() > latestEarliestTimeStamp) {
+                latestEvent = latestEventInSubList;
+                latestEarliestTimeStamp = latestEventInSubList.getTimestamp();
+            }
+
             actualEvents = getSlice(actualEvents, (Match) newElement, eventState);
-            tryToAddMatchesWithEvents(new ArrayList<>(Match.asList((Match)newElement)), actualEvents);
+            for (Event event : actualEvents) {
+                checkAndSendToNextState(event, partialMatchEvents, match);
+
+            }
         }
+        return latestEvent;
     }
 
     public int getIndexWithClosestValue(List<Event> events, long desiredValue, boolean getLower, boolean compareBySequence) {

@@ -2,24 +2,18 @@ package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
 import sase.base.Event;
-import sase.config.MainConfig;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
 import sase.simulator.Environment;
-import sase.specification.SimulationSpecification;
 import sase.statistics.Statistics;
 
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -81,10 +75,7 @@ public abstract class BufferWorker implements Runnable {
             if (oppositeBufferList.isEmpty()) {
                 continue;
             }
-            iterateOnOppositeBuffer(newElement, oppositeBufferList);
-            List<ContainsEvent> combinedOppositeBuffer = new ArrayList<>();
-            oppositeBufferList.forEach(combinedOppositeBuffer::addAll);
-            ContainsEvent removingCriteria = getReleventRemovingCriteria(combinedOppositeBuffer);
+            ContainsEvent removingCriteria = iterateOnOppositeBuffer(newElement, oppositeBufferList);
             if (removingCriteria != null) {
                 dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted(), removingCriteria);
             }
@@ -103,9 +94,6 @@ public abstract class BufferWorker implements Runnable {
         long latestEarliestTimeStamp = Long.MIN_VALUE;
         ContainsEvent element = null;
         for (ContainsEvent ce : oppositeBufferList) {
-            if (ce == null) {
-                System.out.println("ce is null");
-            }
             if (ce.getEarliestTimestamp() > latestEarliestTimeStamp) {
                 element = ce;
                 latestEarliestTimeStamp = ce.getEarliestTimestamp();
@@ -162,24 +150,19 @@ public abstract class BufferWorker implements Runnable {
     }
 
 
-    protected void tryToAddMatchesWithEvents(List<Match> matches, List<Event> events)
-    {
-        for (Match partialMatch : matches) {
-            List<Event> partialMatchEvents = new ArrayList<>(partialMatch.getPrimitiveEvents());
-            for (Event event : events) {
-                partialMatchEvents.add(event);
-                if (isEventCompatibleWithPartialMatch(partialMatch, partialMatchEvents,event)) {
-                    sendToNextState(partialMatch.createNewPartialMatchWithEvent(event));
-                }
-                partialMatchEvents.remove(partialMatchEvents.size()-1);
-            }
+    protected void checkAndSendToNextState(Event event, List<Event> partialMatchEvents, Match match) {
+        partialMatchEvents.add(event);
+        if (isEventCompatibleWithPartialMatch(match, partialMatchEvents, event)) {
+            sendToNextState(match.createNewPartialMatchWithEvent(event));
         }
+        partialMatchEvents.remove(partialMatchEvents.size() - 1);
     }
+
     public void initializeDataStorage(ThreadContainers dataStorage) {
         this.dataStorage = dataStorage;
     }
 
-    protected abstract void iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList);
+    protected abstract ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList);
 
     protected abstract boolean isBufferSorted();
 }
