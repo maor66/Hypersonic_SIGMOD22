@@ -262,14 +262,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         for (TypedNFAState state : getWorkerStates()) {
             for (InputBufferWorker worker : IBWorkers.get(state)) {
-//                Thread t = new Thread(worker);
-//                t.start();
-                executor.submit(worker);
+                Thread t = new Thread(worker);
+                t.start();
+//                executor.submit(worker);
             }
             for (MatchBufferWorker worker: MBWorkers.get(state)) {
-//                Thread t = new Thread(worker);
-//                t.start();
-                executor.submit(worker);
+                Thread t = new Thread(worker);
+                t.start();
+//                executor.submit(worker);
             }
         }
     }

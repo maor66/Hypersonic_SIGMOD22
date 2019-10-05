@@ -111,9 +111,13 @@ public abstract class BufferWorker implements Runnable {
     {
         List<List<ContainsEvent>> oppositeBuffer = new ArrayList<>();
         for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
-            oppositeBuffer.add(worker.getDataStorage().getBufferSubListWithOptimisticLock());
+            if (finishedWorkers.indexOf(worker)==-1) {
+                oppositeBuffer.add(worker.getDataStorage().getBufferSubListWithOptimisticLock());
+                }
+            else { //If the worker has finished its run, the sub buffer won't change so we don't have to copy it
+                oppositeBuffer.add(worker.getDataStorage().getBufferSubListAfterWorkerFinished());
+            }
         }
-
         return oppositeBuffer;
     }
 

@@ -73,6 +73,11 @@ public class ThreadContainers {
         return oppositeBufferWorkers;
     }
 
+    public List<ContainsEvent> getBufferSubListAfterWorkerFinished() {
+        return bufferSubList;
+    }
+
+
     public List<ContainsEvent> getBufferSubListWithOptimisticLock() {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
         List<ContainsEvent> listView = new ArrayList<>();
