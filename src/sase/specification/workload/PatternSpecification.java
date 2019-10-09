@@ -185,4 +185,7 @@ public class PatternSpecification {
 		return getLongDescription();
 	}
 
+	public PatternSpecification createIdenticalSpecificationWithDifferentWindow(long newTimeWindow) {
+		return new PatternSpecification(name, type, newTimeWindow, structure, conditions, verifierType);
+	}
 }

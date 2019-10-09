@@ -1,7 +1,9 @@
 package sase.specification.creators;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import sase.config.SimulationConfig;
 import sase.specification.workload.PatternSpecification;
@@ -15,7 +17,7 @@ public class SinglePatternCrossProductSimulationSpecificationCreator extends Cro
 	@Override
 	protected Map<WorkloadSpecification, WorkloadCreationSpecification> createWorkloadSpecifications() {
 		Map<WorkloadSpecification, WorkloadCreationSpecification> result = 
-									new HashMap<WorkloadSpecification, WorkloadCreationSpecification>();
+									new LinkedHashMap<>();
 		for (PatternSpecification patternSpecification : SimulationConfig.patternSpecifications) {
 			result.put(new SinglePatternWorkloadSpecification(patternSpecification), null);
 		}
