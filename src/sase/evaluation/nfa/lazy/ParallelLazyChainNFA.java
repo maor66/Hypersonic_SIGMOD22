@@ -1,5 +1,6 @@
 package sase.evaluation.nfa.lazy;
 
+import org.apache.commons.math3.analysis.function.Min;
 import sase.base.Event;
 import sase.base.EventType;
 import sase.config.MainConfig;
@@ -325,12 +326,23 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                                 List<Integer> inputBufferThreadsPerState, List<Integer> matchBufferThreadsPerState) {
         int count = 0;
         int threadsLeft = numOfThreads;
-        int minThreadsPerState = 2;
-        for (TypedNFAState state : nfaStates) {
-            int numOfThreadsForState = (int)(costOfStates.get(count++) / totalCost * numOfThreads);
-            // We need at least 2 threads. One for input and one for match buffer
-            numOfThreadsForState = Math.max(numOfThreadsForState, minThreadsPerState);
-            threadNumCalculation(minThreadsPerState, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
+        final int MIN_THREADS_PER_STATE = 2;
+        int threadsToAdd = 0;
+        double costLeft = totalCost;
+        for (Double costOfState : costOfStates) {
+            int numOfThreadsForState = (int)(costOfState/ totalCost * threadsLeft);
+            if (numOfThreadsForState < MIN_THREADS_PER_STATE) {
+                threadsToAdd += MIN_THREADS_PER_STATE - numOfThreadsForState;
+                costLeft -= costOfState;
+            }
+        }
+        threadsLeft -= threadsToAdd;
+        int threadToAllocate = threadsLeft;
+        threadsLeft = numOfThreads;
+        for (Double costOfState : costOfStates) {
+            int numOfThreadsForState = (int) (costOfState / costLeft * threadToAllocate);
+            numOfThreadsForState = Math.max(numOfThreadsForState, MIN_THREADS_PER_STATE);
+            threadNumCalculation(MIN_THREADS_PER_STATE, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
             threadsLeft -= numOfThreadsForState;
         }
 
@@ -372,7 +384,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             if (numOfThreadsForState == 1) {
                 inputBufferThreadsPerState.add(numOfThreadsForState);
             } else {
-                threadNumCalculation(minThreadsPerState, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
+                threadNumCalculation(MIN_THREADS_PER_STATE, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
             }
             threadsLeft -= numOfThreadsForState;
         }
