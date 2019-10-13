@@ -1,11 +1,15 @@
 package sase.evaluation.nfa.lazy.order.cost;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import sase.base.EventType;
 import sase.config.EventRateConfig;
 import sase.pattern.Pattern;
+import sase.pattern.SimplePattern;
+import sase.pattern.condition.Condition;
+import sase.pattern.condition.base.CNFCondition;
 
 public class ThroughputLatencyCostModel extends ThroughputCostModel implements ICostModel {
 	
@@ -27,6 +31,14 @@ public class ThroughputLatencyCostModel extends ThroughputCostModel implements I
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public Double getCostOfSingleState(CNFCondition filteredCondition, EventType typeOfState, double previousStateCost) {
+		if (throughputToLatencyRatio != 0) {
+			throw new UnsupportedOperationException("Calculation of latency cost model isn't implemented yet");
+		}
+		return super.getCostOfSingleState(filteredCondition, typeOfState, previousStateCost);
 	}
 
 	@Override

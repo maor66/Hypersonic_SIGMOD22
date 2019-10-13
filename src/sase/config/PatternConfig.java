@@ -3,6 +3,7 @@ package sase.config;
 import sase.multi.sla.SlaVerifierTypes;
 import sase.pattern.creation.PatternTypes;
 import sase.specification.condition.ConditionSpecification;
+import sase.specification.condition.DummyConditionSpecification;
 import sase.specification.workload.ParallelPatternSpecification;
 import sase.specification.workload.PatternSpecification;
 import sase.user.stocks.StockEventTypesManager;
@@ -465,7 +466,39 @@ public class PatternConfig {
 	},
 	SlaVerifierTypes.NONE);
 
+	private static final ConditionSpecification[] dummyConditionSpecSEQ5 = new ConditionSpecification[] {
+			new DummyConditionSpecification(
+					StockEventTypesManager.biduEventTypeName,
+					StockEventTypesManager.appleEventTypeName,
+					0.7,0.7, 0),
+			new DummyConditionSpecification(
+					StockEventTypesManager.appleEventTypeName,
+					StockEventTypesManager.yahooEventTypeName,
+					0.3,0.3,0),
+			new DummyConditionSpecification(
+					StockEventTypesManager.yahooEventTypeName,
+					StockEventTypesManager.microsoftEventTypeName,
+					0.4,0.2, 0),
+			new DummyConditionSpecification(
+					StockEventTypesManager.microsoftEventTypeName,
+					StockEventTypesManager.googleEventTypeName,
+					0.4,0.8, 0)};
+
+	private static final PatternSpecification basicPatternDummySEQ5 =
+
+			new PatternSpecification("DUMMY_SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+					new String[][][] {new String[][]{new String[]{
+							StockEventTypesManager.microsoftEventTypeName,
+							StockEventTypesManager.googleEventTypeName,
+							StockEventTypesManager.appleEventTypeName,
+							StockEventTypesManager.yahooEventTypeName,
+							StockEventTypesManager.biduEventTypeName,
+					}}},
+					dummyConditionSpecSEQ5,
+					SlaVerifierTypes.NONE);
+
 	public static final PatternSpecification[] stockByCompanyPatternSpecifications = {
+			basicPatternDummySEQ5.createIdenticalSpecificationWithDifferentWindow(100),
 //			basicPatternSEQ3.createIdenticalSpecificationWithDifferentWindow(100),
 //			basicPatternSEQ3.createIdenticalSpecificationWithDifferentWindow(110),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(70),
@@ -622,7 +655,7 @@ public class PatternConfig {
 							 StockEventTypesManager.qtwwEventTypeName),
 				 },
 				SlaVerifierTypes.NONE),
-*/
+
 		new PatternSpecification("SEQ7", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				 new String[][][] {new String[][]{new String[]{
 						 StockEventTypesManager.microsoftEventTypeName,
@@ -690,7 +723,7 @@ public class PatternConfig {
 				 }, 
 				SlaVerifierTypes.NONE),
 
-
+*/
 //			new PatternSpecification("SEQ9", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 //					new String[][][] {new String[][]{new String[]{
 //							StockEventTypesManager.microsoftEventTypeName,

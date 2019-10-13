@@ -5,6 +5,7 @@ import java.util.List;
 
 import sase.config.MainConfig;
 import sase.evaluation.common.State;
+import sase.evaluation.nfa.lazy.elements.LazyTransition;
 
 public class NFAState extends State {
 	
@@ -82,5 +83,22 @@ public class NFAState extends State {
 	
 	public String toString() {
 		return String.format("%s(%d)", name, id);
+	}
+
+	private Transition getActualTransition(List<Transition> transitions) {
+		for (Transition transition: transitions) {
+			if (transition.getAction() == Transition.Action.TAKE) {
+				return transition;
+			}
+		}
+		throw new RuntimeException("No outgoing TAKE transition");
+	}
+
+	public Transition getActualNextTransition() {
+		return getActualTransition(getOutgoingTransitions());
+	}
+
+	public Transition getActualIncomingTransition() {
+		return getActualTransition(getIncomingTransitions());
 	}
 }

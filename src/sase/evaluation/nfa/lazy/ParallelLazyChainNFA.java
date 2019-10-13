@@ -11,12 +11,16 @@ import sase.evaluation.nfa.lazy.elements.LazyTransition;
 import sase.evaluation.nfa.lazy.order.cost.CostModelFactory;
 import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
 import sase.evaluation.nfa.lazy.order.cost.ICostModel;
+import sase.evaluation.nfa.lazy.order.cost.ThroughputCostModel;
 import sase.evaluation.nfa.parallel.BufferWorker;
 import sase.evaluation.nfa.parallel.InputBufferWorker;
 import sase.evaluation.nfa.parallel.MatchBufferWorker;
 import sase.evaluation.nfa.parallel.ThreadContainers;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
+import sase.pattern.SimplePattern;
+import sase.pattern.condition.Condition;
+import sase.pattern.condition.base.CNFCondition;
 import sase.simulator.Environment;
 import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
 import sase.statistics.Statistics;
@@ -382,24 +386,35 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             throw new NotEnoughThreadsException(res);
         }
         // MAX : fixing this to calculate num of threads without getting it as input
-        ICostModel costModel = CostModelFactory.createCostModel(costModelType, new Object[] { eventTypes, tlr});
+        ThroughputCostModel costModel = (ThroughputCostModel) CostModelFactory.createCostModel(costModelType, new Object[] { eventTypes, tlr});
         // Cost of all the automata
-        List<Double> costOfStates = new ArrayList<>();
         Double sumOfLastState = null;
         List<EventType> eventTypesSoFar = new ArrayList<>();
+        List<Double> costOfStates = new ArrayList<>();
+        costOfStates.add(evaluationOrder.getFullEvaluationOrder().get(0).getRate());
         for (TypedNFAState state : nfaStates) {
+//            CNFCondition filteredCondition = ((CNFCondition) pattern.getCondition()).getConditionForTypes(new ArrayList<>(eventTypesSoFar), true);
+            CNFCondition filteredCondition = (CNFCondition) state.getActualIncomingTransition().getCondition();
+            costOfStates.add(costModel.getCostOfSingleState(filteredCondition,
+                                                            state.getEventType(),
+                                                            costOfStates.get(costOfStates.size() - 1)));
+            eventTypesSoFar.add(state.getEventType());
+            /*
             eventTypesSoFar.add(state.getEventType());
             if (costOfStates.isEmpty()) {
-                Double firstCost = costModel.getOrderCost(pattern, eventTypesSoFar);
+                double previousStateCost = 0;
+                Double firstCost = costModel.getCostOfSingleState((filteredCondition), previousStateCost);
                 costOfStates.add(firstCost);
                 sumOfLastState = firstCost;
                 continue;
             }
             // This is sum of costs till count's state. Need to calculate
-            Double sumCosts = costModel.getOrderCost(pattern, eventTypesSoFar);
+            Double sumCosts = costModel.getOrderCost(createDummyPattern(filteredCondition), evaluationOrder.getFullEvaluationOrder());
             costOfStates.add(sumCosts - sumOfLastState);
             sumOfLastState = sumCosts;
+            */
         }
+        costOfStates.remove(0);
         double totalCost = 0;
         for (int i = 0; i < costOfStates.size(); ++i) {
             totalCost += costOfStates.get(i);

@@ -126,6 +126,10 @@ public class ConditionSelectivityCollector {
 			selectivityEstimates = (HashMap<String, Double>) ois.readObject();
 			ois.close();
 			fis.close();
+//			selectivityEstimates.put("BIDU:AAPL",0.3);
+//			selectivityEstimates.put("AAPL:YHOO",0.7);
+//			selectivityEstimates.put("YHOO:MSFT",0.2);
+//			selectivityEstimates.put("MSFT:GOOG",0.8);
 		}
 		catch(IOException ioe) {
 			//we assume no file is available

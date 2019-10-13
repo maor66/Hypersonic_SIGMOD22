@@ -43,7 +43,7 @@ public abstract class BufferWorker implements Runnable {
         this.eventState = eventState;
         this.finisherInputsToShutdown = finisherInputsToShutdown;
         this.numberOfFinisherInputsToSend = numberOfFinisherInputsToSend;
-        transition = getActualNextTransition(eventState);
+        transition = (LazyTransition) eventState.getActualNextTransition();
         this.isMainFinished = isMainFinished;
         this.finishedWorkers = finishedWorkers;
     }
@@ -128,15 +128,6 @@ public abstract class BufferWorker implements Runnable {
         return transition.verifyCondition(partialMatchEvents) && verifyTimeWindowConstraint(partialMatch, event);
     }
 
-    private LazyTransition getActualNextTransition(NFAState state)
-    {
-        for (Transition transition: state.getOutgoingTransitions()) {
-            if (transition.getAction() == Transition.Action.TAKE) {
-                return (LazyTransition)transition;
-            }
-        }
-        throw new RuntimeException("No outgoing TAKE transition");
-    }
 
     private boolean verifyTimeWindowConstraint(Match partialMatch, Event event) {
 

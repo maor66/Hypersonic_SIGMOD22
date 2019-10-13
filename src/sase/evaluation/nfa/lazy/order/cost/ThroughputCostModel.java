@@ -1,5 +1,7 @@
 package sase.evaluation.nfa.lazy.order.cost;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,6 +14,11 @@ import sase.pattern.condition.base.CNFCondition;
 public class ThroughputCostModel implements ICostModel {
 	
 	protected HashMap<EventType, Double> costsOfLastOrderStates = null;
+
+	public Double getCostOfSingleState(CNFCondition filteredCondition, EventType typeOfState, double previousStateCost) {
+//		List<CNFCondition> conditionsByOrder = filteredCondition.getSubConditionsByOrder(Arrays.asList(typeOfState), true);
+		return previousStateCost * typeOfState.getRate() * filteredCondition.getSelectivity();
+	}
 
 	@Override
 	public Double getOrderCost(Pattern pattern, List<EventType> order) {
@@ -34,7 +41,7 @@ public class ThroughputCostModel implements ICostModel {
 			orderCost += currentStateCost;
 			previousStateCost = currentStateCost;
 		}
-		
+
 		return orderCost;
 	}
 
@@ -42,7 +49,7 @@ public class ThroughputCostModel implements ICostModel {
 	public Double getMPTCost(MultiPatternTree mpt) {
 		return recursiveGetCost(mpt.getRoot(), 1.0);
 	}
-	
+
 	private Double recursiveGetCost(MultiPatternTreeNode node, Double parentCost) {
 		Double nodeCost = parentCost;
 		if (!node.isRoot()) {
@@ -59,5 +66,4 @@ public class ThroughputCostModel implements ICostModel {
 		}
 		return totalCost;
 	}
-
 }
