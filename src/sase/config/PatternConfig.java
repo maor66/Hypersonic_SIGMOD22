@@ -470,19 +470,19 @@ public class PatternConfig {
 			new DummyConditionSpecification(
 					StockEventTypesManager.biduEventTypeName,
 					StockEventTypesManager.appleEventTypeName,
-					0.7,0.7, 0),
+					0.1,0.1, 0),
 			new DummyConditionSpecification(
 					StockEventTypesManager.appleEventTypeName,
 					StockEventTypesManager.yahooEventTypeName,
-					0.3,0.3,0),
+					0.1,0.1,0),
 			new DummyConditionSpecification(
 					StockEventTypesManager.yahooEventTypeName,
 					StockEventTypesManager.microsoftEventTypeName,
-					0.4,0.2, 0),
+					0.02,0.02, 0),
 			new DummyConditionSpecification(
 					StockEventTypesManager.microsoftEventTypeName,
 					StockEventTypesManager.googleEventTypeName,
-					0.4,0.8, 0)};
+					0.04,0.04, 0)};
 
 	private static final PatternSpecification basicPatternDummySEQ5 =
 

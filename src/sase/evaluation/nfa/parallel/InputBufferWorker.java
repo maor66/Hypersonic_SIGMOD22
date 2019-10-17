@@ -9,6 +9,7 @@ import sase.evaluation.nfa.lazy.elements.EvaluationOrder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -42,13 +43,14 @@ private boolean shouldMatchIncomingEvents;
         return isMainFinished.get();
     }
     @Override
-    protected ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList) {
+    protected ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, ListIterator<ContainsEvent> oppositeBufferList) {
 
         long latestEarliestTimeStamp = Long.MIN_VALUE;
         Match latest = null;
 
-        for (List<ContainsEvent> partialMatchesList : oppositeBufferList) {
-            for (Match match : ((List<Match>) (List<?>) partialMatchesList)) {
+        while (oppositeBufferList.hasNext()) {
+            Match match = (Match) oppositeBufferList.next();
+
                 if (match.getEarliestTimestamp() > latestEarliestTimeStamp) {
                     latest = match;
                     latestEarliestTimeStamp = match.getEarliestTimestamp();
@@ -57,7 +59,6 @@ private boolean shouldMatchIncomingEvents;
 
                 checkAndSendToNextState((Event) newElement, partialMatchEvents, match);
             }
-        }
 
         return latest;
     }

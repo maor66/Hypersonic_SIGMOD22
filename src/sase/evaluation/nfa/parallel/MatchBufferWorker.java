@@ -10,6 +10,7 @@ import sase.evaluation.nfa.lazy.elements.LazyTransition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -18,31 +19,27 @@ public class MatchBufferWorker extends BufferWorker {
     private List<BufferWorker> workersNeededToFinish;
 
     @Override
-    protected ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList) {
+    protected ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, ListIterator<ContainsEvent> oppositeBufferList) {
         long latestEarliestTimeStamp = Long.MIN_VALUE;
-        Event latestEvent = null;
         Match match = (Match) newElement;
         List<Event> partialMatchEvents = new ArrayList<>(match.getPrimitiveEvents());
 
-        for (List<ContainsEvent> eventsList : oppositeBufferList) {
-            List<Event> actualEvents = (List<Event>) (List<?>) eventsList;
+            List<Event> actualEvents = (List<Event>) (List<?>) getListFromIterator(oppositeBufferList);
             if (actualEvents.isEmpty()) {
-               continue;
+                return null;
             }
-
-            Event latestEventInSubList = actualEvents.get(actualEvents.size() - 1);
-            if (latestEventInSubList.getTimestamp() > latestEarliestTimeStamp) {
-                latestEvent = latestEventInSubList;
-                latestEarliestTimeStamp = latestEventInSubList.getTimestamp();
-            }
-
             actualEvents = getSlice(actualEvents, (Match) newElement, eventState);
             for (Event event : actualEvents) {
                 checkAndSendToNextState(event, partialMatchEvents, match);
-
             }
-        }
-        return latestEvent;
+
+        return (actualEvents.isEmpty()) ? null :actualEvents.get(actualEvents.size() - 1);
+    }
+
+    private List<ContainsEvent> getListFromIterator(ListIterator<ContainsEvent> oppositeBufferList) {
+        List<ContainsEvent> list = new ArrayList<>();
+        oppositeBufferList.forEachRemaining(list::add);
+        return list;
     }
 
     public int getIndexWithClosestValue(List<Event> events, long desiredValue, boolean getLower, boolean compareBySequence) {

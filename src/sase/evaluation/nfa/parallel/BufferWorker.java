@@ -3,19 +3,16 @@ package sase.evaluation.nfa.parallel;
 import sase.base.ContainsEvent;
 import sase.base.Event;
 import sase.evaluation.common.Match;
-import sase.evaluation.nfa.eager.elements.NFAState;
-import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
 
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class BufferWorker implements Runnable {
@@ -57,8 +54,10 @@ public abstract class BufferWorker implements Runnable {
 
             try {
                 newElement = takeNextInput();
+//                System.out.println(thread.getName() + " Got event " + newElement);
                 if (newElement == null) {
                     if (isPreviousStateFinished()) {
+                        System.out.println("finished " + threadName);
                         finishRun();
                         return;
                     }
@@ -70,14 +69,15 @@ public abstract class BufferWorker implements Runnable {
                 e.printStackTrace();
             }
 
-            dataStorage.addEventToOwnBuffer(newElement);
-            List<List<ContainsEvent>> oppositeBufferList = getOppositeBufferList();
-            if (oppositeBufferList.isEmpty()) {
+//            dataStorage.addEventToOwnBuffer(newElement);
+//            List<List<ContainsEvent>> oppositeBufferList = getOppositeBufferList();
+            ListIterator<ContainsEvent> oppositeBufferList = getOppositeBufferList();
+            if (!oppositeBufferList.hasNext()) {
                 continue;
             }
             ContainsEvent removingCriteria = iterateOnOppositeBuffer(newElement, oppositeBufferList);
             if (removingCriteria != null) {
-                dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted(), removingCriteria);
+                dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp());
             }
         }
     }
@@ -104,22 +104,28 @@ public abstract class BufferWorker implements Runnable {
 
     protected ContainsEvent takeNextInput() throws InterruptedException {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
-        return dataStorage.getInput().poll(1, TimeUnit.SECONDS);
+//        return dataStorage.getInput().poll(1, TimeUnit.SECONDS);
+        return dataStorage.getInputPersistentlyWithTimer(1000);
+
+
     }
 
-    protected List<List<ContainsEvent>> getOppositeBufferList()
-    {
-        List<List<ContainsEvent>> oppositeBuffer = new ArrayList<>();
-        for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
-            if (finishedWorkers.indexOf(worker)==-1) {
-                oppositeBuffer.add(worker.getDataStorage().getBufferSubListWithOptimisticLock());
-                }
-            else { //If the worker has finished its run, the sub buffer won't change so we don't have to copy it
-                oppositeBuffer.add(worker.getDataStorage().getBufferSubListAfterWorkerFinished());
-            }
-        }
-        return oppositeBuffer;
+    protected ListIterator<ContainsEvent> getOppositeBufferList() {
+        return dataStorage.getOppositeBuffer();
     }
+//    protected List<List<ContainsEvent>> getOppositeBufferList()
+//    {
+//        List<List<ContainsEvent>> oppositeBuffer = new ArrayList<>();
+//        for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
+//            if (finishedWorkers.indexOf(worker)==-1) {
+//                oppositeBuffer.add(worker.getDataStorage().getBufferSubListWithOptimisticLock());
+//                }
+//            else { //If the worker has finished its run, the sub buffer won't change so we don't have to copy it
+//                oppositeBuffer.add(worker.getDataStorage().getBufferSubListAfterWorkerFinished());
+//            }
+//        }
+//        return oppositeBuffer;
+//    }
 
     protected boolean isEventCompatibleWithPartialMatch(Match partialMatch, List<Event> partialMatchEvents, Event event) {
         //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
@@ -136,13 +142,16 @@ public abstract class BufferWorker implements Runnable {
     }
 
     protected void sendToNextState(Match newPartialMatchWithEvent) {
-        BlockingQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
-        try {
-            matchesQueue.put(newPartialMatchWithEvent);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        dataStorage.sendToNextState(newPartialMatchWithEvent);
     }
+//    protected void sendToNextState(Match newPartialMatchWithEvent) {
+//        BlockingQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
+//        try {
+//            matchesQueue.put(newPartialMatchWithEvent);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
     protected void checkAndSendToNextState(Event event, List<Event> partialMatchEvents, Match match) {
@@ -157,7 +166,7 @@ public abstract class BufferWorker implements Runnable {
         this.dataStorage = dataStorage;
     }
 
-    protected abstract ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList);
+    protected abstract ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, ListIterator<ContainsEvent> oppositeBufferList);
 
     protected abstract boolean isBufferSorted();
 }

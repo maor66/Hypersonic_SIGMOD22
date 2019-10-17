@@ -13,10 +13,7 @@ import sase.evaluation.nfa.lazy.order.cost.CostModelFactory;
 import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
 import sase.evaluation.nfa.lazy.order.cost.ICostModel;
 import sase.evaluation.nfa.lazy.order.cost.ThroughputCostModel;
-import sase.evaluation.nfa.parallel.BufferWorker;
-import sase.evaluation.nfa.parallel.InputBufferWorker;
-import sase.evaluation.nfa.parallel.MatchBufferWorker;
-import sase.evaluation.nfa.parallel.ThreadContainers;
+import sase.evaluation.nfa.parallel.*;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
 import sase.pattern.SimplePattern;
@@ -56,11 +53,11 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private ExecutorService executor;
     private Map<NFAState, List<InputBufferWorker>> IBWorkers;
     private Map<NFAState, List<MatchBufferWorker>> MBWorkers;
-    private Map<TypedNFAState, BlockingQueue<Event>> eventInputQueues;
+    private Map<TypedNFAState, ParallelInputBuffer> eventInputQueues;
     protected Map<TypedNFAState, Integer> stateToIBThreads = new HashMap<>();
     protected Map<TypedNFAState, Integer> stateToMBThreads = new HashMap<>();
-    private BlockingQueue<Match> secondStateInputQueue = new LinkedBlockingQueue<>();
-    private BlockingQueue<Match> completeMatchOutputQueue;
+    private ParallelMatchBuffer secondStateInputQueue = new ParallelMatchBuffer(timeWindow);
+    private ParallelMatchBuffer completeMatchOutputQueue;
     protected int numOfThreads;
     private CostModelTypes costModelType;
     private Double tlr;
@@ -118,12 +115,11 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         try {
             if (eventState.isInitial()) {
-                LinkedBlockingQueue<Match> transferQueue = (LinkedBlockingQueue<Match>) secondStateInputQueue;
-                transferQueue.put(new Match(Event.asList(event), System.currentTimeMillis()));
+                secondStateInputQueue.add(new Match(Event.asList(event), System.currentTimeMillis()));
             }
             else {
-                LinkedBlockingQueue<Event> transferQueue = (LinkedBlockingQueue<Event>) eventInputQueues.get(eventState);
-                transferQueue.put(event);
+                ParallelInputBuffer buffer =  eventInputQueues.get(eventState);
+                buffer.add(event);
                 Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.parallelBufferInsertions);
             }
         } catch (Exception e) {
@@ -151,11 +147,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         while (true) {
             Match m = null;
-            try {
-                m = completeMatchOutputQueue.poll(1, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//                m = completeMatchOutputQueue.poll(1, TimeUnit.SECONDS);
+                m = (Match) completeMatchOutputQueue.getInputPersistentlyWithTimer(1000);
 
             if (m == null) {
                 if (finishedThreads.size() == this.getAllWorkers().size()) {
@@ -236,29 +229,31 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             previousState = state;
         }
 
-        BlockingQueue<Event> inputQueue;
-        BlockingQueue<Match> outputQueue = new LinkedBlockingQueue<>();
-        BlockingQueue<Match> MBinputQueue = secondStateInputQueue;
+        ParallelInputBuffer inputQueue;
+        ParallelMatchBuffer outputQueue = new ParallelMatchBuffer(timeWindow);
+        ParallelMatchBuffer MBinputQueue = secondStateInputQueue;
         for (TypedNFAState state : getWorkerStates()) {
             //TODO: check that iterating on states by the correct order
-            inputQueue = new LinkedBlockingQueue<>();
+            inputQueue = new ParallelInputBuffer(timeWindow);
             eventInputQueues.put(state, inputQueue);
-            outputQueue = new LinkedBlockingQueue<>();
+            outputQueue = new ParallelMatchBuffer(timeWindow);
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
                 //Every worker has an "equal" ThreadContainer but they must be different since each worker should have a unique sub-list
-                ThreadContainers IBthreadData = new ThreadContainers(inputQueue,
-                        MBWorkers.get(state),
-                        outputQueue,
-                        state.getEventType(),
-                        timeWindow);
+                ThreadContainers IBthreadData = new ThreadContainers(inputQueue, MBinputQueue, outputQueue, state.getEventType(), timeWindow);
+//                ThreadContainers IBthreadData = new ThreadContainers(inputQueue,
+//                        MBWorkers.get(state),
+//                        outputQueue,
+//                        state.getEventType(),
+//                        timeWindow);
                 IBWorkers.get(state).get(i).initializeDataStorage(IBthreadData);
             }
             for (int i = 0; i <stateToMBThreads.get(state); i++) {
-                ThreadContainers MBthreadData = new ThreadContainers(MBinputQueue,
-                        IBWorkers.get(state),
-                        outputQueue,
-                        state.getEventType(),
-                        timeWindow);
+                ThreadContainers MBthreadData = new ThreadContainers(MBinputQueue, inputQueue, outputQueue, state.getEventType(), timeWindow);
+//                ThreadContainers MBthreadData = new ThreadContainers(MBinputQueue,
+//                        IBWorkers.get(state),
+//                        outputQueue,
+//                        state.getEventType(),
+//                        timeWindow);
                 MBWorkers.get(state).get(i).initializeDataStorage(MBthreadData);
             }
             MBinputQueue = outputQueue;
