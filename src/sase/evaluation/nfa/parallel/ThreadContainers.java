@@ -5,11 +5,10 @@ import sase.base.EventType;
 import sase.evaluation.common.Match;
 
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.locks.StampedLock;
 
 public class ThreadContainers {
-//    private final BlockingQueue<? extends ContainsEvent> input;
+    private final int workerIndex;
+    //    private final BlockingQueue<? extends ContainsEvent> input;
 //    private final BlockingQueue<Match> nextStateOutput;
 //    private List<ContainsEvent> bufferSubList;
 //    private List<? extends BufferWorker> oppositeBufferWorkers;
@@ -65,7 +64,7 @@ public class ThreadContainers {
         nextStateBuffer.add(m);
     }
 
-    public ThreadContainers(ParallelBuffer ownBuffer, ParallelBuffer oppositeBuffer, ParallelMatchBuffer nextStateBuffer, EventType state, long timeWindow) {
+    public ThreadContainers(ParallelBuffer ownBuffer, ParallelBuffer oppositeBuffer, ParallelMatchBuffer nextStateBuffer, EventType state, long timeWindow, int workerIndex) {
 //        this.input = input;
         this.ownBuffer = ownBuffer;
         this.nextStateBuffer = nextStateBuffer;
@@ -76,6 +75,7 @@ public class ThreadContainers {
 //        this.nextStateOutput = nextStateOutput;
 //        lock = new StampedLock();
         this.timeWindow = timeWindow;
+        this.workerIndex = workerIndex;
     }
 
 //    public List<? extends BufferWorker> getOppositeBufferWorkers() {
@@ -124,7 +124,7 @@ public class ThreadContainers {
 //    }
 
     public ContainsEvent getInputPersistentlyWithTimer(long milis) {
-        return ownBuffer.getInputPersistentlyWithTimer(milis);
+        return ownBuffer.getElement();
     }
 
     public ContainsEvent getInput() {
@@ -136,7 +136,7 @@ public class ThreadContainers {
     }
 
     public void removeExpiredElements(long removingCriteriaTimeStamp) {
-        ownBuffer.removeElements(removingCriteriaTimeStamp);
+        ownBuffer.removeElements(removingCriteriaTimeStamp, workerIndex);
     }
 //    public void removeExpiredElements(long removingCriteriaTimeStamp, boolean isBufferSorted, ContainsEvent removingCriteria) {
 //

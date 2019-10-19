@@ -1,28 +1,28 @@
 package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
+import sase.base.Event;
+import sase.evaluation.common.Match;
+
+import java.util.ListIterator;
 
 public class ParallelInputBuffer extends ParallelBuffer {
-    public ParallelInputBuffer(long timeWindow) {
-        super(timeWindow);
+
+    public ParallelInputBuffer(long timeWindow, int totalNumberOfWorkers) {
+        super(timeWindow, totalNumberOfWorkers);
     }
 
     @Override
-    protected int actuallyRemove(long removingCriteriaTimeStamp) {
-        int removedItems = 0;
-        ContainsEvent currEvent = buffer.get(0);
-        while (currEvent.getTimestamp() + timeWindow   < removingCriteriaTimeStamp) {
-            if (nextElementToRead <= removedItems) {
-                System.out.println("next " + nextElementToRead + " Removed items " + removedItems + " ts " +removingCriteriaTimeStamp + " event " + currEvent);
-                return removedItems;
-            }
-            buffer.remove(0);
-            removedItems++;
-            if (buffer.isEmpty()) {
+    protected void actuallyRemove(long removingCriteriaTimeStamp, int workerIndex) {
+
+        ListIterator<ContainsEvent> iterator = buffer.listIterator(getStartingIteratorIndex(workerIndex));
+        int finishIndex = getStartingIteratorIndex(workerIndex + 1);
+        while (iterator.hasNext() && iterator.nextIndex() < finishIndex) {
+            Event currEvent = (Event) iterator.next();
+            if (currEvent.getTimestamp() + timeWindow >= removingCriteriaTimeStamp) {
                 break;
             }
-            currEvent = buffer.get(0);
+            iterator.remove();
         }
-        return removedItems;
     }
 }
