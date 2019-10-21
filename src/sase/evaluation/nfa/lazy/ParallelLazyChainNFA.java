@@ -238,6 +238,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             inputQueue = new ParallelInputBuffer(timeWindow, IBWorkers.get(state).size());
             eventInputQueues.put(state, inputQueue);
             outputQueue = new ParallelMatchBuffer(timeWindow, MBWorkers.get(state).size());
+            MBinputQueue.setNumberOfWorkers(MBWorkers.get(state).size());
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
                 //Every worker has an "equal" ThreadContainer but they must be different since each worker should have a unique sub-list
                 ThreadContainers IBthreadData = new ThreadContainers(inputQueue, MBinputQueue, outputQueue, state.getEventType(), timeWindow, i);

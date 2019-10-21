@@ -4,7 +4,6 @@ import sase.base.ContainsEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.StampedLock;
 
@@ -23,9 +22,9 @@ public abstract class ParallelBuffer {
         input.add(ce);
     }
 
-    public ListIterator<ContainsEvent> getBuffer(){
+    public List<ContainsEvent> getBuffer(){
 
-        return getBufferSubListWithOptimisticLock().listIterator();
+        return getBufferSubListWithOptimisticLock();
     }
 
     public List<ContainsEvent> getBufferSubListWithOptimisticLock() {

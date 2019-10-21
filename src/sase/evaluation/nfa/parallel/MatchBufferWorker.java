@@ -19,21 +19,18 @@ public class MatchBufferWorker extends BufferWorker {
     private List<BufferWorker> workersNeededToFinish;
 
     @Override
-    protected ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, ListIterator<ContainsEvent> oppositeBufferList) {
-        long latestEarliestTimeStamp = Long.MIN_VALUE;
+    protected ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, List<ContainsEvent> oppositeBufferList) {
         Match match = (Match) newElement;
         List<Event> partialMatchEvents = new ArrayList<>(match.getPrimitiveEvents());
 
-            List<Event> actualEvents = (List<Event>) (List<?>) getListFromIterator(oppositeBufferList);
-            if (actualEvents.isEmpty()) {
-                return null;
-            }
+            List<Event> actualEvents = (List<Event>) (List<?>) (oppositeBufferList);
+            ContainsEvent removingCriteria = actualEvents.get(actualEvents.size() -1 );
             actualEvents = getSlice(actualEvents, (Match) newElement, eventState);
             for (Event event : actualEvents) {
                 checkAndSendToNextState(event, partialMatchEvents, match);
             }
 
-        return (actualEvents.isEmpty()) ? null :actualEvents.get(actualEvents.size() - 1);
+        return removingCriteria;
     }
 
     private List<ContainsEvent> getListFromIterator(ListIterator<ContainsEvent> oppositeBufferList) {
@@ -98,6 +95,7 @@ public class MatchBufferWorker extends BufferWorker {
         else {
             upperIndex = getIndexWithClosestValue(events, upperBoundEvent.getSequenceNumber(), false, true);
         }
+        if (lowerIndex > upperIndex) {return new ArrayList<Event>();}
         return events.subList(lowerIndex, upperIndex);
     }
 

@@ -11,7 +11,6 @@ import sase.statistics.Statistics;
 
 import java.util.List;
 import java.util.ListIterator;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -71,8 +70,8 @@ public abstract class BufferWorker implements Runnable {
 
 //            dataStorage.addEventToOwnBuffer(newElement);
 //            List<List<ContainsEvent>> oppositeBufferList = getOppositeBufferList();
-            ListIterator<ContainsEvent> oppositeBufferList = getOppositeBufferList();
-            if (!oppositeBufferList.hasNext()) {
+            List<ContainsEvent> oppositeBufferList = getOppositeBufferList();
+            if (oppositeBufferList.isEmpty()) {
                 continue;
             }
             ContainsEvent removingCriteria = iterateOnOppositeBuffer(newElement, oppositeBufferList);
@@ -110,7 +109,7 @@ public abstract class BufferWorker implements Runnable {
 
     }
 
-    protected ListIterator<ContainsEvent> getOppositeBufferList() {
+    protected List<ContainsEvent> getOppositeBufferList() {
         return dataStorage.getOppositeBuffer();
     }
 //    protected List<List<ContainsEvent>> getOppositeBufferList()
@@ -166,7 +165,7 @@ public abstract class BufferWorker implements Runnable {
         this.dataStorage = dataStorage;
     }
 
-    protected abstract ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, ListIterator<ContainsEvent> oppositeBufferList);
+    protected abstract ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, List<ContainsEvent> oppositeBufferList);
 
     protected abstract boolean isBufferSorted();
 }

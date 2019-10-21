@@ -19,7 +19,7 @@ public class ThreadContainers {
     private EventType eventType;
     private long timeWindow;
 
-    public ListIterator<ContainsEvent> getOppositeBuffer() {
+    public List<ContainsEvent> getOppositeBuffer() {
         return oppositeBuffer.getBuffer();
     }
 

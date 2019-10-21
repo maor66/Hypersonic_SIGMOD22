@@ -14,6 +14,7 @@ public class ParallelInputBuffer extends ParallelBuffer {
 
     @Override
     protected void actuallyRemove(long removingCriteriaTimeStamp, int workerIndex) {
+//        buffer.removeIf(element -> element.getEarliestTimestamp() + timeWindow   < removingCriteriaTimeStamp);
 
         ListIterator<ContainsEvent> iterator = buffer.listIterator(getStartingIteratorIndex(workerIndex));
         int finishIndex = getStartingIteratorIndex(workerIndex + 1);
