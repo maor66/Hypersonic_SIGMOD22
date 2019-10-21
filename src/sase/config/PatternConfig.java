@@ -419,7 +419,7 @@ public class PatternConfig {
 	
 	
 	
-	private static final long stockByCompanyPatternTimeWindow = 80;
+	private static final long stockByCompanyPatternTimeWindow = 50;
 	private static final PatternSpecification basicPatternSEQ6 =
 			new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 			new String[][][] {new String[][]{new String[]{
@@ -447,6 +447,40 @@ public class PatternConfig {
 							StockEventTypesManager.yahooEventTypeName,
 							StockEventTypesManager.etfcEventTypeName),
 			},
+			SlaVerifierTypes.NONE);
+	private static final ConditionSpecification[] dummyConditionSpecSEQ6 = new ConditionSpecification[] {
+			new DummyConditionSpecification(
+					StockEventTypesManager.microsoftEventTypeName,
+					StockEventTypesManager.googleEventTypeName,
+					0.03,0.03, 0),
+			new DummyConditionSpecification(
+					StockEventTypesManager.googleEventTypeName,
+					StockEventTypesManager.ciscoEventTypeName,
+					0.015,0.015,0),
+			new DummyConditionSpecification(
+					StockEventTypesManager.ciscoEventTypeName,
+					StockEventTypesManager.intelEventTypeName,
+					0.019,0.019, 0),
+			new DummyConditionSpecification(
+					StockEventTypesManager.intelEventTypeName,
+					StockEventTypesManager.yahooEventTypeName,
+					0.0089,0.0089, 0),
+			new DummyConditionSpecification(
+					StockEventTypesManager.yahooEventTypeName,
+					StockEventTypesManager.etfcEventTypeName,
+					0.049,0.049, 0),
+	};
+	private static final PatternSpecification basicPatternDummySEQ6 =
+			new PatternSpecification("DUMMY_SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+			new String[][][] {new String[][]{new String[]{
+					StockEventTypesManager.microsoftEventTypeName,
+					StockEventTypesManager.googleEventTypeName,
+					StockEventTypesManager.ciscoEventTypeName,
+					StockEventTypesManager.intelEventTypeName,
+					StockEventTypesManager.yahooEventTypeName,
+					StockEventTypesManager.etfcEventTypeName
+			}}},
+			dummyConditionSpecSEQ6,
 			SlaVerifierTypes.NONE);
 	private static final PatternSpecification basicPatternSEQ3 =
 
@@ -484,6 +518,28 @@ public class PatternConfig {
 					StockEventTypesManager.googleEventTypeName,
 					0.4,0.8, 0)};
 
+private static final ConditionSpecification[] dummyConditionSpecSEQ3 = new ConditionSpecification[] {
+			new DummyConditionSpecification(
+					StockEventTypesManager.microsoftEventTypeName,
+					StockEventTypesManager.googleEventTypeName,
+					0.7,0.8, 0),
+			new DummyConditionSpecification(
+			StockEventTypesManager.googleEventTypeName,
+			StockEventTypesManager.appleEventTypeName,
+					0.3,0.3,0),
+};
+
+	private static final PatternSpecification basicPatternDummySEQ3 =
+
+			new PatternSpecification("DUMMY_SEQ3", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+					new String[][][] {new String[][]{new String[]{
+							StockEventTypesManager.microsoftEventTypeName,
+							StockEventTypesManager.googleEventTypeName,
+							StockEventTypesManager.appleEventTypeName
+					}}},
+					dummyConditionSpecSEQ3,
+					SlaVerifierTypes.NONE);
+
 	private static final PatternSpecification basicPatternDummySEQ5 =
 
 			new PatternSpecification("DUMMY_SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
@@ -498,10 +554,266 @@ public class PatternConfig {
 					SlaVerifierTypes.NONE);
 
 	public static final PatternSpecification[] stockByCompanyPatternSpecifications = {
-			basicPatternDummySEQ5.createIdenticalSpecificationWithDifferentWindow(100),
+//			new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.appleEventTypeName,
+//							StockEventTypesManager.amznEventTypeName,
+//							StockEventTypesManager.googleEventTypeName,
+//							StockEventTypesManager.ciscoEventTypeName,
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.appleEventTypeName,
+//									StockEventTypesManager.amznEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.amznEventTypeName,
+//									StockEventTypesManager.googleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.googleEventTypeName,
+//									StockEventTypesManager.ciscoEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
+//			new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.appleEventTypeName,
+//							StockEventTypesManager.amznEventTypeName,
+//							StockEventTypesManager.ciscoEventTypeName,
+//							StockEventTypesManager.googleEventTypeName,
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.appleEventTypeName,
+//									StockEventTypesManager.amznEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.amznEventTypeName,
+//									StockEventTypesManager.ciscoEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.ciscoEventTypeName,
+//									StockEventTypesManager.googleEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
+//			new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.appleEventTypeName,
+//							StockEventTypesManager.googleEventTypeName,
+//							StockEventTypesManager.amznEventTypeName,
+//							StockEventTypesManager.ciscoEventTypeName,
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.appleEventTypeName,
+//									StockEventTypesManager.googleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.googleEventTypeName,
+//									StockEventTypesManager.amznEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.amznEventTypeName,
+//									StockEventTypesManager.ciscoEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
+//			new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.appleEventTypeName,
+//							StockEventTypesManager.googleEventTypeName,
+//							StockEventTypesManager.ciscoEventTypeName,
+//							StockEventTypesManager.amznEventTypeName,
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.appleEventTypeName,
+//									StockEventTypesManager.googleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.googleEventTypeName,
+//									StockEventTypesManager.ciscoEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.ciscoEventTypeName,
+//									StockEventTypesManager.amznEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
+//			new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.googleEventTypeName,
+//							StockEventTypesManager.appleEventTypeName,
+//							StockEventTypesManager.ciscoEventTypeName,
+//							StockEventTypesManager.amznEventTypeName,
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.googleEventTypeName,
+//									StockEventTypesManager.appleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.appleEventTypeName,
+//									StockEventTypesManager.ciscoEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.ciscoEventTypeName,
+//									StockEventTypesManager.amznEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
+//			new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.googleEventTypeName,
+//							StockEventTypesManager.ciscoEventTypeName,
+//							StockEventTypesManager.appleEventTypeName,
+//							StockEventTypesManager.amznEventTypeName,
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.googleEventTypeName,
+//									StockEventTypesManager.ciscoEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.ciscoEventTypeName,
+//									StockEventTypesManager.appleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.appleEventTypeName,
+//									StockEventTypesManager.amznEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
+//						new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.ciscoEventTypeName,
+//							StockEventTypesManager.googleEventTypeName,
+//							StockEventTypesManager.appleEventTypeName,
+//							StockEventTypesManager.amznEventTypeName,
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.ciscoEventTypeName,
+//									StockEventTypesManager.googleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.googleEventTypeName,
+//									StockEventTypesManager.appleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.appleEventTypeName,
+//									StockEventTypesManager.amznEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
+//									new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.ciscoEventTypeName,
+//							StockEventTypesManager.googleEventTypeName,
+//							StockEventTypesManager.amznEventTypeName,
+//							StockEventTypesManager.appleEventTypeName,
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.ciscoEventTypeName,
+//									StockEventTypesManager.googleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.googleEventTypeName,
+//									StockEventTypesManager.amznEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.amznEventTypeName,
+//									StockEventTypesManager.appleEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
+//												new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.ciscoEventTypeName,
+//							StockEventTypesManager.amznEventTypeName,
+//							StockEventTypesManager.googleEventTypeName,
+//							StockEventTypesManager.appleEventTypeName,
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.ciscoEventTypeName,
+//									StockEventTypesManager.amznEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.amznEventTypeName,
+//									StockEventTypesManager.googleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.googleEventTypeName,
+//									StockEventTypesManager.appleEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
+//															new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.ciscoEventTypeName,
+//							StockEventTypesManager.amznEventTypeName,
+//							StockEventTypesManager.googleEventTypeName,
+//							StockEventTypesManager.appleEventTypeName,
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.ciscoEventTypeName,
+//									StockEventTypesManager.amznEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.amznEventTypeName,
+//									StockEventTypesManager.googleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.googleEventTypeName,
+//									StockEventTypesManager.appleEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
+//															new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.amznEventTypeName,
+//							StockEventTypesManager.ciscoEventTypeName,
+//							StockEventTypesManager.googleEventTypeName,
+//							StockEventTypesManager.appleEventTypeName,
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.amznEventTypeName,
+//									StockEventTypesManager.ciscoEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.ciscoEventTypeName,
+//									StockEventTypesManager.googleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.googleEventTypeName,
+//									StockEventTypesManager.appleEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
+//																		new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.amznEventTypeName,
+//							StockEventTypesManager.ciscoEventTypeName,
+//							StockEventTypesManager.appleEventTypeName,
+//							StockEventTypesManager.googleEventTypeName,
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.amznEventTypeName,
+//									StockEventTypesManager.ciscoEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.ciscoEventTypeName,
+//									StockEventTypesManager.appleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.appleEventTypeName,
+//									StockEventTypesManager.googleEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
+																					new PatternSpecification("SEQ4", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+					new String[][][] {new String[][]{new String[]{
+							StockEventTypesManager.amznEventTypeName,
+							StockEventTypesManager.appleEventTypeName,
+							StockEventTypesManager.ciscoEventTypeName,
+							StockEventTypesManager.googleEventTypeName,
+					}}},
+					new ConditionSpecification[] {
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.amznEventTypeName,
+									StockEventTypesManager.appleEventTypeName),
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.appleEventTypeName,
+									StockEventTypesManager.ciscoEventTypeName),
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.ciscoEventTypeName,
+									StockEventTypesManager.googleEventTypeName),
+					},
+					SlaVerifierTypes.NONE),
+
+//			basicPatternDummySEQ3.createIdenticalSpecificationWithDifferentWindow(30),
+//			basicPatternDummySEQ3.createIdenticalSpecificationWithDifferentWindow(40),
+//			basicPatternDummySEQ3.createIdenticalSpecificationWithDifferentWindow(60),
+//			basicPatternDummySEQ3.createIdenticalSpecificationWithDifferentWindow(70),
+//			basicPatternDummySEQ3.createIdenticalSpecificationWithDifferentWindow(80),
 //			basicPatternSEQ3.createIdenticalSpecificationWithDifferentWindow(100),
 //			basicPatternSEQ3.createIdenticalSpecificationWithDifferentWindow(110),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(70),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(60),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(50),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(40),
+//			basicPatternDummySEQ6.createIdenticalSpecificationWithDifferentWindow(40),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(90),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(100),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(110),

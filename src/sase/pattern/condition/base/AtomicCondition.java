@@ -34,21 +34,21 @@ public abstract class AtomicCondition extends Condition {
 		if (shouldIgnoreSelectivityMeasurements()) {
 			return actuallyVerify(events);
 		}
-		Event firstEvent = null;
-		Event secondEvent = null;
-		if (this instanceof DoubleEventCondition) {
-			EventType firstEventType = ((DoubleEventCondition)this).getLeftEventType();
-			firstEvent = getEventByType(events, firstEventType);
-			EventType secondEventType = ((DoubleEventCondition)this).getRightEventType();
-			secondEvent = getEventByType(events, secondEventType);
-			Boolean success =
-				Environment.getEnvironment().getPredicateResultsCache().getConditionEvaluationResult(this,
-																									 firstEvent,
-																									 secondEvent);
-			if (success != null) {
-				return success;
-			}
-		}
+//		Event firstEvent = null;
+//		Event secondEvent = null;
+//		if (this instanceof DoubleEventCondition) {
+//			EventType firstEventType = ((DoubleEventCondition)this).getLeftEventType();
+//			firstEvent = getEventByType(events, firstEventType);
+//			EventType secondEventType = ((DoubleEventCondition)this).getRightEventType();
+//			secondEvent = getEventByType(events, secondEventType);
+//			Boolean success =
+//				Environment.getEnvironment().getPredicateResultsCache().getConditionEvaluationResult(this,
+//																									 firstEvent,
+//																									 secondEvent);
+//			if (success != null) {
+//				return success;
+//			}
+//		}
 		boolean success = actuallyVerify(events);
 		if (MainConfig.conditionSelectivityMeasurementMode) {
 			ConditionSelectivityCollector.getInstance().recordConditionEvaluation(getConditionKey(), success);
@@ -56,12 +56,12 @@ public abstract class AtomicCondition extends Condition {
 		if (MainConfig.isSelectivityMonitoringAllowed) {
 			Environment.getEnvironment().getSelectivityEstimator().registerConditionVerification(this, success);
 		}
-		if (this instanceof DoubleEventCondition) {
-			Environment.getEnvironment().getPredicateResultsCache().recordConditionEvaluation(this,
-																							  firstEvent,
-																							  secondEvent,
-																							  success);
-		}
+//		if (this instanceof DoubleEventCondition) {
+//			Environment.getEnvironment().getPredicateResultsCache().recordConditionEvaluation(this,
+//																							  firstEvent,
+//																							  secondEvent,
+//																							  success);
+//		}
 		return success;
 	}
 	

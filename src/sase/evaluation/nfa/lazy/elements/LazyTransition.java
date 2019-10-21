@@ -113,4 +113,5 @@ public class LazyTransition extends Transition {
 		}
 		return String.format("%s %s", type, transitionAsString);
 	}
+
 }

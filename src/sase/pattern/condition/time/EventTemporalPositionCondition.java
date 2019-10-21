@@ -55,16 +55,16 @@ public class EventTemporalPositionCondition extends AtomicCondition {
 		if (targetEvent == null)
 			throw new RuntimeException("Cannot verify condition - the target event was not found.");
 		for (EventType eventType : precedingEventTypes) {
-			Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.timeComparisons);
-			Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.parallelTimeComparisons);
+//			Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.timeComparisons);
+//			Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.parallelTimeComparisons);
 			Event precedingEvent = getEventByType(events, eventType);
 			if (isEarlier(targetEvent, precedingEvent)) {
 				return false;
 			}
 		}
 		for (EventType eventType : succeedingEventTypes) {
-			Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.timeComparisons);
-			Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.parallelTimeComparisons);
+//			Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.timeComparisons);
+//			Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.parallelTimeComparisons);
 			Event succeedingEvent = getEventByType(events, eventType);
 			if (isEarlier(succeedingEvent, targetEvent)) {
 				return false;
