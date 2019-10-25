@@ -72,9 +72,11 @@ public abstract class BufferWorker implements Runnable {
 //            List<List<ContainsEvent>> oppositeBufferList = getOppositeBufferList();
             List<ContainsEvent> oppositeBufferList = getOppositeBufferList();
             if (oppositeBufferList.isEmpty()) {
+                dataStorage.releaseBuffer();
                 continue;
             }
             ContainsEvent removingCriteria = iterateOnOppositeBuffer(newElement, oppositeBufferList);
+            dataStorage.releaseBuffer();
             if (removingCriteria != null) {
                 dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp());
             }

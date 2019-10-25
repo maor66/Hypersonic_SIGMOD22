@@ -13,6 +13,7 @@ public abstract class ParallelBuffer {
     protected BlockingQueue<ContainsEvent> input = new LinkedBlockingQueue<>();
     protected StampedLock lock = new StampedLock();
     protected int totalNumberOfWorkers;
+    private long stamp;
     protected long timeWindow;
 
     public ParallelBuffer(long timeWindow, int totalNumberOfWorkers) {this.timeWindow = timeWindow;
@@ -25,6 +26,15 @@ public abstract class ParallelBuffer {
     public List<ContainsEvent> getBuffer(){
 
         return getBufferSubListWithOptimisticLock();
+    }
+
+    public List<ContainsEvent> lockAndAcquireBuffer() {
+        stamp = lock.readLock();
+        return buffer;
+    }
+
+    public void releaseBuffer() {
+        lock.unlockRead(stamp);
     }
 
     public List<ContainsEvent> getBufferSubListWithOptimisticLock() {

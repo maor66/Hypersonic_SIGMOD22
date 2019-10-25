@@ -20,7 +20,11 @@ public class ThreadContainers {
     private long timeWindow;
 
     public List<ContainsEvent> getOppositeBuffer() {
-        return oppositeBuffer.getBuffer();
+        return oppositeBuffer.lockAndAcquireBuffer();
+    }
+
+    public void releaseBuffer() {
+        oppositeBuffer.releaseBuffer();
     }
 
     public enum StatisticsType {
