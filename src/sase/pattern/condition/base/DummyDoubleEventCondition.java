@@ -18,12 +18,12 @@ public class DummyDoubleEventCondition extends DoubleEventCondition {
 
 	@Override
 	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
-		try {
-			Thread.sleep(timeTillDone);
-		} catch (InterruptedException e) {
-//			e.printStackTrace();
-			// Not sure if I should do anything here
-		}
+//		try {
+//			Thread.sleep(timeTillDone);
+//		} catch (InterruptedException e) {
+////			e.printStackTrace();
+//			// Not sure if I should do anything here
+//		}
 		return Math.random() < trueProbability;
 	}
 

@@ -11,6 +11,8 @@ public class LinuxPathConfig extends PathConfig {
 		firstInputDirectoryPath = "/home/yankovitch/parallelCEP/data/0802";
 		outputFilePath = "/home/yankovitch/parallelCEP/lazyCEPlogs/NASDAQ_20080201_1out"+System.currentTimeMillis()+".csv";
 //		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1sel.ser";
-		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1selSEQ4.ser";
+//		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1selSEQ6.ser";
+		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1selSEQ4actual.ser";
+//		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1selSEQ4.ser";
 	}
 }

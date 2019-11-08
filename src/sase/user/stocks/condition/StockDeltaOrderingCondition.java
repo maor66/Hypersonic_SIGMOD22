@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import sase.base.Event;
 import sase.base.EventType;
+import sase.evaluation.common.Match;
 import sase.pattern.condition.base.DoubleEventCondition;
 import sase.user.stocks.StockEventTypesManager;
 
@@ -20,6 +21,7 @@ public class StockDeltaOrderingCondition extends DoubleEventCondition {
 	private Double calculateDelta(Event event) {
 		Double firstValue = (Double)event.getAttributeValue(StockEventTypesManager.firstStockMeasurementIndex);
 		Double secondValue = (Double)event.getAttributeValue(StockEventTypesManager.firstStockMeasurementIndex + 1);
+//		return Math.abs(Math.pow(firstValue, 3) - Math.pow(secondValue,3));
 		return Math.abs(firstValue - secondValue);
 	}
 

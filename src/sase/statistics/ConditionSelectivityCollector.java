@@ -124,12 +124,31 @@ public class ConditionSelectivityCollector {
 			FileInputStream fis = new FileInputStream(MainConfig.selectivityEstimatorsFilePath);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			selectivityEstimates = (HashMap<String, Double>) ois.readObject();
+			selectivityEstimates.clear();
 			ois.close();
 			fis.close();
 //			selectivityEstimates.put("BIDU:AAPL",0.3);
 //			selectivityEstimates.put("AAPL:YHOO",0.7);
 //			selectivityEstimates.put("YHOO:MSFT",0.2);
-//			selectivityEstimates.put("MSFT:GOOG",0.8);
+//			selectivityEstimates.put("GOOG:INTC",0.1);
+//			selectivityEstimates.put("INTC:YHOO",0.1);
+//			selectivityEstimates.put("CSCO:ETFC",1.0);
+			selectivityEstimates.put("INTC:CSCO",1.0);
+			selectivityEstimates.put("YHOO:INTC",0.1);
+			selectivityEstimates.put("CSCO:GOOG",0.1);
+//			selectivityEstimates.put("MSFT:GOOG",0.126951);
+//			selectivityEstimates.put("GOOG:CSCO",0.006409);
+//			selectivityEstimates.put("CSCO:INTC",0.297975);
+//			selectivityEstimates.put("INTC:YHOO",0.497602);
+//			selectivityEstimates.put("YHOO:ETFC",0.057237);
+
+//						selectivityEstimates.put("GOOG:CSCO",0.008380);
+//						selectivityEstimates.put("MSFT:GOOG",0.131321);
+//						selectivityEstimates.put("CSCO:QTWW",0.204873);
+//			MSFT:CSCO:0.392575
+//			CSCO:AMZN:0.822481
+//			GOOG:MSFT:0.023011
+
 		}
 		catch(IOException ioe) {
 			//we assume no file is available

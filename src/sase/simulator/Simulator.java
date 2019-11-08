@@ -284,6 +284,7 @@ public class Simulator {
 				return;
 			}
 			foundMatches = new ArrayList<>();
+			System.out.println("Starting events at  " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
 			Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.processingTime);
 
 			for (Event event : allEvents)
@@ -315,6 +316,8 @@ public class Simulator {
 			if (secondaryEvaluationMechanism != null) {
 				recordNewMatches(secondaryEvaluationMechanism.getLastMatches());
 			}
+			System
+					.out.println("Finished run at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
 			Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.processingTime);
 			Environment.getEnvironment().getStatisticsManager().reportStatistics();
 			if (MainConfig.useSimulationHistory) {

@@ -41,6 +41,30 @@ private boolean shouldMatchIncomingEvents;
     protected boolean isPreviousStateFinished() {
         return isMainFinished.get();
     }
+
+    @Override
+    protected ContainsEvent iterateOnSubList(ContainsEvent newElement, List<ContainsEvent> bufferSubList) {
+        long latestEarliestTimeStamp = Long.MIN_VALUE;
+        Match latest = null;
+        for (Match match : ((List<Match>) (List<?>) bufferSubList)) {
+            if (match.getEarliestTimestamp() > latestEarliestTimeStamp) {
+                latest = match;
+                latestEarliestTimeStamp = match.getEarliestTimestamp();
+            }
+//            if (match.isExpired()) {
+////                System.out.println("Doest expired " + match);
+//                continue;
+//            }
+//            if (match.getEarliestTimestamp() - dataStorage.getTimeWindow() > newElement.getTimestamp() || match.getLatestEventTimestamp() + dataStorage.getTimeWindow() < newElement.getTimestamp()) {
+//                match.setExpired();
+//                continue;
+//            }
+            List<Event> partialMatchEvents = new ArrayList<>(match.getPrimitiveEvents());
+
+            checkAndSendToNextState((Event) newElement, partialMatchEvents, match);
+        }
+        return latest;
+    }
     @Override
     protected ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList) {
 

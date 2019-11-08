@@ -21,6 +21,15 @@ public class ThreadContainers {
     private StampedLock lock;
     private EventType eventType;
     private long timeWindow;
+    private long stamp;
+
+    public List<ContainsEvent> getBufferSubListWithReadLock() {
+        stamp = lock.readLock();
+        return bufferSubList;
+    }
+    public void releaseReadLock() {
+        lock.unlockRead(stamp);
+    }
 
     public enum StatisticsType {
         computations ,
