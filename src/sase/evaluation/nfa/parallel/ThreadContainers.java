@@ -8,16 +8,13 @@ import sase.statistics.Statistics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.StampedLock;
 
 public class ThreadContainers {
-    private final BlockingQueue<? extends ContainsEvent> input;
     private final BlockingQueue<Match> nextStateOutput;
     private List<ContainsEvent> bufferSubList;
-    private List<? extends BufferWorker> oppositeBufferWorkers;
     private StampedLock lock;
     private EventType eventType;
     private long timeWindow;
@@ -68,19 +65,15 @@ public class ThreadContainers {
         return nextStateOutput;
     }
 
-    public ThreadContainers(BlockingQueue<? extends ContainsEvent> input, List<? extends BufferWorker> oppositeBufferWorkers, BlockingQueue<Match> nextStateOutput, EventType state, long timeWindow) {
-        this.input = input;
+    public ThreadContainers(BlockingQueue<Match> nextStateOutput, EventType state, long timeWindow) {
         this.eventType = state;
         bufferSubList = new ArrayList<>();
-        this.oppositeBufferWorkers = oppositeBufferWorkers;
+//        this.oppositeBufferWorkers = oppositeBufferWorkers;
         this.nextStateOutput = nextStateOutput;
         lock = new StampedLock();
         this.timeWindow = timeWindow;
     }
 
-    public List<? extends BufferWorker> getOppositeBufferWorkers() {
-        return oppositeBufferWorkers;
-    }
 
     public List<ContainsEvent> getBufferSubListAfterWorkerFinished() {
         return bufferSubList;
@@ -118,9 +111,6 @@ public class ThreadContainers {
         }
     }
 
-    public BlockingQueue<? extends ContainsEvent> getInput() {
-        return input;
-    }
 
     public EventType getEventType() {
         return eventType;

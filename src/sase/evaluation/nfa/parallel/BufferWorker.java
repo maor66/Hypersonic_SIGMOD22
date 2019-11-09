@@ -1,16 +1,13 @@
 package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
-import sase.base.Event;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
-import sase.evaluation.nfa.lazy.elements.LazyTransition;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
 
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -18,19 +15,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class BufferWorker implements Runnable {
-    ThreadContainers dataStorage;
-    TypedNFAState eventState;
-    public int finisherInputsToShutdown;
-    int numberOfFinisherInputsToSend;
+public class BufferWorker implements Runnable {
+
     String threadName;
     protected boolean canCreateMatches= true;
     public long actualCalcTime = 0;
-    private LazyTransition transition;
     public long windowverifyTime = 0;
     public Thread thread;
     protected final CopyOnWriteArrayList<BufferWorker> finishedWorkers;
     protected AtomicBoolean isMainFinished;
+    protected ElementWorker primaryTask;
+    protected ElementWorker secondaryTask;
+    private BlockingQueue<? extends ContainsEvent> primaryInput;
+    private BlockingQueue<? extends ContainsEvent> secondaryInput;
+    private List<BufferWorker> workersNeededToFinish;
 
     public long numberOfHandledItems = 0;
     public long numberOfOppositeItems = 0;
@@ -44,18 +42,23 @@ public abstract class BufferWorker implements Runnable {
     public Long innerWindowTime = 0L;
 
 
-    public ThreadContainers getDataStorage() {
-        return dataStorage;
-    }
-
-    public BufferWorker(TypedNFAState eventState, int finisherInputsToShutdown, int numberOfFinisherInputsToSend, AtomicBoolean isMainFinished, CopyOnWriteArrayList<BufferWorker> finishedWorkers)
+    public BufferWorker(TypedNFAState eventState,
+                        BlockingQueue<? extends ContainsEvent> eventInput,
+                        BlockingQueue<? extends ContainsEvent> partialMatchInput,
+                        CopyOnWriteArrayList<BufferWorker> finishedWorkers,
+                        List<BufferWorker> workersNeededToFinish,
+                        BlockingQueue<Match> nextStateOutput,
+                        long timeWindow,
+                        boolean isInputBufferWorker)
     {
-        this.eventState = eventState;
-        this.finisherInputsToShutdown = finisherInputsToShutdown;
-        this.numberOfFinisherInputsToSend = numberOfFinisherInputsToSend;
-        transition = (LazyTransition) eventState.getActualNextTransition();
-        this.isMainFinished = isMainFinished;
+        ElementWorker EventWorker = new EventWorker(eventState, oppositePartialMatchWorkers, nextStateOutput, timeWindow);
+        ElementWorker partialMatchWorker = new PartialMatchWorker(eventState, oppositeEventWorkers, nextStateOutput, timeWindow);
+        primaryTask = isInputBufferWorker ? EventWorker : partialMatchWorker;
+        secondaryTask = isInputBufferWorker ? partialMatchWorker : EventWorker;
         this.finishedWorkers = finishedWorkers;
+        this.primaryInput = isInputBufferWorker ? eventInput : partialMatchInput;
+        this.secondaryInput = isInputBufferWorker ? partialMatchInput : eventInput;
+        this.workersNeededToFinish = workersNeededToFinish;
     }
 
     @Override
@@ -64,38 +67,41 @@ public abstract class BufferWorker implements Runnable {
         thread.setName(threadName + " " + Thread.currentThread().getName());
         while (true) {
             ContainsEvent newElement = null;
-
-            try {
-                long time = System.nanoTime();
-                newElement = takeNextInput();
-                sliceTime += System.nanoTime() - time;
+            ElementWorker taskUsed = primaryTask;
+            long time = System.nanoTime();
+            newElement = takePrimaryInput();
+            sliceTime += System.nanoTime() - time;
+            if (newElement == null) {
+                newElement = takeSecondaryInput(); // Check if the secondaryTask queue has an item
                 if (newElement == null) {
-                    sliceTimeActual += System.nanoTime() - time;
                     if (isPreviousStateFinished()) {
                         finishRun();
                         return;
-                    }
-                    else {
+                    } else {
                         continue;
                     }
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                primaryTask.updateOppositeWorkers(secondaryTask);
+                taskUsed = secondaryTask; // The secondaryTask queue had an item so it is the task used for adding, iterating and removing
+                sliceTimeActual += System.nanoTime() - time;
+            }
+            else { //Primary is used
+                secondaryTask.updateOppositeWorkers(primaryTask);
             }
 
-            long time = System.nanoTime();
-            dataStorage.addEventToOwnBuffer(newElement);
-            ContainsEvent removingCriteria = null;
-            long latestTimeStamp = Long.MIN_VALUE;
-            for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
-               ContainsEvent ce = iterateOnSubList(newElement, worker.getDataStorage().getBufferSubListWithReadLock());
-               worker.getDataStorage().releaseReadLock();
-               if (ce != null && latestTimeStamp < ce.getEarliestTimestamp()) {
-                   latestTimeStamp = ce.getEarliestTimestamp();
-                   removingCriteria = ce;
-               }
-            }
-
+//            long time = System.nanoTime();
+            taskUsed.handleElement(newElement);
+//            ContainsEvent removingCriteria = null;
+//            long latestTimeStamp = Long.MIN_VALUE;
+//            for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
+//               ContainsEvent ce = iterateOnSubList(newElement, worker.getDataStorage().getBufferSubListWithReadLock());
+//               worker.getDataStorage().releaseReadLock();
+//               if (ce != null && latestTimeStamp < ce.getEarliestTimestamp()) {
+//                   latestTimeStamp = ce.getEarliestTimestamp();
+//                   removingCriteria = ce;
+//               }
+//            }
+//
 //            List<List<ContainsEvent>> oppositeBufferList = getOppositeBufferList();
 //            idleTime += System.nanoTime() - time;
 //            if (oppositeBufferList.isEmpty()) {
@@ -105,16 +111,32 @@ public abstract class BufferWorker implements Runnable {
 //            time = System.nanoTime();
 //            ContainsEvent removingCriteria = iterateOnOppositeBuffer(newElement, oppositeBufferList);
 //            iteratingBufferTime += System.nanoTime() - time;
-            if (removingCriteria != null) {
-                time = System.nanoTime();
-                dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted(), removingCriteria);
-                windowverifyTime += System.nanoTime() -time;
-            }
+//            if (removingCriteria != null) {
+//                time = System.nanoTime();
+//                dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted(), removingCriteria);
+//                windowverifyTime += System.nanoTime() -time;
+//            }
         }
     }
 
-    protected abstract ContainsEvent iterateOnSubList(ContainsEvent newElement, List<ContainsEvent> bufferSubList);
+    private ContainsEvent takeSecondaryInput() {
+        return takeNextInput(secondaryInput, 500);
+    }
 
+    private ContainsEvent takePrimaryInput() {
+        return takeNextInput(primaryInput, 0);
+    }
+
+
+    protected ContainsEvent takeNextInput(BlockingQueue<ContainsEvent> input, int timeoutInMilis)  {
+        Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
+        try {
+            return input.poll(timeoutInMilis, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     private void finishRun() {
         finishedWorkers.add(this);
             System.out.println("Thread " + Thread.currentThread().getName() +" " +Thread.currentThread().getId() + " has finished at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
@@ -123,7 +145,15 @@ public abstract class BufferWorker implements Runnable {
                     " Calculation time "+ actualCalcTime/1000000 + " Window verify time "+ windowverifyTime/1000000 + " Cond 1 " + innerCondTime + " Cond 2 " + innerWindowTime);
 
     }
-    protected abstract boolean isPreviousStateFinished();
+
+    protected boolean isPreviousStateFinished() {
+        for (BufferWorker worker: workersNeededToFinish) {
+            if (finishedWorkers.indexOf(worker) == -1) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     private ContainsEvent getReleventRemovingCriteria(List<ContainsEvent> oppositeBufferList)
     {
@@ -138,76 +168,20 @@ public abstract class BufferWorker implements Runnable {
         }
         return element;
     }
-
-    protected ContainsEvent takeNextInput() throws InterruptedException {
-        Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
-        return dataStorage.getInput().poll(1, TimeUnit.SECONDS);
-    }
-
-    protected List<List<ContainsEvent>> getOppositeBufferList()
-    {
-        List<List<ContainsEvent>> oppositeBuffer = new ArrayList<>();
-        for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
-            if (finishedWorkers.indexOf(worker)==-1) {
+//
+//    protected List<List<ContainsEvent>> getOppositeBufferList()
+//    {
+//        List<List<ContainsEvent>> oppositeBuffer = new ArrayList<>();
+//        for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
+//            if (finishedWorkers.indexOf(worker)==-1) {
+////                oppositeBuffer.add(worker.getDataStorage().getBufferSubListWithOptimisticLock());
 //                oppositeBuffer.add(worker.getDataStorage().getBufferSubListWithOptimisticLock());
-                oppositeBuffer.add(worker.getDataStorage().getBufferSubListWithOptimisticLock());
-                }
-            else { //If the worker has finished its run, the sub buffer won't change so we don't have to copy it
-                oppositeBuffer.add(worker.getDataStorage().getBufferSubListAfterWorkerFinished());
-            }
-        }
-        return oppositeBuffer;
-    }
-
-    protected boolean isEventCompatibleWithPartialMatch(Match partialMatch, List<Event> partialMatchEvents, Event event) {
-        //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
-        //TODO: doesn't have to verify temporal condition first anymore - check if removing doesn't hurt correctness
-        long time = System.nanoTime();
-        boolean b =  transition.verifyCondition(partialMatchEvents);
-        actualCalcTime += System.nanoTime() - time;
-        numberOfOppositeItems++;
-        if (b) {
-            time = System.nanoTime();
-            boolean w = verifyTimeWindowConstraint(partialMatch, event);
-            conditionTime += System.nanoTime() - time;
-            return  w;
-        }
-        return  false;
-    }
+//                }
+//            else { //If the worker has finished its run, the sub buffer won't change so we don't have to copy it
+//                oppositeBuffer.add(worker.getDataStorage().getBufferSubListAfterWorkerFinished());
+//            }
+//        }
+//        return oppositeBuffer;
+//    }
 
 
-    private boolean verifyTimeWindowConstraint(Match partialMatch, Event event) {
-
-        return (partialMatch.getLatestEventTimestamp() <= event.getTimestamp() + dataStorage.getTimeWindow()) &&
-                (partialMatch.getEarliestEvent() + dataStorage.getTimeWindow() >= event.getTimestamp());
-    }
-
-    protected void sendToNextState(Match newPartialMatchWithEvent) {
-
-        BlockingQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
-        try {
-            matchesQueue.put(newPartialMatchWithEvent);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    protected void checkAndSendToNextState(Event event, List<Event> partialMatchEvents, Match match) {
-        partialMatchEvents.add(event);
-        if (isEventCompatibleWithPartialMatch(match, partialMatchEvents, event)) {
-            long time = System.nanoTime();
-            sendToNextState(match.createNewPartialMatchWithEvent(event));
-            sendMatchingTime += System.nanoTime() - time;
-        }
-        partialMatchEvents.remove(partialMatchEvents.size() - 1);
-    }
-
-    public void initializeDataStorage(ThreadContainers dataStorage) {
-        this.dataStorage = dataStorage;
-    }
-
-    protected abstract ContainsEvent iterateOnOppositeBuffer(ContainsEvent newElement, List<List<ContainsEvent>> oppositeBufferList);
-
-    protected abstract boolean isBufferSorted();
-}

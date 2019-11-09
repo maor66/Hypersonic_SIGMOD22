@@ -13,10 +13,7 @@ import sase.evaluation.nfa.lazy.order.cost.CostModelFactory;
 import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
 import sase.evaluation.nfa.lazy.order.cost.ICostModel;
 import sase.evaluation.nfa.lazy.order.cost.ThroughputCostModel;
-import sase.evaluation.nfa.parallel.BufferWorker;
-import sase.evaluation.nfa.parallel.InputBufferWorker;
-import sase.evaluation.nfa.parallel.MatchBufferWorker;
-import sase.evaluation.nfa.parallel.ThreadContainers;
+import sase.evaluation.nfa.parallel.*;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
 import sase.pattern.SimplePattern;
@@ -54,8 +51,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     //TODO: Article - (5) Should add something about minimum required threads?
 
     private ExecutorService executor;
-    private Map<NFAState, List<InputBufferWorker>> IBWorkers;
-    private Map<NFAState, List<MatchBufferWorker>> MBWorkers;
+    private Map<NFAState, List<BufferWorker>> IBWorkers;
+    private Map<NFAState, List<BufferWorker>> MBWorkers;
     private Map<TypedNFAState, BlockingQueue<Event>> eventInputQueues;
     protected Map<TypedNFAState, Integer> stateToIBThreads = new HashMap<>();
     protected Map<TypedNFAState, Integer> stateToMBThreads = new HashMap<>();
@@ -208,33 +205,40 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         eventInputQueues = new HashMap<>();
         executor = Executors.newFixedThreadPool((getTotalNumberOfThreads())); //TODO: maybe workstealingpool?
 
-        int prevTotalThreads = 1;
         TypedNFAState previousState = null;
+        BlockingQueue<Match> partialMatchInput = secondStateInputQueue;
         for (TypedNFAState state : getWorkerStates()) {
             // Construct the workers first so it will be possible to add them as parameters in the ThreadContainer c'tor. Probably should've used a better design pattern (builder?)
-            List<InputBufferWorker> stateIBworkers = new ArrayList<>();
-            List<MatchBufferWorker> stateMBworkers = new ArrayList<>();
+            List<BufferWorker> stateIBworkers = new ArrayList<>();
+            List<BufferWorker> stateMBworkers = new ArrayList<>();
+
+            BlockingQueue<Match> matchesOutput = new LinkedBlockingQueue<>();
+            BlockingQueue<Event> eventInput = new LinkedBlockingQueue<>();
+            eventInputQueues.put(state, eventInput);
+
+            List<BufferWorker> workersNeededToFinish;
+            if (previousState == null) { //First state in the chain - Add a dummy worker to be changed by main
+                workersNeededToFinish = new ArrayList<>();
+                workersNeededToFinish.add(dummyWorkerNeedForFinish);
+            }
+            else { // Inner/Last state - Add all previous state's workers
+                workersNeededToFinish = new ArrayList<>(IBWorkers.get(previousState));
+                workersNeededToFinish.addAll(MBWorkers.get(previousState));
+            }
+
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
-                stateIBworkers.add(new InputBufferWorker(state, this.evaluationOrder, this.fullCondition.getEventTypes(),1,
-                        stateToMBThreads.getOrDefault(getNextWorkerStateOrNullIfLast(state), 1), isFinishedWithInput, finishedThreads)); //TODO: not necessary the correct sequence order, have to validate it somehow
+                stateIBworkers.add(new BufferWorker(state, eventInput, partialMatchInput, finishedThreads, workersNeededToFinish, matchesOutput, timeWindow, true));
             }
             for (int i = 0; i < stateToMBThreads.get(state); i++) {
-                List<BufferWorker> workersNeededToFinish;
-                if (previousState == null) {
-                    workersNeededToFinish = null;
-                }
-                else {
-                    workersNeededToFinish = new ArrayList<>(IBWorkers.get(previousState));
-                    workersNeededToFinish.addAll(MBWorkers.get(previousState));
-                }
-                stateMBworkers.add(new MatchBufferWorker(state, prevTotalThreads, stateToMBThreads.getOrDefault(getNextWorkerStateOrNullIfLast(state),1),
-                        isFinishedWithInput, finishedThreads, workersNeededToFinish));
+                stateMBworkers.add(new BufferWorker(state, eventInput, partialMatchInput, finishedThreads, workersNeededToFinish, matchesOutput, timeWindow, false));
             }
-            prevTotalThreads = stateToIBThreads.get(state) + stateToMBThreads.get(state);
             IBWorkers.put(state, stateIBworkers);
             MBWorkers.put(state, stateMBworkers);
             previousState = state;
+            partialMatchInput = matchesOutput;
         }
+        completeMatchOutputQueue = partialMatchInput; // The final output queue is that of the final state and the main thread should get the matches from it
+
 
         BlockingQueue<Event> inputQueue;
         BlockingQueue<Match> outputQueue = new LinkedBlockingQueue<>();
@@ -263,15 +267,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             }
             MBinputQueue = outputQueue;
         }
-        completeMatchOutputQueue = outputQueue; // The final output queue is that of the final state and the main thread should get the matches from it
 
-        for (TypedNFAState state : getWorkerStates()) {
-            for (InputBufferWorker worker : IBWorkers.get(state)) {
+        for (TypedNFAState state : getWorkerStates()) { //TODO: Add delay until mechanism actually start sedning events - we need to add the option to have the first partial match wait a bit before switching to getting events
+            for (BufferWorker worker : IBWorkers.get(state)) {
                 Thread t = new Thread(worker);
                 t.start();
 //                executor.submit(worker);
             }
-            for (MatchBufferWorker worker: MBWorkers.get(state)) {
+            for (BufferWorker worker: MBWorkers.get(state)) {
                 Thread t = new Thread(worker);
                 t.start();
 //                executor.submit(worker);
