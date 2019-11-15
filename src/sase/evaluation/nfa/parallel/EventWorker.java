@@ -11,8 +11,13 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 public class EventWorker extends ElementWorker {
-    public EventWorker(TypedNFAState eventState, List<? extends ElementWorker> oppositeWorkers, BlockingQueue<Match> nextStateOutput, long timeWindow) {
-        super(eventState, oppositeWorkers, nextStateOutput, timeWindow);
+    public EventWorker(TypedNFAState eventState, BlockingQueue<Match> nextStateOutput, long timeWindow) {
+        super(eventState, nextStateOutput, timeWindow);
+    }
+
+    @Override
+    protected boolean isBufferSorted() {
+        return true;
     }
 
     @Override

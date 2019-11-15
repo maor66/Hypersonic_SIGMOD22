@@ -18,16 +18,18 @@ public abstract class ElementWorker {
     private boolean isSecondaryAddToList = false;
 
     public ElementWorker(TypedNFAState eventState,
-                         List<ElementWorker> oppositeWorkers,
                          BlockingQueue<Match> nextStateOutput,
                          long timeWindow) {
         this.eventState = eventState;
-        this.oppositeWorkers = oppositeWorkers;
         transition = (LazyTransition) eventState.getActualNextTransition();
         dataStorage = new ThreadContainers(nextStateOutput, eventState.getEventType(), timeWindow);
-
-
     }
+
+    void initializeOppositeWorkers(List<ElementWorker> oppositeWorkers) {
+        this.oppositeWorkers = oppositeWorkers;
+    }
+
+
 
     public void handleElement(ContainsEvent newElement) {
         ContainsEvent removingCriteria = null;
@@ -47,6 +49,8 @@ public abstract class ElementWorker {
             dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted(), removingCriteria);
         }
     }
+
+    protected abstract boolean isBufferSorted();
 
 
     protected boolean isEventCompatibleWithPartialMatch(Match partialMatch, List<Event> partialMatchEvents, Event event) {

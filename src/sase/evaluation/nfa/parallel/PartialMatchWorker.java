@@ -13,8 +13,13 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 public class PartialMatchWorker extends ElementWorker {
-    public PartialMatchWorker(TypedNFAState eventState, List<? extends ElementWorker> oppositeWorkers, BlockingQueue<Match> nextStateOutput, long timeWindow) {
-        super(eventState, oppositeWorkers, nextStateOutput, timeWindow);
+    public PartialMatchWorker(TypedNFAState eventState, BlockingQueue<Match> nextStateOutput, long timeWindow) {
+        super(eventState, nextStateOutput, timeWindow);
+    }
+
+    @Override
+    protected boolean isBufferSorted() {
+        return false;
     }
 
     @Override

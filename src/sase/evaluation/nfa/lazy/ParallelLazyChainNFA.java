@@ -59,6 +59,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private BlockingQueue<Match> secondStateInputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Match> completeMatchOutputQueue;
     protected int numOfThreads;
+    private BufferWorker dummyWorkerNeededForFinish = new BufferWorker();
     private CostModelTypes costModelType;
     private Double tlr;
     private List<EventType> eventTypes;
@@ -78,7 +79,9 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         @Override
         public void run() {
             System.out.println("Match: " + matches.size()+ " Finished threads " + finishedThreads.size());
-            finishedThreads.forEach(bufferWorker -> System.out.print(bufferWorker.thread.getName()+ ", "));
+            finishedThreads.forEach(bufferWorker -> {if (bufferWorker != dummyWorkerNeededForFinish) {
+                System.out.print(bufferWorker.thread.getName()+ ", "); }
+            });
 
             getAllWorkers().forEach(worker -> System.out.print(worker.thread.getName() + " Thread state " + worker.thread.getState() + ", "));
             System.out.println("\n");
@@ -133,6 +136,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     public List<Match> getLastMatches() {
 
         isFinishedWithInput.set(true);
+        finishedThreads.add(dummyWorkerNeededForFinish);
         if (MainConfig.parallelDebugMode) {
             System.out.println("Starting poison pill at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
             System.out.println("Main thread idle time is " + mainThreadIdleTime / 1000000);
@@ -219,7 +223,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             List<BufferWorker> workersNeededToFinish;
             if (previousState == null) { //First state in the chain - Add a dummy worker to be changed by main
                 workersNeededToFinish = new ArrayList<>();
-                workersNeededToFinish.add(dummyWorkerNeedForFinish);
+                workersNeededToFinish.add(dummyWorkerNeededForFinish);
             }
             else { // Inner/Last state - Add all previous state's workers
                 workersNeededToFinish = new ArrayList<>(IBWorkers.get(previousState));
@@ -238,34 +242,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             partialMatchInput = matchesOutput;
         }
         completeMatchOutputQueue = partialMatchInput; // The final output queue is that of the final state and the main thread should get the matches from it
-
-
-        BlockingQueue<Event> inputQueue;
-        BlockingQueue<Match> outputQueue = new LinkedBlockingQueue<>();
-        BlockingQueue<Match> MBinputQueue = secondStateInputQueue;
         for (TypedNFAState state : getWorkerStates()) {
-            //TODO: check that iterating on states by the correct order
-            inputQueue = new LinkedBlockingQueue<>();
-            eventInputQueues.put(state, inputQueue);
-            outputQueue = new LinkedBlockingQueue<>();
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
-                //Every worker has an "equal" ThreadContainer but they must be different since each worker should have a unique sub-list
-                ThreadContainers IBthreadData = new ThreadContainers(inputQueue,
-                        MBWorkers.get(state),
-                        outputQueue,
-                        state.getEventType(),
-                        timeWindow);
-                IBWorkers.get(state).get(i).initializeDataStorage(IBthreadData);
+                IBWorkers.get(state).get(i).initializeOppositeWorkers(MBWorkers.get(state), IBWorkers.get(state));
             }
-            for (int i = 0; i <stateToMBThreads.get(state); i++) {
-                ThreadContainers MBthreadData = new ThreadContainers(MBinputQueue,
-                        IBWorkers.get(state),
-                        outputQueue,
-                        state.getEventType(),
-                        timeWindow);
-                MBWorkers.get(state).get(i).initializeDataStorage(MBthreadData);
+            for (int i = 0; i < stateToMBThreads.get(state); i++) {
+                MBWorkers.get(state).get(i).initializeOppositeWorkers(IBWorkers.get(state), MBWorkers.get(state));
             }
-            MBinputQueue = outputQueue;
+
         }
 
         for (TypedNFAState state : getWorkerStates()) { //TODO: Add delay until mechanism actually start sedning events - we need to add the option to have the first partial match wait a bit before switching to getting events

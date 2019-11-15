@@ -8,6 +8,7 @@ import sase.statistics.Statistics;
 
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -22,7 +23,7 @@ public class BufferWorker implements Runnable {
     public long actualCalcTime = 0;
     public long windowverifyTime = 0;
     public Thread thread;
-    protected final CopyOnWriteArrayList<BufferWorker> finishedWorkers;
+    protected CopyOnWriteArrayList<BufferWorker> finishedWorkers;
     protected AtomicBoolean isMainFinished;
     protected ElementWorker primaryTask;
     protected ElementWorker secondaryTask;
@@ -51,8 +52,8 @@ public class BufferWorker implements Runnable {
                         long timeWindow,
                         boolean isInputBufferWorker)
     {
-        ElementWorker EventWorker = new EventWorker(eventState, oppositePartialMatchWorkers, nextStateOutput, timeWindow);
-        ElementWorker partialMatchWorker = new PartialMatchWorker(eventState, oppositeEventWorkers, nextStateOutput, timeWindow);
+        ElementWorker EventWorker = new EventWorker(eventState, nextStateOutput, timeWindow);
+        ElementWorker partialMatchWorker = new PartialMatchWorker(eventState, nextStateOutput, timeWindow);
         primaryTask = isInputBufferWorker ? EventWorker : partialMatchWorker;
         secondaryTask = isInputBufferWorker ? partialMatchWorker : EventWorker;
         this.finishedWorkers = finishedWorkers;
@@ -60,6 +61,9 @@ public class BufferWorker implements Runnable {
         this.secondaryInput = isInputBufferWorker ? partialMatchInput : eventInput;
         this.workersNeededToFinish = workersNeededToFinish;
     }
+
+    public BufferWorker() //Creates dummy BufferWorker
+    {}
 
     @Override
     public void run() {
@@ -128,7 +132,7 @@ public class BufferWorker implements Runnable {
     }
 
 
-    protected ContainsEvent takeNextInput(BlockingQueue<ContainsEvent> input, int timeoutInMilis)  {
+    protected ContainsEvent takeNextInput(BlockingQueue<? extends ContainsEvent> input, int timeoutInMilis)  {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
         try {
             return input.poll(timeoutInMilis, TimeUnit.MILLISECONDS);
@@ -168,6 +172,21 @@ public class BufferWorker implements Runnable {
         }
         return element;
     }
+
+    public void initializeOppositeWorkers(List<BufferWorker> primaryOppositeWorkers, List<BufferWorker> secondaryOppositeWorkers) {
+        List<ElementWorker> actualPrimaryOppositeWorkers = new ArrayList<>();
+        insertElementWorkers(primaryTask, primaryOppositeWorkers, actualPrimaryOppositeWorkers);
+        List<ElementWorker> actualSecondaryOppositeWorkers = new ArrayList<>();
+        insertElementWorkers(secondaryTask, secondaryOppositeWorkers, actualSecondaryOppositeWorkers);
+    }
+
+    private void insertElementWorkers(ElementWorker task, List<BufferWorker> oppositeWorkers, List<ElementWorker> actualOppositeWorkers) {
+        for (BufferWorker worker : oppositeWorkers) {
+            actualOppositeWorkers.add(worker.primaryTask);
+        }
+        task.initializeOppositeWorkers(actualOppositeWorkers);
+    }
+}
 //
 //    protected List<List<ContainsEvent>> getOppositeBufferList()
 //    {
