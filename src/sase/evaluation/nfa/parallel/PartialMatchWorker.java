@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 public class PartialMatchWorker extends ElementWorker {
-    public PartialMatchWorker(TypedNFAState eventState, BlockingQueue<Match> nextStateOutput, long timeWindow) {
-        super(eventState, nextStateOutput, timeWindow);
+    public PartialMatchWorker(TypedNFAState eventState, List<ThreadContainers> eventOppositeBuffers) {
+        super(eventState, eventOppositeBuffers);
     }
 
     @Override

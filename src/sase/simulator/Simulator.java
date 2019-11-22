@@ -316,8 +316,7 @@ public class Simulator {
 			if (secondaryEvaluationMechanism != null) {
 				recordNewMatches(secondaryEvaluationMechanism.getLastMatches());
 			}
-			System
-					.out.println("Finished run at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+			System.out.println("Finished run at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
 			Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.processingTime);
 			Environment.getEnvironment().getStatisticsManager().reportStatistics();
 			if (MainConfig.useSimulationHistory) {

@@ -31,9 +31,11 @@ public class BufferWorker implements Runnable {
     private BlockingQueue<? extends ContainsEvent> secondaryInput;
     private List<BufferWorker> workersNeededToFinish;
 
-    public long numberOfHandledItems = 0;
+    public long numberOfPrimaryHandledItems = 0;
+    public long numberOfSecondaryHandledItems = 0;
     public long numberOfOppositeItems = 0;
-    public  long idleTime = 0;
+    public  long primaryIdleTime = 0;
+    public  long secondaryIdleTime = 0;
     public long iteratingBufferTime = 0;
     public long sliceTime = 0;
     public long sliceTimeActual = 0;
@@ -42,24 +44,29 @@ public class BufferWorker implements Runnable {
     public Long innerCondTime = 0L;
     public Long innerWindowTime = 0L;
 
+private boolean primaryTakenOnce = false;
 
     public BufferWorker(TypedNFAState eventState,
                         BlockingQueue<? extends ContainsEvent> eventInput,
                         BlockingQueue<? extends ContainsEvent> partialMatchInput,
+                        ThreadContainers threadContainer,
+                        List<ThreadContainers> eventOppositeBuffers,
+                        List<ThreadContainers> partialMatchOppositeBuffers,
                         CopyOnWriteArrayList<BufferWorker> finishedWorkers,
                         List<BufferWorker> workersNeededToFinish,
-                        BlockingQueue<Match> nextStateOutput,
-                        long timeWindow,
                         boolean isInputBufferWorker)
     {
-        ElementWorker EventWorker = new EventWorker(eventState, nextStateOutput, timeWindow);
-        ElementWorker partialMatchWorker = new PartialMatchWorker(eventState, nextStateOutput, timeWindow);
+        ElementWorker EventWorker = new EventWorker(eventState, partialMatchOppositeBuffers);
+        ElementWorker partialMatchWorker = new PartialMatchWorker(eventState, eventOppositeBuffers);
         primaryTask = isInputBufferWorker ? EventWorker : partialMatchWorker;
+        primaryTask.initializeDataStorage(threadContainer);
         secondaryTask = isInputBufferWorker ? partialMatchWorker : EventWorker;
+        secondaryTask.initializeDataStorage(threadContainer.createClone());
         this.finishedWorkers = finishedWorkers;
         this.primaryInput = isInputBufferWorker ? eventInput : partialMatchInput;
         this.secondaryInput = isInputBufferWorker ? partialMatchInput : eventInput;
         this.workersNeededToFinish = workersNeededToFinish;
+        threadName = isInputBufferWorker ?  "InputBufferWorker" + eventState.getName() :"MatchBufferWorker "+ eventState.getName();
     }
 
     public BufferWorker() //Creates dummy BufferWorker
@@ -70,7 +77,7 @@ public class BufferWorker implements Runnable {
         thread = Thread.currentThread();
         thread.setName(threadName + " " + Thread.currentThread().getName());
         while (true) {
-            ContainsEvent newElement = null;
+            ContainsEvent newElement;
             ElementWorker taskUsed = primaryTask;
             long time = System.nanoTime();
             newElement = takePrimaryInput();
@@ -85,13 +92,16 @@ public class BufferWorker implements Runnable {
                         continue;
                     }
                 }
+                numberOfSecondaryHandledItems++;
                 primaryTask.updateOppositeWorkers(secondaryTask);
                 taskUsed = secondaryTask; // The secondaryTask queue had an item so it is the task used for adding, iterating and removing
-                sliceTimeActual += System.nanoTime() - time;
             }
-            else { //Primary is used
-                secondaryTask.updateOppositeWorkers(primaryTask);
+            else {
+                numberOfPrimaryHandledItems++;
             }
+//            else { //Primary is used
+//                secondaryTask.updateOppositeWorkers(primaryTask);
+//            }
 
 //            long time = System.nanoTime();
             taskUsed.handleElement(newElement);
@@ -124,10 +134,14 @@ public class BufferWorker implements Runnable {
     }
 
     private ContainsEvent takeSecondaryInput() {
-        return takeNextInput(secondaryInput, 500);
+        if (!primaryTakenOnce) {
+            return null;
+        }
+        return takeNextInput(secondaryInput, 0);
     }
 
     private ContainsEvent takePrimaryInput() {
+        primaryTakenOnce = true;
         return takeNextInput(primaryInput, 0);
     }
 
@@ -136,6 +150,7 @@ public class BufferWorker implements Runnable {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
         try {
             return input.poll(timeoutInMilis, TimeUnit.MILLISECONDS);
+//            return input.take();
         } catch (InterruptedException e) {
             e.printStackTrace();
             return null;
@@ -173,19 +188,19 @@ public class BufferWorker implements Runnable {
         return element;
     }
 
-    public void initializeOppositeWorkers(List<BufferWorker> primaryOppositeWorkers, List<BufferWorker> secondaryOppositeWorkers) {
-        List<ElementWorker> actualPrimaryOppositeWorkers = new ArrayList<>();
-        insertElementWorkers(primaryTask, primaryOppositeWorkers, actualPrimaryOppositeWorkers);
-        List<ElementWorker> actualSecondaryOppositeWorkers = new ArrayList<>();
-        insertElementWorkers(secondaryTask, secondaryOppositeWorkers, actualSecondaryOppositeWorkers);
-    }
-
-    private void insertElementWorkers(ElementWorker task, List<BufferWorker> oppositeWorkers, List<ElementWorker> actualOppositeWorkers) {
-        for (BufferWorker worker : oppositeWorkers) {
-            actualOppositeWorkers.add(worker.primaryTask);
-        }
-        task.initializeOppositeWorkers(actualOppositeWorkers);
-    }
+//    public void initializeOppositeWorkers(List<BufferWorker> primaryOppositeWorkers, List<BufferWorker> secondaryOppositeWorkers) {
+//        List<ElementWorker> actualPrimaryOppositeWorkers = new ArrayList<>();
+//        insertElementWorkers(primaryTask, primaryOppositeWorkers, actualPrimaryOppositeWorkers);
+//        List<ElementWorker> actualSecondaryOppositeWorkers = new ArrayList<>();
+//        insertElementWorkers(secondaryTask, secondaryOppositeWorkers, actualSecondaryOppositeWorkers);
+//    }
+//
+//    private void insertElementWorkers(ElementWorker task, List<BufferWorker> oppositeWorkers, List<ElementWorker> actualOppositeWorkers) {
+//        for (BufferWorker worker : oppositeWorkers) {
+//            actualOppositeWorkers.add(worker.primaryTask);
+//        }
+//        task.initializeOppositeWorkers(actualOppositeWorkers);
+//    }
 }
 //
 //    protected List<List<ContainsEvent>> getOppositeBufferList()

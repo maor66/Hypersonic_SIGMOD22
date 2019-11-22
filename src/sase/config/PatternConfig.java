@@ -881,10 +881,10 @@ private static final ConditionSpecification[] dummyConditionSpecSEQ4 = new Condi
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(110),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(150),
 //			basicPatternDummySEQ6.createIdenticalSpecificationWithDifferentWindow(40),
-//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(90),
-//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(100),
-//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(110),
-//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(120),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(50),
+			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(100),
+			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(110),
+			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(120),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(130),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(140),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(150),
@@ -957,21 +957,21 @@ private static final ConditionSpecification[] dummyConditionSpecSEQ4 = new Condi
 					},
 					SlaVerifierTypes.NONE),
 
-			new PatternSpecification("SEQ3", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
-					new String[][][] {new String[][]{new String[]{
-							StockEventTypesManager.microsoftEventTypeName,
-							StockEventTypesManager.googleEventTypeName,
-							StockEventTypesManager.appleEventTypeName
-					}}},
-					new ConditionSpecification[] {
-							new StockDeltaOrderingConditionSpecification(
-									StockEventTypesManager.microsoftEventTypeName,
-									StockEventTypesManager.googleEventTypeName),
-							new StockDeltaOrderingConditionSpecification(
-									StockEventTypesManager.googleEventTypeName,
-									StockEventTypesManager.appleEventTypeName),
-					},
-					SlaVerifierTypes.NONE),
+//			new PatternSpecification("SEQ3", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+//					new String[][][] {new String[][]{new String[]{
+//							StockEventTypesManager.microsoftEventTypeName,
+//							StockEventTypesManager.googleEventTypeName,
+//							StockEventTypesManager.appleEventTypeName
+//					}}},
+//					new ConditionSpecification[] {
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.microsoftEventTypeName,
+//									StockEventTypesManager.googleEventTypeName),
+//							new StockDeltaOrderingConditionSpecification(
+//									StockEventTypesManager.googleEventTypeName,
+//									StockEventTypesManager.appleEventTypeName),
+//					},
+//					SlaVerifierTypes.NONE),
 
 
 

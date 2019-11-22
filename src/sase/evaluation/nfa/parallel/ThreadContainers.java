@@ -1,6 +1,7 @@
 package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
+import sase.base.Event;
 import sase.base.EventType;
 import sase.evaluation.common.Match;
 import sase.simulator.Environment;
@@ -26,6 +27,10 @@ public class ThreadContainers {
     }
     public void releaseReadLock() {
         lock.unlockRead(stamp);
+    }
+
+    public ThreadContainers createClone() {
+        return new ThreadContainers(nextStateOutput, eventType, timeWindow);
     }
 
     public enum StatisticsType {
@@ -105,6 +110,9 @@ public class ThreadContainers {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
         long stamp = lock.writeLock();
         try {
+            if (!bufferSubList.isEmpty()&& event instanceof Event && bufferSubList.get(bufferSubList.size() - 1).getTimestamp() > event.getTimestamp()) {
+                System.out.println("Event out of order " + event + "last in bufer" + bufferSubList.get(bufferSubList.size()-1));
+            }
             bufferSubList.add(event);
         } finally {
             lock.unlockWrite(stamp);
@@ -127,7 +135,7 @@ public class ThreadContainers {
 
         if (isBufferSorted) { //IB is sorted, while MB isn't
             ContainsEvent currEvent = bufferSubList.get(0);
-            while (currEvent.getTimestamp() + timeWindow   < removingCriteriaTimeStamp) {
+            while (currEvent.getTimestamp() + timeWindow * 2   < removingCriteriaTimeStamp) {
                 bufferSubList.remove(0);
                 numberOfRemovedElements++;
                 if (bufferSubList.isEmpty()) {
