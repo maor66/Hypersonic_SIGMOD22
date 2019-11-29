@@ -24,7 +24,9 @@ public class DummyDoubleEventCondition extends DoubleEventCondition {
 ////			e.printStackTrace();
 //			// Not sure if I should do anything here
 //		}
-		return Math.random() < trueProbability;
+//		return (firstEvent.getSequenceNumber()%40 * secondEvent.getSequenceNumber() %40) /100.0 < trueProbability;
+		return (firstEvent.getSequenceNumber()%10.0) /10.0 < trueProbability;
+//		return Math.random() < trueProbability;
 	}
 
 }

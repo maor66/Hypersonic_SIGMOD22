@@ -287,6 +287,9 @@ public class Simulator {
 			System.out.println("Starting events at  " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
 			Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.processingTime);
 
+			if (primaryEvaluationMechanism instanceof ParallelLazyChainNFA) {
+				((ParallelLazyChainNFA) primaryEvaluationMechanism).startThreads();
+			}
 			for (Event event : allEvents)
 			{
 				if (Environment.getEnvironment().isTimeoutReached(null)) {

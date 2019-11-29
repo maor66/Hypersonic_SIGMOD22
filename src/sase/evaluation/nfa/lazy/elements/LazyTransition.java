@@ -104,6 +104,13 @@ public class LazyTransition extends Transition {
 	{
 		return (temporalCondition == null || temporalCondition.verify(events)) &&  super.verifyCondition(events);
 	}
+
+	public boolean verifySecondStepCondition(List <Event> events) {
+		return (temporalCondition == null || temporalCondition.verify(events));
+	}
+	public boolean verifyFirstStepCondition(List <Event> events) {
+		return super.verifyCondition(events);
+	}
 	
 	@Override
 	public String toString() {

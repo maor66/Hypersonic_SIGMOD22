@@ -24,16 +24,21 @@ public class PartialMatchWorker extends ElementWorker {
 
     @Override
     protected ContainsEvent iterateOnSubList(ContainsEvent newElement, List<ContainsEvent> bufferSubList) {
+//        long time = System.nanoTime();
         Match match = (Match) newElement;
         List<Event> partialMatchEvents = new ArrayList<>(match.getPrimitiveEvents());
         List<Event> actualEvents = (List<Event>) (List<?>) bufferSubList;
         if (actualEvents.isEmpty()) {
+//            sliceTime += System.nanoTime() - time;
             return null;
         }
         Event latestEventInSubList = actualEvents.get(actualEvents.size() - 1);
         actualEvents = getSlice(actualEvents, (Match) newElement, eventState);
+//        sliceTime += System.nanoTime() - time;
         for (Event event : actualEvents) {
+//            time = System.nanoTime();
             checkAndSendToNextState(event, partialMatchEvents, match);
+//            sliceTimeActual += System.nanoTime() - time;
         }
         return latestEventInSubList;
     }

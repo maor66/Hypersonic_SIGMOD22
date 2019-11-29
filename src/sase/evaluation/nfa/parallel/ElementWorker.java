@@ -47,7 +47,9 @@ public abstract class ElementWorker {
         Iterator<ThreadContainers> iterator = oppositeBuffers.iterator();
         while (iterator.hasNext()) {
             ThreadContainers buffer = iterator.next();
+//            long time = System.nanoTime();
             ContainsEvent ce = iterateOnSubList(newElement, buffer.getBufferSubListWithReadLock());
+//            iteratingBufferTime += System.nanoTime() - time;
             buffer.releaseReadLock();
             if (ce != null && latestTimeStamp < ce.getEarliestTimestamp()) {
                 latestTimeStamp = ce.getEarliestTimestamp();
@@ -55,14 +57,16 @@ public abstract class ElementWorker {
             }
         }
         if (removingCriteria != null) {
+//            long time =  System.nanoTime();
             dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted(), removingCriteria);
+//            innerCondTime += System.nanoTime() - time;
         }
     }
-    private  void finishRun() {
+    public void finishRun() {
         System.out.println("Thread " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " has finished at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
-                " Handled " + numberOfHandledItems + " items and compared to " + numberOfOppositeItems + " opposite items. Idle time " + idleTime / 1000000 + " Condition time " + conditionTime / 1000000 +
+                " Compared to " + numberOfOppositeItems + " items Condition time " + conditionTime / 1000000 +
                 " Iterating buffer time " + iteratingBufferTime / 1000000 + " Slice time " + sliceTime / 1000000 + " Actual Slice time " + sliceTimeActual / 1000000 + " Send sync time " + sendMatchingTime / 1000000 +
-                " Calculation time " + actualCalcTime / 1000000 + " Window verify time " + windowverifyTime / 1000000 + " Cond 1 " + innerCondTime + " Cond 2 " + innerWindowTime);
+                " Calculation time " + actualCalcTime / 1000000 + " Window verify time " + windowverifyTime / 1000000 + " Cond 1 " + innerCondTime / 1000000 + " Cond 2 " + innerWindowTime / 1000000);
     }
     protected abstract boolean isBufferSorted();
 
@@ -73,7 +77,7 @@ public abstract class ElementWorker {
         long time = System.nanoTime();
         boolean b =  transition.verifyCondition(partialMatchEvents);
 //        actualCalcTime += System.nanoTime() - time;
-//        numberOfOppositeItems++;
+        numberOfOppositeItems++;
         if (b) {
 //            time = System.nanoTime();
             boolean w = verifyTimeWindowConstraint(partialMatch, event);
@@ -90,20 +94,29 @@ public abstract class ElementWorker {
     }
 
     protected void checkAndSendToNextState(Event event, List<Event> partialMatchEvents, Match match) {
+//        long time = System.nanoTime();
         partialMatchEvents.add(event);
         if (isEventCompatibleWithPartialMatch(match, partialMatchEvents, event)) {
+//            windowverifyTime += System.nanoTime() - time;
 //            long time = System.nanoTime();
             sendToNextState(match.createNewPartialMatchWithEvent(event));
 //            sendMatchingTime += System.nanoTime() - time;
         }
+//        else {
+//            windowverifyTime += System.nanoTime() - time;
+//        }
+//        time = System.nanoTime();
         partialMatchEvents.remove(partialMatchEvents.size() - 1);
+//        actualCalcTime += System.nanoTime() - time;
     }
 
     protected void sendToNextState(Match newPartialMatchWithEvent) {
 
         BlockingQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
         try {
+//            long time = System.nanoTime();
             matchesQueue.put(newPartialMatchWithEvent);
+//            windowverifyTime += System.nanoTime() - time;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

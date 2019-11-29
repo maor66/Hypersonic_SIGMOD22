@@ -3,7 +3,7 @@ package sase.evaluation.data_parallel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.LinkedTransferQueue;
 
 import sase.base.Event;
 import sase.evaluation.IEvaluationMechanism;
@@ -46,7 +46,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	// class to run threads
 	public class ParallelThread extends Thread {
 		public IEvaluationMechanism machine;
-		protected BlockingQueue<EvaluationInput> threadInput = new LinkedBlockingQueue<EvaluationInput>();
+		protected BlockingQueue<EvaluationInput> threadInput = new LinkedTransferQueue<EvaluationInput>();
 		volatile long maxSize = 0;
 		
 		public void run() {
@@ -92,7 +92,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	}
 	
 	// output queue for all threads
-	protected BlockingQueue<Match> threadOutput = new LinkedBlockingQueue<Match>();
+	protected BlockingQueue<Match> threadOutput = new LinkedTransferQueue<Match>();
 	
 	private void SetUpThreads(Pattern pattern, EvaluationPlan evaluationPlan, EvaluationSpecification internalSpecification) {
 		for (int i = 0; i < numOfThreads; ++i) {

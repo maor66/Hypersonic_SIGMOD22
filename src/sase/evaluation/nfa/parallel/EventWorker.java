@@ -38,7 +38,6 @@ public class EventWorker extends ElementWorker {
 //                continue;
 //            }
             List<Event> partialMatchEvents = new ArrayList<>(match.getPrimitiveEvents());
-
             checkAndSendToNextState((Event) newElement, partialMatchEvents, match);
         }
         return latest;

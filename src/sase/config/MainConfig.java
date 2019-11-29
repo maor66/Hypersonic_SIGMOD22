@@ -19,7 +19,7 @@ public class MainConfig {
 
 	public static final boolean statisticsDebugMode = false;
 
-	public static final boolean parallelDebugMode = true;
+	public static final boolean parallelDebugMode = false;
 
 
 	/* Settings for creating and preprocessing primitive events arriving on the input stream. */

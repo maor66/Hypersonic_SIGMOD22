@@ -45,6 +45,7 @@ public class BufferWorker implements Runnable {
     public Long innerWindowTime = 0L;
 
 private boolean primaryTakenOnce = false;
+private int isPrimaryInputTakenLast = 1;
 
     public BufferWorker(TypedNFAState eventState,
                         BlockingQueue<? extends ContainsEvent> eventInput,
@@ -79,9 +80,9 @@ private boolean primaryTakenOnce = false;
         while (true) {
             ContainsEvent newElement;
             ElementWorker taskUsed = primaryTask;
-            long time = System.nanoTime();
+//            long time = System.nanoTime();
             newElement = takePrimaryInput();
-            sliceTime += System.nanoTime() - time;
+//            sliceTime += System.nanoTime() - time;
             if (newElement == null) {
                 newElement = takeSecondaryInput(); // Check if the secondaryTask queue has an item
                 if (newElement == null) {
@@ -93,10 +94,12 @@ private boolean primaryTakenOnce = false;
                     }
                 }
                 numberOfSecondaryHandledItems++;
+                isPrimaryInputTakenLast = 0;
                 primaryTask.updateOppositeWorkers(secondaryTask);
                 taskUsed = secondaryTask; // The secondaryTask queue had an item so it is the task used for adding, iterating and removing
             }
             else {
+                isPrimaryInputTakenLast = 1;
                 numberOfPrimaryHandledItems++;
             }
 //            else { //Primary is used
@@ -134,15 +137,27 @@ private boolean primaryTakenOnce = false;
     }
 
     private ContainsEvent takeSecondaryInput() {
-        if (!primaryTakenOnce) {
+//        long time = System.nanoTime();
+        if (!primaryTakenOnce || secondaryInput.isEmpty()) {
+//            secondaryIdleTime += System.nanoTime() - time;
             return null;
         }
-        return takeNextInput(secondaryInput, 0);
+        ContainsEvent ce = takeNextInput(secondaryInput, 50);
+//        secondaryIdleTime += System.nanoTime() - time;
+        return ce;
     }
 
     private ContainsEvent takePrimaryInput() {
+//        long time = System.nanoTime();
+        if (primaryInput.isEmpty()) {
+//            primaryIdleTime += System.nanoTime() - time;
+            return null;
+        }
         primaryTakenOnce = true;
-        return takeNextInput(primaryInput, 0);
+
+        ContainsEvent ce  = takeNextInput(primaryInput, 0);
+//        primaryIdleTime += System.nanoTime() - time;
+        return ce;
     }
 
 
@@ -158,11 +173,10 @@ private boolean primaryTakenOnce = false;
     }
     private void finishRun() {
         finishedWorkers.add(this);
-            System.out.println("Thread " + Thread.currentThread().getName() +" " +Thread.currentThread().getId() + " has finished at "  + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
-                    " Handled " + numberOfHandledItems + " items and compared to " + numberOfOppositeItems+" opposite items. Idle time "+ idleTime/1000000 + " Condition time " + conditionTime/1000000 +
-                    " Iterating buffer time " + iteratingBufferTime/1000000+ " Slice time "+ sliceTime/1000000+ " Actual Slice time "+ sliceTimeActual/1000000+ " Send sync time " + sendMatchingTime/1000000 +
-                    " Calculation time "+ actualCalcTime/1000000 + " Window verify time "+ windowverifyTime/1000000 + " Cond 1 " + innerCondTime + " Cond 2 " + innerWindowTime);
-
+        System.out.println("Buffer Worker - " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " Handled " + numberOfPrimaryHandledItems + " primary items " +
+                + numberOfSecondaryHandledItems + " Handled secondary items.  Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000);
+        primaryTask.finishRun();
+        secondaryTask.finishRun();
     }
 
     protected boolean isPreviousStateFinished() {
