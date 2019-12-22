@@ -35,7 +35,7 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 	private boolean isCreationCompleted;
 
 	protected final long timeWindow;
-	protected final List<EventType> supportedEventTypes;
+	public final List<EventType> supportedEventTypes;
 	protected final List<List<EventType>> sequences;
 	protected final List<EventType> negativeTypes;
 	protected final List<EventType> iterativeTypes;
