@@ -4,24 +4,24 @@ import sase.evaluation.EvaluationMechanismTypes;
 
 public final class RIPEvaluationSpecification extends ParallelEvaluationSpecification {
 
-	public long eventsPerThread;
-	public long windowSize;
+	public double batchesRatio;
+	public long totalNumberOfEvents;
 	
 	public RIPEvaluationSpecification(EvaluationMechanismTypes type, EvaluationSpecification specification,
-			int numOfThreads, long eventsPerThread, long windowSize) {
+			int numOfThreads, double batchesRatio, long totalNumberOfEvents) {
 		super(type, specification, numOfThreads);
-		this.eventsPerThread = eventsPerThread;
-		this.windowSize = windowSize;
+		this.batchesRatio = batchesRatio;
+		this.totalNumberOfEvents = totalNumberOfEvents;
 	}
 	
 	@Override
 	public String getShortDescription() {
-		return String.format("%s|%d|%d", type, eventsPerThread, windowSize);
+		return String.format("%s|%f|%d", type, batchesRatio, totalNumberOfEvents);
 	}
 	
 	@Override
 	public String getLongDescription() {
-		return String.format("ordering algorithm %s, events per thread %d, window size %d",
-				 			 type, eventsPerThread, windowSize);
+		return String.format("ordering algorithm %s, batches ratio %f,total number of Events %d",
+				 			 type, batchesRatio, totalNumberOfEvents);
 	}
 }

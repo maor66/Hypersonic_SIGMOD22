@@ -16,13 +16,14 @@ import sase.specification.evaluation.RIPEvaluationSpecification;
 import sase.statistics.Statistics;
 
 public final class RIPEvaluationMechanism extends DataParallelEvaluationMechanism {
-	
+
+	private static final long EVENTS_RATE = 1;
 	private long eventCount = 0;
 	private long eventsPerThread = 0;
-	private long windowSize = 0;
 	private List<Event> events;
 	private int currThread = 0;
-	
+	private int duplicatedEvents=0;
+
 	private class WindowTooBigException extends Exception {
 		public WindowTooBigException(String message) {
 			super(message);
@@ -31,11 +32,19 @@ public final class RIPEvaluationMechanism extends DataParallelEvaluationMechanis
 	
 	public RIPEvaluationMechanism(Pattern pattern, RIPEvaluationSpecification specification, EvaluationPlan evaluationPlan) {
 		super(pattern, specification, evaluationPlan);
-		eventsPerThread = specification.eventsPerThread;
-		windowSize = specification.windowSize;
+
+		eventsPerThread = calculateEventsPerThread(pattern, specification);
+		System.out.println("Using " + eventsPerThread + " events per thread");
 		events = new ArrayList<Event>();
 	}
-	
+
+	private long calculateEventsPerThread(Pattern pattern, RIPEvaluationSpecification specification) {
+		long duplicatedEPT = timeWindow * EVENTS_RATE * pattern.getEventTypes().size();
+		long minEPT = 1 + duplicatedEPT * 2;
+		long maxEPT = (specification.totalNumberOfEvents + duplicatedEPT * specification.numOfThreads)  / specification.numOfThreads;
+		return (long) ((maxEPT - minEPT)* specification.batchesRatio) +minEPT;
+	}
+
 	private void CheckWindowLegal(long timeStampOfWindowEnd, Event event, long windowSize) throws WindowTooBigException {
 		if (timeStampOfWindowEnd - events.get(0).getTimestamp() < windowSize) {
 			// Window is too big!
@@ -46,7 +55,7 @@ public final class RIPEvaluationMechanism extends DataParallelEvaluationMechanis
 	@Override
 	protected void scheduleEvent(EvaluationInput evaluationInput) {
 		// Calculate the thread we should send next event to
-		int newCurrThread = (int)((++eventCount / eventsPerThread) % numOfThreads);		
+		int newCurrThread = (int)((eventCount++ / eventsPerThread) % numOfThreads);
 		// Add events to a list. After finished with one thread check which
 		// intersecting events should be sent to the next thread
 		events.add(evaluationInput.event.clone());
@@ -56,17 +65,18 @@ public final class RIPEvaluationMechanism extends DataParallelEvaluationMechanis
 			// Make sure the input was correct - check that windowSize isn't accidentally bigger
 			// than the whole window
 			try {
-				CheckWindowLegal(timeStampOfWindowEnd, evaluationInput.event, windowSize);
+				CheckWindowLegal(timeStampOfWindowEnd, evaluationInput.event, timeWindow);
 			} catch (WindowTooBigException e) {
 				e.printStackTrace();
 			}
 			for (Event storedEvent : events) {
 				long difference = timeStampOfWindowEnd - storedEvent.getTimestamp(); 
-				if (difference < windowSize) {
+				if (difference < timeWindow) {
 					// Send event to next thread
 					threads[newCurrThread].threadInput.add(new EvaluationInput(storedEvent, evaluationInput.canStartInstance));
 					// This addition counts as new event for RIP thread event count
 					++eventCount;
+					duplicatedEvents++;
 				}
 			}
 			events.clear();

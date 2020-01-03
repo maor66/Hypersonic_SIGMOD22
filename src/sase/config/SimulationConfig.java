@@ -454,12 +454,12 @@ public class SimulationConfig {
 	public static final EvaluationSpecification[] evaluationSpecifications = {
 
 
-			new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-					CostModelTypes.THROUGHPUT_LATENCY,
-					0.0, Runtime.getRuntime().availableProcessors(), 0.5),
-		new ParallelBasicEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-				CostModelTypes.THROUGHPUT_LATENCY,
-				0.0),
+//		new ParallelBasicEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0),
+//		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+//					CostModelTypes.THROUGHPUT_LATENCY,
+//					0.0, 23, 0.5),
 //		new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //				CostModelTypes.THROUGHPUT_LATENCY,
 //				0.0),
@@ -467,9 +467,12 @@ public class SimulationConfig {
 //			new HirzelEvaluationSpecification(EvaluationMechanismTypes.HIRZEL_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //					CostModelTypes.THROUGHPUT_LATENCY,
 //					0.0), Runtime.getRuntime().availableProcessors(), StockEventTypesManager.labelAttributeName),
-//			new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+			new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+					CostModelTypes.THROUGHPUT_LATENCY,
+					0.0), 23, 0.80, 50873),
+//		new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //					CostModelTypes.THROUGHPUT_LATENCY,
-//					0.0), Runtime.getRuntime().availableProcessors(), 20000, 1),
+//					0.0), 23, 0.6, 50873),
 		
 ////			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
 //						CostModelTypes.THROUGHPUT_LATENCY,

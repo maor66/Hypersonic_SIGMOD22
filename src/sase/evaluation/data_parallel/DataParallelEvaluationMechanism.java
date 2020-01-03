@@ -1,15 +1,20 @@
 package sase.evaluation.data_parallel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import sase.base.Event;
 import sase.evaluation.IEvaluationMechanism;
 import sase.evaluation.IEvaluationMechanismInfo;
 import sase.evaluation.common.Match;
 import sase.evaluation.common.State;
+import sase.evaluation.nfa.NFA;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.evaluation.tree.TreeEvaluationMechanism;
 import sase.pattern.Pattern;
@@ -28,15 +33,19 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	private static final long timeToWaitForThreads = 10;
 	
 	protected int numOfThreads;
+	protected final long timeWindow;
 	protected ParallelThread threads[];
-	
+	private final AtomicBoolean isInputFinished = new AtomicBoolean(false);
+
+
 	public static DataParallelEvaluationMechanism singleton = null;
 	
 	// Input for the parallel thread
 	protected class EvaluationInput {
 		public Event event;
 		public boolean canStartInstance;
-		
+
+
 		public EvaluationInput(Event event, boolean canStartInstance) {
 			this.event = event;
 			this.canStartInstance = canStartInstance;
@@ -45,16 +54,26 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	
 	// class to run threads
 	public class ParallelThread extends Thread {
+
 		public IEvaluationMechanism machine;
-		protected BlockingQueue<EvaluationInput> threadInput = new LinkedTransferQueue<EvaluationInput>();
-		volatile long maxSize = 0;
-		
+		protected BlockingQueue<EvaluationInput> threadInput = new LinkedTransferQueue<>();
+//		volatile long maxSize = 0;
+		long machineTime = 0;
+		private int handledEvents= 0;
+
 		public void run() {
 			// Specific Hirzel code to run
 			EvaluationInput evalInput = null;
 			while (!interrupted()) {
 				try {
-					evalInput = threadInput.take();
+					evalInput = threadInput.poll(1, TimeUnit.SECONDS);
+					if (evalInput == null) {
+						if (isInputFinished.get()) {
+							System.out.println(this.toString() + " machine time:  " + machineTime/1000000 + " handled events " + handledEvents);
+							return;
+						}
+						continue;
+					}
 					processEvent(evalInput);
 				} catch (InterruptedException e) {
 					return;
@@ -68,22 +87,31 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 			boolean canStartInstance = evalInput.canStartInstance;
 			// if yes, run processNewEvent of nfa
 			List<Match> result = null;
-			synchronized(machine) {
+//			synchronized(machine) {
 				result = machine.validateTimeWindow(event.getTimestamp());
 				if (result == null) {
 					result = machine.processNewEvent(event, canStartInstance);
+					System.out.println("wrong");
 				} else {
+					handledEvents++;
+//					try {
+//						Thread.sleep(20);
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+					long time = System.nanoTime();
 					List<Match> resProcessNewEvent = machine.processNewEvent(event, canStartInstance);
+					machineTime += System.nanoTime() -time;
 					if (resProcessNewEvent != null)
 						result.addAll(resProcessNewEvent);
 				}
-			}
+//			}
 			// add result of processNewEvent to out queue
 			if (result != null) {
 				Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.numberOfSynchronizationActions);
 				threadOutput.addAll(result);
 			}
-			maxSize = Math.max(maxSize, machine.size());
+//			maxSize = Math.max(maxSize, machine.size());
 		}
 		
 		public void cancel() {
@@ -92,7 +120,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	}
 	
 	// output queue for all threads
-	protected BlockingQueue<Match> threadOutput = new LinkedTransferQueue<Match>();
+	protected BlockingQueue<Match> threadOutput = new LinkedTransferQueue<>();
 	
 	private void SetUpThreads(Pattern pattern, EvaluationPlan evaluationPlan, EvaluationSpecification internalSpecification) {
 		for (int i = 0; i < numOfThreads; ++i) {
@@ -118,12 +146,13 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	}
 	
 	public DataParallelEvaluationMechanism(Pattern pattern, ParallelEvaluationSpecification specification, EvaluationPlan evaluationPlan) {
-		numOfThreads = specification.numOfThreeads;
+		numOfThreads = specification.numOfThreads;
 		threads = new ParallelThread[numOfThreads];
 		// Build evaluation mechanism for internal nfa from specification
 		EvaluationSpecification internalSpecification = specification.internalSpecification;
 		SetUpThreads(pattern, evaluationPlan, internalSpecification);
 		DataParallelEvaluationMechanism.singleton = this;
+		timeWindow = pattern.getTimeWindow();
 
 		// Create threads
 		for (int i = 0; i < numOfThreads; ++i) {
@@ -157,14 +186,23 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 
 	@Override
 	public List<Match> getLastMatches() {
-		while (haveUnprocessedEvents()) {
+//		while (haveUnprocessedEvents()) {
+//			try {
+//				Thread.sleep(timeToWaitForThreads);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//		}
+		isInputFinished.set(true);
+		System.out.println("Waiting for threads" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
+		for (Thread t : threads) {
 			try {
-				Thread.sleep(timeToWaitForThreads);
+				t.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		
+		System.out.println("Threads finished at" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
 		//need to receive and process matches that were created while we waited
 		List<Match> matches = new ArrayList<Match>();
 		threadOutput.drainTo(matches);
@@ -176,9 +214,9 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 		
 		List<Match> res = new ArrayList<Match>();
 		for (int i = 0; i < numOfThreads; ++i) {
-			synchronized(threads[i].machine) {
+//			synchronized(threads[i].machine) {
 				res.addAll(threads[i].machine.getLastMatches());
-			}
+//			}
 		}
 		return res;
 	}
@@ -196,7 +234,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	public long size() {
 		long size = 0;
 		for (ParallelThread parallelThread : threads) {
-			size += parallelThread.maxSize;
+//			size += parallelThread.maxSize;
 		}
 		return size;
 	}
@@ -210,9 +248,9 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	@Override
 	public void removeConflictingInstances(List<Match> matches) {
 		for (int i = 0; i < numOfThreads; ++i) {
-			synchronized(threads[i].machine) {
+//			synchronized(threads[i].machine) {
 				threads[i].machine.removeConflictingInstances(matches);
-			}
+//			}
 		}
 	}
 
@@ -228,6 +266,10 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	
 	@Override
 	public List<Match> processNewEvent(Event event, boolean canStartInstance) {
+		if (!(((NFA)(threads[0].machine)).supportedEventTypes.contains(event.getType()))) {
+			// irrelevant event
+			return null;
+		}
 		scheduleEvent(new EvaluationInput(event, canStartInstance));
 		List<Match> result = new ArrayList<Match>();
 		threadOutput.drainTo(result);
