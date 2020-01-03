@@ -1,9 +1,7 @@
 package sase.evaluation.data_parallel;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
@@ -39,6 +37,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 
 
 	public static DataParallelEvaluationMechanism singleton = null;
+	private Set<Match> matches = new HashSet<>();
 
 	// Input for the parallel thread
 	protected class EvaluationInput {
@@ -204,21 +203,27 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 		}
 		System.out.println("Threads finished at" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
 		//need to receive and process matches that were created while we waited
-		List<Match> matches = new ArrayList<Match>();
 		threadOutput.drainTo(matches);
-		for (Match match : matches) {
-			Environment.getEnvironment().getStatisticsManager().updateFractionalStatistic(Statistics.averageLatency,
-					match.getDetectionLatency());
-			Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.matches);
-		}
-
-		List<Match> res = new ArrayList<Match>();
 		for (int i = 0; i < numOfThreads; ++i) {
-//			synchronized(threads[i].machine) {
-			res.addAll(threads[i].machine.getLastMatches());
-//			}
+			synchronized(threads[i].machine) {
+				matches.addAll(threads[i].machine.getLastMatches());
+			}
 		}
-		return res;
+		System.out.println("There are actually " + matches.size() + " Matches");
+//		for (Match match : matches) {
+//			Environment.getEnvironment().getStatisticsManager().updateFractionalStatistic(Statistics.averageLatency,
+//					match.getDetectionLatency());
+//			Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.matches);
+//		}
+		List< Match> l = new ArrayList<>(matches);
+		return new ArrayList<>();
+//		List<Match> res = new ArrayList<Match>();
+//		for (int i = 0; i < numOfThreads; ++i) {
+////			synchronized(threads[i].machine) {
+//			res.addAll(threads[i].machine.getLastMatches());
+////			}
+//		}
+//		return res;
 	}
 
 	private boolean haveUnprocessedEvents() {
@@ -271,9 +276,8 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 			return null;
 		}
 		scheduleEvent(new EvaluationInput(event, canStartInstance));
-		List<Match> result = new ArrayList<Match>();
-		threadOutput.drainTo(result);
-		return result;
+//		threadOutput.drainTo(matches);
+		return new ArrayList<>();
 	}
 
 	protected abstract void scheduleEvent(EvaluationInput evaluationInput);

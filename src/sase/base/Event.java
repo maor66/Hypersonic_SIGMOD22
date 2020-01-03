@@ -160,6 +160,12 @@ public class Event implements Comparable<Event>, ContainsEvent {
 		}
 		return result;*/
 	}
+	@Override
+	public boolean equals(Object other) {
+		if (this == other)
+			return true;
+		return other instanceof Event && this.sequenceNumber == ((Event) other).sequenceNumber;
+	}
 
 	@Override
 	public int compareTo(Event e) {

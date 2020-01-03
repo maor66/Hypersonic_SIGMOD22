@@ -45,18 +45,26 @@ private long earliestEvent = 0;
 	
 	@Override
 	public boolean equals(Object other) {
+		Match otherMatch = (Match)other;
 		if (this == other)
 			return true;
 		if (!(other instanceof Match))
 			return false;
-		Match otherMatch = (Match)other;
-		for (Event event : primitiveEvents) {
-			if (!(otherMatch.primitiveEvents.contains(event))) {
-				return false;
-			}
+//		for (Event event : primitiveEvents) {
+//			if (!(otherMatch.primitiveEvents.contains(event))) {
+//				return false;
+//			}
+//		}
+//		for (Event event : otherMatch.primitiveEvents) {
+//			if (!(primitiveEvents.contains(event))) {
+//				return false;
+//			}
+//		}
+		if (this.primitiveEvents.size() != otherMatch.primitiveEvents.size()) {
+			return  false;
 		}
-		for (Event event : otherMatch.primitiveEvents) {
-			if (!(primitiveEvents.contains(event))) {
+		for (int i =0 ; i< this.primitiveEvents.size(); i++) {
+			if (!this.primitiveEvents.get(i) .equals(otherMatch.primitiveEvents.get(i))){
 				return false;
 			}
 		}
@@ -65,7 +73,11 @@ private long earliestEvent = 0;
 	
 	@Override
     public int hashCode() {
-        return Objects.hash(primitiveEvents);
+		int sum=0;
+		for (Event e : primitiveEvents){
+			sum += e.getSequenceNumber();
+		}
+		return sum;
     }
 	
 	public long getDetectionLatency() {
