@@ -948,6 +948,7 @@ private static final ConditionSpecification[] dummyConditionSpecSEQ4 = new Condi
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(220),
 //			basicPatternDummySEQ6.createIdenticalSpecificationWithDifferentWindow(40),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(50),
+			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(80),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(10),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(20),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(30),
