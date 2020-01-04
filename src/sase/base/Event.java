@@ -33,7 +33,7 @@ public class Event implements Comparable<Event>, ContainsEvent {
 
 	protected final long sequenceNumber;
 	protected EventType type;
-	protected final long systemTimestamp;
+	protected  long systemTimestamp;
 	protected Object[] payload;
 	private long timestamp = 0;
 	private boolean isLastInput = false;
@@ -41,8 +41,7 @@ public class Event implements Comparable<Event>, ContainsEvent {
 	public Event(EventType type, Object[] payload) {
 		this.sequenceNumber = eventCounter++;
 		this.type = type;
-		this.systemTimestamp = System.currentTimeMillis();
-		this.payload = payload == null ? null : 
+		this.payload = payload == null ? null :
 										 EventTypesManager.getInstance().convertStringPayloadToObjectPayload(payload);
 	}
 
@@ -166,4 +165,7 @@ public class Event implements Comparable<Event>, ContainsEvent {
 		return new Long(sequenceNumber - e.sequenceNumber).intValue();
 	}
 
+	public void updateSystemTime() {
+		systemTimestamp = System.currentTimeMillis();
+	}
 }

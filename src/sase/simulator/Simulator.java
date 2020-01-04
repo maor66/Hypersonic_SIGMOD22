@@ -299,6 +299,7 @@ public class Simulator {
 				if (event == null) {
 					break;
 				}
+				event.updateSystemTime();
 				processIncomingEvent(event);
 				long memoryUsage = secondaryEvaluationMechanism == null ?
 						primaryEvaluationMechanism.size() :

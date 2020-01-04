@@ -18,12 +18,16 @@ public class Match implements ContainsEvent{
 private Event lastestEvent = null;
 private long earliestEvent = 0;
 
-	public Match(List<Event> primitiveEvents, long latestEventTimestamp) {
+	public Match(List<Event> primitiveEvents) {
 		if (primitiveEvents.size() != 1)
 		{
 			Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.parallelPartialMatchesCreations);
 		}
 		this.primitiveEvents = primitiveEvents;
+		long latestEventTimestamp = 0;
+		for (Event event : primitiveEvents) {
+			latestEventTimestamp = (event.getSystemTimestamp() > latestEventTimestamp) ? event.getSystemTimestamp() : latestEventTimestamp;
+		}
 		this.detectionLatency = System.currentTimeMillis() - latestEventTimestamp;
 	}
 	public Match()
@@ -90,7 +94,7 @@ private long earliestEvent = 0;
 		//TODO: creates partial match by evaluation/frequency order and not by sequence order. not sure if ok
 		List<Event> list = new ArrayList(primitiveEvents);
 		list.add(event);
-		return new Match(list, event.getSystemTimestamp());
+		return new Match(list);
 	}
 
     public long getEarliestEvent() {
