@@ -8,8 +8,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import sase.base.Event;
+import sase.config.MainConfig;
 import sase.evaluation.IEvaluationMechanism;
 import sase.evaluation.IEvaluationMechanismInfo;
 import sase.evaluation.common.Match;
@@ -34,8 +36,11 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	
 	protected int numOfThreads;
 	protected final long timeWindow;
-	protected ParallelThread threads[];
+	protected ParallelThread[] threads;
 	private final AtomicBoolean isInputFinished = new AtomicBoolean(false);
+	private final AtomicBoolean isGroupInputFinished = new AtomicBoolean(false);
+	private final AtomicInteger numberOfFinishedThreads = new AtomicInteger(0);
+
 
 
 	public static DataParallelEvaluationMechanism singleton = null;
@@ -60,14 +65,19 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 //		volatile long maxSize = 0;
 		long machineTime = 0;
 		private int handledEvents= 0;
+		boolean isFinishedWithOwnGroupInput = false;
 
 		public void run() {
 			// Specific Hirzel code to run
 			EvaluationInput evalInput = null;
 			while (!interrupted()) {
 				try {
-					evalInput = threadInput.poll(1, TimeUnit.SECONDS);
+					evalInput = threadInput.poll(3, TimeUnit.MILLISECONDS);
 					if (evalInput == null) {
+						if (MainConfig.latencyCalculation && isGroupInputFinished.get() && !isFinishedWithOwnGroupInput) {
+							numberOfFinishedThreads.getAndIncrement();
+							isFinishedWithOwnGroupInput = true;
+						}
 						if (isInputFinished.get()) {
 							System.out.println(this.toString() + " machine time:  " + machineTime/1000000 + " handled events " + handledEvents);
 							return;
@@ -81,7 +91,11 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 			}
 			return;
 		}
-		
+		public void resetGroupFinish()
+		{
+			isFinishedWithOwnGroupInput = false;
+		}
+
 		protected void processEvent(EvaluationInput evalInput) {
 			Event event = evalInput.event;
 			boolean canStartInstance = evalInput.canStartInstance;
@@ -275,6 +289,39 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 		threadOutput.drainTo(result);
 		return result;
 	}
-	
+
+	@Override
+	public ArrayList<Match> waitForGroupToFinish()
+	{
+		isGroupInputFinished.set(true);
+		ArrayList<Match> matches = new ArrayList<Match>();
+		while (true)
+		{
+			try {
+				Match m  = threadOutput.poll(3, TimeUnit.MILLISECONDS);
+				if (m == null) {
+					if (numberOfFinishedThreads.get() == numOfThreads) {
+						break;
+					}
+				}
+				else {
+					matches.add(m);
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+//		threadOutput.drainTo(matches); // instead - do a while (true) with polling each element
+		//Should calc latency here?
+		isGroupInputFinished.set(false);
+		for (ParallelThread  t  : threads)
+{
+	t.resetGroupFinish();
+}
+		numberOfFinishedThreads.set(0);
+		//Do nothing
+		return matches;
+	}
+
 	protected abstract void scheduleEvent(EvaluationInput evaluationInput);
 }

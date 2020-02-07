@@ -14,7 +14,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.StampedLock;
 
 public class ThreadContainers {
-    private final BlockingQueue<Match> nextStateOutput;
+    private final ParallelQueue<Match> nextStateOutput;
     private List<ContainsEvent> bufferSubList;
     private StampedLock lock;
     private EventType eventType;
@@ -66,11 +66,11 @@ public class ThreadContainers {
         return timeWindow;
     }
 
-    public BlockingQueue<Match> getNextStateOutput() {
+    public ParallelQueue<Match> getNextStateOutput() {
         return nextStateOutput;
     }
 
-    public ThreadContainers(BlockingQueue<Match> nextStateOutput, EventType state, long timeWindow) {
+    public ThreadContainers(ParallelQueue<Match> nextStateOutput, EventType state, long timeWindow) {
         this.eventType = state;
         bufferSubList = new ArrayList<>();
 //        this.oppositeBufferWorkers = oppositeBufferWorkers;
@@ -124,7 +124,8 @@ public class ThreadContainers {
         return eventType;
     }
 
-    public void removeExpiredElements(long removingCriteriaTimeStamp, boolean isBufferSorted, ContainsEvent removingCriteria) {
+    public int removeExpiredElements(long removingCriteriaTimeStamp, boolean isBufferSorted, ContainsEvent removingCriteria) {
+
 
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
         int numberOfRemovedElements = 0;
@@ -160,5 +161,6 @@ public class ThreadContainers {
             Environment.getEnvironment().getStatisticsManager().updateParallelStatistic(Statistics.parallelPartialMatchesDeleltions,
                     numberOfRemovedElements);
         }
+        return numberOfRemovedElements;
     }
 }

@@ -1,39 +1,27 @@
 package sase.evaluation.nfa.lazy;
 
-import org.apache.commons.math3.analysis.function.Min;
 import sase.base.Event;
 import sase.base.EventType;
 import sase.config.MainConfig;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.NFAState;
-import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
-import sase.evaluation.nfa.lazy.elements.LazyTransition;
 import sase.evaluation.nfa.lazy.order.cost.CostModelFactory;
 import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
-import sase.evaluation.nfa.lazy.order.cost.ICostModel;
 import sase.evaluation.nfa.lazy.order.cost.ThroughputCostModel;
 import sase.evaluation.nfa.parallel.*;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.pattern.Pattern;
-import sase.pattern.SimplePattern;
-import sase.pattern.condition.Condition;
 import sase.pattern.condition.base.CNFCondition;
 import sase.simulator.Environment;
 import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
 import sase.statistics.Statistics;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 
 
 public class ParallelLazyChainNFA extends LazyChainNFA {
@@ -53,11 +41,11 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private ExecutorService executor;
     private Map<NFAState, List<BufferWorker>> IBWorkers;
     private Map<NFAState, List<BufferWorker>> MBWorkers;
-    private Map<TypedNFAState, BlockingQueue<Event>> eventInputQueues;
+    private Map<TypedNFAState, ParallelQueue<Event>> eventInputQueues;
     protected Map<TypedNFAState, Integer> stateToIBThreads = new HashMap<>();
     protected Map<TypedNFAState, Integer> stateToMBThreads = new HashMap<>();
-    private BlockingQueue<Match> secondStateInputQueue = new LinkedTransferQueue<Match>();
-    private BlockingQueue<Match> completeMatchOutputQueue;
+    private ParallelQueue<Match> secondStateInputQueue = new ParallelQueue<Match>();
+    private ParallelQueue<Match> completeMatchOutputQueue;
     protected int numOfThreads;
     private BufferWorker dummyWorkerNeededForFinish = new BufferWorker();
     private CostModelTypes costModelType;
@@ -68,6 +56,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private List<Future<ThreadContainers.ParallelStatistics>> threadStatistics = new ArrayList<>();
     private long mainThreadIdleTime = 0;
     private CopyOnWriteArrayList<BufferWorker> finishedThreads = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<BufferWorker> finishedWithGroup = new CopyOnWriteArrayList<>();
     private AtomicBoolean isFinishedWithInput = new AtomicBoolean(false);
 
     private class PrintMatchTimerTask extends TimerTask {
@@ -118,11 +107,11 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         try {
             if (eventState.isInitial()) {
-                LinkedTransferQueue<Match> transferQueue = (LinkedTransferQueue<Match>) secondStateInputQueue;
-                transferQueue.put(new Match(Event.asList(event), System.currentTimeMillis()));
+                ParallelQueue<Match> transferQueue = (ParallelQueue<Match>) secondStateInputQueue;
+                transferQueue.put(new Match(Event.asList(event)));
             }
             else {
-                LinkedTransferQueue<Event> transferQueue = (LinkedTransferQueue<Event>) eventInputQueues.get(eventState);
+                ParallelQueue<Event> transferQueue = (ParallelQueue<Event>) eventInputQueues.get(eventState);
                 transferQueue.put(event);
                 Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.parallelBufferInsertions);
             }
@@ -130,6 +119,31 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public ArrayList<Match> waitForGroupToFinish()
+    {
+        finishedWithGroup.add(dummyWorkerNeededForFinish);
+        HashSet<Match> matches = new HashSet<>();
+        while (true) {
+            Match m = completeMatchOutputQueue.poll(1, TimeUnit.MILLISECONDS);
+            if (m == null) {
+                if (finishedWithGroup.size() - 1 == this.getAllWorkers().size()) {
+                    break;
+                }
+            }
+            else {
+                matches.add(m);
+            }
+        }
+        finishedWithGroup.clear();
+        for (BufferWorker worker: getAllWorkers())
+        {
+            worker.resetGroupFinish();
+        }
+        return new ArrayList<>(matches);
+
     }
 
     @Override
@@ -150,14 +164,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             printTimer.scheduleAtFixedRate(new PrintMatchTimerTask(matches), 0, 20 * 1000);
         }
 
+        boolean flag = true;
         while (true) {
             Match m = null;
-
-            try {
-                m = completeMatchOutputQueue.poll(1, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (flag&& finishedThreads.size() - 1 ==this.getAllWorkers().size()) {
+                System.out.println("So far got matches - " + matches.size());
+                flag = false;
             }
+            m = completeMatchOutputQueue.poll(1, TimeUnit.SECONDS);
 
             if (m == null) {
                 if (finishedThreads.size() - 1 == this.getAllWorkers().size()) {
@@ -225,7 +239,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         executor = Executors.newFixedThreadPool((getTotalNumberOfThreads())); //TODO: maybe workstealingpool?
 
         TypedNFAState previousState = null;
-        BlockingQueue<Match> partialMatchInput = secondStateInputQueue;
+        ParallelQueue<Match> partialMatchInput = secondStateInputQueue;
         for (TypedNFAState state : getWorkerStates()) {
             // Construct the workers first so it will be possible to add them as parameters in the ThreadContainer c'tor. Probably should've used a better design pattern (builder?)
             List<BufferWorker> stateIBworkers = new ArrayList<>();
@@ -233,14 +247,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
             List<ThreadContainers> eventThreadContainers = new CopyOnWriteArrayList<>();
             List<ThreadContainers> partialMatchThreadContainers = new CopyOnWriteArrayList<>();
-            BlockingQueue<Match> matchesOutput = new LinkedTransferQueue<Match>();
+            ParallelQueue<Match> matchesOutput = new ParallelQueue<Match>();
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
                 eventThreadContainers.add(createThreadContainerByState(state,matchesOutput));
             }
             for (int i = 0; i < stateToMBThreads.get(state); i++) {
                 partialMatchThreadContainers.add(createThreadContainerByState(state, matchesOutput));
             }
-            BlockingQueue<Event> eventInput = new LinkedTransferQueue<Event>();
+            ParallelQueue<Event> eventInput = new ParallelQueue<Event>();
             eventInputQueues.put(state, eventInput);
 
             List<BufferWorker> workersNeededToFinish;
@@ -254,10 +268,10 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             }
 
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
-                stateIBworkers.add(new BufferWorker(state, eventInput, partialMatchInput, eventThreadContainers.get(i),eventThreadContainers, partialMatchThreadContainers , finishedThreads, workersNeededToFinish, true));
+                stateIBworkers.add(new BufferWorker(state, eventInput, partialMatchInput, eventThreadContainers.get(i),eventThreadContainers, partialMatchThreadContainers , finishedThreads, finishedWithGroup, workersNeededToFinish, true));
             }
             for (int i = 0; i < stateToMBThreads.get(state); i++) {
-                stateMBworkers.add(new BufferWorker(state, eventInput, partialMatchInput,partialMatchThreadContainers.get(i), eventThreadContainers, partialMatchThreadContainers,  finishedThreads, workersNeededToFinish, false));
+                stateMBworkers.add(new BufferWorker(state, eventInput, partialMatchInput,partialMatchThreadContainers.get(i), eventThreadContainers, partialMatchThreadContainers,  finishedThreads, finishedWithGroup, workersNeededToFinish, false));
             }
             IBWorkers.put(state, stateIBworkers);
             MBWorkers.put(state, stateMBworkers);
@@ -278,7 +292,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
     }
 
-    private ThreadContainers createThreadContainerByState(TypedNFAState state, BlockingQueue<Match> matchesOutput) {
+    private ThreadContainers createThreadContainerByState(TypedNFAState state, ParallelQueue<Match> matchesOutput) {
         return  new ThreadContainers(matchesOutput, state.getEventType(), timeWindow);
     }
 
@@ -440,18 +454,41 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         balanceThreads(nfaStates, costOfStates, totalCost, inputBufferThreadsPerState, matchBufferThreadsPerState);
 
-//        inputBufferThreadsPerState.clear();
-//        matchBufferThreadsPerState.clear();
+        inputBufferThreadsPerState.clear();
+        matchBufferThreadsPerState.clear();
+        //SEQ 4
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(3);
+//        inputBufferThreadsPerState.add(8);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(2);
+//        matchBufferThreadsPerState.add(8);
 //        inputBufferThreadsPerState.add(1);
 //        inputBufferThreadsPerState.add(1);
-//        inputBufferThreadsPerState.add(4);
-//        inputBufferThreadsPerState.add(4);
-//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(10);
 //        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(10);
+        //SEQ 5
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(3);
+//        inputBufferThreadsPerState.add(5);
+//        inputBufferThreadsPerState.add(2);
+//        matchBufferThreadsPerState.add(2);
+//        matchBufferThreadsPerState.add(3);
 //        matchBufferThreadsPerState.add(5);
-//        matchBufferThreadsPerState.add(4);
-//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(2);
+        //SEQ 6
+        inputBufferThreadsPerState.add(1);
+        inputBufferThreadsPerState.add(1);
+        inputBufferThreadsPerState.add(4);
+        inputBufferThreadsPerState.add(4);
+        inputBufferThreadsPerState.add(1);
+        matchBufferThreadsPerState.add(1);
+        matchBufferThreadsPerState.add(1);
+        matchBufferThreadsPerState.add(5);
+        matchBufferThreadsPerState.add(4);
+        matchBufferThreadsPerState.add(1);
         int listIndex = 0;
         for (TypedNFAState state : nfaStates) {
             stateToIBThreads.put(state, inputBufferThreadsPerState.get(listIndex));

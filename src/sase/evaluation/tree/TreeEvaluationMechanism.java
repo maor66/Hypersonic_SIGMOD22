@@ -336,4 +336,10 @@ public class TreeEvaluationMechanism implements IEvaluationMechanism, IEvaluatio
 			storage.removeConflictingInstances(match);
 		}		
 	}
+
+	@Override
+	public ArrayList<Match> waitForGroupToFinish() {
+		//Do nothng
+		return null;
+	}
 }

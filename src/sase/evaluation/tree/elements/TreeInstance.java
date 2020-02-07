@@ -48,7 +48,7 @@ public class TreeInstance {
 	public Match getMatch() {
 		if (!hasMatch())
 			return null;
-		return new Match(matchBuffer.getEvents(), matchBuffer.getLatestTimestamp());
+		return new Match(matchBuffer.getEvents());
 	}
 	
 	public Node getCurrentNode() {

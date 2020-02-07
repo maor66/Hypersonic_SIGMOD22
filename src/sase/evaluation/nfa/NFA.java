@@ -397,4 +397,9 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 	}
 
 	protected abstract void initNFAStructure();
+	public ArrayList<Match> waitForGroupToFinish ()
+	{
+		//Do nothing
+		return null;
+	}
 }

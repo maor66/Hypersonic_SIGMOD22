@@ -49,7 +49,7 @@ public class Instance {
 	public Match getMatch() {
 		if (!currentState.isAccepting())
 			return null;
-		return new Match(getEventsFromMatchBuffer(), matchBuffer.getLatestTimestamp());
+		return new Match(getEventsFromMatchBuffer());
 	}
 	
 	public boolean shouldInvalidate() {

@@ -1,5 +1,6 @@
 package sase.evaluation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import sase.base.Event;
@@ -15,4 +16,6 @@ public interface IEvaluationMechanism {
 	public long size();
 	public String getStructureSummary();
 	public void removeConflictingInstances(List<Match> matches);
+
+	public ArrayList<Match> waitForGroupToFinish();
 }

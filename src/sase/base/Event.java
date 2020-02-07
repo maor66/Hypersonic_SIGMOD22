@@ -165,7 +165,7 @@ public class Event implements Comparable<Event>, ContainsEvent {
 		return new Long(sequenceNumber - e.sequenceNumber).intValue();
 	}
 
-	public void updateSystemTime() {
-		systemTimestamp = System.currentTimeMillis();
+	public void updateSystemTime(long groupTime) {
+		systemTimestamp = groupTime;
 	}
 }

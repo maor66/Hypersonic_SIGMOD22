@@ -117,4 +117,10 @@ public class DisjunctionTreeEvaluationMechanism implements IEvaluationMechanism,
 		}
 	}
 
+	@Override
+	public ArrayList<Match> waitForGroupToFinish() {
+		//Do nothing
+		return null;
+	}
+
 }

@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
+import java.util.Queue;
 
 public abstract class ElementWorker {
     ThreadContainers dataStorage;
@@ -32,6 +32,11 @@ public abstract class ElementWorker {
     public Long innerCondTime = 0L;
     public Long innerWindowTime = 0L;
 
+    public long lastCriteriaTimestamp = 0;
+    private int lastRemovedNumber= 0;
+    private  int currentBackoff = 0;
+    private  int backoffStep = 1;
+
     public ElementWorker(TypedNFAState eventState,
                          List<ThreadContainers> oppositeBuffers)
     {
@@ -40,7 +45,7 @@ public abstract class ElementWorker {
         transition = (LazyTransition) eventState.getActualNextTransition();
     }
 
-    public void handleElement(ContainsEvent newElement) {
+    public void handleElement(ContainsEvent newElement, List<BufferWorker> workersNeededToFinish, ParallelQueue<? extends  ContainsEvent> input) {
         ContainsEvent removingCriteria = null;
         long latestTimeStamp = Long.MIN_VALUE;
         dataStorage.addEventToOwnBuffer(newElement);
@@ -57,11 +62,22 @@ public abstract class ElementWorker {
             }
         }
         if (removingCriteria != null) {
+            if ( currentBackoff <= 0)  {
 //            long time =  System.nanoTime();
-            dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted(), removingCriteria);
+                lastCriteriaTimestamp = removingCriteria.getEarliestTimestamp();
+                lastRemovedNumber = dataStorage.removeExpiredElements(lastCriteriaTimestamp, isBufferSorted(), removingCriteria);
+                backoffStep = lastRemovedNumber > 0 ? 1: backoffStep*2;
+                currentBackoff  = lastRemovedNumber > 0 ? 0: backoffStep ;
 //            innerCondTime += System.nanoTime() - time;
+            }
+            else {
+                currentBackoff--;
+            }
         }
     }
+
+    protected abstract boolean oppositeTaskNotFinished(List<BufferWorker> workersNeededToFinish);
+
     public void finishRun() {
         System.out.println("Thread " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " has finished at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
                 " Compared to " + numberOfOppositeItems + " items Condition time " + conditionTime / 1000000 +
@@ -75,13 +91,15 @@ public abstract class ElementWorker {
         //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
         //TODO: doesn't have to verify temporal condition first anymore - check if removing doesn't hurt correctness
         long time = System.nanoTime();
-        boolean b =  transition.verifyCondition(partialMatchEvents);
-//        actualCalcTime += System.nanoTime() - time;
+        boolean b =  transition.verifyFirstStepCondition(partialMatchEvents);
+        actualCalcTime += System.nanoTime() - time;
         numberOfOppositeItems++;
         if (b) {
-//            time = System.nanoTime();
+            time = System.nanoTime();
+            boolean s =  transition.verifySecondStepCondition(partialMatchEvents);
+            conditionTime += System.nanoTime() - time;
+            if (!s) return false;
             boolean w = verifyTimeWindowConstraint(partialMatch, event);
-//            conditionTime += System.nanoTime() - time;
             return  w;
         }
         return  false;
@@ -112,14 +130,10 @@ public abstract class ElementWorker {
 
     protected void sendToNextState(Match newPartialMatchWithEvent) {
 
-        BlockingQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
-        try {
-//            long time = System.nanoTime();
-            matchesQueue.put(newPartialMatchWithEvent);
-//            windowverifyTime += System.nanoTime() - time;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        ParallelQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
+                    long time = System.nanoTime();
+        matchesQueue.put(newPartialMatchWithEvent);
+            windowverifyTime += System.nanoTime() - time;
     }
 
     public void initializeDataStorage(ThreadContainers dataStorage) {

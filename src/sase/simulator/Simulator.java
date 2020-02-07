@@ -6,10 +6,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import sase.adaptive.monitoring.IAdaptationNecessityDetector;
 import sase.adaptive.monitoring.IMultiPatternAdaptationNecessityDetector;
@@ -50,7 +49,7 @@ import sase.statistics.StatisticsManager;
 public class Simulator {
 
 	private static final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-
+	private static final long EVENTS_IN_GROUP = 10000;
 	private List<SimulationSpecification> specifications;
 
 	private IWorkloadManager workload;
@@ -290,27 +289,34 @@ public class Simulator {
 			if (primaryEvaluationMechanism instanceof ParallelLazyChainNFA) {
 				((ParallelLazyChainNFA) primaryEvaluationMechanism).startThreads();
 			}
-			for (Event event : allEvents)
-			{
-				if (Environment.getEnvironment().isTimeoutReached(null)) {
-					Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(Statistics.isTimeoutReached, 1);
-					return;
-				}
-				if (event == null) {
-					break;
-				}
-				event.updateSystemTime();
-				processIncomingEvent(event);
-				long memoryUsage = secondaryEvaluationMechanism == null ?
-						primaryEvaluationMechanism.size() :
-						primaryEvaluationMechanism.size() + secondaryEvaluationMechanism.size();
-				Environment.getEnvironment().getStatisticsManager().recordPeakMemoryUsage(memoryUsage);
-				if (MainConfig.periodicallyReportStatistics) {
-					StatisticsManager.attemptPeriodicUpdate();
-				}
-			}
-			System.out.println("Simulator starts after " + processTime/1000000 + " FileBasedEventProducer read time " + FileBasedEventProducer.ReadTime/1000000+ " FileEventStreamReader read time " + FileEventStreamReader.readTime/1000000);
+			System.out.println("Simulator starts after " + processTime / 1000000 + " FileBasedEventProducer read time " + FileBasedEventProducer.ReadTime / 1000000 + " FileEventStreamReader read time " + FileEventStreamReader.readTime / 1000000);
 
+			List<List<Event>> eventGroups = getEventGroupsBySize(allEvents, EVENTS_IN_GROUP);
+			for (List<Event> eventTimeGroup : eventGroups) {
+				long groupTime = System.currentTimeMillis();
+				for (Event event : eventTimeGroup) {
+					if (Environment.getEnvironment().isTimeoutReached(null)) {
+						Environment.getEnvironment().getStatisticsManager().updateDiscreteStatistic(Statistics.isTimeoutReached, 1);
+						return;
+					}
+					if (event == null) {
+						break;
+					}
+					event.updateSystemTime(groupTime);
+					processIncomingEvent(event);
+					long memoryUsage = secondaryEvaluationMechanism == null ?
+							primaryEvaluationMechanism.size() :
+							primaryEvaluationMechanism.size() + secondaryEvaluationMechanism.size();
+					Environment.getEnvironment().getStatisticsManager().recordPeakMemoryUsage(memoryUsage);
+					if (MainConfig.periodicallyReportStatistics) {
+						StatisticsManager.attemptPeriodicUpdate();
+					}
+				}
+				if (MainConfig.latencyCalculation) {
+					recordNewMatches(primaryEvaluationMechanism.waitForGroupToFinish());
+				}
+
+			}
 		}
 		finally {
 			//get last matches
@@ -342,6 +348,17 @@ public class Simulator {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
+	}
+
+	private List<List<Event>> getEventGroupsBySize(List<Event> allEvents, long eventsInGroup) {
+
+		final AtomicInteger counter = new AtomicInteger();
+
+		final List<List<Event>> result = new ArrayList<List<Event>> (allEvents.stream()
+				.collect(Collectors.groupingBy(it -> counter.getAndIncrement() / eventsInGroup))
+				.values());
+		return  result;
+
 	}
 
 	private void cleanupEvaluationStep() {

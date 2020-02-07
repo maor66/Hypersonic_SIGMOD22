@@ -1,17 +1,12 @@
 package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
-import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
 
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,11 +19,12 @@ public class BufferWorker implements Runnable {
     public long windowverifyTime = 0;
     public Thread thread;
     protected CopyOnWriteArrayList<BufferWorker> finishedWorkers;
+    private CopyOnWriteArrayList<BufferWorker> finishedWithGroup;
     protected AtomicBoolean isMainFinished;
     protected ElementWorker primaryTask;
     protected ElementWorker secondaryTask;
-    private BlockingQueue<? extends ContainsEvent> primaryInput;
-    private BlockingQueue<? extends ContainsEvent> secondaryInput;
+    private ParallelQueue<? extends ContainsEvent> primaryInput;
+    private ParallelQueue<? extends ContainsEvent> secondaryInput;
     private List<BufferWorker> workersNeededToFinish;
 
     public long numberOfPrimaryHandledItems = 0;
@@ -45,15 +41,18 @@ public class BufferWorker implements Runnable {
     public Long innerWindowTime = 0L;
 
 private boolean primaryTakenOnce = false;
+private boolean addedToGroupFinish =  false;
+
 private int isPrimaryInputTakenLast = 1;
 
     public BufferWorker(TypedNFAState eventState,
-                        BlockingQueue<? extends ContainsEvent> eventInput,
-                        BlockingQueue<? extends ContainsEvent> partialMatchInput,
+                        ParallelQueue<? extends ContainsEvent> eventInput,
+                        ParallelQueue<? extends ContainsEvent> partialMatchInput,
                         ThreadContainers threadContainer,
                         List<ThreadContainers> eventOppositeBuffers,
                         List<ThreadContainers> partialMatchOppositeBuffers,
                         CopyOnWriteArrayList<BufferWorker> finishedWorkers,
+                        CopyOnWriteArrayList<BufferWorker> finishedWithGroup,
                         List<BufferWorker> workersNeededToFinish,
                         boolean isInputBufferWorker)
     {
@@ -64,6 +63,7 @@ private int isPrimaryInputTakenLast = 1;
         secondaryTask = isInputBufferWorker ? partialMatchWorker : EventWorker;
         secondaryTask.initializeDataStorage(threadContainer.createClone());
         this.finishedWorkers = finishedWorkers;
+        this.finishedWithGroup = finishedWithGroup;
         this.primaryInput = isInputBufferWorker ? eventInput : partialMatchInput;
         this.secondaryInput = isInputBufferWorker ? partialMatchInput : eventInput;
         this.workersNeededToFinish = workersNeededToFinish;
@@ -86,7 +86,11 @@ private int isPrimaryInputTakenLast = 1;
             if (newElement == null) {
                 newElement = takeSecondaryInput(); // Check if the secondaryTask queue has an item
                 if (newElement == null) {
-                    if (isPreviousStateFinished()) {
+                    if (isPreviousStateFinished(finishedWithGroup) && !addedToGroupFinish) {
+                        finishedWithGroup.add(this);
+                        addedToGroupFinish = true;
+                    }
+                    if (isPreviousStateFinished(finishedWorkers)) {
                         finishRun();
                         return;
                     } else {
@@ -107,7 +111,14 @@ private int isPrimaryInputTakenLast = 1;
 //            }
 
 //            long time = System.nanoTime();
-            taskUsed.handleElement(newElement);
+//            try {
+//                if ((numberOfPrimaryHandledItems + numberOfSecondaryHandledItems) % 500== 0) {
+//                    Thread.sleep(20);
+//                }
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            taskUsed.handleElement(newElement, finishedWorkers, (isPrimaryInputTakenLast==1) ? secondaryInput : primaryInput );
 //            ContainsEvent removingCriteria = null;
 //            long latestTimeStamp = Long.MIN_VALUE;
 //            for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
@@ -161,15 +172,10 @@ private int isPrimaryInputTakenLast = 1;
     }
 
 
-    protected ContainsEvent takeNextInput(BlockingQueue<? extends ContainsEvent> input, int timeoutInMilis)  {
+    protected ContainsEvent takeNextInput(ParallelQueue<? extends ContainsEvent> input, int timeoutInMilis)  {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
-        try {
-            return input.poll(timeoutInMilis, TimeUnit.MILLISECONDS);
+        return input.poll(timeoutInMilis, TimeUnit.MILLISECONDS);
 //            return input.take();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
     private void finishRun() {
         finishedWorkers.add(this);
@@ -179,9 +185,9 @@ private int isPrimaryInputTakenLast = 1;
         secondaryTask.finishRun();
     }
 
-    protected boolean isPreviousStateFinished() {
+    protected boolean isPreviousStateFinished(CopyOnWriteArrayList<BufferWorker> finished) {
         for (BufferWorker worker: workersNeededToFinish) {
-            if (finishedWorkers.indexOf(worker) == -1) {
+            if (finished.indexOf(worker) == -1) {
                 return false;
             }
         }
@@ -200,6 +206,10 @@ private int isPrimaryInputTakenLast = 1;
             }
         }
         return element;
+    }
+
+    public void resetGroupFinish() {
+        addedToGroupFinish = false;
     }
 
 //    public void initializeOppositeWorkers(List<BufferWorker> primaryOppositeWorkers, List<BufferWorker> secondaryOppositeWorkers) {

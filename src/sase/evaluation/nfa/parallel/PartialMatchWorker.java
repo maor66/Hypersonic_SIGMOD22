@@ -10,11 +10,16 @@ import sase.evaluation.nfa.lazy.elements.LazyTransition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 
 public class PartialMatchWorker extends ElementWorker {
     public PartialMatchWorker(TypedNFAState eventState, List<ThreadContainers> eventOppositeBuffers) {
         super(eventState, eventOppositeBuffers);
+    }
+
+    @Override
+    protected boolean oppositeTaskNotFinished(List<BufferWorker> workersNeededToFinish) {
+        return workersNeededToFinish.isEmpty();
+//        return true;
     }
 
     @Override

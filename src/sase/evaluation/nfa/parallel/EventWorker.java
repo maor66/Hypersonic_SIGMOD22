@@ -10,9 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
+
+
 public class EventWorker extends ElementWorker {
     public EventWorker(TypedNFAState eventState, List<ThreadContainers> partialMatchOppositeBuffers) {
         super(eventState,  partialMatchOppositeBuffers);
+    }
+
+    @Override
+    protected boolean oppositeTaskNotFinished(List<BufferWorker> workersNeededToFinish) {
+        return true;
     }
 
     @Override

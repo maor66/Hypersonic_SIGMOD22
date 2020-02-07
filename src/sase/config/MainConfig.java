@@ -12,7 +12,7 @@ import sase.user.stocks.StockEventTypesManager;
 @SuppressWarnings("unused")
 public class MainConfig {
 	/* An OS-dependent module for accessing local paths. */
-	private static final PathConfig pathConfig = new WindowsPathConfig();
+	private static final PathConfig pathConfig = new LinuxPathConfig();
 	
 	/* A flag indicating whether code testing is currently in process. */
 	public static final boolean debugMode = false;
@@ -89,4 +89,5 @@ public class MainConfig {
 	
 	/* Enable/disable debug prints of the generated evaluation structures. */
 	public static final boolean printStructureSummary = false;
+    public static boolean latencyCalculation = true;
 }
