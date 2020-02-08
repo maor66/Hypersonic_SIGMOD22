@@ -24,6 +24,13 @@ public class AggregatedEvent extends Event {
 		if (this.events.size() > 0) {
 			payload = this.events.get(0).getSignature();
 		}
+		if (events != null) {
+			long lowestSEQnumber = this.sequenceNumber;
+			for (Event e : events) {
+				lowestSEQnumber = Math.min(e.sequenceNumber, lowestSEQnumber);
+			}
+			this.sequenceNumber = lowestSEQnumber;
+		}
 	}
 	
 	public void addPrimitiveEvent(Event event) {
@@ -35,6 +42,7 @@ public class AggregatedEvent extends Event {
 			//this is the first event to be added
 			payload = event.getSignature();
 		}
+		this.sequenceNumber = Math.min(event.sequenceNumber, this.sequenceNumber);
 		events.add(event);
 	}
 	

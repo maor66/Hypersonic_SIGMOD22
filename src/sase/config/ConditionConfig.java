@@ -467,7 +467,7 @@ public class ConditionConfig {
 			new StockCorrelationConditionSpecification(StockEventTypesManager.centralAmericanCompanyEventTypeName,
 					   StockEventTypesManager.australianCompanyEventTypeName,
 					   0.9)};
-	
+
 	public static final ConditionSpecification[] sequenceOfThreeWithMiddleIteration = new ConditionSpecification[] {
 			new IterativeAverageStockCorrelationConditionSpecification(
 															StockEventTypesManager.centralAmericanCompanyEventTypeName,
@@ -494,7 +494,21 @@ public class ConditionConfig {
 															StockEventTypesManager.centralAmericanCompanyEventTypeName,
 															StockEventTypesManager.africanCompanyEventTypeName,
 															StockEventTypesManager.southAmericanCompanyEventTypeName)};
-	
+
+	public static final ConditionSpecification[] sequenceOfThreeKnownEqualityIteration = new ConditionSpecification[] {
+//			new StockFirstValueCmpConditionSpecification()
+//					new StockDeltaOrderingConditionSpecification(
+//							StockEventTypesManager.microsoftEventTypeName,
+//							StockEventTypesManager.googleEventTypeName),
+//					new StockDeltaOrderingConditionSpecification(
+//							StockEventTypesManager.googleEventTypeName,
+//							StockEventTypesManager.ciscoEventTypeName),
+//			,
+//
+			new IterativeStockDeltaOrderingConditionSpecification(
+					StockEventTypesManager.microsoftEventTypeName,
+					StockEventTypesManager.googleEventTypeName,
+					StockEventTypesManager.appleEventTypeName)};
 	
 	////////////////////////////////////////Test configuration/////////////////////////////////////
 	public static final ConditionSpecification[] testSequence = new ConditionSpecification[] {

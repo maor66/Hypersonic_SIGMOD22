@@ -448,6 +448,19 @@ public class PatternConfig {
 							StockEventTypesManager.etfcEventTypeName),
 			},
 			SlaVerifierTypes.NONE);
+
+	public static final PatternSpecification iterPatternSEQ3 =
+			new PatternSpecification("ITER3MIDMGC", PatternTypes.STOCK_PATTERN, 15L,
+					new String[][][] {new String[][]{new String[]{
+							StockEventTypesManager.microsoftEventTypeName,
+							StockEventTypesManager.googleEventTypeName,
+							StockEventTypesManager.appleEventTypeName,
+					}}},
+					null,
+					new String[] {StockEventTypesManager.googleEventTypeName},
+					ConditionConfig.sequenceOfThreeKnownEqualityIteration,
+							SlaVerifierTypes.NONE);
+
 	private static final PatternSpecification basicPatternSEQ5 =
 			new PatternSpecification("SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 			new String[][][] {new String[][]{new String[]{
@@ -949,6 +962,9 @@ private static final ConditionSpecification[] dummyConditionSpecSEQ4 = new Condi
 //			basicPatternDummySEQ6.createIdenticalSpecificationWithDifferentWindow(40),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(50),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(80),
+//			iterPatternSEQ3,
+			basicPatternSEQ3.createIdenticalSpecificationWithDifferentWindow(15),
+			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(80),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(10),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(20),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(30),

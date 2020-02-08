@@ -31,7 +31,7 @@ public class Event implements Comparable<Event>, ContainsEvent {
 		return result;
 	}
 
-	protected final long sequenceNumber;
+	protected  long sequenceNumber;
 	protected EventType type;
 	protected  long systemTimestamp;
 	protected Object[] payload;
