@@ -10,11 +10,10 @@ import sase.statistics.Statistics;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.StampedLock;
 
 public class ThreadContainers {
-    private final ParallelQueue<Match> nextStateOutput;
+    private final List<ParallelQueue<Match>> matchOutputs;
     private List<ContainsEvent> bufferSubList;
     private StampedLock lock;
     private EventType eventType;
@@ -30,7 +29,7 @@ public class ThreadContainers {
     }
 
     public ThreadContainers createClone() {
-        return new ThreadContainers(nextStateOutput, eventType, timeWindow);
+        return new ThreadContainers(matchOutputs, eventType, timeWindow);
     }
 
     public enum StatisticsType {
@@ -66,15 +65,15 @@ public class ThreadContainers {
         return timeWindow;
     }
 
-    public ParallelQueue<Match> getNextStateOutput() {
-        return nextStateOutput;
+    public List<ParallelQueue<Match>> getMatchOutputs() {
+        return matchOutputs;
     }
 
-    public ThreadContainers(ParallelQueue<Match> nextStateOutput, EventType state, long timeWindow) {
+    public ThreadContainers(List<ParallelQueue<Match>> nextStateOutput, EventType state, long timeWindow) {
         this.eventType = state;
         bufferSubList = new ArrayList<>();
 //        this.oppositeBufferWorkers = oppositeBufferWorkers;
-        this.nextStateOutput = nextStateOutput;
+        this.matchOutputs = nextStateOutput;
         lock = new StampedLock();
         this.timeWindow = timeWindow;
     }

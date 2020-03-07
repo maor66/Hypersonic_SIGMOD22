@@ -7,11 +7,7 @@ import sase.user.speedd.traffic.TrafficEventTypesManager;
 import sase.user.speedd.traffic.TrafficSameVehicleIDConditionSpecification;
 import sase.user.stocks.StockEventTypesManager;
 import sase.user.stocks.condition.StockFirstValueCmpCondition.ComparisonOperation;
-import sase.user.stocks.specification.IterativeAverageStockCorrelationConditionSpecification;
-import sase.user.stocks.specification.IterativeValueCmpStockCorrelationConditionSpecification;
-import sase.user.stocks.specification.StockCorrelationConditionSpecification;
-import sase.user.stocks.specification.StockDeltaOrderingConditionSpecification;
-import sase.user.stocks.specification.StockFirstValueCmpConditionSpecification;
+import sase.user.stocks.specification.*;
 import sase.user.trams.TramCongestionIntersectionConditionSpecification;
 import sase.user.trams.TramEventTypesManager;
 
@@ -474,7 +470,7 @@ public class ConditionConfig {
 															StockEventTypesManager.africanCompanyEventTypeName,
 															StockEventTypesManager.southAmericanCompanyEventTypeName,
 															0.9),};
-	
+
 
 	//Equality patterns for SASE comparison
 	public static final ConditionSpecification[] sequenceOfThreeEquality = new ConditionSpecification[] {

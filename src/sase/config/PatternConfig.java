@@ -1,6 +1,7 @@
 package sase.config;
 
 import sase.multi.sla.SlaVerifierTypes;
+import sase.pattern.condition.Condition;
 import sase.pattern.creation.PatternTypes;
 import sase.specification.condition.ConditionSpecification;
 import sase.specification.condition.DummyConditionSpecification;
@@ -295,12 +296,13 @@ public class PatternConfig {
 	
 	/* Iterations/Aggregations */
 	public static final PatternSpecification sequenceOfThreeWithIteration = 
-			new PatternSpecification("ITER3MID", PatternTypes.STOCK_PATTERN, null, 
+			new PatternSpecification("ITER3MID", PatternTypes.STOCK_PATTERN, null,
 									 StructureConfig.sequenceOfThreeForIteration,
 									 null,
 									 new String[] {StockEventTypesManager.africanCompanyEventTypeName},
 									 ConditionConfig.sequenceOfThreeWithMiddleIteration, SlaVerifierTypes.NONE);
-	
+
+
 	
 	//Equality patterns for SASE comparison
 	public static final PatternSpecification sequenceOfThreeWithEquation = 
@@ -962,7 +964,8 @@ private static final ConditionSpecification[] dummyConditionSpecSEQ4 = new Condi
 //			basicPatternDummySEQ6.createIdenticalSpecificationWithDifferentWindow(40),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(50),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(80),
-//			iterPatternSEQ3,
+
+			iterPatternSEQ3,
 			basicPatternSEQ3.createIdenticalSpecificationWithDifferentWindow(15),
 			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(80),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(10),

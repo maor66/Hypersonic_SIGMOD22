@@ -344,6 +344,9 @@ public class Simulator {
 //				writer.write(match.toString()+"\n");
 //			}
 //			writer.close();
+//		for (Match m : foundMatches) {
+//			System.out.println(m);
+//		}
 		System.out.println("Found " + foundMatches.size() + " matches");
 //		} catch (IOException e) {
 //			e.printStackTrace();

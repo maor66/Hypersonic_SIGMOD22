@@ -50,7 +50,7 @@ public class AggregatedEvent extends Event {
 		events.addAll(aggregatedEvent.events);
 	}
 	
-	public List<Event> getPrimitiveEvents() {
+	public final List<Event> getPrimitiveEvents() {
 		return events;
 	}
 	
@@ -80,7 +80,12 @@ public class AggregatedEvent extends Event {
 		}
 		return true;
 	}
-	
+
+	@Override
+	public boolean isAggregatedEvent() {
+		return true;
+	}
+
 	@Override
 	public AggregatedEvent clone() {
 		return new AggregatedEvent(type, events);
@@ -91,4 +96,15 @@ public class AggregatedEvent extends Event {
 		return String.format("%s(Aggregated, %d events)", type, events.size());
 	}
 
+	public boolean isPrimitiveNotInAggregate(Event event) {
+		return  !events.contains(event);
+	}
+
+	public boolean containsLaterEvent(Event event) {
+		long latestSequenceNumber = 0;
+		for (Event primitiveEvent : events) {
+			latestSequenceNumber = Math.max(primitiveEvent.sequenceNumber, latestSequenceNumber);
+		}
+		return latestSequenceNumber > event.sequenceNumber;
+	}
 }

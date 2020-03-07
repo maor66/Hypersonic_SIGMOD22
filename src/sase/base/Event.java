@@ -159,6 +159,10 @@ public class Event implements Comparable<Event>, ContainsEvent {
 		}
 		return result;*/
 	}
+	public boolean isAggregatedEvent()
+	{
+		return false;
+	}
 
 	@Override
 	public int compareTo(Event e) {

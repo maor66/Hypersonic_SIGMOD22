@@ -87,7 +87,7 @@ public class NFAState extends State {
 
 	private Transition getActualTransition(List<Transition> transitions) {
 		for (Transition transition: transitions) {
-			if (transition.getAction() == Transition.Action.TAKE) {
+			if (transition.getAction() == Transition.Action.TAKE || transition.getAction() == Transition.Action.ITERATE) {
 				return transition;
 			}
 		}

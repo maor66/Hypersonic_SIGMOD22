@@ -1,5 +1,6 @@
 package sase.evaluation.nfa.lazy;
 
+import sase.base.AggregatedEvent;
 import sase.base.Event;
 import sase.base.EventType;
 import sase.config.MainConfig;
@@ -105,6 +106,9 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             return null;
         }
 
+        if (isIteratedEventType(eventState.getEventType())) {
+            event = new AggregatedEvent(List.of(event));
+        }
         try {
             if (eventState.isInitial()) {
                 ParallelQueue<Match> transferQueue = (ParallelQueue<Match>) secondStateInputQueue;
@@ -121,11 +125,20 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         return null;
     }
 
+    private boolean isIteratedEventType(EventType eventType) {
+        return this.iterativeTypes.indexOf(eventType) != -1;
+    }
+
     @Override
     public ArrayList<Match> waitForGroupToFinish()
     {
         finishedWithGroup.add(dummyWorkerNeededForFinish);
         HashSet<Match> matches = new HashSet<>();
+        Timer printTimer;
+        if (MainConfig.parallelDebugMode) {
+            printTimer = new Timer();
+            printTimer.scheduleAtFixedRate(new PrintMatchTimerTask(matches), 0, 20 * 1000);
+        }
         while (true) {
             Match m = completeMatchOutputQueue.poll(1, TimeUnit.MILLISECONDS);
             if (m == null) {
@@ -141,6 +154,10 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         for (BufferWorker worker: getAllWorkers())
         {
             worker.resetGroupFinish();
+        }
+
+        if (MainConfig.parallelDebugMode) {
+            printTimer.cancel();
         }
         return new ArrayList<>(matches);
 
@@ -158,11 +175,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
 
         Set<Match> matches = new HashSet<>();
-        Timer printTimer;
-        if (MainConfig.parallelDebugMode) {
-            printTimer = new Timer();
-            printTimer.scheduleAtFixedRate(new PrintMatchTimerTask(matches), 0, 20 * 1000);
-        }
+
 
         boolean flag = true;
         while (true) {
@@ -180,6 +193,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             }
             else {
                 matches.add(m);
+                System.out.println(m);
             }
         }
 
@@ -192,9 +206,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 }
             }
         }
-        if (MainConfig.parallelDebugMode) {
-            printTimer.cancel();
-        }
+
         return new ArrayList<>(matches);
     }
 
@@ -249,10 +261,10 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             List<ThreadContainers> partialMatchThreadContainers = new CopyOnWriteArrayList<>();
             ParallelQueue<Match> matchesOutput = new ParallelQueue<Match>();
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
-                eventThreadContainers.add(createThreadContainerByState(state,matchesOutput));
+                eventThreadContainers.add(createThreadContainerByState(state,matchesOutput, partialMatchInput));
             }
             for (int i = 0; i < stateToMBThreads.get(state); i++) {
-                partialMatchThreadContainers.add(createThreadContainerByState(state, matchesOutput));
+                partialMatchThreadContainers.add(createThreadContainerByState(state, matchesOutput, partialMatchInput));
             }
             ParallelQueue<Event> eventInput = new ParallelQueue<Event>();
             eventInputQueues.put(state, eventInput);
@@ -292,8 +304,13 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
     }
 
-    private ThreadContainers createThreadContainerByState(TypedNFAState state, ParallelQueue<Match> matchesOutput) {
-        return  new ThreadContainers(matchesOutput, state.getEventType(), timeWindow);
+    private ThreadContainers createThreadContainerByState(TypedNFAState state, ParallelQueue<Match> matchesOutput, ParallelQueue<Match> iterativeMatchOutput) {
+        List<ParallelQueue<Match>> outputs = new ArrayList<ParallelQueue<Match>>();
+        outputs.add(matchesOutput);
+        if (isIteratedEventType(state.getEventType())) {
+            outputs.add(iterativeMatchOutput);
+        }
+        return  new ThreadContainers(outputs, state.getEventType(), timeWindow);
     }
 
     private int getTotalNumberOfThreads() {
