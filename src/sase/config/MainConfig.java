@@ -89,5 +89,5 @@ public class MainConfig {
 	
 	/* Enable/disable debug prints of the generated evaluation structures. */
 	public static final boolean printStructureSummary = false;
-    public static boolean latencyCalculation = true;
+    public static boolean latencyCalculation = false;
 }

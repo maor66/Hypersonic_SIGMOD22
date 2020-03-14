@@ -100,7 +100,7 @@ public abstract class LazyNFA extends NFA {
 			// irrelevant event
 			return null;
 		}
-
+		Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.events);
 		List<Instance> instancesToAdd = new ArrayList<Instance>();
 		List<Instance> instancesToRemove = new ArrayList<Instance>();
 		List<Match> matches = new LinkedList<Match>();

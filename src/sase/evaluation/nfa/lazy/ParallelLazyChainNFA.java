@@ -104,7 +104,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             // The event has irrelevent type (not in the query)
             return null;
         }
-
+        Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.events);
         try {
             if (eventState.isInitial()) {
                 ParallelQueue<Match> transferQueue = (ParallelQueue<Match>) secondStateInputQueue;
@@ -469,26 +469,65 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 //        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(10);
-        //SEQ 5
+        //SEQ 4
+        inputBufferThreadsPerState.add(5);
+        inputBufferThreadsPerState.add(4);
+        inputBufferThreadsPerState.add(1);
+        matchBufferThreadsPerState.add(5);
+        matchBufferThreadsPerState.add(5);
+        matchBufferThreadsPerState.add(1);
+// SEQ 5
 //        inputBufferThreadsPerState.add(1);
 //        inputBufferThreadsPerState.add(3);
-//        inputBufferThreadsPerState.add(5);
-//        inputBufferThreadsPerState.add(2);
-//        matchBufferThreadsPerState.add(2);
+//        inputBufferThreadsPerState.add(6);
+//        inputBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(3);
+//        matchBufferThreadsPerState.add(7);
+//        matchBufferThreadsPerState.add(1);
+        //SEQ 8
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(2);
+//        inputBufferThreadsPerState.add(3);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(3);
+//        matchBufferThreadsPerState.add(3);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+        //SEQ 7
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(4);
+//        inputBufferThreadsPerState.add(3);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(5);
-//        matchBufferThreadsPerState.add(2);
-        //SEQ 6
-        inputBufferThreadsPerState.add(1);
-        inputBufferThreadsPerState.add(1);
-        inputBufferThreadsPerState.add(4);
-        inputBufferThreadsPerState.add(4);
-        inputBufferThreadsPerState.add(1);
-        matchBufferThreadsPerState.add(1);
-        matchBufferThreadsPerState.add(1);
-        matchBufferThreadsPerState.add(5);
-        matchBufferThreadsPerState.add(4);
-        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(3);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+        //SEQ 8
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(3);
+//        inputBufferThreadsPerState.add(3);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(4);
+//        matchBufferThreadsPerState.add(3);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
         int listIndex = 0;
         for (TypedNFAState state : nfaStates) {
             stateToIBThreads.put(state, inputBufferThreadsPerState.get(listIndex));

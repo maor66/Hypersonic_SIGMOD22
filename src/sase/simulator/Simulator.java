@@ -77,7 +77,7 @@ public class Simulator {
 		if (MainConfig.isArrivalRateMonitoringAllowed) {
 			Environment.getEnvironment().getEventRateEstimator().registerEventArrival(event.getType());
 		}
-		Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.events);
+
 		List<Match> matches = actuallyProcessIncomingEvent(event);
 		Environment.getEnvironment().getPredicateResultsCache().clear();
 		recordNewMatches(matches);
