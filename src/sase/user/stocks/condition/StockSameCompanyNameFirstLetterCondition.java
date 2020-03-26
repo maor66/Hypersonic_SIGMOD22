@@ -2,7 +2,6 @@ package sase.user.stocks.condition;
 
 import sase.base.Event;
 import sase.base.EventType;
-import sase.evaluation.data_parallel.DataParallelEvaluationMechanism;
 import sase.pattern.condition.base.DoubleEventCondition;
 
 public class StockSameCompanyNameFirstLetterCondition extends DoubleEventCondition {
@@ -16,7 +15,7 @@ public class StockSameCompanyNameFirstLetterCondition extends DoubleEventConditi
 	}
 
 	@Override
-	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
+    public boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
 		String firstName = firstEvent.getAttributeValue("CompanyName").toString();
 		String secondName = secondEvent.getAttributeValue("CompanyName").toString();
 		String firstLetter = firstName.substring(0, 1);

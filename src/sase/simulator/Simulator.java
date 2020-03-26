@@ -339,11 +339,11 @@ public class Simulator {
 //			writercond.write(DoubleEventCondition.condPrint);
 //			writercond.close();
 //			DoubleEventCondition.condPrint ="";
-//			BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Maor\\Documents\\"+this.currentStepNumber+".txt"));
-//			for (Match match : foundMatches){
-//				writer.write(match.toString()+"\n");
-//			}
-//			writer.close();
+			BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Maor\\Documents\\"+this.currentStepNumber+"5.txt"));
+			for (Match match : foundMatches){
+				writer.write(match.toString()+"\n");
+			}
+			writer.close();
 //		for (Match m : foundMatches) {
 //			System.out.println(m);
 //		}

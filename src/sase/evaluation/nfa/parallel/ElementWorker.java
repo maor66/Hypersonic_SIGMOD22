@@ -81,7 +81,7 @@ public abstract class ElementWorker {
 
     public void finishRun() {
         System.out.println("Thread " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " has finished at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
-                " Compared to " + numberOfOppositeItems + " items Condition time " + conditionTime / 1000000 +
+                " Compared to " + numberOfOppositeItems + " items Condition time " + conditionTime +
                 " Iterating buffer time " + iteratingBufferTime / 1000000 + " Slice time " + sliceTime / 1000000 + " Actual Slice time " + sliceTimeActual / 1000000 + " Send sync time " + sendMatchingTime / 1000000 +
                 " Calculation time " + actualCalcTime / 1000000 + " Window verify time " + windowverifyTime / 1000000 + " Cond 1 " + innerCondTime / 1000000 + " Cond 2 " + innerWindowTime / 1000000);
     }
@@ -102,6 +102,10 @@ public abstract class ElementWorker {
             if (!isTemporalConditionValid) {
                 return false;
             }
+            AggregatedEvent ae = (AggregatedEvent) partialMatchEvents.get(partialMatchEvents.size() - 1);
+            if (event.getSequenceNumber() != ae.getPrimitiveEvents().get(ae.getPrimitiveEvents().size() - 1).getSequenceNumber()) {
+                System.out.println("\n\n\nd343sfdsfsdfd\n\n\n\n");
+            }
         }
         boolean b =  transition.verifyFirstStepCondition(partialMatchEvents);
         actualCalcTime += System.nanoTime() - time;
@@ -110,6 +114,9 @@ public abstract class ElementWorker {
             time = System.nanoTime();
             boolean s =  transition.verifySecondStepCondition(partialMatchEvents);
             conditionTime += System.nanoTime() - time;
+            if (!s && event.isAggregatedEvent()) {
+                System.out.println("\n\n\ndsfdsfsdfd\n\n\n\n");
+            }
             if (!s) return false;
             boolean w = verifyTimeWindowConstraint(partialMatch, event);
             return  w;
@@ -133,6 +140,9 @@ public abstract class ElementWorker {
         Event removedAggregate = null;
         if(getLastListElement(partialMatchEvents).isAggregatedEvent() && event.isAggregatedEvent()) {
             AggregatedEvent aggEvent = (AggregatedEvent) getLastListElement(partialMatchEvents).clone();
+            if (aggEvent.getPrimitiveEvents().size() > 1) {
+                int a=5;
+            }
             if (aggEvent.containsLaterEvent(event)) {
                 return;
             }
@@ -161,7 +171,7 @@ public abstract class ElementWorker {
 //        }
         if (isEventCompatibleWithPartialMatch(match, partialMatchEvents, event)) {
             List<Event> primitiveEvents = new ArrayList<>(partialMatchEvents);
-                sendToNextState(new Match(primitiveEvents));
+                sendToNextState(new Match(primitiveEvents), event.isAggregatedEvent());
             }
 //            windowverifyTime += System.nanoTime() - time;
 //            long time = System.nanoTime();
@@ -192,12 +202,18 @@ public abstract class ElementWorker {
         return false;
     }
 
-    protected void sendToNextState(Match newPartialMatchWithEvent) {
+    protected void sendToNextState(Match newPartialMatchWithEvent, boolean isAggregatedEvent) {
 
+        conditionTime++;
         List<ParallelQueue<Match>> matchesQueue = dataStorage.getMatchOutputs();
         long time = System.nanoTime();
         for (ParallelQueue<Match> output : matchesQueue) {
-            output.put(newPartialMatchWithEvent);
+            if (isAggregatedEvent) {
+                output.putAtHead(newPartialMatchWithEvent);
+            }
+            else {
+                output.put(newPartialMatchWithEvent);
+            }
         }
         windowverifyTime += System.nanoTime() - time;
     }

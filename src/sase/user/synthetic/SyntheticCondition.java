@@ -24,7 +24,7 @@ public class SyntheticCondition extends DoubleEventCondition {
 	}
 
 	@Override
-	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
+    public boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
 		if (selectivityProvider == null) {
 			throw new RuntimeException("The selectivity provider was not set yet.");
 		}

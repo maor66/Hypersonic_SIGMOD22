@@ -1,10 +1,12 @@
 package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
+import sase.evaluation.common.Match;
 
 import java.sql.Time;
 import java.util.AbstractQueue;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -44,7 +46,7 @@ public class ParallelQueue<CE> {
     public void put(CE ce) {
             queue.add(ce);
         }
-    private AbstractQueue<CE> queue = new ConcurrentLinkedQueue<CE>();
+    private ConcurrentLinkedDeque<CE> queue = new ConcurrentLinkedDeque<CE>();
         public CE poll(long time, TimeUnit tu) {
             return queue.poll();
         }
@@ -54,4 +56,7 @@ public class ParallelQueue<CE> {
 
             }
 
+    public void putAtHead(CE newPartialMatchWithEvent) {
+            queue.addFirst(newPartialMatchWithEvent);
+    }
 }

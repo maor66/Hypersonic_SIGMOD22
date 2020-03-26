@@ -191,6 +191,11 @@ private int isPrimaryInputTakenLast = 1;
                 return false;
             }
         }
+        if (!primaryInput.isEmpty() || !secondaryInput.isEmpty()) /* Check that there are absolutely no more items that should be.
+        A race exists with the main thread because it is possible that some items entered the queue and the flag was sent during the 50ms poll.
+        */ {
+            return false;
+        }
         return true;
     }
 

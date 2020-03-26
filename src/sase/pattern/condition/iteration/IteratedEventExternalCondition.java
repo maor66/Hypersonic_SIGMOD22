@@ -14,7 +14,7 @@ public abstract class IteratedEventExternalCondition extends DoubleEventConditio
 	}
 
 	@Override
-	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
+    public boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
 		if (firstEvent instanceof AggregatedEvent) {
 			return verifyListOfEventsWithExternalEvent(((AggregatedEvent)firstEvent).getPrimitiveEvents(), 
 													   secondEvent);

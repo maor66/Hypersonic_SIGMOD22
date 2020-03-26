@@ -25,7 +25,7 @@ public class TramCongestionIntersectionCondition extends DoubleEventCondition {
 	}
 	
 	@Override
-	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
+    public boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
 		HashSet<String> firstEventLineNumbers = getEventLineNumbers(firstEvent);
 		HashSet<String> secondEventLineNumbers = getEventLineNumbers(secondEvent);
 		firstEventLineNumbers.retainAll(secondEventLineNumbers);

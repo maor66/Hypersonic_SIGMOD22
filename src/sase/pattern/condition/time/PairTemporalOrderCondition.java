@@ -16,7 +16,7 @@ public class PairTemporalOrderCondition extends DoubleEventCondition {
 	}
 
 	@Override
-	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
+    public boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
 		return firstEvent.getSequenceNumber() < secondEvent.getSequenceNumber();
 	}
 	

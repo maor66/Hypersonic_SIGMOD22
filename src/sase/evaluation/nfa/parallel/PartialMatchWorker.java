@@ -83,12 +83,10 @@ public class PartialMatchWorker extends ElementWorker {
 
 
     private List<Event> getSlice(List<Event> events, Match partialMatch, TypedNFAState eventState) {
-        if (events.isEmpty()) {
-            return events;
-        }
-
         Event lowerBoundEvent = ((LazyTransition) (eventState.getActualNextTransition())).getActualPrecedingEvent(partialMatch.getPrimitiveEvents());
-        Event upperBoundEvent =  ((LazyTransition) (eventState.getActualIncomingTransition())).getActualSucceedingEvent(partialMatch.getPrimitiveEvents());
+        Event upperBoundEvent =  ((LazyTransition) (eventState.getActualNextTransition())).getActualSucceedingEvent(partialMatch.getPrimitiveEvents());
+
+
         int lowerIndex, upperIndex;
 
         if (lowerBoundEvent == null) {

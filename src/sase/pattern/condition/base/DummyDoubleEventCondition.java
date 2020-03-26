@@ -17,7 +17,7 @@ public class DummyDoubleEventCondition extends DoubleEventCondition {
 	}
 
 	@Override
-	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
+    public boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
 //		try {
 //			Thread.sleep(timeTillDone);
 //		} catch (InterruptedException e) {

@@ -31,6 +31,14 @@ public class AggregatedEvent extends Event {
 			}
 			this.sequenceNumber = lowestSEQnumber;
 		}
+		long m = 0;
+
+		for (int i  =0 ; events != null && i < events.size(); i++) {
+			if (m >= events.get(i).sequenceNumber) {
+				System.out.println("\n\n\nfgfdgdgdf\n\n\n");
+			}
+			m = events.get(i).sequenceNumber;
+		}
 	}
 	
 	public void addPrimitiveEvent(Event event) {
@@ -44,6 +52,13 @@ public class AggregatedEvent extends Event {
 		}
 		this.sequenceNumber = Math.min(event.sequenceNumber, this.sequenceNumber);
 		events.add(event);
+		long m = 0;
+		for (int i  =0 ; i < events.size(); i++) {
+			if (m >= events.get(i).sequenceNumber) {
+				System.out.println("\n\n\nfgfdgdgdf\n\n\n");
+			}
+			m = events.get(i).sequenceNumber;
+		}
 	}
 	
 	public void addAggregatedEvent(AggregatedEvent aggregatedEvent) {
@@ -64,6 +79,9 @@ public class AggregatedEvent extends Event {
 	
 	@Override
 	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
 		if (!(other instanceof AggregatedEvent)) {
 			return false;
 		}
@@ -93,7 +111,13 @@ public class AggregatedEvent extends Event {
 	
 	@Override
 	public String toString() {
-		return String.format("%s(Aggregated, %d events)", type, events.size());
+		StringBuilder builder = new StringBuilder();
+		builder.append(String.format("%s(Aggregated, %d events),: ", type, events.size()));
+		for (Event e : events ) {
+			builder.append(e.toString()).append(" ");
+		}
+
+		return builder.toString();
 	}
 
 	public boolean isPrimitiveNotInAggregate(Event event) {

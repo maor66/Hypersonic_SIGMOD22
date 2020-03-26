@@ -1,17 +1,11 @@
 package sase.pattern.condition.base;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.locks.StampedLock;
 
 import sase.base.Event;
 import sase.base.EventType;
 import sase.config.MainConfig;
-import sase.evaluation.common.Match;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
 
 /**
  * Represents a condition which involves attributes of a pair of primitive events.
@@ -68,7 +62,9 @@ public abstract class DoubleEventCondition extends AtomicCondition {
 				}
 //				for (long j=0; j < 10; j++) {
 //				for (long i=0;i < (long)(21999); i++);
-				return verifyDoubleEvent(firstEvent, secondEvent);
+				boolean b = verifyDoubleEvent(firstEvent, secondEvent);
+//				System.out.println(("Comparing: "+ firstEvent.toString() + " , " +secondEvent.toString()+"result is " + b));
+				return b;
 			}
 		}
 		return false;
@@ -87,5 +83,5 @@ public abstract class DoubleEventCondition extends AtomicCondition {
 		return String.format("%s:%s", firstType.getName(), secondType.getName());
 	}
 	
-	protected abstract boolean verifyDoubleEvent(Event firstEvent, Event secondEvent);
+	public abstract boolean verifyDoubleEvent(Event firstEvent, Event secondEvent);
 }

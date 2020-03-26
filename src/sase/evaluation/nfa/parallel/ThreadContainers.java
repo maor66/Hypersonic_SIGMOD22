@@ -147,7 +147,7 @@ public class ThreadContainers {
 
         else { //Since the buffer isn't sorted, the iterating order doesn't matter'
             int beforeRemovalSize = bufferSubList.size();
-            bufferSubList.removeIf(element -> element.getEarliestTimestamp() + timeWindow   < removingCriteriaTimeStamp);
+            bufferSubList.removeIf(element -> element.getEarliestTimestamp() + timeWindow * 2   < removingCriteriaTimeStamp);
             numberOfRemovedElements = beforeRemovalSize - bufferSubList.size();
         }
 

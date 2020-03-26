@@ -24,7 +24,10 @@ public class Event implements Comparable<Event>, ContainsEvent {
 		}
 		return result;
 	}
-	
+	@Override
+	public int hashCode() {
+		return (int) sequenceNumber;
+	}
 	public static List<Event> asList(Event event) {
 		List result = new ArrayList<Event>();
 		result.add(event);

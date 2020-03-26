@@ -49,7 +49,7 @@ public class StockFirstValueCmpCondition extends DoubleEventCondition {
 	}
 	
 	@Override
-	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
+	public boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
 		int firstEventValue = ((Double)getStockFirstValue(firstEvent)).intValue();
 		int secondEventValue = ((Double)getStockFirstValue(secondEvent)).intValue();
 		switch (operation) {

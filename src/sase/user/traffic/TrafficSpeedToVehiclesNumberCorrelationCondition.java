@@ -13,7 +13,7 @@ public class TrafficSpeedToVehiclesNumberCorrelationCondition extends DoubleEven
 	}
 
 	@Override
-	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
+    public boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
 		Integer firstPointID = (Integer) firstEvent.getAttributeValue(AarhusTrafficEventTypesManager.pointIDAttributeName);
 		Integer secondPointID = (Integer) secondEvent.getAttributeValue(AarhusTrafficEventTypesManager.pointIDAttributeName);
 		if (firstPointID == secondPointID) {

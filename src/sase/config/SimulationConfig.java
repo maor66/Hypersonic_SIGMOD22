@@ -460,9 +460,9 @@ public class SimulationConfig {
 //		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //					CostModelTypes.THROUGHPUT_LATENCY,
 //					0.0, 20, 0.5),
-		new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-				CostModelTypes.THROUGHPUT_LATENCY,
-				0.0),
+//		new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0),
 //		Maor: Lazy in the 2015 article
 //			new HirzelEvaluationSpecification(EvaluationMechanismTypes.HIRZEL_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //					CostModelTypes.THROUGHPUT_LATENCY,

@@ -39,7 +39,7 @@ public class StockCorrelationCondition extends DoubleEventCondition {
 	}
 	
 	@Override
-	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
+    public boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
 		if (getCompanyName(firstEvent) == getCompanyName(secondEvent))
 			return false;
 		

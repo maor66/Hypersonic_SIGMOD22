@@ -95,7 +95,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         this.inputMatchThreadRatio = specification.inputMatchThreadRatio;
         System.out.println("Processors: " + Runtime.getRuntime().availableProcessors());
     }
-    
+LinkedList<Event> delayedIteratedEvents = new LinkedList<>();
     @Override
     public List<Match> processNewEvent(Event event, boolean canStartInstance) {
 
@@ -108,6 +108,9 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         if (isIteratedEventType(eventState.getEventType())) {
             event = new AggregatedEvent(List.of(event));
+//            delayedIteratedEvents.addFirst(event);
+//            return null;
+
         }
         try {
             if (eventState.isInitial()) {
@@ -132,6 +135,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     @Override
     public ArrayList<Match> waitForGroupToFinish()
     {
+
         finishedWithGroup.add(dummyWorkerNeededForFinish);
         HashSet<Match> matches = new HashSet<>();
         Timer printTimer;
@@ -165,7 +169,16 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
     @Override
     public List<Match> getLastMatches() {
-
+        for (Event e: delayedIteratedEvents) {
+            TypedNFAState eventState = getStateByEventType(getWorkerAndInitialState(), e);
+            ParallelQueue<Event> transferQueue = (ParallelQueue<Event>) eventInputQueues.get(eventState);
+            transferQueue.put(e);
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         isFinishedWithInput.set(true);
         finishedThreads.add(dummyWorkerNeededForFinish);
         if (MainConfig.parallelDebugMode) {
@@ -174,7 +187,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             System.out.println(("Actual thread used " + getAllWorkers().size()));
         }
 
-        Set<Match> matches = new HashSet<>();
+        List<Match> matches = new ArrayList<>();
 
 
         boolean flag = true;
@@ -193,7 +206,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             }
             else {
                 matches.add(m);
-                System.out.println(m);
+//                System.out.println(m);
             }
         }
 
@@ -207,7 +220,9 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             }
         }
 
-        return new ArrayList<>(matches);
+        System.out.println("List matches " + matches.size());
+        HashSet<Match> s = new HashSet<Match>(matches);
+        return new ArrayList<>(s);
     }
 
     private List<? extends BufferWorker> getAllWorkers()
