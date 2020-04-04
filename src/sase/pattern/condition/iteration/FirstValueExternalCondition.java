@@ -9,10 +9,12 @@ import sase.pattern.condition.base.DoubleEventCondition;
 public class FirstValueExternalCondition extends IteratedEventExternalCondition {
 
 	private DoubleEventCondition nestedCondition;
-	
-	public FirstValueExternalCondition(DoubleEventCondition nestedCondition) {
+	private boolean isLast;
+
+	public FirstValueExternalCondition(DoubleEventCondition nestedCondition, boolean isLast) {
 		super(nestedCondition.getLeftEventType(), nestedCondition.getRightEventType());
 		this.nestedCondition = nestedCondition;
+		this.isLast = isLast;
 	}
 
 	@Override
@@ -21,7 +23,8 @@ public class FirstValueExternalCondition extends IteratedEventExternalCondition 
 			return false;
 		}
 		List<Event> eventsToVerify = new ArrayList<Event>();
-		eventsToVerify.add(internalEvents.get(0));
+		int index = isLast ? internalEvents.size() - 1 : 0;
+		eventsToVerify.add(internalEvents.get(index));
 		eventsToVerify.add(externalEvent);
 		return nestedCondition.verify(eventsToVerify);
 	}

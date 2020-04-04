@@ -8,6 +8,7 @@ import sase.specification.condition.DummyConditionSpecification;
 import sase.specification.workload.ParallelPatternSpecification;
 import sase.specification.workload.PatternSpecification;
 import sase.user.stocks.StockEventTypesManager;
+import sase.user.stocks.specification.IterativeStockDeltaOrderingConditionSpecification;
 import sase.user.stocks.specification.StockCorrelationConditionSpecification;
 import sase.user.stocks.specification.StockDeltaOrderingConditionSpecification;
 import sase.user.stocks.specification.StockSameCompanyNameFirstLetterConditionSpecification;
@@ -462,6 +463,38 @@ public class PatternConfig {
 					new String[] {StockEventTypesManager.googleEventTypeName},
 					ConditionConfig.sequenceOfThreeKnownEqualityIteration,
 							SlaVerifierTypes.NONE);
+
+	public static final PatternSpecification iterPatternSEQ6 =
+			new PatternSpecification("ITER6MIDMGC", PatternTypes.STOCK_PATTERN, 15L,
+					new String[][][] {new String[][]{new String[]{
+							StockEventTypesManager.ciscoEventTypeName,
+							StockEventTypesManager.microsoftEventTypeName,
+							StockEventTypesManager.etfcEventTypeName,
+							StockEventTypesManager.googleEventTypeName,
+							StockEventTypesManager.appleEventTypeName,
+							StockEventTypesManager.yahooEventTypeName,
+					}}},
+					null,
+					new String[] {StockEventTypesManager.yahooEventTypeName},
+					new ConditionSpecification[] {
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.ciscoEventTypeName,
+									StockEventTypesManager.microsoftEventTypeName),
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.microsoftEventTypeName,
+									StockEventTypesManager.etfcEventTypeName),
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.etfcEventTypeName,
+									StockEventTypesManager.googleEventTypeName),
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.googleEventTypeName,
+									StockEventTypesManager.appleEventTypeName),
+							new IterativeStockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.appleEventTypeName,
+									StockEventTypesManager.yahooEventTypeName,
+									null),
+					},
+					SlaVerifierTypes.NONE);
 
 	private static final PatternSpecification basicPatternSEQ5 =
 			new PatternSpecification("SEQ5", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
@@ -962,11 +995,30 @@ private static final ConditionSpecification[] dummyConditionSpecSEQ4 = new Condi
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(210),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(220),
 //			basicPatternDummySEQ6.createIdenticalSpecificationWithDifferentWindow(40),
-//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(50),
-//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(80),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(90),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(100),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(110),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(120),
 
-			iterPatternSEQ3,
-			basicPatternSEQ3.createIdenticalSpecificationWithDifferentWindow(15),
+
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(20),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(25),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(30),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(35),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(40),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(45),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(50),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(55),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(60),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(65),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(70),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(75),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(80),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(85),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(90),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(95),
+			iterPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(100),
+			basicPatternSEQ3.createIdenticalSpecificationWithDifferentWindow(50),
 			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(80),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(10),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(20),

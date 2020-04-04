@@ -61,9 +61,12 @@ public class AggregatedEvent extends Event {
 		}
 		payload = aggregator.aggregateVectors(primitiveEventsPayloads);
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
 		if (!(other instanceof AggregatedEvent)) {
 			return false;
 		}
@@ -90,10 +93,16 @@ public class AggregatedEvent extends Event {
 	public AggregatedEvent clone() {
 		return new AggregatedEvent(type, events);
 	}
-	
+
 	@Override
 	public String toString() {
-		return String.format("%s(Aggregated, %d events)", type, events.size());
+		StringBuilder builder = new StringBuilder();
+		builder.append(String.format("%s(Aggregated, %d events),: ", type, events.size()));
+		for (Event e : events ) {
+			builder.append(e.toString()).append(" ");
+		}
+
+		return builder.toString();
 	}
 
 	public boolean isPrimitiveNotInAggregate(Event event) {

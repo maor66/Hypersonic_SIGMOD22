@@ -69,8 +69,12 @@ private long earliestEvent = 0;
 	
 	@Override
     public int hashCode() {
-        return Objects.hash(primitiveEvents);
-    }
+		int sum = 0;
+		for (int i = 0; i < primitiveEvents.size(); i++) {
+			sum+= primitiveEvents.get(i).hashCode();
+		}
+		return sum;
+	}
 	
 	public long getDetectionLatency() {
 		return detectionLatency;

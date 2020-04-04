@@ -45,10 +45,10 @@ public class EvaluationMechanismFactory {
 																 IEvaluationMechanism currentEvaluationMechanism) {
 		EvaluationPlanCreator evaluationPlanCreator = Environment.getEnvironment().getEvaluationPlanCreator();
 		EvaluationPlan evaluationPlan = evaluationPlanCreator.createEvaluationPlan(patterns, currentEvaluationMechanism);
-		if (!MainConfig.conditionSelectivityMeasurementMode) {
-			Environment.getEnvironment().getStatisticsManager().replaceFractionalStatistic(Statistics.evaluationPlanCost,
-					   																	   evaluationPlan.getCost());
-		}
+//		if (!MainConfig.conditionSelectivityMeasurementMode) {
+//			Environment.getEnvironment().getStatisticsManager().replaceFractionalStatistic(Statistics.evaluationPlanCost,
+//					   																	   evaluationPlan.getCost());
+//		}
 		EvaluationSpecification specification = evaluationPlanCreator.getSpecification();
 		if (specification.type == EvaluationMechanismTypes.MULTI_PATTERN_TREE) {
 			return new LazyMultiPatternTreeNFA(patterns, evaluationPlan);

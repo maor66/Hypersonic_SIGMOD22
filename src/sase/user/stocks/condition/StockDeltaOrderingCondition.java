@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import sase.base.Event;
 import sase.base.EventType;
-import sase.evaluation.common.Match;
 import sase.pattern.condition.base.DoubleEventCondition;
 import sase.user.stocks.StockEventTypesManager;
 
@@ -36,6 +35,10 @@ public class StockDeltaOrderingCondition extends DoubleEventCondition {
 	protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
 		return calculateDelta(firstEvent) < calculateDelta(secondEvent);
 //		return calculateDelta(firstEvent) < calculateDelta(secondEvent) + 1000000; //TODO: CHANGE!!!111
+	}
+
+	public boolean verifySpecificCondition(Event firstEvent, Event secondEvent) {
+		return verifyDoubleEvent(firstEvent, secondEvent);
 	}
 	
 	@Override

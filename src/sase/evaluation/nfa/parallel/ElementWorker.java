@@ -161,7 +161,7 @@ public abstract class ElementWorker {
 //        }
         if (isEventCompatibleWithPartialMatch(match, partialMatchEvents, event)) {
             List<Event> primitiveEvents = new ArrayList<>(partialMatchEvents);
-                sendToNextState(new Match(primitiveEvents));
+            sendToNextState(new Match(primitiveEvents), event.isAggregatedEvent());
             }
 //            windowverifyTime += System.nanoTime() - time;
 //            long time = System.nanoTime();
@@ -192,12 +192,17 @@ public abstract class ElementWorker {
         return false;
     }
 
-    protected void sendToNextState(Match newPartialMatchWithEvent) {
+    protected void sendToNextState(Match newPartialMatchWithEvent, boolean isAggregatedEvent) {
 
         List<ParallelQueue<Match>> matchesQueue = dataStorage.getMatchOutputs();
         long time = System.nanoTime();
         for (ParallelQueue<Match> output : matchesQueue) {
-            output.put(newPartialMatchWithEvent);
+            if (isAggregatedEvent) {
+                output.putAtHead(newPartialMatchWithEvent);
+            }
+            else {
+                output.put(newPartialMatchWithEvent);
+            }
         }
         windowverifyTime += System.nanoTime() - time;
     }

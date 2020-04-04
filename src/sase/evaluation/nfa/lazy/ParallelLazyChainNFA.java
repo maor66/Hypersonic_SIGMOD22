@@ -193,7 +193,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             }
             else {
                 matches.add(m);
-                System.out.println(m);
+//                System.out.println(m);
             }
         }
 
@@ -497,13 +497,13 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 //        matchBufferThreadsPerState.add(2);
         //SEQ 6
         inputBufferThreadsPerState.add(1);
-        inputBufferThreadsPerState.add(1);
-        inputBufferThreadsPerState.add(4);
         inputBufferThreadsPerState.add(4);
         inputBufferThreadsPerState.add(1);
-        matchBufferThreadsPerState.add(1);
+        inputBufferThreadsPerState.add(4);
+        inputBufferThreadsPerState.add(1);
         matchBufferThreadsPerState.add(1);
         matchBufferThreadsPerState.add(5);
+        matchBufferThreadsPerState.add(1);
         matchBufferThreadsPerState.add(4);
         matchBufferThreadsPerState.add(1);
         int listIndex = 0;

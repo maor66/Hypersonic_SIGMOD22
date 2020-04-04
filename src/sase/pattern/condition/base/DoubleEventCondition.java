@@ -1,17 +1,11 @@
 package sase.pattern.condition.base;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.locks.StampedLock;
 
 import sase.base.Event;
 import sase.base.EventType;
 import sase.config.MainConfig;
-import sase.evaluation.common.Match;
-import sase.simulator.Environment;
-import sase.statistics.Statistics;
 
 /**
  * Represents a condition which involves attributes of a pair of primitive events.

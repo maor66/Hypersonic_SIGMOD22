@@ -2,7 +2,6 @@ package sase.user.stocks.condition;
 
 import sase.base.Event;
 import sase.base.EventType;
-import sase.evaluation.data_parallel.DataParallelEvaluationMechanism;
 import sase.pattern.condition.base.DoubleEventCondition;
 
 public class StockSameCompanyNameFirstLetterCondition extends DoubleEventCondition {

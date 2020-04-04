@@ -186,6 +186,6 @@ public class PatternSpecification {
 	}
 
 	public PatternSpecification createIdenticalSpecificationWithDifferentWindow(long newTimeWindow) {
-		return new PatternSpecification(name, type, newTimeWindow, structure, conditions, verifierType);
+		return new PatternSpecification(name, type, newTimeWindow, structure, negatedEventNames, iteratedEventNames, conditions, verifierType);
 	}
 }

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import sase.adaptive.monitoring.IAdaptationNecessityDetector;
 import sase.adaptive.monitoring.IMultiPatternAdaptationNecessityDetector;
+import sase.base.AggregatedEvent;
 import sase.base.Event;
 import sase.base.EventSelectionStrategies;
 import sase.config.MainConfig;
@@ -347,6 +348,7 @@ public class Simulator {
 //		for (Match m : foundMatches) {
 //			System.out.println(m);
 //		}
+
 		System.out.println("Found " + foundMatches.size() + " matches");
 //		} catch (IOException e) {
 //			e.printStackTrace();

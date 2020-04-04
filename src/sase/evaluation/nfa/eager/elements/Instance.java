@@ -96,6 +96,9 @@ public class Instance {
 		currentState = transition.getDestination();
 		switch (transition.getAction()) {
 			case TAKE:
+				if (event == null) {
+					throw new RuntimeException("event can be null only when using eager NFA (should be used in ITERATE only)");
+				}
 				executeMatchBufferTransition(event);
 				break;
 			case IGNORE:

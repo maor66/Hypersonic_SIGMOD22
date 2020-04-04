@@ -45,8 +45,8 @@ public class IterativeValueCmpStockCorrelationConditionSpecification extends Con
 		StockFirstValueCmpCondition nestedTriggeringEqualityCondition = 
 									new StockFirstValueCmpCondition(precedingType, iterativeType,
 																	SimulationConfig.triggerComparisonOperator);
-		FirstValueExternalCondition triggeringEqualityCondition = 
-									new FirstValueExternalCondition(nestedTriggeringEqualityCondition);
+		FirstValueExternalCondition triggeringEqualityCondition =
+				new FirstValueExternalCondition(nestedTriggeringEqualityCondition, false);
 		StockFirstValueCmpCondition nestedIterativeEqualityCondition = 
 									new StockFirstValueCmpCondition(iterativeType, iterativeType,
 																	SimulationConfig.iterativeComparisonOperator);

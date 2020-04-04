@@ -169,6 +169,10 @@ public class Event implements Comparable<Event>, ContainsEvent {
 		return new Long(sequenceNumber - e.sequenceNumber).intValue();
 	}
 
+	@Override
+	public int hashCode() {
+		return (int) sequenceNumber;
+	}
 	public void updateSystemTime(long groupTime) {
 		systemTimestamp = groupTime;
 	}

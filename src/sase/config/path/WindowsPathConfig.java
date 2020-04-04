@@ -6,7 +6,7 @@ public class WindowsPathConfig extends PathConfig {
 //		companyToRegionDirectoryPath = "C:\\Education\\PhD\\Experiments\\Metadata\\Regions";
 		companyToRegionDirectoryPath = "C:\\CEP\\Metadata\\Regions";
 		testInputFilePath = "";
-		firstInputFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_20080205_1.txt";
+		firstInputFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_20080205_1_shorter.txt";
 //				firstInputFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_short.txt";
 //		firstInputFilePath = "C:\\CEP\\0802\\NASDAQ_20080205_1.txt";
 

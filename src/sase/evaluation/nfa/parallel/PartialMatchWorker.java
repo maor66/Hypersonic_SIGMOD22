@@ -88,7 +88,7 @@ public class PartialMatchWorker extends ElementWorker {
         }
 
         Event lowerBoundEvent = ((LazyTransition) (eventState.getActualNextTransition())).getActualPrecedingEvent(partialMatch.getPrimitiveEvents());
-        Event upperBoundEvent =  ((LazyTransition) (eventState.getActualIncomingTransition())).getActualSucceedingEvent(partialMatch.getPrimitiveEvents());
+        Event upperBoundEvent = ((LazyTransition) (eventState.getActualNextTransition())).getActualSucceedingEvent(partialMatch.getPrimitiveEvents());
         int lowerIndex, upperIndex;
 
         if (lowerBoundEvent == null) {
