@@ -12,4 +12,6 @@ public enum EventTypesConverterTypes {
 	
 	SYNTHETIC,
 	TRAFFIC_SPEED_VEHICLES_NUMBER,
+
+	SENSOR_BY_ACTIVITY,
 }
