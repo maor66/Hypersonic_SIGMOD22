@@ -8,13 +8,11 @@ import sase.evaluation.nfa.eager.elements.TypedNFAState;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-
 
 
 public class EventWorker extends ElementWorker {
-    public EventWorker(TypedNFAState eventState, List<ThreadContainers> partialMatchOppositeBuffers) {
-        super(eventState,  partialMatchOppositeBuffers);
+    public EventWorker(TypedNFAState eventState) {
+        super(eventState);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package sase.evaluation.nfa.lazy;
 
+import jdk.internal.org.objectweb.asm.TypeReference;
+import sase.base.ContainsEvent;
 import sase.base.Event;
 import sase.base.EventType;
 import sase.config.MainConfig;
@@ -17,6 +19,7 @@ import sase.simulator.Environment;
 import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
 import sase.statistics.Statistics;
 
+import java.net.Proxy;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
@@ -240,6 +243,37 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         TypedNFAState previousState = null;
         ParallelQueue<Match> partialMatchInput = secondStateInputQueue;
+        Map<ParallelQueue<? extends ContainsEvent>, Map<EventType, Boolean>> inputsToTypeAndCategory = new HashMap<>();
+        Map<ThreadContainers, Boolean> allSubBuffers = new HashMap<>();
+        List<List<ThreadContainers>> dataStoragesWithAllTypes = new ArrayList<>();
+        for (int i = 0; i <getTotalNumberOfThreads(); i++) {
+            dataStoragesWithAllTypes.add(new ArrayList<>());
+        }
+        for (TypedNFAState state : getWorkerStates()) {
+
+            ParallelQueue<Match> matchesOutput = new ParallelQueue<>();
+            //Put in the next loop
+            for (int i = 0; i < getTotalNumberOfThreads(); i++) { //The total number of thread containers should be states*threads*2
+                ThreadContainers threadContainerByState = createThreadContainerByState(state, matchesOutput);
+                allSubBuffers.put(threadContainerByState, true);
+                dataStoragesWithAllTypes.get(i).add(threadContainerByState);
+
+                threadContainerByState = threadContainerByState.createClone();
+                allSubBuffers.put(createThreadContainerByState(state, matchesOutput), false);
+                dataStoragesWithAllTypes.get(i).add(threadContainerByState);
+            }
+
+            //input queue creation
+            ParallelQueue<Event> eventInput = new ParallelQueue<Event>();
+            eventInputQueues.put(state, eventInput);
+            inputsToTypeAndCategory.put(eventInput, Collections.singletonMap(state.getEventType(), true)); //Add event input
+            inputsToTypeAndCategory.put(partialMatchInput, Collections.singletonMap(state.getEventType(), false)); //Add partial match input
+            partialMatchInput = matchesOutput;
+
+        }
+
+        List<List<ThreadContainers>> dataStoragesWithAllTypes = splitDataStoragesToListsOfAllTypes(allSubBuffers);
+
         for (TypedNFAState state : getWorkerStates()) {
             // Construct the workers first so it will be possible to add them as parameters in the ThreadContainer c'tor. Probably should've used a better design pattern (builder?)
             List<BufferWorker> stateIBworkers = new ArrayList<>();

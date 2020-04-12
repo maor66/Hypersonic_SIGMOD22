@@ -1,13 +1,15 @@
 package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
+import sase.base.EventType;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
 
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,11 +23,22 @@ public class BufferWorker implements Runnable {
     protected CopyOnWriteArrayList<BufferWorker> finishedWorkers;
     private CopyOnWriteArrayList<BufferWorker> finishedWithGroup;
     protected AtomicBoolean isMainFinished;
+
+    //Tasks
     protected ElementWorker primaryTask;
     protected ElementWorker secondaryTask;
-    private ParallelQueue<? extends ContainsEvent> primaryInput;
-    private ParallelQueue<? extends ContainsEvent> secondaryInput;
+    private Map<EventType, Map <Boolean, ElementWorker>> typeToWorker;
+
+    //input
+    private final ParallelQueue<? extends ContainsEvent> primaryInput;
+    private final ParallelQueue<? extends ContainsEvent> secondaryInput;
+    private final Map<ParallelQueue<? extends ContainsEvent>, ElementWorker> inputsToTasks; //Also actions
+    private ParallelQueue<? extends ContainsEvent> lastInputUsed;
+
+    // Finish run
     private List<BufferWorker> workersNeededToFinish;
+    private EventType eventType;
+    private FinishBarrier barrier;
 
     public long numberOfPrimaryHandledItems = 0;
     public long numberOfSecondaryHandledItems = 0;
@@ -48,6 +61,9 @@ private int isPrimaryInputTakenLast = 1;
     public BufferWorker(TypedNFAState eventState,
                         ParallelQueue<? extends ContainsEvent> eventInput,
                         ParallelQueue<? extends ContainsEvent> partialMatchInput,
+//                        Map<EventType, ParallelQueue<Match>> stateToOutputs,
+                        Map<ParallelQueue<? extends ContainsEvent>, Map<EventType, Boolean>> inputsToTypeAndCategory,
+
                         ThreadContainers threadContainer,
                         List<ThreadContainers> eventOppositeBuffers,
                         List<ThreadContainers> partialMatchOppositeBuffers,
@@ -56,8 +72,15 @@ private int isPrimaryInputTakenLast = 1;
                         List<BufferWorker> workersNeededToFinish,
                         boolean isInputBufferWorker)
     {
-        ElementWorker EventWorker = new EventWorker(eventState, partialMatchOppositeBuffers);
-        ElementWorker partialMatchWorker = new PartialMatchWorker(eventState, eventOppositeBuffers);
+        inputsToTasks = new HashMap<>();
+        inputsToTypeAndCategory.forEach((input, typeAndCategory) -> typeAndCategory.forEach((type, category) -> {
+//            ThreadContainers dataStorage = new ThreadContainers(stateToOutputs.get(eventState.getEventType()),eventState.getEventType(), timeWindow);
+            ElementWorker worker = category ? new EventWorker(eventState) : new PartialMatchWorker(eventState);
+            inputsToTasks.put(input, worker);
+        }));
+
+        ElementWorker EventWorker = new EventWorker(eventState);
+        ElementWorker partialMatchWorker = new PartialMatchWorker(eventState);
         primaryTask = isInputBufferWorker ? EventWorker : partialMatchWorker;
         primaryTask.initializeDataStorage(threadContainer);
         secondaryTask = isInputBufferWorker ? partialMatchWorker : EventWorker;
@@ -66,12 +89,105 @@ private int isPrimaryInputTakenLast = 1;
         this.finishedWithGroup = finishedWithGroup;
         this.primaryInput = isInputBufferWorker ? eventInput : partialMatchInput;
         this.secondaryInput = isInputBufferWorker ? partialMatchInput : eventInput;
+        this.lastInputUsed = primaryInput; //To indicate that should start try and get an input from the primary input and not any other input
         this.workersNeededToFinish = workersNeededToFinish;
+        this.eventType = eventState.getEventType();
         threadName = isInputBufferWorker ?  "InputBufferWorker" + eventState.getName() :"MatchBufferWorker "+ eventState.getName();
     }
 
+    //TODO: is it needed?
     public BufferWorker() //Creates dummy BufferWorker
     {}
+
+    public void initializeOppositesForWorkers(Map<ThreadContainers, Boolean> allSubBuffers) {
+        for (ThreadContainers dataStorage : allSubBuffers.keySet()) {
+            boolean isEvent = allSubBuffers.get(dataStorage);
+            EventType eventType = dataStorage.getEventType();
+            getTaskByEventTypeAndCategory(eventType, !isEvent).addToOpposites(dataStorage); //Get the opposing worker of the same state
+        }
+    }
+
+    private ElementWorker getTaskByEventTypeAndCategory(EventType eventType, boolean isEvent) {
+        return typeToWorker.get(eventType).get(isEvent);
+    }
+
+    private List<ElementWorker> getAllWorkers() {
+        List<ElementWorker> allWorkers = new ArrayList<>(inputsToTasks.values());
+        allWorkers.add(primaryTask);
+        allWorkers.add(secondaryTask);
+        return allWorkers;
+    }
+
+    private ContainsEvent getElement()
+    {
+        if (!primaryTakenOnce) { // Give a chance to the primary only
+            return takePrimaryInput();
+        }
+
+        ContainsEvent newElement = takePrimaryInput();
+        if (newElement != null) {
+            lastInputUsed = primaryInput;
+            return newElement;
+        }
+
+        newElement = takeSecondaryInput();
+        if (newElement != null) {
+            lastInputUsed = secondaryInput;
+            return newElement;
+        }
+        possibleNotifyWorkerFinishedInState();
+
+        newElement = takeElementFromDifferentState();
+        return newElement;
+    }
+
+    private void possibleNotifyWorkerFinishedInState() {
+        if (barrier.hasFinishedWithAllPreviousStates(eventType)) {
+            barrier.notifyWorkerFinished(eventType);
+        }
+    }
+
+    private ContainsEvent takeElementFromDifferentState() {
+        List<ParallelQueue<? extends ContainsEvent>> inputs = getInputsOfOngoingStates();
+        Collections.shuffle(inputs, ThreadLocalRandom.current());
+        ParallelQueue<? extends ContainsEvent> inputToTake = lastInputUsed;
+        ContainsEvent newElement;
+
+        if (inputsToTasks.containsKey(lastInputUsed)) { // If input is successful before than it gets priority
+            newElement = takeElementFromSpecificInput(lastInputUsed);
+            if (newElement != null) {
+                return newElement;
+            }
+        }
+
+        inputs.remove(lastInputUsed); // TODO: check that actually removed
+        for (ParallelQueue<? extends ContainsEvent> input : inputs){ // check all other inputs
+            newElement = takeElementFromSpecificInput(input);
+            if (newElement != null) {
+                lastInputUsed = input;
+                return newElement;
+            }
+        }
+        return null;
+    }
+
+    private List<ParallelQueue<? extends ContainsEvent>> getInputsOfOngoingStates() {
+        //TODO: unimplemented currently... Need a mapping between state/eventType to input queue
+        ArrayList<ParallelQueue<? extends ContainsEvent>> inputs = new ArrayList<>(inputsToTasks.keySet());
+        // Removing this state's queue
+        inputs.remove(primaryInput);
+        inputs.remove(secondaryInput);
+        return inputs;
+    }
+
+    public void getAndWork() {
+        ContainsEvent newElement = getElement();
+        if (newElement == null) {
+            return;
+        }
+        ElementWorker usedTask = inputsToTasks.get(lastInputUsed);
+        usedTask.handleElement(newElement);
+    }
 
     @Override
     public void run() {
@@ -164,7 +280,7 @@ private int isPrimaryInputTakenLast = 1;
 //            primaryIdleTime += System.nanoTime() - time;
             return null;
         }
-        primaryTakenOnce = true;
+        primaryTakenOnce = true; //keep and delete comment
 
         ContainsEvent ce  = takeNextInput(primaryInput, 0);
 //        primaryIdleTime += System.nanoTime() - time;

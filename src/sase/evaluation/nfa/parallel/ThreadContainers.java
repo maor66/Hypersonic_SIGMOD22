@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.StampedLock;
 
 public class ThreadContainers {
@@ -20,6 +21,8 @@ public class ThreadContainers {
     private EventType eventType;
     private long timeWindow;
     private long stamp;
+    private AtomicBoolean isContainerActive;
+
 
     public List<ContainsEvent> getBufferSubListWithReadLock() {
         stamp = lock.readLock();
@@ -162,5 +165,13 @@ public class ThreadContainers {
                     numberOfRemovedElements);
         }
         return numberOfRemovedElements;
+    }
+
+    public boolean isContainerActive() {
+
+    }
+
+    public void setContainerActive() {
+
     }
 }

@@ -11,13 +11,15 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class ElementWorker {
     ThreadContainers dataStorage;
     private LazyTransition transition;
     TypedNFAState eventState;
-    private List<ThreadContainers> oppositeBuffers;
+    private final List<ThreadContainers> oppositeBuffers;
     private boolean isSecondaryAddToList = false;
+    private boolean isFirstHandle = true;
 
     public long actualCalcTime = 0;
     public long windowverifyTime = 0;
@@ -37,15 +39,17 @@ public abstract class ElementWorker {
     private  int currentBackoff = 0;
     private  int backoffStep = 1;
 
-    public ElementWorker(TypedNFAState eventState,
-                         List<ThreadContainers> oppositeBuffers)
+    public ElementWorker(TypedNFAState eventState)
     {
         this.eventState = eventState;
-        this.oppositeBuffers = oppositeBuffers;
         transition = (LazyTransition) eventState.getActualNextTransition();
     }
 
     public void handleElement(ContainsEvent newElement, List<BufferWorker> workersNeededToFinish, ParallelQueue<? extends  ContainsEvent> input) {
+        if (isFirstHandle) {
+            isFirstHandle = false;
+            dataStorage.setContainerActive();
+        }
         ContainsEvent removingCriteria = null;
         long latestTimeStamp = Long.MIN_VALUE;
         dataStorage.addEventToOwnBuffer(newElement);
@@ -53,6 +57,9 @@ public abstract class ElementWorker {
         while (iterator.hasNext()) {
             ThreadContainers buffer = iterator.next();
 //            long time = System.nanoTime();
+            if (!buffer.isContainerActive()) {
+                continue; // skip empty sub-lists (that were always empty)
+            }
             ContainsEvent ce = iterateOnSubList(newElement, buffer.getBufferSubListWithReadLock());
 //            iteratingBufferTime += System.nanoTime() - time;
             buffer.releaseReadLock();

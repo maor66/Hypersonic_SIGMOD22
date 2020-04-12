@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PartialMatchWorker extends ElementWorker {
-    public PartialMatchWorker(TypedNFAState eventState, List<ThreadContainers> eventOppositeBuffers) {
-        super(eventState, eventOppositeBuffers);
+    public PartialMatchWorker(TypedNFAState eventState) {
+        super(eventState);
     }
 
     @Override
