@@ -58,6 +58,36 @@ private boolean addedToGroupFinish =  false;
 
 private int isPrimaryInputTakenLast = 1;
 
+
+    public BufferWorker(TypedNFAState eventState,
+                    Map<ParallelQueue<? extends ContainsEvent>, Map<EventType, Boolean>> inputsToTypeAndCategory,
+                    Map<EventType, Map<Boolean, ThreadContainers>> dataStorageForTasks,
+                    Map<ThreadContainers, Map<EventType, Boolean>> allOppositeWorkers) {
+        inputsToTasks = new HashMap<>();
+        inputsToTypeAndCategory.forEach((input, typeAndCategory) -> typeAndCategory.forEach((type, category) -> {
+//            ThreadContainers dataStorage = new ThreadContainers(stateToOutputs.get(eventState.getEventType()),eventState.getEventType(), timeWindow);
+            Map<Boolean, ThreadContainers> dataStorageForSpecificType = dataStorageForTasks.get(type);
+            ElementWorker worker = category ?
+                    new EventWorker(eventState, dataStorageForSpecificType.get(true)) :
+                    new PartialMatchWorker(eventState, dataStorageForSpecificType.get(false));
+            inputsToTasks.put(input, worker);
+            Map<Boolean, ElementWorker> tasksInState = typeToWorker.get(type);
+            if (tasksInState == null) {
+                tasksInState = new HashMap<>();
+            }
+            tasksInState.put(category, worker);
+            typeToWorker.put(type, tasksInState);
+
+        }));
+        //initializeOppositeWorkers
+        allOppositeWorkers.forEach((threadContainers, eventTypeBooleanMap) -> {
+            
+        });
+
+
+    }
+
+
     public BufferWorker(TypedNFAState eventState,
                         ParallelQueue<? extends ContainsEvent> eventInput,
                         ParallelQueue<? extends ContainsEvent> partialMatchInput,

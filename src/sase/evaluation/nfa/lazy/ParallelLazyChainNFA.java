@@ -245,7 +245,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         ParallelQueue<Match> partialMatchInput = secondStateInputQueue;
         Map<ParallelQueue<? extends ContainsEvent>, Map<EventType, Boolean>> inputsToTypeAndCategory = new HashMap<>();
         Map<ThreadContainers, Boolean> allSubBuffers = new HashMap<>();
-        List<List<ThreadContainers>> dataStoragesWithAllTypes = new ArrayList<>();
+        List<List<ThreadContainers>> dataStoragesWithAllTypes = new ArrayList<>(); // need to create mapping: EventType -> Boolean -> ThreadContainer
         for (int i = 0; i <getTotalNumberOfThreads(); i++) {
             dataStoragesWithAllTypes.add(new ArrayList<>());
         }
@@ -272,7 +272,10 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         }
 
-        List<List<ThreadContainers>> dataStoragesWithAllTypes = splitDataStoragesToListsOfAllTypes(allSubBuffers);
+        for (TypedNFAState state : getWorkerStates()) {
+
+        }
+
 
         for (TypedNFAState state : getWorkerStates()) {
             // Construct the workers first so it will be possible to add them as parameters in the ThreadContainer c'tor. Probably should've used a better design pattern (builder?)
