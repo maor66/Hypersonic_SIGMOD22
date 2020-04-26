@@ -12,7 +12,7 @@ import sase.user.stocks.StockEventTypesManager;
 @SuppressWarnings("unused")
 public class MainConfig {
 	/* An OS-dependent module for accessing local paths. */
-	private static final PathConfig pathConfig = new LinuxPathConfig();
+	private static final PathConfig pathConfig = new WindowsPathConfig();
 	
 	/* A flag indicating whether code testing is currently in process. */
 	public static final boolean debugMode = false;
@@ -23,7 +23,8 @@ public class MainConfig {
 
 
 	/* Settings for creating and preprocessing primitive events arriving on the input stream. */
-	public static final EventProducerTypes eventProducerType = EventProducerTypes.FILE_BASED;
+//	public static final EventProducerTypes eventProducerType = EventProducerTypes.FILE_BASED;
+	public static final EventProducerTypes eventProducerType = EventProducerTypes.FILE_BASED_SENSOR;
 	public static final boolean isSyntheticInputEnabled = (eventProducerType == EventProducerTypes.SYNTHETIC);
 //	public static final EventTypesConverterTypes eventTypesConverterType = EventTypesConverterTypes.STOCK_BY_COMPANY;
 	public static final EventTypesConverterTypes eventTypesConverterType = EventTypesConverterTypes.SENSOR_BY_ACTIVITY;
@@ -31,10 +32,10 @@ public class MainConfig {
 	/* Settings for receiving events from the input stream. */
 	// Maor: This two settings determine if the input is taken from a directory or a file
 	public static String[] inputDirsPaths = {
-		pathConfig.firstInputDirectoryPath,
+//		pathConfig.firstInputDirectoryPath,
 	};
 	public static String[] inputFilesPaths = {
-//		pathConfig.firstInputFilePath,
+		pathConfig.firstInputFilePath,
 	};
 	public static final int eventsPerRead = 0;
 	

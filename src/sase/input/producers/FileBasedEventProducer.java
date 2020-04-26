@@ -29,9 +29,14 @@ public class FileBasedEventProducer extends EventProducer {
 			if (rawEvent == null) {
 				return false;
 			}
-			eventsCreated = produceActualEvents(rawEvent);
+			String[] preprocessLine  = preprocessLineBeforeProducingEvent(rawEvent);
+			eventsCreated = produceActualEvents(preprocessLine);
 		}
 		return true;
+	}
+
+	protected String[] preprocessLineBeforeProducingEvent(String[] rawEvent) {
+		return rawEvent;
 	}
 
 	@Override
