@@ -100,11 +100,12 @@ public class FileEventStreamReader {
 		long time = System.nanoTime();
 
 			int pos = 0, end;
-			while ((end = line.indexOf(',', pos)) >= 0) {
-				stringSplit.add(line.substring(pos, end));
-				pos = end + 1;
-			}
-		String [] lines = stringSplit.toArray(new String[0]);
+//			while ((end = line.indexOf(',', pos)) >= 0) {
+//				stringSplit.add(line.substring(pos, end));
+//				pos = end + 1;
+//			}
+//		String [] lines = stringSplit.toArray(new String[0]);
+		String [] lines = line.split(",");
 
 		readTime += System.nanoTime() - time;
 
