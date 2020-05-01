@@ -3,6 +3,7 @@ package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
 import sase.base.Event;
+import sase.base.EventType;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 
@@ -11,8 +12,8 @@ import java.util.List;
 
 
 public class EventWorker extends ElementWorker {
-    public EventWorker(TypedNFAState eventState) {
-        super(eventState);
+    public EventWorker(TypedNFAState eventState, ThreadContainers dataStorage, List<ThreadContainers> oppositeBuffer, ParallelQueue<Match> outputQueue) {
+        super(eventState, dataStorage, oppositeBuffer, outputQueue);
     }
 
     @Override

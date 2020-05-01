@@ -10,13 +10,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class ElementWorker {
-    ThreadContainers dataStorage;
-    private LazyTransition transition;
-    TypedNFAState eventState;
+    final ThreadContainers dataStorage;
+    private final LazyTransition transition;
+    final TypedNFAState eventState;
+    private final ParallelQueue<Match> outputQueue;
     private final List<ThreadContainers> oppositeBuffers;
     private boolean isSecondaryAddToList = false;
     private boolean isFirstHandle = true;
@@ -39,13 +38,16 @@ public abstract class ElementWorker {
     private  int currentBackoff = 0;
     private  int backoffStep = 1;
 
-    public ElementWorker(TypedNFAState eventState)
+    public ElementWorker(TypedNFAState eventState, ThreadContainers dataStorage, List<ThreadContainers> oppositeBuffers, ParallelQueue<Match> outputQueue)
     {
         this.eventState = eventState;
+        this.dataStorage = dataStorage;
+        this.oppositeBuffers = oppositeBuffers;
+        this.outputQueue = outputQueue;
         transition = (LazyTransition) eventState.getActualNextTransition();
     }
 
-    public void handleElement(ContainsEvent newElement, List<BufferWorker> workersNeededToFinish, ParallelQueue<? extends  ContainsEvent> input) {
+    public void handleElement(ContainsEvent newElement) {
         if (isFirstHandle) {
             isFirstHandle = false;
             dataStorage.setContainerActive();
@@ -137,16 +139,10 @@ public abstract class ElementWorker {
 
     protected void sendToNextState(Match newPartialMatchWithEvent) {
 
-        ParallelQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
-                    long time = System.nanoTime();
-        matchesQueue.put(newPartialMatchWithEvent);
+        long time = System.nanoTime();
+        outputQueue.put(newPartialMatchWithEvent);
             windowverifyTime += System.nanoTime() - time;
     }
-
-    public void initializeDataStorage(ThreadContainers dataStorage) {
-        this.dataStorage = dataStorage;
-    }
-
 
     protected abstract ContainsEvent iterateOnSubList(ContainsEvent newElement, List<ContainsEvent> bufferSubList);
 

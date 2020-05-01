@@ -2,6 +2,7 @@ package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
 import sase.base.EventType;
+import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
@@ -12,6 +13,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static sase.evaluation.nfa.parallel.WorkerGroup.EVENT_WORKER;
 
 public class BufferWorker implements Runnable {
 
@@ -60,82 +63,81 @@ private int isPrimaryInputTakenLast = 1;
 
 
     public BufferWorker(TypedNFAState eventState,
-                    Map<ParallelQueue<? extends ContainsEvent>, Map<EventType, Boolean>> inputsToTypeAndCategory,
-                    Map<EventType, Map<Boolean, ThreadContainers>> dataStorageForTasks,
-                    Map<ThreadContainers, Map<EventType, Boolean>> allOppositeWorkers) {
+                        Map<ParallelQueue<? extends ContainsEvent>, Map.Entry<TypedNFAState, WorkerGroup>> inputsToTypeAndGroup,
+                        Map<Map.Entry<TypedNFAState, WorkerGroup>, ThreadContainers> dataStorageForTasks,
+                        Map<Map.Entry<TypedNFAState, WorkerGroup>, List<ThreadContainers>> allOppositeWorkers,
+                        Map<TypedNFAState, ParallelQueue<Match>> stateToOutput,
+                        WorkerGroup group) {
         inputsToTasks = new HashMap<>();
-        inputsToTypeAndCategory.forEach((input, typeAndCategory) -> typeAndCategory.forEach((type, category) -> {
+        Map<Map.Entry<TypedNFAState, WorkerGroup>, ParallelQueue<? extends ContainsEvent>> specificInputs = new HashMap<>();
+        inputsToTypeAndGroup.forEach((input, typeAndGroup) -> {
 //            ThreadContainers dataStorage = new ThreadContainers(stateToOutputs.get(eventState.getEventType()),eventState.getEventType(), timeWindow);
-            Map<Boolean, ThreadContainers> dataStorageForSpecificType = dataStorageForTasks.get(type);
-            ElementWorker worker = category ?
-                    new EventWorker(eventState, dataStorageForSpecificType.get(true)) :
-                    new PartialMatchWorker(eventState, dataStorageForSpecificType.get(false));
+            List<ThreadContainers> oppositeWorkers = allOppositeWorkers.get(Map.entry(typeAndGroup.getKey(), typeAndGroup.getValue().getOpposite()));
+            ElementWorker worker = (typeAndGroup.getValue() == EVENT_WORKER) ?
+                    new EventWorker(typeAndGroup.getKey(), dataStorageForTasks.get(typeAndGroup), oppositeWorkers, stateToOutput.get((typeAndGroup.getKey()))) :
+                    new PartialMatchWorker(typeAndGroup.getKey(), dataStorageForTasks.get(typeAndGroup), oppositeWorkers, stateToOutput.get((typeAndGroup.getKey())));
             inputsToTasks.put(input, worker);
-            Map<Boolean, ElementWorker> tasksInState = typeToWorker.get(type);
-            if (tasksInState == null) {
-                tasksInState = new HashMap<>();
+            if (typeAndGroup.getKey().getEventType() == eventState.getEventType()) {
+                specificInputs.put(typeAndGroup, input);
             }
-            tasksInState.put(category, worker);
-            typeToWorker.put(type, tasksInState);
+//            Map<Boolean, ElementWorker> tasksInState = typeToWorker.get(type);
+//            if (tasksInState == null) {
+//                tasksInState = new HashMap<>();
+//            }
+//            tasksInState.put(category, worker);
+//            typeToWorker.put(type, tasksInState);
 
-        }));
-        //initializeOppositeWorkers
-        allOppositeWorkers.forEach((threadContainers, eventTypeBooleanMap) -> {
-            
         });
-
-
+        primaryInput = specificInputs.get(Map.entry(eventState, group));
+        secondaryInput = specificInputs.get(Map.entry(eventState, group.getOpposite()));
     }
 
 
-    public BufferWorker(TypedNFAState eventState,
-                        ParallelQueue<? extends ContainsEvent> eventInput,
-                        ParallelQueue<? extends ContainsEvent> partialMatchInput,
-//                        Map<EventType, ParallelQueue<Match>> stateToOutputs,
-                        Map<ParallelQueue<? extends ContainsEvent>, Map<EventType, Boolean>> inputsToTypeAndCategory,
-
-                        ThreadContainers threadContainer,
-                        List<ThreadContainers> eventOppositeBuffers,
-                        List<ThreadContainers> partialMatchOppositeBuffers,
-                        CopyOnWriteArrayList<BufferWorker> finishedWorkers,
-                        CopyOnWriteArrayList<BufferWorker> finishedWithGroup,
-                        List<BufferWorker> workersNeededToFinish,
-                        boolean isInputBufferWorker)
-    {
-        inputsToTasks = new HashMap<>();
-        inputsToTypeAndCategory.forEach((input, typeAndCategory) -> typeAndCategory.forEach((type, category) -> {
-//            ThreadContainers dataStorage = new ThreadContainers(stateToOutputs.get(eventState.getEventType()),eventState.getEventType(), timeWindow);
-            ElementWorker worker = category ? new EventWorker(eventState) : new PartialMatchWorker(eventState);
-            inputsToTasks.put(input, worker);
-        }));
-
-        ElementWorker EventWorker = new EventWorker(eventState);
-        ElementWorker partialMatchWorker = new PartialMatchWorker(eventState);
-        primaryTask = isInputBufferWorker ? EventWorker : partialMatchWorker;
-        primaryTask.initializeDataStorage(threadContainer);
-        secondaryTask = isInputBufferWorker ? partialMatchWorker : EventWorker;
-        secondaryTask.initializeDataStorage(threadContainer.createClone());
-        this.finishedWorkers = finishedWorkers;
-        this.finishedWithGroup = finishedWithGroup;
-        this.primaryInput = isInputBufferWorker ? eventInput : partialMatchInput;
-        this.secondaryInput = isInputBufferWorker ? partialMatchInput : eventInput;
-        this.lastInputUsed = primaryInput; //To indicate that should start try and get an input from the primary input and not any other input
-        this.workersNeededToFinish = workersNeededToFinish;
-        this.eventType = eventState.getEventType();
-        threadName = isInputBufferWorker ?  "InputBufferWorker" + eventState.getName() :"MatchBufferWorker "+ eventState.getName();
-    }
+//    public BufferWorker(TypedNFAState eventState,
+//                        ParallelQueue<? extends ContainsEvent> eventInput,
+//                        ParallelQueue<? extends ContainsEvent> partialMatchInput,
+////                        Map<EventType, ParallelQueue<Match>> stateToOutputs,
+//                        Map<ParallelQueue<? extends ContainsEvent>, Map<EventType, Boolean>> inputsToTypeAndCategory,
+//
+//                        ThreadContainers threadContainer,
+//                        List<ThreadContainers> eventOppositeBuffers,
+//                        List<ThreadContainers> partialMatchOppositeBuffers,
+//                        CopyOnWriteArrayList<BufferWorker> finishedWorkers,
+//                        CopyOnWriteArrayList<BufferWorker> finishedWithGroup,
+//                        List<BufferWorker> workersNeededToFinish,
+//                        boolean isInputBufferWorker)
+//    {
+//        inputsToTasks = new HashMap<>();
+//        inputsToTypeAndCategory.forEach((input, typeAndCategory) -> typeAndCategory.forEach((type, category) -> {
+////            ThreadContainers dataStorage = new ThreadContainers(stateToOutputs.get(eventState.getEventType()),eventState.getEventType(), timeWindow);
+//            ElementWorker worker = category ? new EventWorker(eventState, dataStorageForTasks.get(typeAndGroup), allOppositeWorkers.get(typeAndGroup), stateToOutput.get(eventState)) : new PartialMatchWorker(eventState, dataStorageForTasks.get(typeAndGroup), allOppositeWorkers.get(typeAndGroup), stateToOutput.get(eventState));
+//            inputsToTasks.put(input, worker);
+//        }));
+//
+//        ElementWorker EventWorker = new EventWorker(eventState, dataStorageForTasks.get(typeAndGroup), allOppositeWorkers.get(typeAndGroup), stateToOutput.get(eventState));
+//        ElementWorker partialMatchWorker = new PartialMatchWorker(eventState, dataStorageForTasks.get(typeAndGroup), allOppositeWorkers.get(typeAndGroup), stateToOutput.get(eventState));
+//        primaryTask = isInputBufferWorker ? EventWorker : partialMatchWorker;
+//        primaryTask.initializeDataStorage(threadContainer);
+//        secondaryTask = isInputBufferWorker ? partialMatchWorker : EventWorker;
+//        secondaryTask.initializeDataStorage(threadContainer.createClone());
+//        this.finishedWorkers = finishedWorkers;
+//        this.finishedWithGroup = finishedWithGroup;
+//        this.primaryInput = isInputBufferWorker ? eventInput : partialMatchInput;
+//        this.secondaryInput = isInputBufferWorker ? partialMatchInput : eventInput;
+//        this.lastInputUsed = primaryInput; //To indicate that should start try and get an input from the primary input and not any other input
+//        this.workersNeededToFinish = workersNeededToFinish;
+//        this.eventType = eventState.getEventType();
+//        threadName = isInputBufferWorker ?  "InputBufferWorker" + eventState.getName() :"MatchBufferWorker "+ eventState.getName();
+//    }
 
     //TODO: is it needed?
     public BufferWorker() //Creates dummy BufferWorker
-    {}
-
-    public void initializeOppositesForWorkers(Map<ThreadContainers, Boolean> allSubBuffers) {
-        for (ThreadContainers dataStorage : allSubBuffers.keySet()) {
-            boolean isEvent = allSubBuffers.get(dataStorage);
-            EventType eventType = dataStorage.getEventType();
-            getTaskByEventTypeAndCategory(eventType, !isEvent).addToOpposites(dataStorage); //Get the opposing worker of the same state
-        }
+    {
+        primaryInput = null;
+        secondaryInput = null;
+        inputsToTasks = null;
     }
+
 
     private ElementWorker getTaskByEventTypeAndCategory(EventType eventType, boolean isEvent) {
         return typeToWorker.get(eventType).get(isEvent);
@@ -201,6 +203,10 @@ private int isPrimaryInputTakenLast = 1;
         return null;
     }
 
+    private ContainsEvent takeElementFromSpecificInput(ParallelQueue<? extends ContainsEvent> lastInputUsed) {
+        throw new RuntimeException("Unimplemented");
+    }
+
     private List<ParallelQueue<? extends ContainsEvent>> getInputsOfOngoingStates() {
         //TODO: unimplemented currently... Need a mapping between state/eventType to input queue
         ArrayList<ParallelQueue<? extends ContainsEvent>> inputs = new ArrayList<>(inputsToTasks.keySet());
@@ -223,6 +229,7 @@ private int isPrimaryInputTakenLast = 1;
     public void run() {
         thread = Thread.currentThread();
         thread.setName(threadName + " " + Thread.currentThread().getName());
+        getAndWork();
         while (true) {
             ContainsEvent newElement;
             ElementWorker taskUsed = primaryTask;
@@ -264,7 +271,7 @@ private int isPrimaryInputTakenLast = 1;
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
-            taskUsed.handleElement(newElement, finishedWorkers, (isPrimaryInputTakenLast==1) ? secondaryInput : primaryInput );
+            taskUsed.handleElement(newElement);
 //            ContainsEvent removingCriteria = null;
 //            long latestTimeStamp = Long.MIN_VALUE;
 //            for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {

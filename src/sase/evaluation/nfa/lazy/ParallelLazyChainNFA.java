@@ -1,6 +1,5 @@
 package sase.evaluation.nfa.lazy;
 
-import jdk.internal.org.objectweb.asm.TypeReference;
 import sase.base.ContainsEvent;
 import sase.base.Event;
 import sase.base.EventType;
@@ -19,12 +18,14 @@ import sase.simulator.Environment;
 import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
 import sase.statistics.Statistics;
 
-import java.net.Proxy;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+
+import static sase.evaluation.nfa.parallel.WorkerGroup.EVENT_WORKER;
+import static sase.evaluation.nfa.parallel.WorkerGroup.MATCH_WORKER;
 
 
 public class ParallelLazyChainNFA extends LazyChainNFA {
@@ -242,95 +243,121 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         executor = Executors.newFixedThreadPool((getTotalNumberOfThreads())); //TODO: maybe workstealingpool?
 
         TypedNFAState previousState = null;
+        Map<ParallelQueue<? extends ContainsEvent>,Map.Entry<TypedNFAState, WorkerGroup>> inputsToTypeAndGroup = new HashMap<>();
+        Map<Map.Entry<TypedNFAState, WorkerGroup>, List<ThreadContainers>> allSubBuffers;
+
+        List< Map<Map.Entry<TypedNFAState, WorkerGroup>, ThreadContainers>> dataStoragePerBufferWorker = new ArrayList<>();
+        int bufferWorkerIndex = 0;
+
+        Map<TypedNFAState, ParallelQueue<Match>> stateToOutput = new HashMap<>();
         ParallelQueue<Match> partialMatchInput = secondStateInputQueue;
-        Map<ParallelQueue<? extends ContainsEvent>, Map<EventType, Boolean>> inputsToTypeAndCategory = new HashMap<>();
-        Map<ThreadContainers, Boolean> allSubBuffers = new HashMap<>();
-        List<List<ThreadContainers>> dataStoragesWithAllTypes = new ArrayList<>(); // need to create mapping: EventType -> Boolean -> ThreadContainer
-        for (int i = 0; i <getTotalNumberOfThreads(); i++) {
-            dataStoragesWithAllTypes.add(new ArrayList<>());
-        }
-        for (TypedNFAState state : getWorkerStates()) {
 
+        for (TypedNFAState state : getWorkerStates()) {
+            ParallelQueue<Event> eventInput = new ParallelQueue<>();
             ParallelQueue<Match> matchesOutput = new ParallelQueue<>();
-            //Put in the next loop
-            for (int i = 0; i < getTotalNumberOfThreads(); i++) { //The total number of thread containers should be states*threads*2
-                ThreadContainers threadContainerByState = createThreadContainerByState(state, matchesOutput);
-                allSubBuffers.put(threadContainerByState, true);
-                dataStoragesWithAllTypes.get(i).add(threadContainerByState);
-
-                threadContainerByState = threadContainerByState.createClone();
-                allSubBuffers.put(createThreadContainerByState(state, matchesOutput), false);
-                dataStoragesWithAllTypes.get(i).add(threadContainerByState);
-            }
-
-            //input queue creation
-            ParallelQueue<Event> eventInput = new ParallelQueue<Event>();
             eventInputQueues.put(state, eventInput);
-            inputsToTypeAndCategory.put(eventInput, Collections.singletonMap(state.getEventType(), true)); //Add event input
-            inputsToTypeAndCategory.put(partialMatchInput, Collections.singletonMap(state.getEventType(), false)); //Add partial match input
+            inputsToTypeAndGroup.put(eventInput, Map.entry(state, EVENT_WORKER));
+            inputsToTypeAndGroup.put(partialMatchInput, Map.entry(state, MATCH_WORKER));
             partialMatchInput = matchesOutput;
+            stateToOutput.put(state, matchesOutput);
 
+            for (int i = 0; i < stateToIBThreads.get(state) + stateToMBThreads.get(state); i++) {
+                dataStoragePerBufferWorker.add(createDataStoragesForBufferWorker());
+            }
         }
+        completeMatchOutputQueue = partialMatchInput;
 
+        allSubBuffers = convertDataStoragePerBufferWorkerToTypeAndGroupKey(dataStoragePerBufferWorker);
         for (TypedNFAState state : getWorkerStates()) {
-
-        }
-
-
-        for (TypedNFAState state : getWorkerStates()) {
-            // Construct the workers first so it will be possible to add them as parameters in the ThreadContainer c'tor. Probably should've used a better design pattern (builder?)
             List<BufferWorker> stateIBworkers = new ArrayList<>();
             List<BufferWorker> stateMBworkers = new ArrayList<>();
-
-            List<ThreadContainers> eventThreadContainers = new CopyOnWriteArrayList<>();
-            List<ThreadContainers> partialMatchThreadContainers = new CopyOnWriteArrayList<>();
-            ParallelQueue<Match> matchesOutput = new ParallelQueue<Match>();
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
-                eventThreadContainers.add(createThreadContainerByState(state,matchesOutput));
+                stateIBworkers.add(new BufferWorker(state, inputsToTypeAndGroup, dataStoragePerBufferWorker.get(bufferWorkerIndex++), allSubBuffers, stateToOutput, EVENT_WORKER));
             }
             for (int i = 0; i < stateToMBThreads.get(state); i++) {
-                partialMatchThreadContainers.add(createThreadContainerByState(state, matchesOutput));
-            }
-            ParallelQueue<Event> eventInput = new ParallelQueue<Event>();
-            eventInputQueues.put(state, eventInput);
-
-            List<BufferWorker> workersNeededToFinish;
-            if (previousState == null) { //First state in the chain - Add a dummy worker to be changed by main
-                workersNeededToFinish = new ArrayList<>();
-                workersNeededToFinish.add(dummyWorkerNeededForFinish);
-            }
-            else { // Inner/Last state - Add all previous state's workers
-                workersNeededToFinish = new ArrayList<>(IBWorkers.get(previousState));
-                workersNeededToFinish.addAll(MBWorkers.get(previousState));
-            }
-
-            for (int i = 0; i < stateToIBThreads.get(state); i++) {
-                stateIBworkers.add(new BufferWorker(state, eventInput, partialMatchInput, eventThreadContainers.get(i),eventThreadContainers, partialMatchThreadContainers , finishedThreads, finishedWithGroup, workersNeededToFinish, true));
-            }
-            for (int i = 0; i < stateToMBThreads.get(state); i++) {
-                stateMBworkers.add(new BufferWorker(state, eventInput, partialMatchInput,partialMatchThreadContainers.get(i), eventThreadContainers, partialMatchThreadContainers,  finishedThreads, finishedWithGroup, workersNeededToFinish, false));
+                stateMBworkers.add(new BufferWorker(state, inputsToTypeAndGroup, dataStoragePerBufferWorker.get(bufferWorkerIndex++), allSubBuffers, stateToOutput, MATCH_WORKER));
             }
             IBWorkers.put(state, stateIBworkers);
             MBWorkers.put(state, stateMBworkers);
-            previousState = state;
-            partialMatchInput = matchesOutput;
         }
-        completeMatchOutputQueue = partialMatchInput; // The final output queue is that of the final state and the main thread should get the matches from it
-//        for (TypedNFAState state : getWorkerStates()) {
-//            for (int i = 0; i < stateToIBThreads.get(state); i++) {
-//                IBWorkers.get(state).get(i).initializeOppositeWorkers(MBWorkers.get(state), IBWorkers.get(state));
-//            }
-//            for (int i = 0; i < stateToMBThreads.get(state); i++) {
-//                MBWorkers.get(state).get(i).initializeOppositeWorkers(IBWorkers.get(state), MBWorkers.get(state));
-//            }
-//
-//        }
-
 
     }
 
-    private ThreadContainers createThreadContainerByState(TypedNFAState state, ParallelQueue<Match> matchesOutput) {
-        return  new ThreadContainers(matchesOutput, state.getEventType(), timeWindow);
+    private Map<Map.Entry<TypedNFAState, WorkerGroup>, List<ThreadContainers>> convertDataStoragePerBufferWorkerToTypeAndGroupKey(
+            List<Map<Map.Entry<TypedNFAState, WorkerGroup>, ThreadContainers>> dataStoragePerBufferWorker) {
+        Map<Map.Entry<TypedNFAState,WorkerGroup>, List<ThreadContainers>> typeAndGroupToDataStorage = new HashMap<>();
+        dataStoragePerBufferWorker.forEach(bufferWorkerDataStorage -> bufferWorkerDataStorage.forEach((typeAndGroup, dataStorage) -> {
+            typeAndGroupToDataStorage.putIfAbsent(typeAndGroup, new ArrayList<>());
+            typeAndGroupToDataStorage.get(typeAndGroup).add(dataStorage);
+        }));
+        return typeAndGroupToDataStorage;
+    }
+
+    private Map<Map.Entry<TypedNFAState, WorkerGroup>, ThreadContainers> createDataStoragesForBufferWorker() {
+        Map<Map.Entry<TypedNFAState, WorkerGroup>, ThreadContainers> dataStorages = new HashMap<>();
+        for (TypedNFAState state : getWorkerStates()) {  // Each BufferWorker should have 2 * (number of states) Element workers, need the same amount of storages
+            dataStorages.put(Map.entry(state, EVENT_WORKER), createThreadContainerByState(state));
+            dataStorages.put(Map.entry(state, MATCH_WORKER), createThreadContainerByState(state));
+        }
+        return dataStorages;
+    }
+
+
+
+//        for (TypedNFAState state : getWorkerStates()) {
+//            // Construct the workers first so it will be possible to add them as parameters in the ThreadContainer c'tor. Probably should've used a better design pattern (builder?)
+//            List<BufferWorker> stateIBworkers = new ArrayList<>();
+//            List<BufferWorker> stateMBworkers = new ArrayList<>();
+//
+//            List<ThreadContainers> eventThreadContainers = new CopyOnWriteArrayList<>();
+//            List<ThreadContainers> partialMatchThreadContainers = new CopyOnWriteArrayList<>();
+//            ParallelQueue<Match> matchesOutput = new ParallelQueue<Match>();
+//            for (int i = 0; i < stateToIBThreads.get(state); i++) {
+//                eventThreadContainers.add(createThreadContainerByState(state,matchesOutput));
+//            }
+//            for (int i = 0; i < stateToMBThreads.get(state); i++) {
+//                partialMatchThreadContainers.add(createThreadContainerByState(state, matchesOutput));
+//            }
+//            ParallelQueue<Event> eventInput = new ParallelQueue<Event>();
+//            eventInputQueues.put(state, eventInput);
+//
+//            List<BufferWorker> workersNeededToFinish;
+//            if (previousState == null) { //First state in the chain - Add a dummy worker to be changed by main
+//                workersNeededToFinish = new ArrayList<>();
+//                workersNeededToFinish.add(dummyWorkerNeededForFinish);
+//            }
+//            else { // Inner/Last state - Add all previous state's workers
+//                workersNeededToFinish = new ArrayList<>(IBWorkers.get(previousState));
+//                workersNeededToFinish.addAll(MBWorkers.get(previousState));
+//            }
+//
+//            for (int i = 0; i < stateToIBThreads.get(state); i++) {
+//                stateIBworkers.add(new BufferWorker(state, eventInput, partialMatchInput, eventThreadContainers.get(i),eventThreadContainers, partialMatchThreadContainers , finishedThreads, finishedWithGroup, workersNeededToFinish, true));
+//            }
+//            for (int i = 0; i < stateToMBThreads.get(state); i++) {
+//                stateMBworkers.add(new BufferWorker(state, eventInput, partialMatchInput,partialMatchThreadContainers.get(i), eventThreadContainers, partialMatchThreadContainers,  finishedThreads, finishedWithGroup, workersNeededToFinish, false));
+//            }
+//            IBWorkers.put(state, stateIBworkers);
+//            MBWorkers.put(state, stateMBworkers);
+//            previousState = state;
+//            partialMatchInput = matchesOutput;
+//        }
+//        completeMatchOutputQueue = partialMatchInput; // The final output queue is that of the final state and the main thread should get the matches from it
+////        for (TypedNFAState state : getWorkerStates()) {
+////            for (int i = 0; i < stateToIBThreads.get(state); i++) {
+////                IBWorkers.get(state).get(i).initializeOppositeWorkers(MBWorkers.get(state), IBWorkers.get(state));
+////            }
+////            for (int i = 0; i < stateToMBThreads.get(state); i++) {
+////                MBWorkers.get(state).get(i).initializeOppositeWorkers(IBWorkers.get(state), MBWorkers.get(state));
+////            }
+////
+////        }
+//
+//
+//    }
+
+    private ThreadContainers createThreadContainerByState(TypedNFAState state) {
+        return new ThreadContainers(state.getEventType(), timeWindow);
     }
 
     private int getTotalNumberOfThreads() {
@@ -507,12 +534,12 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 //        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(10);
         //SEQ 4
-        inputBufferThreadsPerState.add(5);
+        inputBufferThreadsPerState.add(3);
+        inputBufferThreadsPerState.add(2);
         inputBufferThreadsPerState.add(4);
-        inputBufferThreadsPerState.add(1);
-        matchBufferThreadsPerState.add(5);
-        matchBufferThreadsPerState.add(5);
+        matchBufferThreadsPerState.add(2);
         matchBufferThreadsPerState.add(1);
+        matchBufferThreadsPerState.add(2);
 // SEQ 5
 //        inputBufferThreadsPerState.add(1);
 //        inputBufferThreadsPerState.add(3);

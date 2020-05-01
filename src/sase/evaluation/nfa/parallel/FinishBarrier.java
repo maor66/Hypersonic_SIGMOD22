@@ -20,7 +20,7 @@ public class FinishBarrier {
     }
 
     public boolean hasFinishedWithAllPreviousStates(EventType eventType) {
-
+throw  new RuntimeException("Unimplemented");
     }
 
     public List<EventType> getAllFinishedState() {
