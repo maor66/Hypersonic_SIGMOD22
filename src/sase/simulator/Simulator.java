@@ -286,11 +286,11 @@ public class Simulator {
 			System.out.println("Starting events at  " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
 			Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.processingTime);
 
+			System.out.println("Simulator starts after " + processTime / 1000000 + " FileBasedEventProducer read time " + FileBasedEventProducer.ReadTime / 1000000 + " FileEventStreamReader read time " + FileEventStreamReader.readTime / 1000000);
+
 			if (primaryEvaluationMechanism instanceof ParallelLazyChainNFA) {
 				((ParallelLazyChainNFA) primaryEvaluationMechanism).startThreads();
 			}
-			System.out.println("Simulator starts after " + processTime / 1000000 + " FileBasedEventProducer read time " + FileBasedEventProducer.ReadTime / 1000000 + " FileEventStreamReader read time " + FileEventStreamReader.readTime / 1000000);
-
 			List<List<Event>> eventGroups = getEventGroupsBySize(allEvents, EVENTS_IN_GROUP);
 			for (List<Event> eventTimeGroup : eventGroups) {
 				long groupTime = System.currentTimeMillis();

@@ -62,6 +62,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private CopyOnWriteArrayList<BufferWorker> finishedThreads = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<BufferWorker> finishedWithGroup = new CopyOnWriteArrayList<>();
     private AtomicBoolean isFinishedWithInput = new AtomicBoolean(false);
+    private FinishBarrier barrier;
 
     private class PrintMatchTimerTask extends TimerTask {
 
@@ -96,6 +97,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         this.eventTypes = (List<EventType>) pattern.getEventTypes();
         this.pattern = pattern;
         this.inputMatchThreadRatio = specification.inputMatchThreadRatio;
+        this.barrier = new FinishBarrier(this.evaluationOrder.getFullEvaluationOrder());
+        barrier.addBarrierLevel(this.evaluationOrder.getFullEvaluationOrder().get(0), 1); //Add dummy level as the first level with the first (which is deleted) type
         System.out.println("Processors: " + Runtime.getRuntime().availableProcessors());
     }
     
@@ -155,6 +158,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         isFinishedWithInput.set(true);
         finishedThreads.add(dummyWorkerNeededForFinish);
+        barrier.notifyWorkerFinished(evaluationOrder.getFullEvaluationOrder().get(0));
         if (MainConfig.parallelDebugMode) {
             System.out.println("Starting poison pill at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
             System.out.println("Main thread idle time is " + mainThreadIdleTime / 1000000);
@@ -178,7 +182,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             m = completeMatchOutputQueue.poll(1, TimeUnit.SECONDS);
 
             if (m == null) {
-                if (finishedThreads.size() - 1 == this.getAllWorkers().size()) {
+                if (barrier.numberOfFinishedStates() == evaluationOrder.getFullEvaluationOrder().size()) {
                     break;
                 }
             }
@@ -199,6 +203,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         if (MainConfig.parallelDebugMode) {
             printTimer.cancel();
         }
+        IBWorkers.forEach((nfaState, bufferWorkers) -> bufferWorkers.forEach(bufferWorker -> bufferWorker.thread.interrupt()));
         return new ArrayList<>(matches);
     }
 
@@ -271,11 +276,12 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         for (TypedNFAState state : getWorkerStates()) {
             List<BufferWorker> stateIBworkers = new ArrayList<>();
             List<BufferWorker> stateMBworkers = new ArrayList<>();
+            barrier.addBarrierLevel(state.getEventType(), stateToIBThreads.get(state) + stateToMBThreads.get(state));
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
-                stateIBworkers.add(new BufferWorker(state, inputsToTypeAndGroup, dataStoragePerBufferWorker.get(bufferWorkerIndex++), allSubBuffers, stateToOutput, EVENT_WORKER));
+                stateIBworkers.add(new BufferWorker(state, inputsToTypeAndGroup, dataStoragePerBufferWorker.get(bufferWorkerIndex++), allSubBuffers, stateToOutput, barrier, EVENT_WORKER));
             }
             for (int i = 0; i < stateToMBThreads.get(state); i++) {
-                stateMBworkers.add(new BufferWorker(state, inputsToTypeAndGroup, dataStoragePerBufferWorker.get(bufferWorkerIndex++), allSubBuffers, stateToOutput, MATCH_WORKER));
+                stateMBworkers.add(new BufferWorker(state, inputsToTypeAndGroup, dataStoragePerBufferWorker.get(bufferWorkerIndex++), allSubBuffers, stateToOutput, barrier, MATCH_WORKER));
             }
             IBWorkers.put(state, stateIBworkers);
             MBWorkers.put(state, stateMBworkers);

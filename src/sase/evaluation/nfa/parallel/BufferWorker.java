@@ -1,6 +1,7 @@
 package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
+import sase.base.Event;
 import sase.base.EventType;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
@@ -60,6 +61,7 @@ private boolean primaryTakenOnce = false;
 private boolean addedToGroupFinish =  false;
 
 private int isPrimaryInputTakenLast = 1;
+    private boolean isFinishedWithThisState = false;
 
 
     public BufferWorker(TypedNFAState eventState,
@@ -67,6 +69,7 @@ private int isPrimaryInputTakenLast = 1;
                         Map<Map.Entry<TypedNFAState, WorkerGroup>, ThreadContainers> dataStorageForTasks,
                         Map<Map.Entry<TypedNFAState, WorkerGroup>, List<ThreadContainers>> allOppositeWorkers,
                         Map<TypedNFAState, ParallelQueue<Match>> stateToOutput,
+                        FinishBarrier barrier,
                         WorkerGroup group) {
         inputsToTasks = new HashMap<>();
         Map<Map.Entry<TypedNFAState, WorkerGroup>, ParallelQueue<? extends ContainsEvent>> specificInputs = new HashMap<>();
@@ -90,6 +93,10 @@ private int isPrimaryInputTakenLast = 1;
         });
         primaryInput = specificInputs.get(Map.entry(eventState, group));
         secondaryInput = specificInputs.get(Map.entry(eventState, group.getOpposite()));
+        this.barrier = barrier;
+        this.eventType = eventState.getEventType();
+        threadName = group == EVENT_WORKER ?  "InputBufferWorker" + eventState.getName() :"MatchBufferWorker "+ eventState.getName();
+
     }
 
 
@@ -153,28 +160,32 @@ private int isPrimaryInputTakenLast = 1;
     private ContainsEvent getElement()
     {
         if (!primaryTakenOnce) { // Give a chance to the primary only
+            lastInputUsed = primaryInput;
             return takePrimaryInput();
         }
+        ContainsEvent newElement;
+        if (!isFinishedWithThisState) {
+            newElement = takePrimaryInput();
+            if (newElement != null) {
+                lastInputUsed = primaryInput;
+                return newElement;
+            }
 
-        ContainsEvent newElement = takePrimaryInput();
-        if (newElement != null) {
-            lastInputUsed = primaryInput;
-            return newElement;
+            newElement = takeSecondaryInput();
+            if (newElement != null) {
+                lastInputUsed = secondaryInput;
+                return newElement;
+            }
+            possibleNotifyWorkerFinishedInState();
         }
-
-        newElement = takeSecondaryInput();
-        if (newElement != null) {
-            lastInputUsed = secondaryInput;
-            return newElement;
-        }
-        possibleNotifyWorkerFinishedInState();
 
         newElement = takeElementFromDifferentState();
         return newElement;
     }
 
     private void possibleNotifyWorkerFinishedInState() {
-        if (barrier.hasFinishedWithAllPreviousStates(eventType)) {
+        if (barrier.hasFinishedWithAllPreviousStates(eventType) && primaryInput.isEmpty() && secondaryInput.isEmpty() && !isFinishedWithThisState) {
+            isFinishedWithThisState = true;
             barrier.notifyWorkerFinished(eventType);
         }
     }
@@ -182,10 +193,10 @@ private int isPrimaryInputTakenLast = 1;
     private ContainsEvent takeElementFromDifferentState() {
         List<ParallelQueue<? extends ContainsEvent>> inputs = getInputsOfOngoingStates();
         Collections.shuffle(inputs, ThreadLocalRandom.current());
-        ParallelQueue<? extends ContainsEvent> inputToTake = lastInputUsed;
         ContainsEvent newElement;
 
-        if (inputsToTasks.containsKey(lastInputUsed)) { // If input is successful before than it gets priority
+        // Check that the last input is not primary/secondary or was already finished
+        if (inputs.contains(lastInputUsed)) { // If input is successful before than it gets priority
             newElement = takeElementFromSpecificInput(lastInputUsed);
             if (newElement != null) {
                 return newElement;
@@ -204,12 +215,21 @@ private int isPrimaryInputTakenLast = 1;
     }
 
     private ContainsEvent takeElementFromSpecificInput(ParallelQueue<? extends ContainsEvent> lastInputUsed) {
-        throw new RuntimeException("Unimplemented");
+//        System.out.println("Taking different input");
+        return takeNextInput(lastInputUsed, 0);
     }
 
     private List<ParallelQueue<? extends ContainsEvent>> getInputsOfOngoingStates() {
-        //TODO: unimplemented currently... Need a mapping between state/eventType to input queue
         ArrayList<ParallelQueue<? extends ContainsEvent>> inputs = new ArrayList<>(inputsToTasks.keySet());
+        Iterator<EventType> finishedStates = barrier.getAllFinishedStates();
+        while (finishedStates.hasNext()) {
+            EventType finishedType = finishedStates.next();
+            inputsToTasks.forEach((input, elementWorker) -> {
+                if (elementWorker.eventState.getEventType() == finishedType) {
+                    inputs.remove(input);
+                }
+            });
+        }
         // Removing this state's queue
         inputs.remove(primaryInput);
         inputs.remove(secondaryInput);
@@ -219,6 +239,7 @@ private int isPrimaryInputTakenLast = 1;
     public void getAndWork() {
         ContainsEvent newElement = getElement();
         if (newElement == null) {
+            possibleNotifyWorkerFinishedInState();
             return;
         }
         ElementWorker usedTask = inputsToTasks.get(lastInputUsed);
@@ -229,49 +250,51 @@ private int isPrimaryInputTakenLast = 1;
     public void run() {
         thread = Thread.currentThread();
         thread.setName(threadName + " " + Thread.currentThread().getName());
-        getAndWork();
-        while (true) {
-            ContainsEvent newElement;
-            ElementWorker taskUsed = primaryTask;
-//            long time = System.nanoTime();
-            newElement = takePrimaryInput();
-//            sliceTime += System.nanoTime() - time;
-            if (newElement == null) {
-                newElement = takeSecondaryInput(); // Check if the secondaryTask queue has an item
-                if (newElement == null) {
-                    if (isPreviousStateFinished(finishedWithGroup) && !addedToGroupFinish) {
-                        finishedWithGroup.add(this);
-                        addedToGroupFinish = true;
-                    }
-                    if (isPreviousStateFinished(finishedWorkers)) {
-                        finishRun();
-                        return;
-                    } else {
-                        continue;
-                    }
-                }
-                numberOfSecondaryHandledItems++;
-                isPrimaryInputTakenLast = 0;
-                primaryTask.updateOppositeWorkers(secondaryTask);
-                taskUsed = secondaryTask; // The secondaryTask queue had an item so it is the task used for adding, iterating and removing
-            }
-            else {
-                isPrimaryInputTakenLast = 1;
-                numberOfPrimaryHandledItems++;
-            }
-//            else { //Primary is used
-//                secondaryTask.updateOppositeWorkers(primaryTask);
+        while (!thread.isInterrupted()) {
+            getAndWork();
+        }
+        inputsToTasks.forEach((parallelQueue, elementWorker) -> elementWorker.finishRun());
+//            ContainsEvent newElement;
+//            ElementWorker taskUsed = primaryTask;
+////            long time = System.nanoTime();
+//            newElement = takePrimaryInput();
+////            sliceTime += System.nanoTime() - time;
+//            if (newElement == null) {
+//                newElement = takeSecondaryInput(); // Check if the secondaryTask queue has an item
+//                if (newElement == null) {
+//                    if (isPreviousStateFinished(finishedWithGroup) && !addedToGroupFinish) {
+//                        finishedWithGroup.add(this);
+//                        addedToGroupFinish = true;
+//                    }
+//                    if (isPreviousStateFinished(finishedWorkers)) {
+//                        finishRun();
+//                        return;
+//                    } else {
+//                        continue;
+//                    }
+//                }
+//                numberOfSecondaryHandledItems++;
+//                isPrimaryInputTakenLast = 0;
+//                primaryTask.updateOppositeWorkers(secondaryTask);
+//                taskUsed = secondaryTask; // The secondaryTask queue had an item so it is the task used for adding, iterating and removing
 //            }
-
-//            long time = System.nanoTime();
-//            try {
+//            else {
+//                isPrimaryInputTakenLast = 1;
+//                numberOfPrimaryHandledItems++;
+//            }
+////            else { //Primary is used
+////                secondaryTask.updateOppositeWorkers(primaryTask);
+////            }
+//
+////            long time = System.nanoTime();
+////            try {
 //                if ((numberOfPrimaryHandledItems + numberOfSecondaryHandledItems) % 500== 0) {
 //                    Thread.sleep(20);
 //                }
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
-            taskUsed.handleElement(newElement);
+//            taskUsed.handleElement(newElement);
 //            ContainsEvent removingCriteria = null;
 //            long latestTimeStamp = Long.MIN_VALUE;
 //            for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
@@ -297,8 +320,8 @@ private int isPrimaryInputTakenLast = 1;
 //                dataStorage.removeExpiredElements(removingCriteria.getEarliestTimestamp(), isBufferSorted(), removingCriteria);
 //                windowverifyTime += System.nanoTime() -time;
 //            }
-        }
     }
+
 
     private ContainsEvent takeSecondaryInput() {
 //        long time = System.nanoTime();
@@ -306,6 +329,7 @@ private int isPrimaryInputTakenLast = 1;
 //            secondaryIdleTime += System.nanoTime() - time;
             return null;
         }
+//        System.out.println("Taking secondary input");
         ContainsEvent ce = takeNextInput(secondaryInput, 50);
 //        secondaryIdleTime += System.nanoTime() - time;
         return ce;
@@ -318,7 +342,7 @@ private int isPrimaryInputTakenLast = 1;
             return null;
         }
         primaryTakenOnce = true; //keep and delete comment
-
+//        System.out.println("Taking primary input");
         ContainsEvent ce  = takeNextInput(primaryInput, 0);
 //        primaryIdleTime += System.nanoTime() - time;
         return ce;

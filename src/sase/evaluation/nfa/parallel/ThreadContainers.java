@@ -19,7 +19,7 @@ public class ThreadContainers {
     private EventType eventType;
     private long timeWindow;
     private long stamp;
-    private AtomicBoolean isContainerActive;
+    private AtomicBoolean isContainerActive = new AtomicBoolean(false);
 
 
     public List<ContainsEvent> getBufferSubListWithReadLock() {
@@ -162,12 +162,11 @@ public class ThreadContainers {
     }
 
     public boolean isContainerActive() {
-        throw  new RuntimeException("Unimplemented");
+       return isContainerActive.get();
 
     }
 
     public void setContainerActive() {
-        throw  new RuntimeException("Unimplemented");
-
+        isContainerActive.set(true);
     }
 }
