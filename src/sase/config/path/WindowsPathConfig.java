@@ -1,5 +1,7 @@
 package sase.config.path;
 
+import sase.config.MainConfig;
+
 public class WindowsPathConfig extends PathConfig {
 
 	public WindowsPathConfig() {
@@ -7,7 +9,9 @@ public class WindowsPathConfig extends PathConfig {
 		companyToRegionDirectoryPath = "C:\\CEP\\Metadata\\Regions";
 		testInputFilePath = "";
 //		firstInputFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_20080205_1.txt";
-		firstInputFilePath = "C:\\Users\\Maor\\Documents\\csh124.ann.features.csv";
+		firstInputFilePath = (MainConfig.datasetInUse == MainConfig.DatasetInUse.STOCKS)  ?
+				"C:\\Users\\Maor\\Documents\\csh124.ann.features.csv" :
+				"C:\\Users\\Maor\\Documents\\NASDAQ_20080205_1.txt" ;
 //				firstInputFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_short.txt";
 //		firstInputFilePath = "C:\\CEP\\0802\\NASDAQ_20080205_1.txt";
 

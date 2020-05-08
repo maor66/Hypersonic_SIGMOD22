@@ -6,6 +6,8 @@ import sase.specification.condition.ConditionSpecification;
 import sase.specification.condition.DummyConditionSpecification;
 import sase.specification.workload.ParallelPatternSpecification;
 import sase.specification.workload.PatternSpecification;
+import sase.user.sensors.SensorActivityChangeConditionSpecification;
+import sase.user.sensors.SensorEventTypeManager;
 import sase.user.stocks.StockEventTypesManager;
 import sase.user.stocks.specification.StockCorrelationConditionSpecification;
 import sase.user.stocks.specification.StockDeltaOrderingConditionSpecification;
@@ -420,6 +422,25 @@ public class PatternConfig {
 	
 	
 	private static final long stockByCompanyPatternTimeWindow = 50;
+	private static final long sensorPatternTimeWindow = 50;
+
+	private static final PatternSpecification basicPatternSensorSEQ3 =
+			new PatternSpecification("sensorSEQ3", PatternTypes.SENSOR_PATTERN, sensorPatternTimeWindow,
+					new String[][][]{new String[][] {new String[]{
+							SensorEventTypeManager.phoneEventTypeName,
+							SensorEventTypeManager.sleepEventTypeName,
+							SensorEventTypeManager.workOnComputerEventTypeName
+					}}},
+					new ConditionSpecification[]{
+							new SensorActivityChangeConditionSpecification(
+									SensorEventTypeManager.phoneEventTypeName,
+									SensorEventTypeManager.sleepEventTypeName),
+							new SensorActivityChangeConditionSpecification(
+									SensorEventTypeManager.sleepEventTypeName,
+									SensorEventTypeManager.workOnComputerEventTypeName)
+					},
+					SlaVerifierTypes.NONE);
+
 	private static final PatternSpecification basicPatternSEQ6 =
 			new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 			new String[][][] {new String[][]{new String[]{
@@ -1715,5 +1736,8 @@ private static final ConditionSpecification[] dummyConditionSpecSEQ4 = new Condi
 					 new SyntheticConditionSpecification("2","3"),
 					 new SyntheticConditionSpecification("3","0"),
 				 }, SlaVerifierTypes.NONE),
+	};
+	public static PatternSpecification[] sensorPatternSpecifications = {
+			basicPatternSensorSEQ3.createIdenticalSpecificationWithDifferentWindow(90),
 	};
 }

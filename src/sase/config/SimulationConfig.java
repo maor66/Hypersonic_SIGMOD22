@@ -33,6 +33,8 @@ import sase.multi.calculator.local.neighborhood.NeighborhoodTypes;
 import sase.pattern.Pattern.PatternOperatorTypes;
 import sase.pattern.workload.WorkloadManagerTypes;
 
+import static sase.config.MainConfig.datasetInUse;
+
 @SuppressWarnings("unused")
 public class SimulationConfig {
 	
@@ -524,7 +526,9 @@ public class SimulationConfig {
 //			new EvaluationSpecification(TopologyCreatorTypes.ADAPTIVE_ZSTREAM, TreeCostModelTypes.NONE, 0.0),
 	};
 		// Maor: what patterns are going to be matched, should start with a simple one
-	public static final PatternSpecification[] patternSpecifications = PatternConfig.stockByCompanyPatternSpecifications;
+//	public static final PatternSpecification[] patternSpecifications = PatternConfig.stockByCompanyPatternSpecifications;
+	public static final PatternSpecification[] patternSpecifications = (datasetInUse == MainConfig.DatasetInUse.STOCKS) ?
+				PatternConfig.stockByCompanyPatternSpecifications : PatternConfig.sensorPatternSpecifications;
 //	public static final AdaptationSpecification[] adaptationSpecifications = {
 //		new TrivialAdaptationSpecification(),
 //		new ConstantThresholdAdaptationSpecification(statisticsMonitoringWindowToTimeWindowRatio, 0.0001, 0.1),

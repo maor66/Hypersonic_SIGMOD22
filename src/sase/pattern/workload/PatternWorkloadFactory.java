@@ -102,6 +102,7 @@ public class PatternWorkloadFactory {
 			case SPEEDD_CREDIT_CARD_FRAUD_PATTERN:
 			case SPEEDD_TRAFFIC_PATTERN:
 			case SYNTHETIC_PATTERN:
+			case SENSOR_PATTERN:
 				return new CompositePatternCreator(patternSpecification.getStructure(), 
 												   patternSpecification.getConditions(),
 												   patternSpecification.getNegatedEventNames(),

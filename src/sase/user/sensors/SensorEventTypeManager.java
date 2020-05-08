@@ -16,11 +16,11 @@ public class SensorEventTypeManager extends EventTypesManager {
     public static final int labelAttributeIndex = 34;
     public static final int timestampAttributeIndex = 0;
     public static final int firstSensorIDdataIndex = 1;
-    public static final int complexityDataIndex = 7;
-    public static final int activityChangeIndex = 8;
-    public static final int areaTransitionsIndex = 9;
-    public static final int numSensorsIndex = 10;
-    public static final int weightedSensorCountFirstIndex = 10;
+    public static final int complexityDataIndex = 8;
+    public static final int activityChangeIndex = 9;
+    public static final int areaTransitionsIndex = 10;
+    public static final int numSensorsIndex = 11;
+    public static final int weightedSensorCountFirstIndex = 12;
 
 
     public static final String sleepEventTypeName = "Sleep";
@@ -123,8 +123,12 @@ public class SensorEventTypeManager extends EventTypesManager {
         Map<Integer, Datatype> indexToDataType = getMappingBetweenIndexToDataType();
         for (int i : indexToDataType.keySet()) {
             switch(indexToDataType.get(i)) {
-                case LONG:
-                    newPayload[i] = Long.valueOf((String) payload[i]);
+                case LONG: // Actually double as the file stores as 5.0, but we convert to integer
+                    Double textDouble = Double.valueOf((String) payload[i]);
+                    if (Math.rint(textDouble) != textDouble) {
+                        throw new RuntimeException("Converting double value to int");
+                    }
+                    newPayload[i] = textDouble.longValue();
                     break;
                 case TEXT:
                     newPayload[i] = payload[i];
