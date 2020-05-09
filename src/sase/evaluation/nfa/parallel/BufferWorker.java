@@ -46,6 +46,7 @@ public class BufferWorker implements Runnable {
 
     public long numberOfPrimaryHandledItems = 0;
     public long numberOfSecondaryHandledItems = 0;
+    public long numberOfOtherStateHandledItems = 0;
     public long numberOfOppositeItems = 0;
     public  long primaryIdleTime = 0;
     public  long secondaryIdleTime = 0;
@@ -57,10 +58,10 @@ public class BufferWorker implements Runnable {
     public Long innerCondTime = 0L;
     public Long innerWindowTime = 0L;
 
-private boolean primaryTakenOnce = false;
-private boolean addedToGroupFinish =  false;
+    private boolean primaryTakenOnce = false;
+    private boolean addedToGroupFinish =  false;
 
-private int isPrimaryInputTakenLast = 1;
+    private int isPrimaryInputTakenLast = 1;
     private boolean isFinishedWithThisState = false;
 
 
@@ -95,7 +96,7 @@ private int isPrimaryInputTakenLast = 1;
         secondaryInput = specificInputs.get(Map.entry(eventState, group.getOpposite()));
         this.barrier = barrier;
         this.eventType = eventState.getEventType();
-        threadName = group == EVENT_WORKER ?  "InputBufferWorker" + eventState.getName() :"MatchBufferWorker "+ eventState.getName();
+        threadName = (group == EVENT_WORKER) ?  "InputBufferWorker " + eventState.getName() : "MatchBufferWorker "+ eventState.getName();
 
     }
 
@@ -167,12 +168,14 @@ private int isPrimaryInputTakenLast = 1;
         if (!isFinishedWithThisState) {
             newElement = takePrimaryInput();
             if (newElement != null) {
+                numberOfPrimaryHandledItems++;
                 lastInputUsed = primaryInput;
                 return newElement;
             }
 
             newElement = takeSecondaryInput();
             if (newElement != null) {
+                numberOfSecondaryHandledItems++;
                 lastInputUsed = secondaryInput;
                 return newElement;
             }
@@ -199,6 +202,7 @@ private int isPrimaryInputTakenLast = 1;
         if (inputs.contains(lastInputUsed)) { // If input is successful before than it gets priority
             newElement = takeElementFromSpecificInput(lastInputUsed);
             if (newElement != null) {
+                numberOfOtherStateHandledItems++;
                 return newElement;
             }
         }
@@ -208,6 +212,7 @@ private int isPrimaryInputTakenLast = 1;
             newElement = takeElementFromSpecificInput(input);
             if (newElement != null) {
                 lastInputUsed = input;
+                numberOfOtherStateHandledItems++;
                 return newElement;
             }
         }
@@ -253,7 +258,7 @@ private int isPrimaryInputTakenLast = 1;
         while (!thread.isInterrupted()) {
             getAndWork();
         }
-        inputsToTasks.forEach((parallelQueue, elementWorker) -> elementWorker.finishRun());
+        finishRun();
 //            ContainsEvent newElement;
 //            ElementWorker taskUsed = primaryTask;
 ////            long time = System.nanoTime();
@@ -355,11 +360,11 @@ private int isPrimaryInputTakenLast = 1;
 //            return input.take();
     }
     private void finishRun() {
-        finishedWorkers.add(this);
-        System.out.println("Buffer Worker - " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " Handled " + numberOfPrimaryHandledItems + " primary items " +
-                + numberOfSecondaryHandledItems + " Handled secondary items.  Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000);
-        primaryTask.finishRun();
-        secondaryTask.finishRun();
+        System.out.println("Buffer Worker - " +threadName + " " + Thread.currentThread().getId() + " Handled " + numberOfPrimaryHandledItems + " primary items " +
+                + numberOfSecondaryHandledItems + " Handled secondary items " + numberOfOtherStateHandledItems +  "Handle other states items. Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000);
+        inputsToTasks.forEach((parallelQueue, elementWorker) -> elementWorker.finishRun());
+//        primaryTask.finishRun();
+//        secondaryTask.finishRun();
     }
 
     protected boolean isPreviousStateFinished(CopyOnWriteArrayList<BufferWorker> finished) {

@@ -204,6 +204,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             printTimer.cancel();
         }
         IBWorkers.forEach((nfaState, bufferWorkers) -> bufferWorkers.forEach(bufferWorker -> bufferWorker.thread.interrupt()));
+        MBWorkers.forEach((nfaState, bufferWorkers) -> bufferWorkers.forEach(bufferWorker -> bufferWorker.thread.interrupt()));
         return new ArrayList<>(matches);
     }
 

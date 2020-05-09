@@ -52,6 +52,7 @@ public abstract class ElementWorker {
             isFirstHandle = false;
             dataStorage.setContainerActive();
         }
+        numberOfHandledItems++;
         ContainsEvent removingCriteria = null;
         long latestTimeStamp = Long.MIN_VALUE;
         dataStorage.addEventToOwnBuffer(newElement);
@@ -88,8 +89,8 @@ public abstract class ElementWorker {
     protected abstract boolean oppositeTaskNotFinished(List<BufferWorker> workersNeededToFinish);
 
     public void finishRun() {
-        System.out.println("Thread " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " has finished at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
-                " Compared to " + numberOfOppositeItems + " items Condition time " + conditionTime / 1000000 +
+        System.out.println("Thread " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " Of state "+ eventState + " has finished at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
+                " Handled " + numberOfHandledItems + " Compared to " + numberOfOppositeItems + " items Condition time " + conditionTime / 1000000 +
                 " Iterating buffer time " + iteratingBufferTime / 1000000 + " Slice time " + sliceTime / 1000000 + " Actual Slice time " + sliceTimeActual / 1000000 + " Send sync time " + sendMatchingTime / 1000000 +
                 " Calculation time " + actualCalcTime / 1000000 + " Window verify time " + windowverifyTime / 1000000 + " Cond 1 " + innerCondTime / 1000000 + " Cond 2 " + innerWindowTime / 1000000);
     }
