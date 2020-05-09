@@ -12,10 +12,7 @@ import sase.evaluation.nfa.eager.AND_NFA;
 import sase.evaluation.nfa.eager.AND_SEQ_NFA;
 import sase.evaluation.nfa.eager.OR_AND_SEQ_NFA;
 import sase.evaluation.nfa.eager.SEQ_NFA;
-import sase.evaluation.nfa.lazy.LazyChainNFA;
-import sase.evaluation.nfa.lazy.LazyMultiChainNFA;
-import sase.evaluation.nfa.lazy.LazyMultiPatternTreeNFA;
-import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
+import sase.evaluation.nfa.lazy.*;
 import sase.evaluation.plan.DisjunctionEvaluationPlan;
 import sase.evaluation.plan.EvaluationPlan;
 import sase.evaluation.plan.MultiPatternMultiTreeEvaluationPlan;
@@ -30,13 +27,7 @@ import sase.pattern.Pattern;
 import sase.pattern.Pattern.PatternOperatorTypes;
 import sase.pattern.condition.base.TrivialCondition;
 import sase.simulator.Environment;
-import sase.specification.evaluation.EvaluationSpecification;
-import sase.specification.evaluation.HirzelEvaluationSpecification;
-import sase.specification.evaluation.LazyNFAEvaluationSpecification;
-import sase.specification.evaluation.ParallelBasicEvaluationSpecification;
-import sase.specification.evaluation.ParallelEvaluationSpecification;
-import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
-import sase.specification.evaluation.RIPEvaluationSpecification;
+import sase.specification.evaluation.*;
 import sase.statistics.Statistics;
 
 public class EvaluationMechanismFactory {
@@ -71,6 +62,8 @@ public class EvaluationMechanismFactory {
 												((LazyNFAEvaluationSpecification)specification).negationType);
 					case LAZY_CHAIN_PARALLEL:
 						return new ParallelLazyChainNFA(pattern, evaluationPlan, (ParallelLazyNFAEvaluationSpecification)specification);
+					case LAZY_CHAIN_PARALLEL_STATE_DYNAMIC:
+						return new StateDynamicParallelLazyChainNFA(pattern, evaluationPlan, (ParallelLazyNFAStateDynamicEvaluationSpecification) specification);
 					case LAZY_CHAIN_PARALLEL_DUMMY:
 						return new ParallelBasicEvaluationMechanism(pattern, evaluationPlan, (ParallelBasicEvaluationSpecification)specification);
 					case HIRZEL_CHAIN_NFA:

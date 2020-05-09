@@ -267,8 +267,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             partialMatchInput = matchesOutput;
             stateToOutput.put(state, matchesOutput);
 
-            for (int i = 0; i < stateToIBThreads.get(state) + stateToMBThreads.get(state); i++) {
-                dataStoragePerBufferWorker.add(createDataStoragesForBufferWorker());
+            for (int i = 0; i < stateToIBThreads.get(state) + stateToMBThreads.get(state); i++) { // amount of BufferWorkers
+                dataStoragePerBufferWorker.add(createDataStoragesForBufferWorker(state));
             }
         }
         completeMatchOutputQueue = partialMatchInput;
@@ -279,15 +279,26 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             List<BufferWorker> stateMBworkers = new ArrayList<>();
             barrier.addBarrierLevel(state.getEventType(), stateToIBThreads.get(state) + stateToMBThreads.get(state));
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
-                stateIBworkers.add(new BufferWorker(state, inputsToTypeAndGroup, dataStoragePerBufferWorker.get(bufferWorkerIndex++), allSubBuffers, stateToOutput, barrier, EVENT_WORKER));
+                stateIBworkers.add(new BufferWorker(state, getInputReleventForState(inputsToTypeAndGroup, state), dataStoragePerBufferWorker.get(bufferWorkerIndex++), allSubBuffers, stateToOutput, barrier, EVENT_WORKER));
             }
             for (int i = 0; i < stateToMBThreads.get(state); i++) {
-                stateMBworkers.add(new BufferWorker(state, inputsToTypeAndGroup, dataStoragePerBufferWorker.get(bufferWorkerIndex++), allSubBuffers, stateToOutput, barrier, MATCH_WORKER));
+                stateMBworkers.add(new BufferWorker(state, getInputReleventForState(inputsToTypeAndGroup, state), dataStoragePerBufferWorker.get(bufferWorkerIndex++), allSubBuffers, stateToOutput, barrier, MATCH_WORKER));
             }
             IBWorkers.put(state, stateIBworkers);
             MBWorkers.put(state, stateMBworkers);
         }
 
+    }
+
+    protected Map<ParallelQueue<? extends ContainsEvent>,Map.Entry<TypedNFAState,WorkerGroup>> getInputReleventForState(
+            Map<ParallelQueue<? extends ContainsEvent>, Map.Entry<TypedNFAState, WorkerGroup>> inputsToTypeAndGroup,
+            TypedNFAState state) {
+        return inputsToTypeAndGroup;
+    }
+
+
+    protected List<TypedNFAState> getStatesReleventForBufferWorkerStorage(TypedNFAState ownState) {
+        return getWorkerStates();
     }
 
     private Map<Map.Entry<TypedNFAState, WorkerGroup>, List<ThreadContainers>> convertDataStoragePerBufferWorkerToTypeAndGroupKey(
@@ -300,9 +311,9 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         return typeAndGroupToDataStorage;
     }
 
-    private Map<Map.Entry<TypedNFAState, WorkerGroup>, ThreadContainers> createDataStoragesForBufferWorker() {
+    private Map<Map.Entry<TypedNFAState, WorkerGroup>, ThreadContainers> createDataStoragesForBufferWorker(TypedNFAState ownState) {
         Map<Map.Entry<TypedNFAState, WorkerGroup>, ThreadContainers> dataStorages = new HashMap<>();
-        for (TypedNFAState state : getWorkerStates()) {  // Each BufferWorker should have 2 * (number of states) Element workers, need the same amount of storages
+        for (TypedNFAState state : getStatesReleventForBufferWorkerStorage(ownState)) {  // Each BufferWorker should have 2 * (number of states) Element workers, need the same amount of storages
             dataStorages.put(Map.entry(state, EVENT_WORKER), createThreadContainerByState(state));
             dataStorages.put(Map.entry(state, MATCH_WORKER), createThreadContainerByState(state));
         }

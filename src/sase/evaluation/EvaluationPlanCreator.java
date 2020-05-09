@@ -65,6 +65,7 @@ public class EvaluationPlanCreator {
 			case LAZY_CHAIN:
 			case LAZY_CHAIN_PARALLEL:
 			case LAZY_CHAIN_PARALLEL_DUMMY:
+			case LAZY_CHAIN_PARALLEL_STATE_DYNAMIC:
 				return createOrderBasedPlan(pattern);
 			case TREE:
 				return createTreeBasedPlan(pattern);

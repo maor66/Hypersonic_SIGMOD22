@@ -361,7 +361,7 @@ public class BufferWorker implements Runnable {
     }
     private void finishRun() {
         System.out.println("Buffer Worker - " +threadName + " " + Thread.currentThread().getId() + " Handled " + numberOfPrimaryHandledItems + " primary items " +
-                + numberOfSecondaryHandledItems + " Handled secondary items " + numberOfOtherStateHandledItems +  "Handle other states items. Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000);
+                + numberOfSecondaryHandledItems + " Handled secondary items " + numberOfOtherStateHandledItems +  " Handle other states items. Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000);
         inputsToTasks.forEach((parallelQueue, elementWorker) -> elementWorker.finishRun());
 //        primaryTask.finishRun();
 //        secondaryTask.finishRun();
