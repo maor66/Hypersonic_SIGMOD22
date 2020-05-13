@@ -11,9 +11,12 @@ import sase.user.stocks.StockEventTypesManager;
 
 @SuppressWarnings("unused")
 public class MainConfig {
+	//    public static DatasetInUse datasetInUse = DatasetInUse.STOCKS;
+	public static DatasetInUse datasetInUse = DatasetInUse.SENSORS;
+
 	/* An OS-dependent module for accessing local paths. */
 	private static final PathConfig pathConfig = new WindowsPathConfig();
-
+	
 	/* A flag indicating whether code testing is currently in process. */
 	public static final boolean debugMode = false;
 
@@ -21,11 +24,10 @@ public class MainConfig {
 
 	public static final boolean parallelDebugMode = false;
 
-    public enum DatasetInUse {
+	public enum DatasetInUse {
     	STOCKS,
 			SENSORS
-		}
-    public static DatasetInUse datasetInUse = DatasetInUse.STOCKS;
+			}
 
 	/* Settings for creating and preprocessing primitive events arriving on the input stream. */
 //	public static final EventProducerTypes eventProducerType = EventProducerTypes.FILE_BASED;

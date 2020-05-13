@@ -6,6 +6,8 @@ import sase.base.Event;
 import sase.base.EventType;
 import sase.pattern.EventTypesManager;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -114,7 +116,8 @@ public class SensorEventTypeManager extends EventTypesManager {
 
     @Override
     public Long getEventTimestamp(Event event) {
-        return (Long)event.getAttributeValue(timestampAttributeIndex);
+        LocalDateTime ldt = LocalDateTime.parse((String)event.getAttributeValue(timestampAttributeIndex));
+        return Long.parseLong(ldt.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
     }
 
     @Override
@@ -135,6 +138,9 @@ public class SensorEventTypeManager extends EventTypesManager {
                     break;
                 case DOUBLE:
                     newPayload[i] = Double.valueOf((String)payload[i]);
+                    break;
+                case LOCALDATETIME:
+                    newPayload[i] = payload[i];
                     break;
                 default:
                     throw new RuntimeException("There is a datatype that doesn't exists" + indexToDataType.get(i).toString());
@@ -202,7 +208,7 @@ public class SensorEventTypeManager extends EventTypesManager {
 
     public Map<Integer, Datatype> getMappingBetweenIndexToDataType() {
         Map<Integer, Datatype> indexToDataType = new HashMap<>();
-        indexToDataType.put(timestampAttributeIndex, Datatype.LONG);
+        indexToDataType.put(timestampAttributeIndex, Datatype.LOCALDATETIME);
         for (int i = firstSensorIDdataIndex; i < complexityDataIndex; ++i) { //Integers
             indexToDataType.put(i, Datatype.LONG);
         }

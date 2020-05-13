@@ -36,13 +36,14 @@ public class SensorPreprocessedFileBasedEventProducer extends FileBasedEventProd
         return preprocessedEvent;
     }
 
-    private Long convertToTimestamp(int hours, int seconds, int dayOfWeek) {
+    private LocalDateTime convertToTimestamp(int hours, int seconds, int dayOfWeek) {
         LocalDateTime currentDateTime = initialDateTime.plusHours(hours).plusSeconds(seconds).plusDays(dayOfWeek).plusWeeks(weeksPassed);
         if (currentDateTime.isBefore(lastDateTimeObserved)) {
             currentDateTime = currentDateTime.plusWeeks(1);
             weeksPassed++;
         }
         lastDateTimeObserved = currentDateTime;
-        return Timestamp.valueOf(lastDateTimeObserved).getTime();
+//        return Timestamp.valueOf(lastDateTimeObserved).getTime();
+        return lastDateTimeObserved;
     }
 }
