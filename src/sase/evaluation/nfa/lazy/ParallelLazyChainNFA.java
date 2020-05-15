@@ -538,6 +538,16 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         inputBufferThreadsPerState.clear();
         matchBufferThreadsPerState.clear();
+        inputBufferThreadsPerState.add(1);
+        inputBufferThreadsPerState.add(1);
+        inputBufferThreadsPerState.add(4);
+        inputBufferThreadsPerState.add(4);
+        inputBufferThreadsPerState.add(1);
+        matchBufferThreadsPerState.add(1);
+        matchBufferThreadsPerState.add(1);
+        matchBufferThreadsPerState.add(5);
+        matchBufferThreadsPerState.add(4);
+        matchBufferThreadsPerState.add(1);
         //SEQ 4
 //        inputBufferThreadsPerState.add(1);
 //        inputBufferThreadsPerState.add(3);
@@ -552,12 +562,12 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 //        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(10);
         //SEQ 4
-        inputBufferThreadsPerState.add(3);
-        inputBufferThreadsPerState.add(2);
-        inputBufferThreadsPerState.add(4);
-        matchBufferThreadsPerState.add(2);
-        matchBufferThreadsPerState.add(1);
-        matchBufferThreadsPerState.add(2);
+//        inputBufferThreadsPerState.add(3);
+//        inputBufferThreadsPerState.add(2);
+//        inputBufferThreadsPerState.add(4);
+//        matchBufferThreadsPerState.add(2);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(2);
 // SEQ 5
 //        inputBufferThreadsPerState.add(1);
 //        inputBufferThreadsPerState.add(3);
@@ -596,20 +606,20 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 //        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(1);
         //SEQ 8
-//        inputBufferThreadsPerState.add(1);
-//        inputBufferThreadsPerState.add(1);
-//        inputBufferThreadsPerState.add(1);
 //        inputBufferThreadsPerState.add(3);
 //        inputBufferThreadsPerState.add(3);
 //        inputBufferThreadsPerState.add(1);
 //        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(4);
 //        matchBufferThreadsPerState.add(3);
-//        matchBufferThreadsPerState.add(1);
-//        matchBufferThreadsPerState.add(1);
         int listIndex = 0;
         for (TypedNFAState state : nfaStates) {
             stateToIBThreads.put(state, inputBufferThreadsPerState.get(listIndex));

@@ -35,18 +35,18 @@ import sase.pattern.workload.WorkloadManagerTypes;
 
 @SuppressWarnings("unused")
 public class SimulationConfig {
-	
+
 	//specification creator definition
-	public static final SpecificationCreatorTypes specificationCreatorType = 
+	public static final SpecificationCreatorTypes specificationCreatorType =
 																SpecificationCreatorTypes.CROSS_PRODUCT_SINGLE;
-	public static final ConditionSpecificationCreatorTypes conditionCreatorType = 
+	public static final ConditionSpecificationCreatorTypes conditionCreatorType =
 																ConditionSpecificationCreatorTypes.STOCK_DELTA;
-	public static final ConditionSpecificationSetCreatorTypes conditionSetCreatorType = 
+	public static final ConditionSpecificationSetCreatorTypes conditionSetCreatorType =
 																ConditionSpecificationSetCreatorTypes.COUNTERS;
 
 	//for stock events
 	public static final long timeWindows[] = {20};
-	
+
 	//for tram events
 	//public static final long timeWindows[] = {3 * 60, 6 * 60, 9 * 60, 12 * 60, 15 * 60, 18 * 60};
 
@@ -457,12 +457,12 @@ public class SimulationConfig {
 //		new ParallelBasicEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //				CostModelTypes.THROUGHPUT_LATENCY,
 //				0.0),
-		new ParallelLazyNFAStateDynamicEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+        new ParallelLazyNFAStateDynamicEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+                CostModelTypes.THROUGHPUT_LATENCY,
+                0.0, 23, 0.5),
+		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 				CostModelTypes.THROUGHPUT_LATENCY,
 				0.0, 23, 0.5),
-//		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-//				CostModelTypes.THROUGHPUT_LATENCY,
-//				0.0, 23, 0.5),
 //		new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //				CostModelTypes.THROUGHPUT_LATENCY,
 //				0.0),

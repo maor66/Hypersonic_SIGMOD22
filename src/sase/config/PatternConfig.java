@@ -420,6 +420,34 @@ public class PatternConfig {
 	
 	
 	private static final long stockByCompanyPatternTimeWindow = 50;
+	private static final PatternSpecification basicPatternSEQ6orig =
+			new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+					new String[][][] {new String[][]{new String[]{
+							StockEventTypesManager.microsoftEventTypeName,
+							StockEventTypesManager.googleEventTypeName,
+							StockEventTypesManager.ciscoEventTypeName,
+							StockEventTypesManager.intelEventTypeName,
+							StockEventTypesManager.yahooEventTypeName,
+							StockEventTypesManager.etfcEventTypeName
+					}}},
+					new ConditionSpecification[] {
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.microsoftEventTypeName,
+									StockEventTypesManager.googleEventTypeName),
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.googleEventTypeName,
+									StockEventTypesManager.ciscoEventTypeName),
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.ciscoEventTypeName,
+									StockEventTypesManager.intelEventTypeName),
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.intelEventTypeName,
+									StockEventTypesManager.yahooEventTypeName),
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.yahooEventTypeName,
+									StockEventTypesManager.etfcEventTypeName),
+					},
+					SlaVerifierTypes.NONE);
 	private static final PatternSpecification basicPatternSEQ6 =
 			new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 			new String[][][] {new String[][]{new String[]{
@@ -1124,6 +1152,28 @@ private static final ConditionSpecification[] dummyConditionSpecSEQ4 = new Condi
 //					},
 //					SlaVerifierTypes.NONE),
 
+			basicPatternSEQ6orig.createIdenticalSpecificationWithDifferentWindow(10),
+			basicPatternSEQ6orig.createIdenticalSpecificationWithDifferentWindow(20),
+			basicPatternSEQ6orig.createIdenticalSpecificationWithDifferentWindow(30),
+			basicPatternSEQ6orig.createIdenticalSpecificationWithDifferentWindow(40),
+			basicPatternSEQ6orig.createIdenticalSpecificationWithDifferentWindow(50),
+			basicPatternSEQ6orig.createIdenticalSpecificationWithDifferentWindow(60),
+			basicPatternSEQ6orig.createIdenticalSpecificationWithDifferentWindow(70),
+			basicPatternSEQ6orig.createIdenticalSpecificationWithDifferentWindow(80),
+			basicPatternSEQ6orig.createIdenticalSpecificationWithDifferentWindow(90),
+			basicPatternSEQ6orig.createIdenticalSpecificationWithDifferentWindow(100),
+			basicPatternSEQ6orig.createIdenticalSpecificationWithDifferentWindow(110),
+			basicPatternSEQ6orig.createIdenticalSpecificationWithDifferentWindow(120),
+//			basicPatternSEQ8var2.createIdenticalSpecificationWithDifferentWindow(10),
+//			basicPatternSEQ8var2.createIdenticalSpecificationWithDifferentWindow(20),
+//			basicPatternSEQ8var2.createIdenticalSpecificationWithDifferentWindow(30),
+//			basicPatternSEQ8var2.createIdenticalSpecificationWithDifferentWindow(40),
+//			basicPatternSEQ8var2.createIdenticalSpecificationWithDifferentWindow(50),
+//			basicPatternSEQ8var2.createIdenticalSpecificationWithDifferentWindow(60),
+//			basicPatternSEQ8var2.createIdenticalSpecificationWithDifferentWindow(70),
+//			basicPatternSEQ8var2.createIdenticalSpecificationWithDifferentWindow(80),
+//			basicPatternSEQ8var2.createIdenticalSpecificationWithDifferentWindow(90),
+//			basicPatternSEQ8var2.createIdenticalSpecificationWithDifferentWindow(100),
 //			basicPatternDummySEQ3.createIdenticalSpecificationWithDifferentWindow(30),
 //			basicPatternDummySEQ3.createIdenticalSpecificationWithDifferentWindow(40),
 //			basicPatternDummySEQ3.createIdenticalSpecificationWithDifferentWindow(60),
@@ -1162,7 +1212,7 @@ private static final ConditionSpecification[] dummyConditionSpecSEQ4 = new Condi
 //			basicPatternSEQ5.createIdenticalSpecificationWithDifferentWindow(60),
 //			basicPatternSEQ5.createIdenticalSpecificationWithDifferentWindow(80),
 //			basicPatternSEQ5.createIdenticalSpecificationWithDifferentWindow(100),
-			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(30),
+//			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(30),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(40),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(50),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(60),
