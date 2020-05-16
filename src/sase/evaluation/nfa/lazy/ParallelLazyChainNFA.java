@@ -131,12 +131,12 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     @Override
     public ArrayList<Match> waitForGroupToFinish()
     {
-        finishedWithGroup.add(dummyWorkerNeededForFinish);
+        signalGroupFinished();
         HashSet<Match> matches = new HashSet<>();
         while (true) {
             Match m = completeMatchOutputQueue.poll(1, TimeUnit.MILLISECONDS);
             if (m == null) {
-                if (finishedWithGroup.size() - 1 == this.getAllWorkers().size()) {
+                if (isDoneWithGroup()) {
                     break;
                 }
             }
@@ -144,7 +144,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 matches.add(m);
             }
         }
-        finishedWithGroup.clear();
+        barrier.resetCounts();
         for (BufferWorker worker: getAllWorkers())
         {
             worker.resetGroupFinish();
@@ -156,9 +156,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     @Override
     public List<Match> getLastMatches() {
 
-        isFinishedWithInput.set(true);
-        finishedThreads.add(dummyWorkerNeededForFinish);
-        barrier.notifyWorkerFinished(evaluationOrder.getFullEvaluationOrder().get(0));
+        signalGroupFinished();
         if (MainConfig.parallelDebugMode) {
             System.out.println("Starting poison pill at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
             System.out.println("Main thread idle time is " + mainThreadIdleTime / 1000000);
@@ -182,7 +180,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             m = completeMatchOutputQueue.poll(1, TimeUnit.SECONDS);
 
             if (m == null) {
-                if (barrier.numberOfFinishedStates() == evaluationOrder.getFullEvaluationOrder().size()) {
+                if (isDoneWithGroup()) {
                     break;
                 }
             }
@@ -206,6 +204,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         IBWorkers.forEach((nfaState, bufferWorkers) -> bufferWorkers.forEach(bufferWorker -> bufferWorker.thread.interrupt()));
         MBWorkers.forEach((nfaState, bufferWorkers) -> bufferWorkers.forEach(bufferWorker -> bufferWorker.thread.interrupt()));
         return new ArrayList<>(matches);
+    }
+
+    private boolean isDoneWithGroup() {
+        return barrier.numberOfFinishedStates() == evaluationOrder.getFullEvaluationOrder().size();
+    }
+
+    private void signalGroupFinished() {
+        barrier.notifyWorkerFinished(evaluationOrder.getFullEvaluationOrder().get(0));
     }
 
     private List<? extends BufferWorker> getAllWorkers()

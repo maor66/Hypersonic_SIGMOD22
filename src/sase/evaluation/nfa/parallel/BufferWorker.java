@@ -59,7 +59,6 @@ public class BufferWorker implements Runnable {
     public Long innerWindowTime = 0L;
 
     private boolean primaryTakenOnce = false;
-    private boolean addedToGroupFinish =  false;
 
     private int isPrimaryInputTakenLast = 1;
     private boolean isFinishedWithThisState = false;
@@ -391,7 +390,7 @@ public class BufferWorker implements Runnable {
     }
 
     public void resetGroupFinish() {
-        addedToGroupFinish = false;
+        isFinishedWithThisState = false;
     }
 
 //    public void initializeOppositeWorkers(List<BufferWorker> primaryOppositeWorkers, List<BufferWorker> secondaryOppositeWorkers) {

@@ -12,7 +12,7 @@ import sase.user.stocks.StockEventTypesManager;
 @SuppressWarnings("unused")
 public class MainConfig {
 	/* An OS-dependent module for accessing local paths. */
-	private static final PathConfig pathConfig = new LinuxPathConfig();
+	private static final PathConfig pathConfig = new WindowsPathConfig();
 	
 	/* A flag indicating whether code testing is currently in process. */
 	public static final boolean debugMode = false;
@@ -30,10 +30,10 @@ public class MainConfig {
 	/* Settings for receiving events from the input stream. */
 	// Maor: This two settings determine if the input is taken from a directory or a file
 	public static String[] inputDirsPaths = {
-		pathConfig.firstInputDirectoryPath,
+//		pathConfig.firstInputDirectoryPath,
 	};
 	public static String[] inputFilesPaths = {
-//		pathConfig.firstInputFilePath,
+		pathConfig.firstInputFilePath,
 	};
 	public static final int eventsPerRead = 0;
 	
@@ -89,5 +89,5 @@ public class MainConfig {
 	
 	/* Enable/disable debug prints of the generated evaluation structures. */
 	public static final boolean printStructureSummary = false;
-    public static boolean latencyCalculation = false;
+    public static boolean latencyCalculation = true;
 }
