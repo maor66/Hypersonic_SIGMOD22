@@ -441,6 +441,33 @@ public class PatternConfig {
 					},
 					SlaVerifierTypes.NONE);
 
+	private static final PatternSpecification basicFusedPatternSEQ6 =
+			new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+					new String[][][] {new String[][]{new String[]{
+							StockEventTypesManager.microsoftEventTypeName,
+							StockEventTypesManager.googleEventTypeName,
+							StockEventTypesManager.ciscoEventTypeName,
+							StockEventTypesManager.intelEventTypeName + StockEventTypesManager.fslrEventTypeName,
+							StockEventTypesManager.etfcEventTypeName
+					}}},
+					new ConditionSpecification[] {
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.microsoftEventTypeName,
+									StockEventTypesManager.googleEventTypeName),
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.googleEventTypeName,
+									StockEventTypesManager.ciscoEventTypeName),
+							new StockDeltaOrderingFusedFirstConditionSpecification(
+									StockEventTypesManager.ciscoEventTypeName,
+									StockEventTypesManager.intelEventTypeName + StockEventTypesManager.fslrEventTypeName),
+							new StockDeltaOrderingFusedInnerConditionSpecification(
+									StockEventTypesManager.intelEventTypeName + StockEventTypesManager.fslrEventTypeName),
+							new StockDeltaOrderingFusedSecondConditionSpecification(
+									StockEventTypesManager.intelEventTypeName + StockEventTypesManager.fslrEventTypeName,
+									StockEventTypesManager.etfcEventTypeName),
+					},
+					SlaVerifierTypes.NONE);
+
 	private static final PatternSpecification basicPatternSEQ6 =
 			new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 			new String[][][] {new String[][]{new String[]{

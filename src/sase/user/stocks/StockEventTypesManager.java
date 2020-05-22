@@ -676,7 +676,17 @@ public class StockEventTypesManager extends EventTypesManager {
 		result.add(ptekEventTypeName);
 		result.add(kirkEventTypeName);
 		result.add(nathEventTypeName);
-		
+
+		if (MainConfig.isFusionSupported) {
+			List<String> fusedNames = new ArrayList<>();
+			for (int i = 0; i < result.size(); i++) {
+				for (int j = 0; j < result.size(); j++) {
+					fusedNames.add(result.get(i)+ result.get(j));
+				}
+			}
+			return fusedNames;
+		}
+
 		return result;
 	}
 }

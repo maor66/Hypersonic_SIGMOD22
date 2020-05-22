@@ -23,8 +23,9 @@ public class MainConfig {
 	public static final boolean statisticsDebugMode = false;
 
 	public static final boolean parallelDebugMode = false;
+    public static boolean isFusionSupported = true;
 
-	public enum DatasetInUse {
+    public enum DatasetInUse {
     	STOCKS,
 			SENSORS
 			}
