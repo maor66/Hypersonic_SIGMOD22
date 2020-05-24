@@ -79,6 +79,11 @@ public class EventRateConfig {
 		eventRateHashMap.put(StockEventTypesManager.ptekEventTypeName, 0.251 * tempHack);
 		eventRateHashMap.put(StockEventTypesManager.kirkEventTypeName, 0.252 * tempHack);
 		eventRateHashMap.put(StockEventTypesManager.nathEventTypeName, 0.254 * tempHack);
+
+		((StockEventTypesManager) StockEventTypesManager.getInstance()).getAllFusedTypeNames().forEach(fusedEventTypeName ->
+				eventRateHashMap.put(fusedEventTypeName,
+						eventRateHashMap.get(fusedEventTypeName.substring(0,4)) * eventRateHashMap.get(fusedEventTypeName.substring(4))));
+		//Works only if both names are 4 chars long - somewhat lazy but event rate will probably won't be used as simulating fusion will be done only with eager
 		
 		//stocks - regions
 		eventRateHashMap.put(StockEventTypesManager.africanCompanyEventTypeName, 20.0);

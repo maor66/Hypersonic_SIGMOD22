@@ -82,6 +82,9 @@ public class ConditionSelectivityCollector {
 		String[] keyParts = key.split(":", 3);
 		String invertedKey;
 		if (keyParts.length < 2) {
+			if (MainConfig.isFusionSupported) {
+				return keyParts; //Hack just to support default selectivity of fused inner conditions
+			}
 			return null;
 		}
 		invertedKey = (keyParts.length == 2) ? (keyParts[1] + ":" + keyParts[0]) :

@@ -10,7 +10,7 @@ public class WindowsPathConfig extends PathConfig {
 		testInputFilePath = "";
 //		firstInputFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_20080205_1.txt";
 		firstInputFilePath = (MainConfig.datasetInUse == MainConfig.DatasetInUse.STOCKS)  ?
-				"C:\\Users\\Maor\\Documents\\NASDAQ_20080205_1.txt" :
+				"C:\\Users\\Maor\\Documents\\NASDAQ_short2_fused.txt" :
 				"C:\\Users\\Maor\\Documents\\csh124.ann.features.csv" ;
 
 //				firstInputFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_short.txt";

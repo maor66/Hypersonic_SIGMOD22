@@ -11,8 +11,8 @@ import sase.user.stocks.StockEventTypesManager;
 
 @SuppressWarnings("unused")
 public class MainConfig {
-	//    public static DatasetInUse datasetInUse = DatasetInUse.STOCKS;
-	public static DatasetInUse datasetInUse = DatasetInUse.SENSORS;
+	    public static DatasetInUse datasetInUse = DatasetInUse.STOCKS;
+//	public static DatasetInUse datasetInUse = DatasetInUse.SENSORS;
 
 	/* An OS-dependent module for accessing local paths. */
 	private static final PathConfig pathConfig = new WindowsPathConfig();
@@ -54,6 +54,7 @@ public class MainConfig {
 
 	/* Settings for creating and managing stock event types. */
 	public static final int historyLength = 20;
+	public static final int fusedHistoryLength = historyLength * 2;
 	public static final String companyToRegionDirectoryPath = pathConfig.companyToRegionDirectoryPath;
 
 	/* Settings for creating and managing tram congestion event types. */
