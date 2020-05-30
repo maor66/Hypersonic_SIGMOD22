@@ -14,7 +14,7 @@ import java.util.Collections;
 
 public class FileEventStreamReader {
 
-	private final String[] inputFilesPaths;
+	public final String[] inputFilesPaths;
 	private final int eventsPerRead;
 	
 	private int currentFileIndex;
