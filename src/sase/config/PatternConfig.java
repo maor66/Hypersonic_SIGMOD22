@@ -442,12 +442,19 @@ public class PatternConfig {
 	private static final PatternSpecification basicFusedPatternSEQ6 =
 			new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 					new String[][][] {new String[][]{new String[]{
+							StockEventTypesManager.ciscoEventTypeName,
 							StockEventTypesManager.intelEventTypeName + StockEventTypesManager.fslrEventTypeName,
 							StockEventTypesManager.etfcEventTypeName,
 							StockEventTypesManager.microsoftEventTypeName,
 							StockEventTypesManager.googleEventTypeName,
 					}}},
 					new ConditionSpecification[] {
+							new StockDeltaOrderingFusedFirstConditionSpecification(
+									StockEventTypesManager.ciscoEventTypeName,
+									StockEventTypesManager.intelEventTypeName + StockEventTypesManager.fslrEventTypeName),
+							new TimestampFusedComparisonConditionSpecification(
+									StockEventTypesManager.ciscoEventTypeName,
+									StockEventTypesManager.intelEventTypeName + StockEventTypesManager.fslrEventTypeName),
 							new StockDeltaOrderingFusedInnerConditionSpecification(
 									StockEventTypesManager.intelEventTypeName + StockEventTypesManager.fslrEventTypeName),
 							new StockDeltaOrderingFusedSecondConditionSpecification(
@@ -465,6 +472,7 @@ public class PatternConfig {
 	private static final PatternSpecification basicFusedPatternSEQ6_unfused =
 			new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 					new String[][][] {new String[][]{new String[]{
+							StockEventTypesManager.ciscoEventTypeName,
 							StockEventTypesManager.intelEventTypeName,
 							StockEventTypesManager.fslrEventTypeName,
 							StockEventTypesManager.etfcEventTypeName,
@@ -472,6 +480,12 @@ public class PatternConfig {
 							StockEventTypesManager.googleEventTypeName,
 					}}},
 					new ConditionSpecification[] {
+							new StockDeltaOrderingConditionSpecification(
+									StockEventTypesManager.ciscoEventTypeName,
+									StockEventTypesManager.intelEventTypeName),
+							new TimestampFusedComparisonConditionSpecification(
+									StockEventTypesManager.ciscoEventTypeName,
+									StockEventTypesManager.intelEventTypeName),
 							new StockDeltaOrderingConditionSpecification(
 									StockEventTypesManager.intelEventTypeName,
 									StockEventTypesManager.fslrEventTypeName),
@@ -1230,7 +1244,7 @@ private static final ConditionSpecification[] dummyConditionSpecSEQ4 = new Condi
 //			basicPatternSEQ5.createIdenticalSpecificationWithDifferentWindow(80),
 //			basicPatternSEQ5.createIdenticalSpecificationWithDifferentWindow(100),
 			basicFusedPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(8),
-//			basicFusedPatternSEQ6_unfused.createIdenticalSpecificationWithDifferentWindow(8),
+//			basicFusedPatternSEQ6_unfused.createIdenticalSpecificationWithDifferentWindow(11),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(30),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(40),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(50),

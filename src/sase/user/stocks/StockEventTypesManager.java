@@ -21,6 +21,7 @@ public class StockEventTypesManager extends EventTypesManager {
 	public static final int firstStockMeasurementIndex = 2;
 	public static final int numberOfStockMeasurementIndices = 20;
 	public static final int SecondTypeFusedFirstStockMeasurementIndex = firstStockMeasurementIndex + numberOfStockMeasurementIndices;
+	public static final int fusedFirstTypeTimestampIndex = SecondTypeFusedFirstStockMeasurementIndex + numberOfStockMeasurementIndices;
 
 
 	//stock patterns by industry related names
@@ -380,12 +381,13 @@ public class StockEventTypesManager extends EventTypesManager {
 	}
 
 	private Attribute[] getFusedAttributes() {
-		Attribute[] attributes = new Attribute[MainConfig.fusedHistoryLength + 2];
+		Attribute[] attributes = new Attribute[MainConfig.fusedHistoryLength + 2 + 1];
 		attributes[0] = new Attribute(Datatype.TEXT, labelAttributeName);
 		attributes[1] = new Attribute(Datatype.LONG, timestampAttributeName);
 		for (int i = 2; i < attributes.length; ++i) {
 			attributes[i] = new Attribute(Datatype.DOUBLE, String.format("StockPrice_%d", i-2));
 		}
+		attributes[fusedFirstTypeTimestampIndex] = new Attribute(Datatype.LONG, "Fused " + timestampAttributeName);
 		return attributes;
 	}
 
@@ -531,6 +533,9 @@ public class StockEventTypesManager extends EventTypesManager {
 			else {
 				newPayload[i] = Double.valueOf((String)payload[i]);
 			}
+		}
+		if (payload.length == fusedFirstTypeTimestampIndex + 1) {
+			newPayload[fusedFirstTypeTimestampIndex] = payload[fusedFirstTypeTimestampIndex];
 		}
 		return newPayload;
 	}

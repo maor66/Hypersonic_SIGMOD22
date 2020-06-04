@@ -12,7 +12,7 @@ public class FileBasedEventProducer extends EventProducer {
 	
 	private FileEventStreamReader fileEventStreamReader;
 	public static long ReadTime = 0;
-	private int STOCK_TYPE_NAME_LENGTH = 4;
+	public static final int STOCK_TYPE_NAME_LENGTH = 4;
 
 	public FileBasedEventProducer(SimulationSpecification simulationSpecification) {
 		super(simulationSpecification);
