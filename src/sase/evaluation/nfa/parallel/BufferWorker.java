@@ -1,7 +1,6 @@
 package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
-import sase.base.Event;
 import sase.base.EventType;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
@@ -14,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static sase.evaluation.nfa.parallel.WorkerGroup.EVENT_WORKER;
 
@@ -63,6 +63,8 @@ public class BufferWorker implements Runnable {
 
     private int isPrimaryInputTakenLast = 1;
     private boolean isFinishedWithThisState = false;
+    private long numberOfLastUsedItems = 0;
+    private long inputTime = 0;
 
 
     public BufferWorker(TypedNFAState eventState,
@@ -158,21 +160,36 @@ public class BufferWorker implements Runnable {
         return allWorkers;
     }
 
+
     private ContainsEvent getElement()
     {
         if (!primaryTakenOnce) { // Give a chance to the primary only
             lastInputUsed = primaryInput;
             return takePrimaryInput();
         }
+
         ContainsEvent newElement;
         if (!isFinishedWithThisState) {
+//            newElement = takeElementFromSpecificInput(lastInputUsed, 0);
+//            if (newElement  != null) {
+//                numberOfLastUsedItems ++;
+//                if (lastInputUsed == primaryInput) {
+//                    numberOfPrimaryHandledItems++;
+//                }
+//                else if (lastInputUsed == secondaryInput) {
+//                    numberOfSecondaryHandledItems++;
+//                }
+//                else {
+//                    numberOfOtherStateHandledItems++;
+//                }
+//                return newElement;
+//            }
             newElement = takePrimaryInput();
             if (newElement != null) {
                 numberOfPrimaryHandledItems++;
                 lastInputUsed = primaryInput;
                 return newElement;
             }
-
             newElement = takeSecondaryInput();
             if (newElement != null) {
                 numberOfSecondaryHandledItems++;
@@ -180,14 +197,24 @@ public class BufferWorker implements Runnable {
                 return newElement;
             }
             possibleNotifyWorkerFinishedInState();
+
         }
 
+        long time1 = System.nanoTime();
         newElement = takeElementFromDifferentState();
+
+        primaryIdleTime += System.nanoTime() - time1;
+
         return newElement;
+    }
+
+    private ContainsEvent takeElementFromSpecificInput(ParallelQueue<? extends ContainsEvent> lastInputUsed, int timeout ) {
+        return takeNextInput(lastInputUsed, timeout);
     }
 
     private void possibleNotifyWorkerFinishedInState() {
         if (barrier.hasFinishedWithAllPreviousStates(eventType) && primaryInput.isEmpty() && secondaryInput.isEmpty() && !isFinishedWithThisState) {
+            System.out.println("Finished  with state " + eventType);
             isFinishedWithThisState = true;
             barrier.notifyWorkerFinished(eventType);
         }
@@ -195,6 +222,9 @@ public class BufferWorker implements Runnable {
 
     private ContainsEvent takeElementFromDifferentState() {
         List<ParallelQueue<? extends ContainsEvent>> inputs = getInputsOfOngoingStates();
+        if (inputs.isEmpty()) {
+            return null;
+        }
         Collections.shuffle(inputs, ThreadLocalRandom.current());
         ContainsEvent newElement;
 
@@ -202,6 +232,7 @@ public class BufferWorker implements Runnable {
         if (inputs.contains(lastInputUsed)) { // If input is successful before than it gets priority
             newElement = takeElementFromSpecificInput(lastInputUsed);
             if (newElement != null) {
+                numberOfLastUsedItems++;
                 numberOfOtherStateHandledItems++;
                 return newElement;
             }
@@ -242,13 +273,18 @@ public class BufferWorker implements Runnable {
     }
 
     public void getAndWork() {
+        long time2 = System.nanoTime();
         ContainsEvent newElement = getElement();
+        inputTime += System.nanoTime() - time2;
         if (newElement == null) {
             possibleNotifyWorkerFinishedInState();
             return;
         }
         ElementWorker usedTask = inputsToTasks.get(lastInputUsed);
+        long time  = System.nanoTime();
         usedTask.handleElement(newElement);
+        secondaryIdleTime += System.nanoTime() - time;
+
     }
 
     @Override
@@ -360,8 +396,15 @@ public class BufferWorker implements Runnable {
 //            return input.take();
     }
     private void finishRun() {
-        System.out.println("Buffer Worker - " +threadName + " " + Thread.currentThread().getId() + " Handled " + numberOfPrimaryHandledItems + " primary items " +
-                + numberOfSecondaryHandledItems + " Handled secondary items " + numberOfOtherStateHandledItems +  " Handle other states items. Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000);
+        AtomicLong totalhandleitems = new AtomicLong();
+        AtomicLong totalOppositeItems = new AtomicLong();
+        inputsToTasks.forEach(((parallelQueue, elementWorker) ->{
+            totalhandleitems.addAndGet(elementWorker.numberOfHandledItems);
+            totalOppositeItems.addAndGet(elementWorker.numberOfOppositeItems);
+        }));
+        System.out.println("Buffer Worker - " +threadName + " " + Thread.currentThread().getId() + "inputimte " + inputTime/1000000 +  " Handled " + numberOfPrimaryHandledItems + " primary items " +
+                + numberOfSecondaryHandledItems + " Handled secondary items " + numberOfOtherStateHandledItems +  " Handle other states items " + numberOfLastUsedItems + "Handled last used items. Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000+
+                "total handled items " + totalhandleitems + " total opposites items " + totalOppositeItems);
         inputsToTasks.forEach((parallelQueue, elementWorker) -> elementWorker.finishRun());
 //        primaryTask.finishRun();
 //        secondaryTask.finishRun();

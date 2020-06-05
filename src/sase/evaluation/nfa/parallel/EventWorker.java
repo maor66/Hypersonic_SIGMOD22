@@ -31,6 +31,7 @@ public class EventWorker extends ElementWorker {
         long latestEarliestTimeStamp = Long.MIN_VALUE;
         Match latest = null;
         for (Match match : ((List<Match>) (List<?>) bufferSubList)) {
+            long time = System.nanoTime();
             if (match.getEarliestTimestamp() > latestEarliestTimeStamp) {
                 latest = match;
                 latestEarliestTimeStamp = match.getEarliestTimestamp();
@@ -44,6 +45,7 @@ public class EventWorker extends ElementWorker {
 //                continue;
 //            }
             List<Event> partialMatchEvents = new ArrayList<>(match.getPrimitiveEvents());
+            actualCalcTime += System.nanoTime() - time;
             checkAndSendToNextState((Event) newElement, partialMatchEvents, match);
         }
         return latest;

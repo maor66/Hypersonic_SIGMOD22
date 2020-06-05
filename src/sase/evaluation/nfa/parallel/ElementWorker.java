@@ -58,12 +58,23 @@ public abstract class ElementWorker {
         dataStorage.addEventToOwnBuffer(newElement);
         Iterator<ThreadContainers> iterator = oppositeBuffers.iterator();
         while (iterator.hasNext()) {
+            long time = System.nanoTime();
+
             ThreadContainers buffer = iterator.next();
 //            long time = System.nanoTime();
             if (!buffer.isContainerActive()) {
+                sliceTime += System.nanoTime() - time;
+
                 continue; // skip empty sub-lists (that were always empty)
             }
-            ContainsEvent ce = iterateOnSubList(newElement, buffer.getBufferSubListWithReadLock());
+            sliceTime += System.nanoTime() - time;
+
+            time = System.nanoTime();
+            List<ContainsEvent>  l  = buffer.getBufferSubListWithReadLock();
+            sliceTimeActual += System.nanoTime() - time;
+            time = System.nanoTime();
+            ContainsEvent ce = iterateOnSubList(newElement, l);
+            iteratingBufferTime += System.nanoTime() - time;
 //            iteratingBufferTime += System.nanoTime() - time;
             buffer.releaseReadLock();
             if (ce != null && latestTimeStamp < ce.getEarliestTimestamp()) {
@@ -71,6 +82,8 @@ public abstract class ElementWorker {
                 removingCriteria = ce;
             }
         }
+        long time = System.nanoTime();
+
         if (removingCriteria != null) {
             if ( currentBackoff <= 0)  {
 //            long time =  System.nanoTime();
@@ -84,6 +97,7 @@ public abstract class ElementWorker {
                 currentBackoff--;
             }
         }
+        innerCondTime += System.nanoTime() - time;
     }
 
     protected abstract boolean oppositeTaskNotFinished(List<BufferWorker> workersNeededToFinish);
@@ -100,14 +114,14 @@ public abstract class ElementWorker {
     protected boolean isEventCompatibleWithPartialMatch(Match partialMatch, List<Event> partialMatchEvents, Event event) {
         //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
         //TODO: doesn't have to verify temporal condition first anymore - check if removing doesn't hurt correctness
-        long time = System.nanoTime();
+//        long time = System.nanoTime();
         boolean b =  transition.verifyFirstStepCondition(partialMatchEvents);
-        actualCalcTime += System.nanoTime() - time;
+//        actualCalcTime += System.nanoTime() - time;
         numberOfOppositeItems++;
         if (b) {
-            time = System.nanoTime();
+//            time = System.nanoTime();
             boolean s =  transition.verifySecondStepCondition(partialMatchEvents);
-            conditionTime += System.nanoTime() - time;
+//            conditionTime += System.nanoTime() - time;
             if (!s) return false;
             boolean w = verifyTimeWindowConstraint(partialMatch, event);
             return  w;
@@ -122,11 +136,11 @@ public abstract class ElementWorker {
     }
 
     protected void checkAndSendToNextState(Event event, List<Event> partialMatchEvents, Match match) {
-//        long time = System.nanoTime();
+        long time = System.nanoTime();
         partialMatchEvents.add(event);
         if (isEventCompatibleWithPartialMatch(match, partialMatchEvents, event)) {
 //            windowverifyTime += System.nanoTime() - time;
-//            long time = System.nanoTime();
+//             time = System.nanoTime();
             sendToNextState(match.createNewPartialMatchWithEvent(event));
 //            sendMatchingTime += System.nanoTime() - time;
         }
@@ -135,7 +149,7 @@ public abstract class ElementWorker {
 //        }
 //        time = System.nanoTime();
         partialMatchEvents.remove(partialMatchEvents.size() - 1);
-//        actualCalcTime += System.nanoTime() - time;
+        innerWindowTime += System.nanoTime() - time;
     }
 
     protected void sendToNextState(Match newPartialMatchWithEvent) {
