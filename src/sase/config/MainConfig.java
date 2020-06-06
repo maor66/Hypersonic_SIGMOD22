@@ -15,7 +15,7 @@ public class MainConfig {
 //	public static DatasetInUse datasetInUse = DatasetInUse.SENSORS;
 
 	/* An OS-dependent module for accessing local paths. */
-	private static final PathConfig pathConfig = new WindowsPathConfig();
+	private static final PathConfig pathConfig = new LinuxPathConfig();
 	
 	/* A flag indicating whether code testing is currently in process. */
 	public static final boolean debugMode = false;
@@ -23,9 +23,10 @@ public class MainConfig {
 	public static final boolean statisticsDebugMode = false;
 
 	public static final boolean parallelDebugMode = false;
-    public static boolean isFusionSupported = true;
+    public static boolean isFusionSupported = false;
+	public static String systemPythonPath = pathConfig.systemPythonPath;
 
-    public enum DatasetInUse {
+	public enum DatasetInUse {
     	STOCKS,
 			SENSORS
 			}

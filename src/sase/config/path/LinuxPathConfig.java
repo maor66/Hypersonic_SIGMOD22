@@ -14,5 +14,7 @@ public class LinuxPathConfig extends PathConfig {
 //		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1selSEQ6.ser";
 		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1selSEQ4actual.ser";
 //		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1selSEQ4.ser";
+		systemPythonPath = "/usr/bin/python3.8";
+
 	}
 }

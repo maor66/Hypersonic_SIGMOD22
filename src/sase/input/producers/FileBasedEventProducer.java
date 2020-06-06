@@ -39,7 +39,7 @@ public class FileBasedEventProducer extends EventProducer {
 		if (fusedType == null) {
 			throw new RuntimeException("No fused type found");
 		}
-		ProcessBuilder processBuilder = new ProcessBuilder("C:\\Users\\Maor\\AppData\\Local\\Programs\\Python\\Python38\\python.exe", "fusion_input_pre_processor.py",
+		ProcessBuilder processBuilder = new ProcessBuilder(MainConfig.systemPythonPath, "fusion_input_pre_processor.py",
 				file_path,
 				fusedType.substring(0,STOCK_TYPE_NAME_LENGTH),
 				fusedType.substring(STOCK_TYPE_NAME_LENGTH),

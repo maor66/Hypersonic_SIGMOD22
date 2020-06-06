@@ -23,5 +23,6 @@ public class WindowsPathConfig extends PathConfig {
 //		outputFilePath = "C:\\\\CEP\\\\0802\\lazyCEPlogs\\NASDAQ_20080201_1out.csv";
 //		selectivityEstimatorsFilePath = "C:\\Education\\PhD\\Experiments\\Metadata\\selectivity.ser";
 		selectivityEstimatorsFilePath = "C:\\Users\\Maor\\Documents\\NASDAQ_20080201_1sel_dummy.ser";
+		systemPythonPath = "C:\\Users\\Maor\\AppData\\Local\\Programs\\Python\\Python38\\python.exe";
 	}
 }

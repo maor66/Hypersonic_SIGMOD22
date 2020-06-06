@@ -1,6 +1,8 @@
 import argparse
+import datetime
 
 SEPARATOR = ","
+TIMESTAMP_FORMAT = "%Y%m%d%H%M"
 
 
 class InputPreProcessor:
@@ -35,7 +37,7 @@ class InputPreProcessor:
         return self.split_line(line)[0]
 
     def get_timestamp_in_line(self, line):
-        return int(self.split_line(line)[1])
+        return self.split_line(line)[1]
 
     def get_line_attributes(self, line):
         return SEPARATOR.join(self.split_line(line)[2:])[:-1]
@@ -43,21 +45,26 @@ class InputPreProcessor:
     def find_pairs_with_new_line(self, line):
         new_pairs = []
         for (timestamp, attributes) in self.first_type_events.items():
-            if timestamp + self.time_window >= self.get_timestamp_in_line(line):  # found pair
-                new_pairs += self.fuse_events(line, attributes, str(timestamp))
+            if self.validate_time_window(timestamp, self.get_timestamp_in_line(line)):
+                new_pairs += self.fuse_events(line, attributes, timestamp)
         return new_pairs
 
     def get_opposite_event_type(self, event_type):
         return self.first_type if event_type == self.second_type else self.second_type
 
     def fuse_events(self, line, first_type_attributes, first_type_timestamp):
-        return SEPARATOR.join([self.combine_event_names(), str(self.get_timestamp_in_line(line)), first_type_attributes, self.get_line_attributes(line), first_type_timestamp]) + "\n"
+        return SEPARATOR.join([self.combine_event_names(), self.get_timestamp_in_line(line), first_type_attributes, self.get_line_attributes(line), first_type_timestamp]) + "\n"
 
     def combine_event_names(self):
         return self.first_type + self.second_type
 
     def write_line_to_output(self, line):
         self.output += line
+
+    def validate_time_window(self, first_event_timestamp, second_event_timestamp):
+        first_date_time = datetime.datetime.strptime(first_event_timestamp, TIMESTAMP_FORMAT)
+        second_date_time = datetime.datetime.strptime(second_event_timestamp, TIMESTAMP_FORMAT)
+        return first_date_time + datetime.timedelta(minutes=self.time_window) >= second_date_time
 
 
 parser = argparse.ArgumentParser(description='This is a pre processor for simulating fusion as input')
