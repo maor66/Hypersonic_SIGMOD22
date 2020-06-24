@@ -151,4 +151,7 @@ private long earliestEvent = 0;
         return isLastInput;
     }
 
+	public int getEventsInMatch() {
+		return primitiveEvents.size();
+	}
 }

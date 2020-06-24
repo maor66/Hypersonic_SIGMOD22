@@ -212,6 +212,10 @@ private int isPrimaryInputTakenLast = 1;
         addedToGroupFinish = false;
     }
 
+    public long size() {
+        return primaryTask.size() + secondaryTask.size();
+    }
+
 //    public void initializeOppositeWorkers(List<BufferWorker> primaryOppositeWorkers, List<BufferWorker> secondaryOppositeWorkers) {
 //        List<ElementWorker> actualPrimaryOppositeWorkers = new ArrayList<>();
 //        insertElementWorkers(primaryTask, primaryOppositeWorkers, actualPrimaryOppositeWorkers);

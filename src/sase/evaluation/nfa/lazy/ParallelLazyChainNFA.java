@@ -221,6 +221,11 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     }
 
     @Override
+    public long size() {
+        return getAllWorkers().stream().mapToInt(worker -> (int) worker.size()).sum();
+    }
+
+    @Override
     public void completeCreation(List<Pattern> patterns) {
         super.completeCreation(patterns);
         initallizeThreadAllocation();

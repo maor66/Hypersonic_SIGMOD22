@@ -36,6 +36,7 @@ public abstract class ElementWorker {
     private int lastRemovedNumber= 0;
     private  int currentBackoff = 0;
     private  int backoffStep = 1;
+    private long maxElements = 0;
 
     public ElementWorker(TypedNFAState eventState,
                          List<ThreadContainers> oppositeBuffers)
@@ -48,7 +49,7 @@ public abstract class ElementWorker {
     public void handleElement(ContainsEvent newElement, List<BufferWorker> workersNeededToFinish, ParallelQueue<? extends  ContainsEvent> input) {
         ContainsEvent removingCriteria = null;
         long latestTimeStamp = Long.MIN_VALUE;
-        dataStorage.addEventToOwnBuffer(newElement);
+        recordMaxElements(dataStorage.addEventToOwnBuffer(newElement));
         Iterator<ThreadContainers> iterator = oppositeBuffers.iterator();
         while (iterator.hasNext()) {
             ThreadContainers buffer = iterator.next();
@@ -73,6 +74,12 @@ public abstract class ElementWorker {
             else {
                 currentBackoff--;
             }
+        }
+    }
+
+    private void recordMaxElements(long currentNumberOfElements) {
+        if (currentNumberOfElements > maxElements) {
+            maxElements = currentNumberOfElements;
         }
     }
 
@@ -148,5 +155,11 @@ public abstract class ElementWorker {
             oppositeBuffers.add(secondaryTask.dataStorage);
             isSecondaryAddToList = true;
         }
+    }
+
+    protected abstract long sizeOfElement();
+
+    public long size() {
+        return sizeOfElement() * maxElements;
     }
 }
