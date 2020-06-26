@@ -22,6 +22,7 @@ import sase.evaluation.IEvaluationMechanismInfo;
 import sase.evaluation.IMultiPatternEvaluationMechanism;
 import sase.evaluation.common.Match;
 import sase.evaluation.data_parallel.DataParallelEvaluationMechanism;
+import sase.evaluation.data_parallel.RIPEvaluationMechanism;
 import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
 import sase.input.EventProducer;
 import sase.input.EventProducerFactory;
@@ -304,10 +305,13 @@ public class Simulator {
 					}
 					event.updateSystemTime(groupTime);
 					processIncomingEvent(event);
-					long memoryUsage = secondaryEvaluationMechanism == null ?
-							primaryEvaluationMechanism.size() :
-							primaryEvaluationMechanism.size() + secondaryEvaluationMechanism.size();
-					Environment.getEnvironment().getStatisticsManager().recordPeakMemoryUsage(memoryUsage);
+					if (!(primaryEvaluationMechanism instanceof ParallelLazyChainNFA ||
+					primaryEvaluationMechanism instanceof RIPEvaluationMechanism)) {
+						long memoryUsage = secondaryEvaluationMechanism == null ?
+								primaryEvaluationMechanism.size() :
+								primaryEvaluationMechanism.size() + secondaryEvaluationMechanism.size();
+						Environment.getEnvironment().getStatisticsManager().recordPeakMemoryUsage(memoryUsage);
+					}
 					if (MainConfig.periodicallyReportStatistics) {
 						StatisticsManager.attemptPeriodicUpdate();
 					}
@@ -321,6 +325,10 @@ public class Simulator {
 		finally {
 			//get last matches
 //			Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.processingTime);
+			long memoryUsage = secondaryEvaluationMechanism == null ?
+					primaryEvaluationMechanism.size() :
+					primaryEvaluationMechanism.size() + secondaryEvaluationMechanism.size();
+			Environment.getEnvironment().getStatisticsManager().recordPeakMemoryUsage(memoryUsage);
 			recordNewMatches(primaryEvaluationMechanism.getLastMatches());
 //			Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.processingTime);
 			if (secondaryEvaluationMechanism != null) {

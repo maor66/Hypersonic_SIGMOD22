@@ -63,6 +63,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 		public IEvaluationMechanism machine;
 		protected BlockingQueue<EvaluationInput> threadInput = new LinkedTransferQueue<>();
 //		volatile long maxSize = 0;
+		long maxSize = 0;
 		long machineTime = 0;
 		private int handledEvents= 0;
 		boolean isFinishedWithOwnGroupInput = false;
@@ -115,6 +116,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 //					}
 					long time = System.nanoTime();
 					List<Match> resProcessNewEvent = machine.processNewEvent(event, canStartInstance);
+					maxSize = Math.max(maxSize, machine.size());
 					machineTime += System.nanoTime() -time;
 					if (resProcessNewEvent != null)
 						result.addAll(resProcessNewEvent);
@@ -125,7 +127,6 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 				Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.numberOfSynchronizationActions);
 				threadOutput.addAll(result);
 			}
-//			maxSize = Math.max(maxSize, machine.size());
 		}
 		
 		public void cancel() {
@@ -248,7 +249,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	public long size() {
 		long size = 0;
 		for (ParallelThread parallelThread : threads) {
-//			size += parallelThread.maxSize;
+			size += parallelThread.maxSize;
 		}
 		return size;
 	}
