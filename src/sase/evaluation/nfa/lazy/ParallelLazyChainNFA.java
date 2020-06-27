@@ -351,17 +351,30 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         final int MIN_THREADS_PER_STATE = 2;
         int threadsToAdd = 0;
         double costLeft = totalCost;
-        for (Double costOfState : costOfStates) {
+        List<Boolean> isMinThreadStates = new ArrayList<>();
+        for (int i =0; i < costOfStates.size(); i++) {
+            Double costOfState = costOfStates.get(i);
             int numOfThreadsForState = (int)(costOfState/ totalCost * threadsLeft);
             if (numOfThreadsForState < MIN_THREADS_PER_STATE) {
-                threadsToAdd += MIN_THREADS_PER_STATE - numOfThreadsForState;
+                threadsToAdd += MIN_THREADS_PER_STATE;
                 costLeft -= costOfState;
+                isMinThreadStates.add(true);
+            }
+            else {
+                isMinThreadStates.add(false);
             }
         }
         threadsLeft -= threadsToAdd;
         int threadToAllocate = threadsLeft;
         threadsLeft = numOfThreads;
-        for (Double costOfState : costOfStates) {
+        for (int i =0; i < costOfStates.size(); i++) {
+            Double costOfState = costOfStates.get(i);
+            if (isMinThreadStates.get(i)) {
+                inputBufferThreadsPerState.add(MIN_THREADS_PER_STATE / 2);
+                matchBufferThreadsPerState.add(MIN_THREADS_PER_STATE / 2);
+                threadsLeft -= MIN_THREADS_PER_STATE;
+                continue;
+            }
             int numOfThreadsForState = (int) (costOfState / costLeft * threadToAllocate);
             numOfThreadsForState = Math.max(numOfThreadsForState, MIN_THREADS_PER_STATE);
             threadNumCalculation(MIN_THREADS_PER_STATE, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
@@ -404,7 +417,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         while (threadsLeft > 0) {
             int numOfThreadsForState = (int)(Math.ceil(costOfStates.get(--count) / totalCost * threadsLeft));
             if (numOfThreadsForState == 1) {
-                inputBufferThreadsPerState.add(numOfThreadsForState);
+                inputBufferThreadsPerState.add(inputBufferThreadsPerState.remove(count) + numOfThreadsForState);
             } else {
                 threadNumCalculation(MIN_THREADS_PER_STATE, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
             }
@@ -425,14 +438,15 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         Double sumOfLastState = null;
         List<EventType> eventTypesSoFar = new ArrayList<>();
         List<Double> costOfStates = new ArrayList<>();
-        costOfStates.add(evaluationOrder.getFullEvaluationOrder().get(0).getRate());
-        for (TypedNFAState state : nfaStates) {
+        if (!MainConfig.conditionSelectivityMeasurementMode) {
+            costOfStates.add(evaluationOrder.getFullEvaluationOrder().get(0).getRate());
+            for (TypedNFAState state : nfaStates) {
 //            CNFCondition filteredCondition = ((CNFCondition) pattern.getCondition()).getConditionForTypes(new ArrayList<>(eventTypesSoFar), true);
-            CNFCondition filteredCondition = (CNFCondition) state.getActualIncomingTransition().getCondition();
-            costOfStates.add(costModel.getCostOfSingleState(filteredCondition,
-                                                            state.getEventType(),
-                                                            costOfStates.get(costOfStates.size() - 1)));
-            eventTypesSoFar.add(state.getEventType());
+                CNFCondition filteredCondition = (CNFCondition) state.getActualIncomingTransition().getCondition();
+                costOfStates.add(costModel.getCostOfSingleState(filteredCondition,
+                        state.getEventType(),
+                        costOfStates.get(costOfStates.size() - 1)));
+                eventTypesSoFar.add(state.getEventType());
             /*
             eventTypesSoFar.add(state.getEventType());
             if (costOfStates.isEmpty()) {
@@ -447,8 +461,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             costOfStates.add(sumCosts - sumOfLastState);
             sumOfLastState = sumCosts;
             */
+            }
+            costOfStates.remove(0);
         }
-        costOfStates.remove(0);
+        else  {
+            for (TypedNFAState state : nfaStates) {
+                costOfStates.add(1.0);
+            }
+        }
         double totalCost = 0;
         for (int i = 0; i < costOfStates.size(); ++i) {
             totalCost += costOfStates.get(i);
@@ -458,9 +478,15 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         List<Integer> matchBufferThreadsPerState = new ArrayList<>();
 
         balanceThreads(nfaStates, costOfStates, totalCost, inputBufferThreadsPerState, matchBufferThreadsPerState);
+        if (!MainConfig.conditionSelectivityMeasurementMode) {
+            if (inputBufferThreadsPerState.subList(0, nfaStates.size()).stream().mapToInt(integer -> integer).sum() +
+                matchBufferThreadsPerState.subList(0, nfaStates.size()).stream().mapToInt(integer -> integer).sum() != numOfThreads) {
+                throw new RuntimeException("Not using all possible threads");
+            }
+        }
 
-        inputBufferThreadsPerState.clear();
-        matchBufferThreadsPerState.clear();
+//        inputBufferThreadsPerState.clear();
+//        matchBufferThreadsPerState.clear();
         //SEQ 4
 //        inputBufferThreadsPerState.add(1);
 //        inputBufferThreadsPerState.add(3);
@@ -482,14 +508,16 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 //        matchBufferThreadsPerState.add(5);
 //        matchBufferThreadsPerState.add(1);
 // SEQ 5
-        inputBufferThreadsPerState.add(1);
-        inputBufferThreadsPerState.add(3);
-        inputBufferThreadsPerState.add(6);
-        inputBufferThreadsPerState.add(1);
-        matchBufferThreadsPerState.add(1);
-        matchBufferThreadsPerState.add(3);
-        matchBufferThreadsPerState.add(7);
-        matchBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(3);
+//        inputBufferThreadsPerState.add(5);
+//        inputBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(3);
+//        matchBufferThreadsPerState.add(6);
+//        matchBufferThreadsPerState.add(1);
         //SEQ 8
 //        inputBufferThreadsPerState.add(1);
 //        inputBufferThreadsPerState.add(1);

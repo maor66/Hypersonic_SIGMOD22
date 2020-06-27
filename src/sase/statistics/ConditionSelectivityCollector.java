@@ -127,7 +127,7 @@ public class ConditionSelectivityCollector {
 			FileInputStream fis = new FileInputStream(MainConfig.selectivityEstimatorsFilePath);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			selectivityEstimates = (HashMap<String, Double>) ois.readObject();
-			selectivityEstimates.clear();
+//			selectivityEstimates.clear();
 			ois.close();
 			fis.close();
 //			selectivityEstimates.put("BIDU:AAPL",0.3);
@@ -136,9 +136,9 @@ public class ConditionSelectivityCollector {
 //			selectivityEstimates.put("GOOG:INTC",0.1);
 //			selectivityEstimates.put("INTC:YHOO",0.1);
 //			selectivityEstimates.put("CSCO:ETFC",1.0);
-			selectivityEstimates.put("INTC:CSCO",1.0);
-			selectivityEstimates.put("YHOO:INTC",0.1);
-			selectivityEstimates.put("CSCO:GOOG",0.1);
+//			selectivityEstimates.put("INTC:CSCO",1.0);
+//			selectivityEstimates.put("YHOO:INTC",0.1);
+//			selectivityEstimates.put("CSCO:GOOG",0.1);
 //			selectivityEstimates.put("MSFT:GOOG",0.126951);
 //			selectivityEstimates.put("GOOG:CSCO",0.006409);
 //			selectivityEstimates.put("CSCO:INTC",0.297975);

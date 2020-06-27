@@ -15,6 +15,8 @@ public class MainConfig {
 //	public static DatasetInUse datasetInUse = DatasetInUse.SENSORS;
 
 	/* An OS-dependent module for accessing local paths. */
+	public static String experimentName = "SEQ6WindowHybrid";
+
 	private static final PathConfig pathConfig = new LinuxPathConfig();
 	
 	/* A flag indicating whether code testing is currently in process. */
@@ -46,10 +48,10 @@ public class MainConfig {
 
 
 	public static String[] inputDirsPaths = {
-//		pathConfig.firstInputDirectoryPath,
+		pathConfig.firstInputDirectoryPath,
 	};
 	public static String[] inputFilesPaths = {
-		pathConfig.firstInputFilePath,
+//		pathConfig.firstInputFilePath,
 	};
 	public static final int eventsPerRead = 0;
 
