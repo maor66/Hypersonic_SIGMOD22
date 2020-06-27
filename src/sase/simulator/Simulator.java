@@ -325,11 +325,11 @@ public class Simulator {
 		finally {
 			//get last matches
 //			Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.processingTime);
+			recordNewMatches(primaryEvaluationMechanism.getLastMatches());
 			long memoryUsage = secondaryEvaluationMechanism == null ?
 					primaryEvaluationMechanism.size() :
 					primaryEvaluationMechanism.size() + secondaryEvaluationMechanism.size();
 			Environment.getEnvironment().getStatisticsManager().recordPeakMemoryUsage(memoryUsage);
-			recordNewMatches(primaryEvaluationMechanism.getLastMatches());
 //			Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.processingTime);
 			if (secondaryEvaluationMechanism != null) {
 				recordNewMatches(secondaryEvaluationMechanism.getLastMatches());
