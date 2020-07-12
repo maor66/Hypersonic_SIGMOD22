@@ -103,7 +103,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 			// if yes, run processNewEvent of nfa
 			List<Match> result = null;
 //			synchronized(machine) {
-				result = machine.validateTimeWindow(event.getTimestamp());
+				result = machine.validateTimeWindow(event.getTimestamp(), event);
 				if (result == null) {
 					result = machine.processNewEvent(event, canStartInstance);
 					System.out.println("wrong");
@@ -188,7 +188,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	}
 	
 	@Override
-	public List<Match> validateTimeWindow(long currentTime) {
+	public List<Match> validateTimeWindow(long currentTime, Event event) {
 		return new ArrayList<Match>();
 	}
 

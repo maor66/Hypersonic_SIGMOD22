@@ -23,6 +23,7 @@ import sase.evaluation.IMultiPatternEvaluationMechanism;
 import sase.evaluation.common.Match;
 import sase.evaluation.data_parallel.DataParallelEvaluationMechanism;
 import sase.evaluation.data_parallel.RIPEvaluationMechanism;
+import sase.evaluation.nfa.lazy.LazyNFA;
 import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
 import sase.input.EventProducer;
 import sase.input.EventProducerFactory;
@@ -79,6 +80,7 @@ public class Simulator {
 			Environment.getEnvironment().getEventRateEstimator().registerEventArrival(event.getType());
 		}
 
+		event.getTimestamp(); // Initializes the event's timestamp, otherwise can cause problems with the parallel algorithms setting the timestamp concurrently
 		List<Match> matches = actuallyProcessIncomingEvent(event);
 		Environment.getEnvironment().getPredicateResultsCache().clear();
 		recordNewMatches(matches);
@@ -86,17 +88,19 @@ public class Simulator {
 		tryModifyWorkload(event.getTimestamp());
 	}
 
-	private List<Match> actuallyProcessIncomingEvent(Event event) {
-		if (secondaryEvaluationMechanism == null) {
-			List<Match> matches = validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
+    private List<Match> actuallyProcessIncomingEvent(Event event) {
+        if (secondaryEvaluationMechanism == null) {
+            List<Match> matches = new ArrayList<>();
+			validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
 			addIfNotNull(processNewEventOnEvaluationMechanism(primaryEvaluationMechanism, event, true), matches);
+			((LazyNFA)(primaryEvaluationMechanism)).validateTimeWindowForState(event.getTimestamp(), event);
 			return matches;
-		}
-		List<Match> matches = validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
-		matches.addAll(validateTimeWindowOnEvaluationMechanism(secondaryEvaluationMechanism, event));
-		addIfNotNull(processNewEventOnEvaluationMechanism(primaryEvaluationMechanism, event, false), matches);
-		addIfNotNull(processNewEventOnEvaluationMechanism(secondaryEvaluationMechanism, event, true), matches);
-		return matches;
+        }
+        List<Match> matches = validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
+        matches.addAll(validateTimeWindowOnEvaluationMechanism(secondaryEvaluationMechanism, event));
+        addIfNotNull(processNewEventOnEvaluationMechanism(primaryEvaluationMechanism, event, false), matches);
+        addIfNotNull(processNewEventOnEvaluationMechanism(secondaryEvaluationMechanism, event, true), matches);
+        return matches;
 	}
 
 	private void addIfNotNull(List<Match> listToAdd, List<Match> listToAddTo) {
@@ -119,7 +123,7 @@ public class Simulator {
 	}
 
 	private List<Match> validateTimeWindowOnEvaluationMechanism(IEvaluationMechanism mechanism, Event event) {
-		List<Match> matches = mechanism.validateTimeWindow(event.getTimestamp());
+		List<Match> matches = mechanism.validateTimeWindow(event.getTimestamp(), event);
 		if (MainConfig.selectionStrategy != EventSelectionStrategies.SKIP_TILL_ANY) {
 			mechanism.removeConflictingInstances(matches);
 		}

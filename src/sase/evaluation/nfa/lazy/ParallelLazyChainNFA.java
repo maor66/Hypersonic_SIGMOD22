@@ -197,7 +197,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
         return new ArrayList<>(matches);
     }
-
+    @Override
+    public List<Match> validateTimeWindow(long currentTime, Event event) {return null; }
     private List<? extends BufferWorker> getAllWorkers()
     {
         List <BufferWorker> allWorkers = MBWorkers.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
@@ -562,9 +563,11 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 //        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(1);
         int listIndex = 0;
+        System.out.println("Computed thread allocation:");
         for (TypedNFAState state : nfaStates) {
             stateToIBThreads.put(state, inputBufferThreadsPerState.get(listIndex));
             stateToMBThreads.put(state, matchBufferThreadsPerState.get(listIndex++));
+            System.out.print(state.getEventType() + " - [" + inputBufferThreadsPerState.get(listIndex-1) + ","+ matchBufferThreadsPerState.get(listIndex-1) +"]    " );
         }
         initializeThreads();
     }

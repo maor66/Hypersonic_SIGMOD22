@@ -10,7 +10,7 @@ import sase.pattern.Pattern;
 public interface IEvaluationMechanism {
 
 	public List<Match> processNewEvent(Event event, boolean canStartInstance);
-	public List<Match> validateTimeWindow(long currentTime);
+	public List<Match> validateTimeWindow(long currentTime, Event event);
 	public void completeCreation(List<Pattern> patterns);
 	public List<Match> getLastMatches();
 	public long size();

@@ -85,8 +85,20 @@ public abstract class LazyNFA extends NFA {
 		return new LazyInstance(this, initialState);
 	}
 
+	public void validateTimeWindowForState(long currentTime, Event event) {
+		if (!(supportedEventTypes.contains(event.getType()))) {
+			// irrelevant event
+			return;
+		}
+		instances.validateTimeWindow(currentTime, false);
+	}
+
 	@Override
-	public List<Match> validateTimeWindow(long currentTime) {
+	public List<Match> validateTimeWindow(long currentTime, Event event) {
+		if (!(supportedEventTypes.contains(event.getType()))) {
+			// irrelevant event
+			return null;
+		}
 		lastKnownGlobalTime = currentTime;
 		instances.validateTimeWindow(currentTime, true);
 		inputBuffer.refresh(currentTime);

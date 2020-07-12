@@ -501,34 +501,34 @@ public class PatternConfig {
 					},
 					SlaVerifierTypes.NONE);
 
-	private static final PatternSpecification basicPatternSEQ6 =
-			new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
-			new String[][][] {new String[][]{new String[]{
-					StockEventTypesManager.microsoftEventTypeName,
-					StockEventTypesManager.googleEventTypeName,
-					StockEventTypesManager.ciscoEventTypeName,
-					StockEventTypesManager.intelEventTypeName,
-					StockEventTypesManager.fslrEventTypeName,
-					StockEventTypesManager.etfcEventTypeName
-			}}},
-			new ConditionSpecification[] {
-					new StockDeltaOrderingConditionSpecification(
-							StockEventTypesManager.microsoftEventTypeName,
-							StockEventTypesManager.googleEventTypeName),
-					new StockDeltaOrderingConditionSpecification(
-							StockEventTypesManager.googleEventTypeName,
-							StockEventTypesManager.ciscoEventTypeName),
-					new StockDeltaOrderingConditionSpecification(
-							StockEventTypesManager.ciscoEventTypeName,
-							StockEventTypesManager.intelEventTypeName),
-					new StockDeltaOrderingConditionSpecification(
-							StockEventTypesManager.intelEventTypeName,
-							StockEventTypesManager.fslrEventTypeName),
-					new StockDeltaOrderingConditionSpecification(
-							StockEventTypesManager.fslrEventTypeName,
-							StockEventTypesManager.etfcEventTypeName),
-			},
-			SlaVerifierTypes.NONE);
+    private static final PatternSpecification basicPatternSEQ6 =
+            new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+                    new String[][][] {new String[][]{new String[]{
+                            StockEventTypesManager.microsoftEventTypeName,
+                            StockEventTypesManager.googleEventTypeName,
+                            StockEventTypesManager.ciscoEventTypeName,
+                            StockEventTypesManager.intelEventTypeName,
+                            StockEventTypesManager.fslrEventTypeName,
+                            StockEventTypesManager.etfcEventTypeName
+                    }}},
+                    new ConditionSpecification[] {
+                            new StockDeltaOrderingConditionSpecification(
+                                    StockEventTypesManager.microsoftEventTypeName,
+                                    StockEventTypesManager.googleEventTypeName),
+                            new StockDeltaOrderingConditionSpecification(
+                                    StockEventTypesManager.googleEventTypeName,
+                                    StockEventTypesManager.ciscoEventTypeName),
+                            new StockDeltaOrderingConditionSpecification(
+                                    StockEventTypesManager.ciscoEventTypeName,
+                                    StockEventTypesManager.intelEventTypeName),
+                            new StockDeltaOrderingConditionSpecification(
+                                    StockEventTypesManager.intelEventTypeName,
+                                    StockEventTypesManager.fslrEventTypeName),
+                            new StockDeltaOrderingConditionSpecification(
+                                    StockEventTypesManager.fslrEventTypeName,
+                                    StockEventTypesManager.etfcEventTypeName),
+                    },
+                    SlaVerifierTypes.NONE);
 
 
 	private static final PatternSpecification basicPatternSEQ7 =
@@ -1245,30 +1245,31 @@ private static final ConditionSpecification[] dummyConditionSpecSEQ4 = new Condi
 //			basicPatternSEQ5.createIdenticalSpecificationWithDifferentWindow(100),
 //			basicFusedPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(30),
 //			basicFusedPatternSEQ6_unfused.createIdenticalSpecificationWithDifferentWindow(30),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(10),
+////			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(10),
 			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(15),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(20),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(25),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(20),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(25),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(50),
 			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(30),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(35),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(40),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(35),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(40),
 			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(45),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(50),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(55),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(50),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(55),
 			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(60),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(65),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(70),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(65),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(70),
 			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(75),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(80),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(85),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(80),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(85),
 			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(90),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(95),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(100),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(95),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(100),
 			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(105),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(110),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(115),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(120),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(125),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(110),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(115),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(120),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(125),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(40),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(40),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(50),

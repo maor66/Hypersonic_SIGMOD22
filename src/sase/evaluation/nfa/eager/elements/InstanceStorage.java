@@ -3,6 +3,7 @@ package sase.evaluation.nfa.eager.elements;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import sase.base.Event;
 import sase.base.EventType;
@@ -18,6 +19,7 @@ public class InstanceStorage {
 	private NFA nfa;
 	private HashMap<NFAState, List<Instance>> instancesByCurrentState;
 	private List<NFAState> acceptingStates;
+	private Map<EventType, NFAState> typesToStates;
 	private HashMap<EventType, List<NFAState>> eventTypeToExpectingTakeStates;
 	private HashMap<EventType, List<NFAState>> eventTypeToExpectingStoreStates;
 	
@@ -30,10 +32,15 @@ public class InstanceStorage {
 	private void initializeInstanceToTypeHash() {
 		instancesByCurrentState = new HashMap<NFAState, List<Instance>>();
 		acceptingStates = new ArrayList<NFAState>();
+		typesToStates = new HashMap<>();
 		for (NFAState state : nfa.getStates()) {
 			instancesByCurrentState.put(state, new ArrayList<Instance>());
 			if (state.isAccepting()) {
 				acceptingStates.add(state);
+			}
+			if (!state.isRejecting()) {
+				TypedNFAState typedNFAState = (TypedNFAState) state;
+				typesToStates.put(typedNFAState.getEventType(), state);
 			}
 		}
 	}
@@ -213,4 +220,10 @@ public class InstanceStorage {
 		}
 	}
 
+
+
+	public void validateTimeWindow(long currentTime, boolean isRejectingState, Event event) {
+
+		validateTimeWindowForInstancesInState(currentTime, typesToStates.get(event.getType()));
+	}
 }

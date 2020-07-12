@@ -242,7 +242,7 @@ public abstract class NFA implements IEvaluationMechanism, IEvaluationMechanismI
 		return matches;
 	}
 
-	public List<Match> validateTimeWindow(long currentTime) {
+	public List<Match> validateTimeWindow(long currentTime, Event event) {
 		lastKnownGlobalTime = currentTime;
 		List<Instance> expiredAcceptingInstances = instances.validateTimeWindow(currentTime, false);
 		List<Match> matches = new ArrayList<Match>();
