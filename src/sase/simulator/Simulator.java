@@ -14,6 +14,7 @@ import sase.adaptive.monitoring.IAdaptationNecessityDetector;
 import sase.adaptive.monitoring.IMultiPatternAdaptationNecessityDetector;
 import sase.base.Event;
 import sase.base.EventSelectionStrategies;
+import sase.base.EventType;
 import sase.config.MainConfig;
 import sase.config.SimulationConfig;
 import sase.evaluation.EvaluationMechanismFactory;
@@ -23,6 +24,7 @@ import sase.evaluation.IMultiPatternEvaluationMechanism;
 import sase.evaluation.common.Match;
 import sase.evaluation.data_parallel.DataParallelEvaluationMechanism;
 import sase.evaluation.data_parallel.RIPEvaluationMechanism;
+import sase.evaluation.nfa.NFA;
 import sase.evaluation.nfa.lazy.LazyNFA;
 import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
 import sase.input.EventProducer;
@@ -71,6 +73,7 @@ public class Simulator {
 
 	private int currentStepNumber = 0;
 	private List<Match> foundMatches;
+	private List<EventType> supportedEventTypes;
 
 	private void processIncomingEvent(Event event) {
 		if (MainConfig.eventRateMeasurementMode) {
@@ -93,7 +96,9 @@ public class Simulator {
             List<Match> matches = new ArrayList<>();
 			validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
 			addIfNotNull(processNewEventOnEvaluationMechanism(primaryEvaluationMechanism, event, true), matches);
-			((LazyNFA)(primaryEvaluationMechanism)).validateTimeWindowForState(event.getTimestamp(), event);
+			if (primaryEvaluationMechanism instanceof  LazyNFA) {
+				((LazyNFA) (primaryEvaluationMechanism)).validateTimeWindowForState(event.getTimestamp(), event);
+			}
 			return matches;
         }
         List<Match> matches = validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
@@ -261,6 +266,7 @@ public class Simulator {
 		eventProducer = EventProducerFactory.createEventProducer(workload.getCurrentWorkload(), currentSpecification);
 
 		primaryEvaluationMechanism = createNewEvaluationMechanism();
+		supportedEventTypes = workload.getCurrentWorkload().get(0).getEventTypes();
 		secondaryEvaluationMechanism = null;
 		lastAdaptCheckTimestamp = null;
 
@@ -270,6 +276,7 @@ public class Simulator {
 		}
 	}
 	private List<Event> allEvents = new ArrayList<>();
+	private int totalNumberOfEvents = 0;
 	private void runEvaluationStep() throws IOException {
 
 		if (oldStatisticsManager != null) {
@@ -280,8 +287,18 @@ public class Simulator {
 
 		if (allEvents.isEmpty()) { // Hack to read events only for the first time instead of throwing them away at the end
 			while (eventProducer.hasMoreEvents()) {
-				allEvents.add(eventProducer.getNextEvent()); // Maor: this is actually the event, each executions reads the next event from the file
+				Event newEvent = eventProducer.getNextEvent(); // Maor: this is actually the event, each executions reads the next event from the file
+				if (newEvent == null) {
+					continue;
+				}
+				if (supportedEventTypes.contains(newEvent.getType())) {
+					totalNumberOfEvents++;
+				}
+				allEvents.add(newEvent);
 			}
+		}
+		if (primaryEvaluationMechanism instanceof RIPEvaluationMechanism) {
+			((RIPEvaluationMechanism)(primaryEvaluationMechanism)).setUpRIPThreads(totalNumberOfEvents ,supportedEventTypes.size());
 		}
 		long processTime = System.nanoTime() - time;
 
