@@ -269,17 +269,19 @@ public class Simulator {
 			attemptToRecoverExistingStatistics(currentSpecification);
 		}
 	}
-
+	private List<Event> allEvents = new ArrayList<>();
 	private void runEvaluationStep() throws IOException {
+
 		if (oldStatisticsManager != null) {
 			oldStatisticsManager.reportStatistics();
 			return;
 		}
-		List<Event> allEvents = new ArrayList<>();
 		long time = System.nanoTime();
 
-		while (eventProducer.hasMoreEvents()) {
-			allEvents.add(eventProducer.getNextEvent()); // Maor: this is actually the event, each executions reads the next event from the file
+		if (allEvents.isEmpty()) { // Hack to read events only for the first time instead of throwing them away at the end
+			while (eventProducer.hasMoreEvents()) {
+				allEvents.add(eventProducer.getNextEvent()); // Maor: this is actually the event, each executions reads the next event from the file
+			}
 		}
 		long processTime = System.nanoTime() - time;
 
