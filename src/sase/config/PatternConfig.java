@@ -1,6 +1,7 @@
 package sase.config;
 
 import sase.multi.sla.SlaVerifierTypes;
+import sase.pattern.Pattern;
 import sase.pattern.creation.PatternTypes;
 import sase.specification.condition.ConditionSpecification;
 import sase.specification.condition.DummyConditionSpecification;
@@ -12,6 +13,8 @@ import sase.user.stocks.StockEventTypesManager;
 import sase.user.stocks.specification.*;
 import sase.user.synthetic.SyntheticConditionSpecification;
 import sase.user.traffic.TrafficSpeedToVehiclesNumberCorrelationConditionSpecification;
+
+import java.util.List;
 
 public class PatternConfig {
 	
@@ -502,33 +505,28 @@ public class PatternConfig {
 					SlaVerifierTypes.NONE);
 
     private static final PatternSpecification basicPatternSEQ6 =
-            new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
-                    new String[][][] {new String[][]{new String[]{
-                            StockEventTypesManager.microsoftEventTypeName,
-                            StockEventTypesManager.googleEventTypeName,
-                            StockEventTypesManager.ciscoEventTypeName,
-                            StockEventTypesManager.intelEventTypeName,
-                            StockEventTypesManager.fslrEventTypeName,
-                            StockEventTypesManager.etfcEventTypeName
-                    }}},
-                    new ConditionSpecification[] {
-                            new StockDeltaOrderingConditionSpecification(
-                                    StockEventTypesManager.microsoftEventTypeName,
-                                    StockEventTypesManager.googleEventTypeName),
-                            new StockDeltaOrderingConditionSpecification(
-                                    StockEventTypesManager.googleEventTypeName,
-                                    StockEventTypesManager.ciscoEventTypeName),
-                            new StockDeltaOrderingConditionSpecification(
-                                    StockEventTypesManager.ciscoEventTypeName,
-                                    StockEventTypesManager.intelEventTypeName),
-                            new StockDeltaOrderingConditionSpecification(
-                                    StockEventTypesManager.intelEventTypeName,
-                                    StockEventTypesManager.fslrEventTypeName),
-                            new StockDeltaOrderingConditionSpecification(
-                                    StockEventTypesManager.fslrEventTypeName,
-                                    StockEventTypesManager.etfcEventTypeName),
-                    },
-                    SlaVerifierTypes.NONE);
+			buildSequenceStockDeltaOrderingSpecificationFromStocks(
+					"SEQ6",
+					new String[] {
+							StockEventTypesManager.microsoftEventTypeName,
+							StockEventTypesManager.googleEventTypeName,
+							StockEventTypesManager.ciscoEventTypeName,
+							StockEventTypesManager.intelEventTypeName,
+							StockEventTypesManager.fslrEventTypeName,
+							StockEventTypesManager.etfcEventTypeName});
+
+	private static PatternSpecification buildSequenceStockDeltaOrderingSpecificationFromStocks(String patternName, String[] eventTypeNames) {
+		ConditionSpecification conditionSpecifications [] = new ConditionSpecification[eventTypeNames.length - 1];
+		for (int i = 0; i < eventTypeNames.length - 1; i++) {
+			conditionSpecifications[i] = new StockDeltaOrderingConditionSpecification(eventTypeNames[i],eventTypeNames[i+1]);
+		}
+		return new PatternSpecification(patternName, PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+				new String[][][] {new String[][] {
+						eventTypeNames
+				}},
+				conditionSpecifications,
+				SlaVerifierTypes.NONE);
+	}
 
 
 	private static final PatternSpecification basicPatternSEQ7 =
