@@ -32,7 +32,6 @@ public class PartialMatchWorker extends ElementWorker {
 
     @Override
     protected ContainsEvent iterateOnSubList(ContainsEvent newElement, List<ContainsEvent> bufferSubList) {
-//        long time = System.nanoTime();
         Match match = (Match) newElement;
         recordMatchSize(match);
         List<Event> partialMatchEvents = new ArrayList<>(match.getPrimitiveEvents());
@@ -42,14 +41,30 @@ public class PartialMatchWorker extends ElementWorker {
             return null;
         }
         Event latestEventInSubList = actualEvents.get(actualEvents.size() - 1);
-        actualEvents = getSlice(actualEvents, (Match) newElement, eventState);
-//        sliceTime += System.nanoTime() - time;
-        for (Event event : actualEvents) {
+//        long time = System.nanoTime();
+//        actualEvents = getSliceEager(actualEvents, (Match) newElement, eventState);
+//        sliceTimeActual += System.nanoTime() - time;
+        for (int i = actualEvents.size(); i-- > 0 ;) {
+//      for (Event event : actualEvents) {
 //            time = System.nanoTime();
+            Event event = actualEvents.get(i);
+            if (event.getSequenceNumber() < match.getLatestEvent().getSequenceNumber()) {
+                return latestEventInSubList;
+            }
             checkAndSendToNextState(event, partialMatchEvents, match);
 //            sliceTimeActual += System.nanoTime() - time;
         }
         return latestEventInSubList;
+    }
+
+    private List<Event> getSliceEager(List<Event> actualEvents, Match partialMatch, TypedNFAState eventState) {
+        List <Event> laterEvents = new ArrayList<>();
+        for (Event event : actualEvents) {
+            if (event.getSequenceNumber() > partialMatch.getLatestEvent().getSequenceNumber()) {
+                laterEvents.add(event);
+            }
+        }
+        return laterEvents;
     }
 
     private void recordMatchSize(Match match) {

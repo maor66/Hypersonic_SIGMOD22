@@ -7,10 +7,7 @@ import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public abstract class ElementWorker {
     ThreadContainers dataStorage;
@@ -64,12 +61,11 @@ public abstract class ElementWorker {
         }
         if (removingCriteria != null) {
             if ( currentBackoff <= 0)  {
-//            long time =  System.nanoTime();
                 lastCriteriaTimestamp = removingCriteria.getEarliestTimestamp();
+//                long time =  System.nanoTime();
                 lastRemovedNumber = dataStorage.removeExpiredElements(lastCriteriaTimestamp, isBufferSorted(), removingCriteria);
-                backoffStep = lastRemovedNumber > 0 ? 1: backoffStep*2;
-                currentBackoff  = lastRemovedNumber > 0 ? 0: backoffStep ;
-//            innerCondTime += System.nanoTime() - time;
+//                innerCondTime += System.nanoTime() - time;
+                currentBackoff = 100;
             }
             else {
                 currentBackoff--;
@@ -97,14 +93,22 @@ public abstract class ElementWorker {
     protected boolean isEventCompatibleWithPartialMatch(Match partialMatch, List<Event> partialMatchEvents, Event event) {
         //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
         //TODO: doesn't have to verify temporal condition first anymore - check if removing doesn't hurt correctness
-        long time = System.nanoTime();
-        boolean b =  transition.verifyFirstStepCondition(partialMatchEvents);
-        actualCalcTime += System.nanoTime() - time;
+        boolean b;
+        long time;
+//        if (numberOfOppositeItems % 1000 == 0) {
+//            time = System.nanoTime();
+             b =  transition.verifyFirstStepCondition(partialMatchEvents);
+//            actualCalcTime += System.nanoTime() - time;
+//        }
+//        else {
+//            b =  transition.verifyFirstStepCondition(partialMatchEvents);
+//        }
+
         numberOfOppositeItems++;
         if (b) {
-            time = System.nanoTime();
+//            time = System.nanoTime();
             boolean s =  transition.verifySecondStepCondition(partialMatchEvents);
-            conditionTime += System.nanoTime() - time;
+//            conditionTime += System.nanoTime() - time;
             if (!s) return false;
             boolean w = verifyTimeWindowConstraint(partialMatch, event);
             return  w;
@@ -123,9 +127,9 @@ public abstract class ElementWorker {
         partialMatchEvents.add(event);
         if (isEventCompatibleWithPartialMatch(match, partialMatchEvents, event)) {
 //            windowverifyTime += System.nanoTime() - time;
-//            long time = System.nanoTime();
+            long time = System.nanoTime();
             sendToNextState(match.createNewPartialMatchWithEvent(event));
-//            sendMatchingTime += System.nanoTime() - time;
+            sendMatchingTime += System.nanoTime() - time;
         }
 //        else {
 //            windowverifyTime += System.nanoTime() - time;
@@ -134,13 +138,21 @@ public abstract class ElementWorker {
         partialMatchEvents.remove(partialMatchEvents.size() - 1);
 //        actualCalcTime += System.nanoTime() - time;
     }
-
+    private int batchSize = 0;
+    private final int maxBatchSize = 100;
+    private List<Match> partialMatchesBatch = new ArrayList<>();
     protected void sendToNextState(Match newPartialMatchWithEvent) {
+        batchSize++;
+        partialMatchesBatch.add(newPartialMatchWithEvent);
 
-        ParallelQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
-                    long time = System.nanoTime();
-        matchesQueue.put(newPartialMatchWithEvent);
-            windowverifyTime += System.nanoTime() - time;
+        if (batchSize == maxBatchSize) {
+            batchSize = 0;
+            ParallelQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
+//            long time = System.nanoTime();
+            matchesQueue.put(partialMatchesBatch);
+//            sendMatchingTime += System.nanoTime() - time;
+            partialMatchesBatch.clear();
+        }
     }
 
     public void initializeDataStorage(ThreadContainers dataStorage) {
@@ -161,5 +173,10 @@ public abstract class ElementWorker {
 
     public long size() {
         return sizeOfElement() * maxElements;
+    }
+
+    public void forwardIncompleteBatch() {
+        ParallelQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
+        matchesQueue.put(partialMatchesBatch);
     }
 }

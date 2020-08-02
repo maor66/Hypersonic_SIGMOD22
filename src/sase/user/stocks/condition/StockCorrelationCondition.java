@@ -47,7 +47,7 @@ public class StockCorrelationCondition extends DoubleEventCondition {
 		double[] secondEventHistory = getStockHistory(secondEvent);
 		double correlation = new PearsonsCorrelation().correlation(firstEventHistory,
 															   	   secondEventHistory);
-		Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.correlationComputations);
+//		Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.correlationComputations);
 		return minCorrelation > 0 ? correlation > minCorrelation : correlation < minCorrelation;
 	}
 	

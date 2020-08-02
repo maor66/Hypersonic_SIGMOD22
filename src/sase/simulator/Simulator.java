@@ -278,7 +278,6 @@ public class Simulator {
 	private List<Event> allEvents = new ArrayList<>();
 	private int totalNumberOfEvents = 0;
 	private void runEvaluationStep() throws IOException {
-
 		if (oldStatisticsManager != null) {
 			oldStatisticsManager.reportStatistics();
 			return;

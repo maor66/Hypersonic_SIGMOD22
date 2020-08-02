@@ -4,7 +4,9 @@ import sase.base.ContainsEvent;
 
 import java.sql.Time;
 import java.util.AbstractQueue;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -41,17 +43,18 @@ public class ParallelQueue<CE> {
             return queue.isEmpty();
         }
 
-    public void put(CE ce) {
-            queue.add(ce);
+    public void put(List<CE> ce) {
+            List<CE> a = new ArrayList<>(ce);
+            queue.add(a);
         }
-    private AbstractQueue<CE> queue = new ConcurrentLinkedQueue<CE>();
-        public CE poll(long time, TimeUnit tu) {
+    private AbstractQueue<List<CE>> queue = new ConcurrentLinkedQueue<>();
+        public List<CE> poll(long time, TimeUnit tu) {
             return queue.poll();
         }
 
-    public CE take() {
-                        return  poll(0, TimeUnit.SECONDS);
-
-            }
+//    public CE take() {
+//                        return  poll(0, TimeUnit.SECONDS);
+//
+//            }
 
 }

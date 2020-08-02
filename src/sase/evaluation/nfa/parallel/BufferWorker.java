@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BufferWorker implements Runnable {
 
+    private  boolean isInputBufferWorker;
+    private  long windowSize;
     String threadName;
     protected boolean canCreateMatches= true;
     public long actualCalcTime = 0;
@@ -44,6 +46,8 @@ private boolean primaryTakenOnce = false;
 private boolean addedToGroupFinish =  false;
 
 private int isPrimaryInputTakenLast = 1;
+    private long latestSecondary = 0;
+    private long latestPrimary = 0;
 
     public BufferWorker(TypedNFAState eventState,
                         ParallelQueue<? extends ContainsEvent> eventInput,
@@ -67,7 +71,9 @@ private int isPrimaryInputTakenLast = 1;
         this.primaryInput = isInputBufferWorker ? eventInput : partialMatchInput;
         this.secondaryInput = isInputBufferWorker ? partialMatchInput : eventInput;
         this.workersNeededToFinish = workersNeededToFinish;
+        windowSize = threadContainer.getTimeWindow();
         threadName = isInputBufferWorker ?  "InputBufferWorker" + eventState.getName() :"MatchBufferWorker "+ eventState.getName();
+        this.isInputBufferWorker = isInputBufferWorker;
     }
 
     public BufferWorker() //Creates dummy BufferWorker
@@ -78,31 +84,40 @@ private int isPrimaryInputTakenLast = 1;
         thread = Thread.currentThread();
         thread.setName(threadName + " " + Thread.currentThread().getName());
         while (true) {
-            ContainsEvent newElement;
+            List<ContainsEvent> newBatch;
             ElementWorker taskUsed = primaryTask;
 //            long time = System.nanoTime();
-            newElement = takePrimaryInput();
+            if (latestPrimary < latestSecondary + 50) {
+                newBatch = takePrimaryInput();
+            }
+            else {
+                newBatch = null;
+            }
 //            sliceTime += System.nanoTime() - time;
-            if (newElement == null) {
-                newElement = takeSecondaryInput(); // Check if the secondaryTask queue has an item
-                if (newElement == null) {
+            if (newBatch == null) {
+                newBatch = takeSecondaryInput(); // Check if the secondaryTask queue has an item
+                if (newBatch == null) {
                     if (isPreviousStateFinished(finishedWithGroup) && !addedToGroupFinish) {
+                        forwardIncompleteBatch();
                         finishedWithGroup.add(this);
                         addedToGroupFinish = true;
                     }
                     if (isPreviousStateFinished(finishedWorkers)) {
+                        forwardIncompleteBatch();
                         finishRun();
                         return;
                     } else {
                         continue;
                     }
                 }
+//                latestSecondary = newElement.getEarliestTimestamp();
                 numberOfSecondaryHandledItems++;
                 isPrimaryInputTakenLast = 0;
                 primaryTask.updateOppositeWorkers(secondaryTask);
                 taskUsed = secondaryTask; // The secondaryTask queue had an item so it is the task used for adding, iterating and removing
             }
             else {
+//                latestPrimary = newElement.getEarliestTimestamp();
                 isPrimaryInputTakenLast = 1;
                 numberOfPrimaryHandledItems++;
             }
@@ -118,8 +133,26 @@ private int isPrimaryInputTakenLast = 1;
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
-            taskUsed.handleElement(newElement, finishedWorkers, (isPrimaryInputTakenLast==1) ? secondaryInput : primaryInput );
-//            ContainsEvent removingCriteria = null;
+//            if ((numberOfPrimaryHandledItems + numberOfSecondaryHandledItems) % 100 ==0 ) {
+            long time = System.nanoTime();
+            long earliestTimestamp = Long.MAX_VALUE;
+            for (ContainsEvent newElement : newBatch) {
+                if (newElement.getTimestamp() < earliestTimestamp) {
+                    earliestTimestamp = newElement.getTimestamp();
+                }
+                taskUsed.handleElement(newElement, finishedWorkers, (isPrimaryInputTakenLast == 1) ? secondaryInput : primaryInput);
+            }
+            if (primaryTask == taskUsed) {
+                latestPrimary = earliestTimestamp;
+            }
+            else {
+                latestSecondary = earliestTimestamp;
+            }
+            primaryIdleTime+= System.nanoTime() - time;
+//            }
+
+//            taskUsed.handleElement(newElement, finishedWorkers, (isPrimaryInputTakenLast==1) ? secondaryInput : primaryInput );
+            ContainsEvent removingCriteria = null;
 //            long latestTimeStamp = Long.MIN_VALUE;
 //            for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
 //               ContainsEvent ce = iterateOnSubList(newElement, worker.getDataStorage().getBufferSubListWithReadLock());
@@ -147,18 +180,23 @@ private int isPrimaryInputTakenLast = 1;
         }
     }
 
-    private ContainsEvent takeSecondaryInput() {
+    private void forwardIncompleteBatch() {
+        primaryTask.forwardIncompleteBatch();
+        secondaryTask.forwardIncompleteBatch();
+    }
+
+    private List<ContainsEvent> takeSecondaryInput() {
 //        long time = System.nanoTime();
         if (!primaryTakenOnce || secondaryInput.isEmpty()) {
 //            secondaryIdleTime += System.nanoTime() - time;
             return null;
         }
-        ContainsEvent ce = takeNextInput(secondaryInput, 50);
+        List<ContainsEvent> elementBatch = takeNextInput(secondaryInput, 50);
 //        secondaryIdleTime += System.nanoTime() - time;
-        return ce;
+        return elementBatch;
     }
 
-    private ContainsEvent takePrimaryInput() {
+    private List<ContainsEvent> takePrimaryInput() {
 //        long time = System.nanoTime();
         if (primaryInput.isEmpty()) {
 //            primaryIdleTime += System.nanoTime() - time;
@@ -166,15 +204,15 @@ private int isPrimaryInputTakenLast = 1;
         }
         primaryTakenOnce = true;
 
-        ContainsEvent ce  = takeNextInput(primaryInput, 0);
+        List<ContainsEvent> elementBatch  = takeNextInput(primaryInput, 0);
 //        primaryIdleTime += System.nanoTime() - time;
-        return ce;
+        return elementBatch;
     }
 
 
-    protected ContainsEvent takeNextInput(ParallelQueue<? extends ContainsEvent> input, int timeoutInMilis)  {
+    protected List<ContainsEvent> takeNextInput(ParallelQueue<? extends ContainsEvent> input, int timeoutInMilis)  {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
-        return input.poll(timeoutInMilis, TimeUnit.MILLISECONDS);
+        return  (List<ContainsEvent>) input.poll(timeoutInMilis, TimeUnit.MILLISECONDS);
 //            return input.take();
     }
     private void finishRun() {

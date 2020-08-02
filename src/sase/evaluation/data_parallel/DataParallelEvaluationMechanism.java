@@ -64,7 +64,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 		protected BlockingQueue<EvaluationInput> threadInput = new LinkedTransferQueue<>();
 //		volatile long maxSize = 0;
 		long maxSize = 0;
-		long machineTime = 0;
+		public long machineTime = 0;
 		private int handledEvents= 0;
 		boolean isFinishedWithOwnGroupInput = false;
 
@@ -210,13 +210,16 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 //		}
 		isInputFinished.set(true);
 		System.out.println("Waiting for threads" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-		for (Thread t : threads) {
+		long totalTime = 0;
+		for (ParallelThread t : threads) {
 			try {
 				t.join();
+				totalTime += t.machineTime;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Average running time is " + totalTime / threads.length);
 		System.out.println("Threads finished at" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
 		//need to receive and process matches that were created while we waited
 		List<Match> matches = new ArrayList<Match>();
