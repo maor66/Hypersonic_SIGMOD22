@@ -41,10 +41,11 @@ public class PartialMatchWorker extends ElementWorker {
             return null;
         }
         Event latestEventInSubList = actualEvents.get(actualEvents.size() - 1);
-//        long time = System.nanoTime();
 //        actualEvents = getSliceEager(actualEvents, (Match) newElement, eventState);
-//        sliceTimeActual += System.nanoTime() - time;
-        for (int i = actualEvents.size(); i-- > 0 ;) {
+        long time = System.nanoTime();
+        int upperIndex = getIndexWithClosestValue(actualEvents, match.getEarliestTimestamp()+ dataStorage.getTimeWindow(), false, false);
+        sliceTimeActual += System.nanoTime() - time;
+        for (int i = upperIndex; i-- > 0 ;) {
 //      for (Event event : actualEvents) {
 //            time = System.nanoTime();
             Event event = actualEvents.get(i);

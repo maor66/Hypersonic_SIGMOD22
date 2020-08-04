@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public abstract class ElementWorker {
+    public long currentBufferSize = 0;
     ThreadContainers dataStorage;
     private LazyTransition transition;
     TypedNFAState eventState;
@@ -50,9 +51,9 @@ public abstract class ElementWorker {
         Iterator<ThreadContainers> iterator = oppositeBuffers.iterator();
         while (iterator.hasNext()) {
             ThreadContainers buffer = iterator.next();
-//            long time = System.nanoTime();
+            long time = System.nanoTime();
             ContainsEvent ce = iterateOnSubList(newElement, buffer.getBufferSubListWithReadLock());
-//            iteratingBufferTime += System.nanoTime() - time;
+            iteratingBufferTime += System.nanoTime() - time;
             buffer.releaseReadLock();
             if (ce != null && latestTimeStamp < ce.getEarliestTimestamp()) {
                 latestTimeStamp = ce.getEarliestTimestamp();
@@ -62,9 +63,9 @@ public abstract class ElementWorker {
         if (removingCriteria != null) {
             if ( currentBackoff <= 0)  {
                 lastCriteriaTimestamp = removingCriteria.getEarliestTimestamp();
-//                long time =  System.nanoTime();
+                long time =  System.nanoTime();
                 lastRemovedNumber = dataStorage.removeExpiredElements(lastCriteriaTimestamp, isBufferSorted(), removingCriteria);
-//                innerCondTime += System.nanoTime() - time;
+                innerCondTime += System.nanoTime() - time;
                 currentBackoff = 100;
             }
             else {
@@ -74,6 +75,7 @@ public abstract class ElementWorker {
     }
 
     private void recordMaxElements(long currentNumberOfElements) {
+        currentBufferSize = currentNumberOfElements;
         if (currentNumberOfElements > maxElements) {
             maxElements = currentNumberOfElements;
         }
@@ -96,9 +98,9 @@ public abstract class ElementWorker {
         boolean b;
         long time;
 //        if (numberOfOppositeItems % 1000 == 0) {
-//            time = System.nanoTime();
+            time = System.nanoTime();
              b =  transition.verifyFirstStepCondition(partialMatchEvents);
-//            actualCalcTime += System.nanoTime() - time;
+            actualCalcTime += System.nanoTime() - time;
 //        }
 //        else {
 //            b =  transition.verifyFirstStepCondition(partialMatchEvents);
@@ -139,7 +141,7 @@ public abstract class ElementWorker {
 //        actualCalcTime += System.nanoTime() - time;
     }
     private int batchSize = 0;
-    private final int maxBatchSize = 100;
+    private final int maxBatchSize = 1;
     private List<Match> partialMatchesBatch = new ArrayList<>();
     protected void sendToNextState(Match newPartialMatchWithEvent) {
         batchSize++;
