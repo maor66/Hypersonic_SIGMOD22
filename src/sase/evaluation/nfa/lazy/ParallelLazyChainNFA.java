@@ -4,6 +4,7 @@ import sase.base.Event;
 import sase.base.EventType;
 import sase.config.MainConfig;
 import sase.evaluation.common.Match;
+import sase.evaluation.nfa.eager.elements.InstanceStorage;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.order.cost.CostModelFactory;
@@ -11,6 +12,7 @@ import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
 import sase.evaluation.nfa.lazy.order.cost.ThroughputCostModel;
 import sase.evaluation.nfa.parallel.*;
 import sase.evaluation.plan.EvaluationPlan;
+import sase.pattern.EventTypesManager;
 import sase.pattern.Pattern;
 import sase.pattern.condition.base.CNFCondition;
 import sase.simulator.Environment;
@@ -58,6 +60,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private CopyOnWriteArrayList<BufferWorker> finishedThreads = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<BufferWorker> finishedWithGroup = new CopyOnWriteArrayList<>();
     private AtomicBoolean isFinishedWithInput = new AtomicBoolean(false);
+    private List<ParallelQueue<Match>>  allMatchQueues = new ArrayList<>();
 
     private class PrintMatchTimerTask extends TimerTask {
 
@@ -225,7 +228,17 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
     @Override
     public long size() {
-        return getAllWorkers().stream().mapToInt(worker -> (int) worker.size()).sum();
+        int queuesSize = 0;
+        int partialMatchSize = 2;
+        for (ParallelQueue<Match>  q : allMatchQueues) {
+            long individualQueueSize = q.getMaxSize();
+            queuesSize += individualQueueSize * partialMatchSize * EventTypesManager.getInstance().getAverageEventSize();
+
+            System.out.println("Max elements in queue is " +q.getMaxSize());
+            partialMatchSize++;
+        }
+
+        return queuesSize + getAllWorkers().stream().mapToLong(BufferWorker::size).sum();
     }
 
     @Override
@@ -256,6 +269,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             List<ThreadContainers> eventThreadContainers = new CopyOnWriteArrayList<>();
             List<ThreadContainers> partialMatchThreadContainers = new CopyOnWriteArrayList<>();
             ParallelQueue<Match> matchesOutput = new ParallelQueue<Match>();
+            allMatchQueues.add(matchesOutput);
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
                 eventThreadContainers.add(createThreadContainerByState(state,matchesOutput));
             }
@@ -287,6 +301,17 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             partialMatchInput = matchesOutput;
         }
         completeMatchOutputQueue = partialMatchInput; // The final output queue is that of the final state and the main thread should get the matches from it
+        allMatchQueues.remove(completeMatchOutputQueue);
+        if (!MainConfig.latencyCalculation) {
+            for (ParallelQueue<Match> outputQueue : allMatchQueues) {
+                outputQueue.setSizeLimit(1000);
+            }
+        }
+//        allMatchQueues.get(0).setSizeLimit(500);
+//        allMatchQueues.get(1).setSizeLimit(500);
+//        allMatchQueues.get(2).setSizeLimit(500);
+//        allMatchQueues.get(3).setSizeLimit(500);
+//        completeMatchOutputQueue.setSizeLimit(Integer.MAX_VALUE);
 //        for (TypedNFAState state : getWorkerStates()) {
 //            for (int i = 0; i < stateToIBThreads.get(state); i++) {
 //                IBWorkers.get(state).get(i).initializeOppositeWorkers(MBWorkers.get(state), IBWorkers.get(state));

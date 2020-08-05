@@ -85,7 +85,7 @@ private int isPrimaryInputTakenLast = 1;
     public BufferWorker() //Creates dummy BufferWorker
     {}
     private boolean inputPriorityCriteria() {
-        return true;
+        return isInputBufferWorker;
     }
     
     private List<ContainsEvent> takeInput() {
