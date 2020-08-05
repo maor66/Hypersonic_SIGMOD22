@@ -13,6 +13,8 @@ import sase.user.stocks.specification.*;
 import sase.user.synthetic.SyntheticConditionSpecification;
 import sase.user.traffic.TrafficSpeedToVehiclesNumberCorrelationConditionSpecification;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class PatternConfig {
@@ -504,8 +506,9 @@ public class PatternConfig {
 					SlaVerifierTypes.NONE);
 
 	private static final PatternSpecification basicPatternSEQ6 =
-			buildSequenceStockDeltaOrderingSpecificationFromStocks(
+			buildSequenceStockCorrelationSpecificationFromStocks(
 					"SEQ6",
+					0.5,
 					new String[] {
 							StockEventTypesManager.googleEventTypeName,
 							StockEventTypesManager.ciscoEventTypeName,
@@ -513,26 +516,94 @@ public class PatternConfig {
 							StockEventTypesManager.yahooEventTypeName,
 							StockEventTypesManager.biduEventTypeName});
 
+	private static PatternSpecification getBasicPatternSEQ6WithVariantCondition(int conditionNum) {
+		return buildSequenceConditionVariantSpecificationFromStocks(
+				"SEQ6",
+				conditionNum,
+				0.7,
+				new String[] {
+						StockEventTypesManager.microsoftEventTypeName,
+						StockEventTypesManager.googleEventTypeName,
+						StockEventTypesManager.ciscoEventTypeName,
+						StockEventTypesManager.intelEventTypeName,
+						StockEventTypesManager.fslrEventTypeName,
+						StockEventTypesManager.etfcEventTypeName});
+	}
+
 	private static PatternSpecification buildSequenceStockDeltaOrderingSpecificationFromStocks(String patternName, String[] eventTypeNames) {
-		ConditionSpecification conditionSpecifications [] = new ConditionSpecification[eventTypeNames.length - 1];
-		for (int i = 0; i < eventTypeNames.length - 1; i++) {
-			conditionSpecifications[i] = new StockCorrelationConditionSpecification(eventTypeNames[i],eventTypeNames[i+1], 0.5);
-		}
-		ConditionSpecification finalCond [] = new ConditionSpecification[eventTypeNames.length];
-		finalCond[0] = new StockDeltaOrderingConditionSpecification(eventTypeNames[eventTypeNames.length -1 ],
-				eventTypeNames[eventTypeNames.length -2]);
-		for (int i = 0 ; i < conditionSpecifications.length;i++) {
-			finalCond[i+1] = conditionSpecifications[i];
-		}
-//		conditionSpecifications[conditionSpecifications.length - 1] = new StockDeltaOrderingConditionSpecification(
-//				eventTypeNames[eventTypeNames.length - 2], eventTypeNames[eventTypeNames.length - 1]);
 		return new PatternSpecification(patternName, PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
 				new String[][][] {new String[][] {
 						eventTypeNames,
 				}},
-				finalCond,
+				createDeltaConditionSpecificationFromStocks(eventTypeNames).toArray(new ConditionSpecification[0]),
 				SlaVerifierTypes.NONE);
 	}
+	
+	private static PatternSpecification buildSequenceConditionVariantSpecificationFromStocks(String patternName, int conditionNum, double correlationLimit, String[] eventTypeNames) {
+		return new PatternSpecification(patternName, PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+				new String[][][] {new String[][] {
+						eventTypeNames,
+				}},
+				createVariantConditionSpecificationFromStocks(eventTypeNames, conditionNum, correlationLimit).toArray(new ConditionSpecification[0]),
+				SlaVerifierTypes.NONE);
+	}
+
+	private static List<ConditionSpecification> createVariantConditionSpecificationFromStocks(String[] eventTypeNames, int conditionNum, double correlationLimit) {
+		List<ConditionSpecification> conditionSpecifications = createDeltaConditionSpecificationFromStocks(eventTypeNames);
+		if (conditionSpecifications.size() > conditionNum) {
+			System.out.println("Debug : number of condition used " + conditionSpecifications.subList(0, conditionNum).size());
+			return conditionSpecifications.subList(0, conditionNum);
+		}
+		int condLeft = conditionNum - conditionSpecifications.size();
+		for (int i = 0; i <eventTypeNames.length - 1 ; i++) {
+			for (int j = i+1; j < eventTypeNames.length && condLeft > 0 ; j++) {
+				condLeft--;
+				conditionSpecifications.add(new StockCorrelationConditionSpecification(eventTypeNames[i], eventTypeNames[j], 0.5));
+			}
+		}
+		System.out.println("Debug : number of condition used " + conditionSpecifications.size());
+		return conditionSpecifications;
+	}
+
+
+	private static PatternSpecification buildSequenceStockCorrelationSpecificationFromStocks(String patternName, double correlationLimit, String[] eventTypeNames) {
+		return new PatternSpecification(patternName, PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+				new String[][][] {new String[][] {
+						eventTypeNames,
+				}},
+				createCorrelationWithLastDeltaConditionSpecificationFromStocks(eventTypeNames, correlationLimit, true).toArray(new ConditionSpecification[0]),
+				SlaVerifierTypes.NONE);
+	}
+
+	private static List<ConditionSpecification> createCorrelationConditionSpecificationFromStocks(String[] eventTypeNames, double correlationLimit) {
+		List<ConditionSpecification> conditionSpecifications = new ArrayList<>();
+		for (int i = 0; i < eventTypeNames.length - 1; i++) {
+			conditionSpecifications.add(new StockCorrelationConditionSpecification(eventTypeNames[i], eventTypeNames[i+1], correlationLimit));
+		}
+		return conditionSpecifications;
+	}
+
+	private static List<ConditionSpecification> createDeltaConditionSpecificationFromStocks(String[] eventTypeNames) {
+		List<ConditionSpecification> conditionSpecifications = new ArrayList<>();
+		for (int i = 0; i < eventTypeNames.length - 1; i++) {
+			conditionSpecifications.add(new StockDeltaOrderingConditionSpecification(eventTypeNames[i], eventTypeNames[i+1]));
+		}
+		return conditionSpecifications;
+	}
+
+	private static List<ConditionSpecification> createCorrelationWithLastDeltaConditionSpecificationFromStocks(String[] eventTypeNames, double correlationLimit, boolean inverseDeltaCond) {
+		List<ConditionSpecification> conditionSpecifications = createCorrelationConditionSpecificationFromStocks(eventTypeNames, correlationLimit);
+		int firstIndex = eventTypeNames.length - 2;
+		int secondIndex = eventTypeNames.length - 1;
+		if (inverseDeltaCond) {
+			firstIndex++;
+			secondIndex--;
+		}
+		conditionSpecifications.add(0, new StockDeltaOrderingConditionSpecification(
+				eventTypeNames[firstIndex], eventTypeNames[secondIndex])); //Insert before other conditions will actually calculate it last
+		return conditionSpecifications;
+	}
+
 	private static final PatternSpecification basicPatternSEQ6_var2 =
 
 			new PatternSpecification("SEQ6", PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
@@ -1332,22 +1403,36 @@ public class PatternConfig {
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(110),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(125),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(160),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(65),
+			getBasicPatternSEQ6WithVariantCondition(15).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(14).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(13).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(12).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(11).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(10).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(9).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(8).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(7).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(6).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(5).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(4).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(3).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(2).createIdenticalSpecificationWithDifferentWindow(80),
+			getBasicPatternSEQ6WithVariantCondition(1).createIdenticalSpecificationWithDifferentWindow(80),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(70),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(175),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(80),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(80),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(140),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(190),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(95),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(95),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(100),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(205),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(110),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(110),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(115),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(120),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(125),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(140),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(160),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(180),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(125),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(140),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(160),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(180),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(40),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(40),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(50),

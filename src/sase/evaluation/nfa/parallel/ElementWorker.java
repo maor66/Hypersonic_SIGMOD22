@@ -66,7 +66,7 @@ public abstract class ElementWorker {
                 long time =  System.nanoTime();
                 lastRemovedNumber = dataStorage.removeExpiredElements(lastCriteriaTimestamp, isBufferSorted(), removingCriteria);
                 innerCondTime += System.nanoTime() - time;
-                currentBackoff = 100;
+                currentBackoff = 1;
             }
             else {
                 currentBackoff--;
