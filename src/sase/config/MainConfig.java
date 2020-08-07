@@ -108,5 +108,6 @@ public class MainConfig {
 
 	/* Enable/disable debug prints of the generated evaluation structures. */
 	public static final boolean printStructureSummary = false;
-    public static boolean latencyCalculation = false;
+    public static final boolean latencyCalculation = false;
+    public static boolean isLazyEvaluation = true;
 }

@@ -219,7 +219,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Average running time is " + totalTime / threads.length);
+		System.out.println("Average running time is " + totalTime/1000000 / threads.length);
 		System.out.println("Threads finished at" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
 		//need to receive and process matches that were created while we waited
 		List<Match> matches = new ArrayList<Match>();

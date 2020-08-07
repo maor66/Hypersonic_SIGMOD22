@@ -2,6 +2,7 @@ package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
 import sase.base.Event;
+import sase.config.MainConfig;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
@@ -41,31 +42,29 @@ public class PartialMatchWorker extends ElementWorker {
             return null;
         }
         Event latestEventInSubList = actualEvents.get(actualEvents.size() - 1);
-//        actualEvents = getSliceEager(actualEvents, (Match) newElement, eventState);
+
         long time = System.nanoTime();
-        int upperIndex = getIndexWithClosestValue(actualEvents, match.getEarliestTimestamp()+ dataStorage.getTimeWindow(), false, false);
-        sliceTimeActual += System.nanoTime() - time;
-        for (int i = upperIndex; i-- > 0 ;) {
-//      for (Event event : actualEvents) {
-//            time = System.nanoTime();
-            Event event = actualEvents.get(i);
-            if (event.getSequenceNumber() < match.getLatestEvent().getSequenceNumber()) {
-                return latestEventInSubList;
+        if (MainConfig.isLazyEvaluation) { // Have to use the actual getSlice
+            actualEvents = getSlice(actualEvents, (Match) newElement, eventState);
+            sliceTimeActual += System.nanoTime() - time;
+
+            for (Event event : actualEvents) {
+                checkAndSendToNextState(event, partialMatchEvents, match);
             }
-            checkAndSendToNextState(event, partialMatchEvents, match);
-//            sliceTimeActual += System.nanoTime() - time;
+        }
+        else { //Eager ordering so can use just the upper limit and break when events in the IB are old enough
+            int upperIndex = getIndexWithClosestValue(actualEvents, match.getEarliestTimestamp() + dataStorage.getTimeWindow(), false, false);
+            sliceTimeActual += System.nanoTime() - time;
+
+            for (int i = upperIndex; i-- > 0 ;) {
+                Event event = actualEvents.get(i);
+                if (event.getSequenceNumber() < match.getLatestEvent().getSequenceNumber()) {
+                    return latestEventInSubList;
+                }
+                checkAndSendToNextState(event, partialMatchEvents, match);
+            }
         }
         return latestEventInSubList;
-    }
-
-    private List<Event> getSliceEager(List<Event> actualEvents, Match partialMatch, TypedNFAState eventState) {
-        List <Event> laterEvents = new ArrayList<>();
-        for (Event event : actualEvents) {
-            if (event.getSequenceNumber() > partialMatch.getLatestEvent().getSequenceNumber()) {
-                laterEvents.add(event);
-            }
-        }
-        return laterEvents;
     }
 
     private void recordMatchSize(Match match) {
