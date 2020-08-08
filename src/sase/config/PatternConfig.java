@@ -527,6 +527,18 @@ public class PatternConfig {
 							StockEventTypesManager.yahooEventTypeName,
 							StockEventTypesManager.biduEventTypeName});
 
+	private static final PatternSpecification basicPatternSEQ6AllocationTesting =
+			buildSpecificThreadAllocationTestSpecificationFromStocks(
+					"SEQ6",
+					0.85,
+					new String[] {
+							StockEventTypesManager.googleEventTypeName,
+							StockEventTypesManager.ciscoEventTypeName,
+							StockEventTypesManager.appleEventTypeName,
+							StockEventTypesManager.yahooEventTypeName,
+							StockEventTypesManager.microsoftEventTypeName,
+							StockEventTypesManager.biduEventTypeName});
+
 	private static PatternSpecification getBasicPatternSEQ6WithVariantCondition(int conditionNum) {
 		return buildSequenceConditionVariantSpecificationFromStocks(
 				"SEQ6",
@@ -576,6 +588,36 @@ public class PatternConfig {
 		return conditionSpecifications;
 	}
 
+
+	private static PatternSpecification buildSpecificThreadAllocationTestSpecificationFromStocks(String patternName, double correlationLimit, String[] eventTypeNames) {
+		List<ConditionSpecification> conditionSpecifications = new ArrayList<>();
+		conditionSpecifications.add(buildDeltaConditionByIndex(eventTypeNames, 1, 0));
+		conditionSpecifications.add(buildDeltaConditionByIndex(eventTypeNames, 1, 2));
+		conditionSpecifications.add(buildCorrelationConditionByIndex(eventTypeNames, correlationLimit, 0, 3));
+		conditionSpecifications.add(buildCorrelationConditionByIndex(eventTypeNames, correlationLimit, 1, 3));
+		conditionSpecifications.add(buildCorrelationConditionByIndex(eventTypeNames, correlationLimit, 2, 3));
+		conditionSpecifications.add(buildCorrelationConditionByIndex(eventTypeNames, correlationLimit, 0, 4));
+		conditionSpecifications.add(buildCorrelationConditionByIndex(eventTypeNames, correlationLimit, 1, 4));
+		conditionSpecifications.add(buildCorrelationConditionByIndex(eventTypeNames, correlationLimit, 2, 4));
+		conditionSpecifications.add(buildCorrelationConditionByIndex(eventTypeNames, correlationLimit, 3, 4));
+		conditionSpecifications.add(buildCorrelationConditionByIndex(eventTypeNames, correlationLimit, 0, 5));
+		conditionSpecifications.add(buildCorrelationConditionByIndex(eventTypeNames, correlationLimit, 1, 5));
+		conditionSpecifications.add(buildDeltaConditionByIndex(eventTypeNames, 3, 4));
+		return new PatternSpecification(patternName, PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
+				new String[][][] {new String[][] {
+						eventTypeNames,
+				}},
+				conditionSpecifications.toArray(new ConditionSpecification[0]),
+				SlaVerifierTypes.NONE);
+	}
+
+	private static ConditionSpecification buildDeltaConditionByIndex(String[] eventTypeNames, int firstIndex, int secondIndex) {
+		return new StockDeltaOrderingConditionSpecification(eventTypeNames[firstIndex], eventTypeNames[secondIndex]);
+	}
+
+	private static ConditionSpecification buildCorrelationConditionByIndex(String[] eventTypeNames, double correlationLimit, int firstIndex, int secondIndex) {
+		return new StockCorrelationConditionSpecification(eventTypeNames[firstIndex], eventTypeNames[secondIndex], correlationLimit);
+	}
 
 	private static PatternSpecification buildSequenceStockCorrelationSpecificationFromStocks(String patternName, double correlationLimit, String[] eventTypeNames) {
 		return new PatternSpecification(patternName, PatternTypes.STOCK_PATTERN, stockByCompanyPatternTimeWindow,
@@ -1405,14 +1447,15 @@ public class PatternConfig {
 //			basicPatternSEQ5.createIdenticalSpecificationWithDifferentWindow(60),
 //			basicPatternSEQ5.createIdenticalSpecificationWithDifferentWindow(80),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(95),
-//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(190),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(30),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(45),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(60),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(75),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(90),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(105),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(120),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(65),
+//			basicPatternSEQ6Correlation.createIdenticalSpecificationWithDifferentWindow(65),
+//			basicPatternSEQ6Correlation.createIdenticalSpecificationWithDifferentWindow(80),
+//			basicPatternSEQ6Correlation.createIdenticalSpecificationWithDifferentWindow(95),
+//			basicPatternSEQ6Correlation.createIdenticalSpecificationWithDifferentWindow(110),
+			basicPatternSEQ6Correlation.createIdenticalSpecificationWithDifferentWindow(125),
+			basicPatternSEQ6Correlation.createIdenticalSpecificationWithDifferentWindow(140),
+			basicPatternSEQ6Correlation.createIdenticalSpecificationWithDifferentWindow(160),
+			basicPatternSEQ6Correlation.createIdenticalSpecificationWithDifferentWindow(180),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(160),
 //			getBasicPatternSEQ6WithVariantCondition(15).createIdenticalSpecificationWithDifferentWindow(80),
 //			getBasicPatternSEQ6WithVariantCondition(14).createIdenticalSpecificationWithDifferentWindow(80),

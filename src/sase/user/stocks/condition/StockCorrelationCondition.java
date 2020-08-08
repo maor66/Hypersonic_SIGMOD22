@@ -2,6 +2,7 @@ package sase.user.stocks.condition;
 
 import sase.base.Event;
 import sase.base.EventType;
+import sase.config.MainConfig;
 import sase.pattern.condition.base.DoubleEventCondition;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
@@ -20,6 +21,11 @@ public class StockCorrelationCondition extends DoubleEventCondition {
 									 double minCorrelation, Double selectivity) {
 		super(firstType, secondType, selectivity);
 		this.minCorrelation = minCorrelation;
+		if (selectivity == null &&
+				!MainConfig.isSelectivityMonitoringAllowed &&
+				!MainConfig.conditionSelectivityMeasurementMode) {
+			setSelectivityByEstimate();
+		}
 	}
 	
 	public StockCorrelationCondition(EventType firstType, EventType secondType, double minCorrelation) {

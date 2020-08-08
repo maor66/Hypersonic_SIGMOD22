@@ -302,11 +302,11 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
         completeMatchOutputQueue = partialMatchInput; // The final output queue is that of the final state and the main thread should get the matches from it
         allMatchQueues.remove(completeMatchOutputQueue);
-        if (!MainConfig.latencyCalculation) {
-            for (ParallelQueue<Match> outputQueue : allMatchQueues) {
-                outputQueue.setSizeLimit(1000);
-            }
-        }
+//        if (!MainConfig.latencyCalculation) {
+//            for (ParallelQueue<Match> outputQueue : allMatchQueues) {
+//                outputQueue.setSizeLimit(1000);
+//            }
+//        }
 //        allMatchQueues.get(0).setSizeLimit(500);
 //        allMatchQueues.get(1).setSizeLimit(500);
 //        allMatchQueues.get(2).setSizeLimit(500);
@@ -522,6 +522,17 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
 //        inputBufferThreadsPerState.clear();
 //        matchBufferThreadsPerState.clear();
+//                inputBufferThreadsPerState.add(1);
+//                matchBufferThreadsPerState.add(1);
+//                inputBufferThreadsPerState.add(1);
+//                matchBufferThreadsPerState.add(1);
+//                inputBufferThreadsPerState.add(1);
+//                matchBufferThreadsPerState.add(1);
+//                inputBufferThreadsPerState.add(1);
+//                matchBufferThreadsPerState.add(1);
+//                inputBufferThreadsPerState.add(8);
+//                matchBufferThreadsPerState.add(8);
+
         //SEQ 4
 //        inputBufferThreadsPerState.add(1);
 //        inputBufferThreadsPerState.add(3);
