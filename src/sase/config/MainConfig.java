@@ -11,7 +11,12 @@ import sase.user.stocks.StockEventTypesManager;
 
 @SuppressWarnings("unused")
 public class MainConfig {
+	    public static DatasetInUse datasetInUse = DatasetInUse.STOCKS;
+//	public static DatasetInUse datasetInUse = DatasetInUse.SENSORS;
+
 	/* An OS-dependent module for accessing local paths. */
+	public static String experimentName = "SEQ6WindowHybrid";
+
 	private static final PathConfig pathConfig = new WindowsPathConfig();
 	
 	/* A flag indicating whether code testing is currently in process. */
@@ -20,39 +25,53 @@ public class MainConfig {
 	public static final boolean statisticsDebugMode = false;
 
 	public static final boolean parallelDebugMode = false;
+    public static boolean isFusionSupported = false;
+	public static String systemPythonPath = pathConfig.systemPythonPath;
 
+	public enum DatasetInUse {
+    	STOCKS,
+			SENSORS
+			}
 
 	/* Settings for creating and preprocessing primitive events arriving on the input stream. */
-	public static final EventProducerTypes eventProducerType = EventProducerTypes.FILE_BASED;
+//	public static final EventProducerTypes eventProducerType = EventProducerTypes.FILE_BASED;
+	public static final EventProducerTypes eventProducerType = (datasetInUse ==  DatasetInUse.STOCKS) ?
+			EventProducerTypes.FILE_BASED :
+			EventProducerTypes.FILE_BASED_SENSOR;
 	public static final boolean isSyntheticInputEnabled = (eventProducerType == EventProducerTypes.SYNTHETIC);
-	public static final EventTypesConverterTypes eventTypesConverterType = EventTypesConverterTypes.STOCK_BY_COMPANY;
-	
+	public static final EventTypesConverterTypes eventTypesConverterType = (datasetInUse ==  DatasetInUse.STOCKS) ?
+		EventTypesConverterTypes.STOCK_BY_COMPANY :
+		EventTypesConverterTypes.SENSOR_BY_ACTIVITY;
+
 	/* Settings for receiving events from the input stream. */
 	// Maor: This two settings determine if the input is taken from a directory or a file
+
+
 	public static String[] inputDirsPaths = {
-//		pathConfig.firstInputDirectoryPath,
+		pathConfig.firstInputDirectoryPath,
 	};
 	public static String[] inputFilesPaths = {
-		pathConfig.firstInputFilePath,
+//		pathConfig.firstInputFilePath,
 	};
 	public static final int eventsPerRead = 0;
-	
+
 	/* Settings for creating and managing stock event types. */
 	public static final int historyLength = 20;
+	public static final int fusedHistoryLength = historyLength * 2;
 	public static final String companyToRegionDirectoryPath = pathConfig.companyToRegionDirectoryPath;
-	
+
 	/* Settings for creating and managing tram congestion event types. */
 	public static final int lightCongestionThreshold = 3;
 	public static final int mediumCongestionThreshold = 4;
 	public static final int severeCongestionThreshold = 6;
 	public static final int heavyCongestionThreshold = 8;
-	
+
 	/* Settings for creating and managing statistics. */
 	public static String outputFilePath = pathConfig.outputFilePath;
 
 	public static final boolean periodicallyReportStatistics = false;
 	public static final int statisticsReportPeriod = 1000;
-	
+
 	/* Settings for modifying the original events stream to produce synthetic data. */
 	public static final String rarestEventTypeName = null;
 	public static final boolean enableFullDynamicMode = false;
@@ -62,32 +81,33 @@ public class MainConfig {
 			StockEventTypesManager.megaLargeCompanyEventTypeName
 		};
 	public static final int eventRatesChangeFrequency = 10000;
-	
+
 	/* A flag indicating whether event rate measurement is to be enabled. */
 	public static final boolean eventRateMeasurementMode = false;
-	
+
 	/* Condition selectivity measurement settings. */
 	public static final boolean conditionSelectivityMeasurementMode = false; //Maor: indicates whether to use selectivity file or calculate them
 	public static final String selectivityEstimatorsFilePath = pathConfig.selectivityEstimatorsFilePath;
-	
+
 	/* Maximal allowed execution time for a single simulation. */
 	public static final Long maxExecutionTime = (long)(30*60*1000);
-	
+
 	/* Enable/disable to use simulation history to avoid repeated runs. */
 	public static final boolean useSimulationHistory = false;
-	
+
 	/* Enable to run experiments on plan construction phase only. */
 	public static final boolean planConstructionOnly = false;
-	
+
 	/* Runtime statistics monitoring settings. */
 	public static final boolean isArrivalRateMonitoringAllowed = false;
 	public static final boolean isSelectivityMonitoringAllowed = false;
 	public static final Double adaptationTrialsIntervalToTimeWindowRatio = null; //2.0;//null to disable adaptation
-	
+
 	/* Event selection strategy used during the current run. */
 	public static final EventSelectionStrategies selectionStrategy = EventSelectionStrategies.SKIP_TILL_ANY;
-	
+
 	/* Enable/disable debug prints of the generated evaluation structures. */
 	public static final boolean printStructureSummary = false;
-    public static boolean latencyCalculation = true;
+    public static final boolean latencyCalculation = false;
+    public static boolean isLazyEvaluation = true;
 }

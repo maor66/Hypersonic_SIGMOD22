@@ -75,7 +75,7 @@ public abstract class AtomicCondition extends Condition {
 	}
 	
 	protected boolean shouldIgnoreSelectivityMeasurements() {
-		return false;
+		return true;
 	}
 	
 	protected abstract boolean actuallyVerify(List<Event> events);

@@ -6,6 +6,7 @@ import sase.base.Event;
 import sase.base.EventType;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
+import sase.pattern.EventTypesManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,5 +48,10 @@ public class EventWorker extends ElementWorker {
             checkAndSendToNextState((Event) newElement, partialMatchEvents, match);
         }
         return latest;
+    }
+
+    @Override
+    protected long sizeOfElement() {
+        return EventTypesManager.getInstance().getAverageEventSize();
     }
 }

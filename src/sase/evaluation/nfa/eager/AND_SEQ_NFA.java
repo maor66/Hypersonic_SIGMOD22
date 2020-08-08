@@ -220,8 +220,8 @@ public class AND_SEQ_NFA extends AND_NFA {
 	}
 	
 	@Override
-	public List<Match> validateTimeWindow(long currentTime) {
-		List<Match> matches = super.validateTimeWindow(currentTime);
+	public List<Match> validateTimeWindow(long currentTime, Event event) {
+		List<Match> matches = super.validateTimeWindow(currentTime, event);
 		negatedEventsBuffer.refresh(currentTime);
 		if (frozenInstances.isEmpty()) {
 			return matches;
@@ -321,6 +321,6 @@ public class AND_SEQ_NFA extends AND_NFA {
 	public List<Match> getLastMatches() {
 		//force timeout on all instances
 		long dummyExpirationTime = lastKnownGlobalTime + timeWindow;
-		return validateTimeWindow(dummyExpirationTime);
+		return validateTimeWindow(dummyExpirationTime, null);
 	}
 }

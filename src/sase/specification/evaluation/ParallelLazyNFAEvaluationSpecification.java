@@ -1,5 +1,6 @@
 package sase.specification.evaluation;
 
+import sase.config.MainConfig;
 import sase.evaluation.EvaluationMechanismTypes;
 import sase.evaluation.nfa.lazy.order.OrderingAlgorithmTypes;
 import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
@@ -13,6 +14,9 @@ public class ParallelLazyNFAEvaluationSpecification extends CostBasedLazyNFAEval
     public ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes orderingAlgorithmType, CostModelTypes costModelType, Double throughputToLatencyRatio, 
     		int numOfThreads, double inputMatchThreadRatio) {
         super(orderingAlgorithmType, costModelType, throughputToLatencyRatio);
+        if (orderingAlgorithmType == OrderingAlgorithmTypes.TRIVIAL) {
+            MainConfig.isLazyEvaluation = false;
+        }
         this.type = EvaluationMechanismTypes.LAZY_CHAIN_PARALLEL;
         this.numOfThreads = numOfThreads;
         this.inputMatchThreadRatio = inputMatchThreadRatio;

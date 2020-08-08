@@ -18,6 +18,7 @@ import sase.statistics.Statistics;
 public final class RIPEvaluationMechanism extends DataParallelEvaluationMechanism {
 
 	private static final long EVENTS_RATE = 1;
+	private final double batchesRatio;
 	private long eventCount = 0;
 	private long eventsPerThread = 0;
 	private List<Event> events;
@@ -32,17 +33,20 @@ public final class RIPEvaluationMechanism extends DataParallelEvaluationMechanis
 	
 	public RIPEvaluationMechanism(Pattern pattern, RIPEvaluationSpecification specification, EvaluationPlan evaluationPlan) {
 		super(pattern, specification, evaluationPlan);
-
-		eventsPerThread = calculateEventsPerThread(pattern, specification);
-		System.out.println("Using " + eventsPerThread + " events per thread");
 		events = new ArrayList<Event>();
+		batchesRatio = specification.batchesRatio;
 	}
 
-	private long calculateEventsPerThread(Pattern pattern, RIPEvaluationSpecification specification) {
-		long duplicatedEPT = timeWindow * EVENTS_RATE * pattern.getEventTypes().size();
+	public void setUpRIPThreads(int numberOfEvents, int numberOfEventTypes) {
+		eventsPerThread = calculateEventsPerThread(numberOfEvents, numberOfEventTypes);
+		System.out.println("Using " + eventsPerThread + " events per thread");
+	}
+
+	private long calculateEventsPerThread(int numberOfEvents, int numberOfEventTypes) {
+		long duplicatedEPT = timeWindow * EVENTS_RATE * numberOfEventTypes;
 		long minEPT = 1 + duplicatedEPT * 2;
-		long maxEPT = (specification.totalNumberOfEvents + duplicatedEPT * specification.numOfThreads)  / specification.numOfThreads;
-		return (long) ((maxEPT - minEPT)* specification.batchesRatio) +minEPT;
+		long maxEPT = (numberOfEvents + duplicatedEPT * numOfThreads)  / numOfThreads;
+		return (long) ((maxEPT - minEPT)* batchesRatio) + minEPT;
 	}
 
 	private void CheckWindowLegal(long timeStampOfWindowEnd, Event event, long windowSize) throws WindowTooBigException {

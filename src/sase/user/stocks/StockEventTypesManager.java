@@ -1,6 +1,7 @@
 package sase.user.stocks;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,6 +20,9 @@ public class StockEventTypesManager extends EventTypesManager {
 	public static final int timestampAttributeIndex = 1;
 	public static final int firstStockMeasurementIndex = 2;
 	public static final int numberOfStockMeasurementIndices = 20;
+	public static final int SecondTypeFusedFirstStockMeasurementIndex = firstStockMeasurementIndex + numberOfStockMeasurementIndices;
+	public static final int fusedFirstTypeTimestampIndex = SecondTypeFusedFirstStockMeasurementIndex + numberOfStockMeasurementIndices;
+
 
 	//stock patterns by industry related names
 	public static final String highTechCompanyEventTypeName = "HighTechCompany";
@@ -268,7 +272,8 @@ public class StockEventTypesManager extends EventTypesManager {
 	public static EventType ptekEventType;
 	public static EventType kirkEventType;
 	public static EventType nathEventType;
-	
+	public static List<EventType> fusedEventTypes = new ArrayList<>();
+
 	public StockEventTypesManager() {
 	}
 	
@@ -355,10 +360,37 @@ public class StockEventTypesManager extends EventTypesManager {
 		result.put(ptekEventTypeName, ptekEventType);
 		result.put(kirkEventTypeName, kirkEventType);
 		result.put(nathEventTypeName, nathEventType);
-				
+
+		getAllFusedTypeNames().forEach(fusedEventTypeName -> {
+			EventType fusedEventType = createNewFusedEvent(fusedEventTypeName);
+			fusedEventTypes.add(fusedEventType);
+			result.put(fusedEventTypeName, fusedEventType);
+		});
 		return result;
 	}
-	
+
+	private List<EventType> getAllFusedTypes()
+	{
+//		ArrayList<EventType> eventTypes = new ArrayList<>();
+//		getAllFusedTypeNames().forEach(fusedEventTypeName -> eventTypes.add(createNewFusedEvent(fusedEventTypeName)));
+		return fusedEventTypes;
+	}
+
+	private EventType createNewFusedEvent(String fusedEventTypeName) {
+		return new EventType(fusedEventTypeName, getFusedAttributes());
+	}
+
+	private Attribute[] getFusedAttributes() {
+		Attribute[] attributes = new Attribute[MainConfig.fusedHistoryLength + 2 + 1];
+		attributes[0] = new Attribute(Datatype.TEXT, labelAttributeName);
+		attributes[1] = new Attribute(Datatype.LONG, timestampAttributeName);
+		for (int i = 2; i < attributes.length; ++i) {
+			attributes[i] = new Attribute(Datatype.DOUBLE, String.format("StockPrice_%d", i-2));
+		}
+		attributes[fusedFirstTypeTimestampIndex] = new Attribute(Datatype.LONG, "Fused " + timestampAttributeName);
+		return attributes;
+	}
+
 	@Override
 	protected HashMap<String, String> createLongNameToShortNameHash() {
 		HashMap<String, String> result = new HashMap<String, String>();
@@ -502,6 +534,9 @@ public class StockEventTypesManager extends EventTypesManager {
 				newPayload[i] = Double.valueOf((String)payload[i]);
 			}
 		}
+		if (payload.length == fusedFirstTypeTimestampIndex + 1) {
+			newPayload[fusedFirstTypeTimestampIndex] = payload[fusedFirstTypeTimestampIndex];
+		}
 		return newPayload;
 	}
 	
@@ -526,10 +561,11 @@ public class StockEventTypesManager extends EventTypesManager {
 		*/
 		List<EventType> result = new ArrayList<EventType>(getLargeCompaniesEventTypes());
 		result.addAll(getMediumCompaniesEventTypes());
-		result.addAll(getSmallCompaniesEventTypes());		
+		result.addAll(getSmallCompaniesEventTypes());
+		result.addAll(getAllFusedTypes());
 		return result;
 	}
-	
+
 	public List<EventType> getLargeCompaniesEventTypes() {
 		List<EventType> result = new ArrayList<EventType>();
 		result.add(microsoftEventType);
@@ -610,6 +646,26 @@ public class StockEventTypesManager extends EventTypesManager {
 
 	@Override
 	public List<String> getKnownEventTypeNames() {
+		List<String> regularNames = getAllRegularTypeNames();
+		regularNames.addAll(getAllFusedTypeNames());
+		return regularNames;
+	}
+
+	public List<String> getAllFusedTypeNames() {
+		if (!MainConfig.isFusionSupported) {
+			return new ArrayList<>();
+		}
+		List<String> fusedNames = new ArrayList<>();
+		List<String> regularNames = getAllRegularTypeNames();
+		for (int i = 0; i < regularNames.size(); i++) {
+			for (int j = 0; j < regularNames.size(); j++) {
+				fusedNames.add(regularNames.get(i) + regularNames.get(j));
+			}
+		}
+		return fusedNames;
+	}
+
+	private List<String> getAllRegularTypeNames() {
 		List<String> result = new ArrayList<String>();
 		result.add(microsoftEventTypeName);
 		result.add(yahooEventTypeName);
@@ -676,7 +732,6 @@ public class StockEventTypesManager extends EventTypesManager {
 		result.add(ptekEventTypeName);
 		result.add(kirkEventTypeName);
 		result.add(nathEventTypeName);
-		
 		return result;
 	}
 }

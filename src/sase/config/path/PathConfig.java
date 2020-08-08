@@ -8,4 +8,5 @@ public abstract class PathConfig {
 	public String firstInputDirectoryPath;
 	public String outputFilePath;
 	public String selectivityEstimatorsFilePath;
+    public String systemPythonPath;
 }

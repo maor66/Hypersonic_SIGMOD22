@@ -8,6 +8,7 @@ import sase.base.EventType;
 import sase.config.MainConfig;
 import sase.specification.SimulationSpecification;
 import sase.specification.input.InputSpecification;
+import sase.user.sensors.SensorsByActivityEventTypesConverter;
 import sase.user.speedd.fraud.CreditCardFraudEventTypesConverter;
 import sase.user.speedd.traffic.TrafficSpeedEventTypesConverter;
 import sase.user.stocks.converters.StocksByCompanyEventTypesConverter;
@@ -50,6 +51,9 @@ public abstract class EventProducer {
 				break;
 			case TRAFFIC_SPEED_VEHICLES_NUMBER:
 				converter = new AarhusTrafficEventTypesConverter(simulationSpecification);
+				break;
+			case SENSOR_BY_ACTIVITY:
+				converter = new SensorsByActivityEventTypesConverter(simulationSpecification);
 				break;
 			default:
 				converter = null;

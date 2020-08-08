@@ -5,11 +5,17 @@ import sase.base.Event;
 import sase.base.EventType;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
+import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
 
 
 import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +25,8 @@ import static sase.evaluation.nfa.parallel.WorkerGroup.EVENT_WORKER;
 
 public class BufferWorker implements Runnable {
 
+    private  boolean isInputBufferWorker;
+    private  long windowSize;
     String threadName;
     protected boolean canCreateMatches= true;
     public long actualCalcTime = 0;
@@ -29,8 +37,6 @@ public class BufferWorker implements Runnable {
     protected AtomicBoolean isMainFinished;
 
     //Tasks
-    protected ElementWorker primaryTask;
-    protected ElementWorker secondaryTask;
     private Map<EventType, Map <Boolean, ElementWorker>> typeToWorker;
 
     //input
@@ -62,6 +68,9 @@ public class BufferWorker implements Runnable {
 
     private int isPrimaryInputTakenLast = 1;
     private boolean isFinishedWithThisState = false;
+    private long latestSecondary = 0;
+    private long latestPrimary = 0;
+    private ElementWorker taskUsed;
 
 
     public BufferWorker(TypedNFAState eventState,
@@ -150,20 +159,13 @@ public class BufferWorker implements Runnable {
         return typeToWorker.get(eventType).get(isEvent);
     }
 
-    private List<ElementWorker> getAllWorkers() {
-        List<ElementWorker> allWorkers = new ArrayList<>(inputsToTasks.values());
-        allWorkers.add(primaryTask);
-        allWorkers.add(secondaryTask);
-        return allWorkers;
-    }
-
-    private ContainsEvent getElement()
+    private List<ContainsEvent> getElement()
     {
         if (!primaryTakenOnce) { // Give a chance to the primary only
             lastInputUsed = primaryInput;
             return takePrimaryInput();
         }
-        ContainsEvent newElement;
+        List<ContainsEvent> newElement;
         if (!isFinishedWithThisState) {
             newElement = takePrimaryInput();
             if (newElement != null) {
@@ -192,33 +194,33 @@ public class BufferWorker implements Runnable {
         }
     }
 
-    private ContainsEvent takeElementFromDifferentState() {
+    private List<ContainsEvent> takeElementFromDifferentState() {
         List<ParallelQueue<? extends ContainsEvent>> inputs = getInputsOfOngoingStates();
         Collections.shuffle(inputs, ThreadLocalRandom.current());
-        ContainsEvent newElement;
+        List<ContainsEvent> newBatch;
 
         // Check that the last input is not primary/secondary or was already finished
         if (inputs.contains(lastInputUsed)) { // If input is successful before than it gets priority
-            newElement = takeElementFromSpecificInput(lastInputUsed);
-            if (newElement != null) {
+            newBatch = takeElementFromSpecificInput(lastInputUsed);
+            if (newBatch != null) {
                 numberOfOtherStateHandledItems++;
-                return newElement;
+                return newBatch;
             }
         }
 
         inputs.remove(lastInputUsed); // TODO: check that actually removed
         for (ParallelQueue<? extends ContainsEvent> input : inputs){ // check all other inputs
-            newElement = takeElementFromSpecificInput(input);
-            if (newElement != null) {
+            newBatch = takeElementFromSpecificInput(input);
+            if (newBatch != null) {
                 lastInputUsed = input;
                 numberOfOtherStateHandledItems++;
-                return newElement;
+                return newBatch;
             }
         }
         return null;
     }
 
-    private ContainsEvent takeElementFromSpecificInput(ParallelQueue<? extends ContainsEvent> lastInputUsed) {
+    private List<ContainsEvent> takeElementFromSpecificInput(ParallelQueue<? extends ContainsEvent> lastInputUsed) {
 //        System.out.println("Taking different input");
         return takeNextInput(lastInputUsed, 0);
     }
@@ -241,13 +243,15 @@ public class BufferWorker implements Runnable {
     }
 
     public void getAndWork() {
-        ContainsEvent newElement = getElement();
-        if (newElement == null) {
+        List<ContainsEvent> newBatch = getElement();
+        if (newBatch == null) {
             possibleNotifyWorkerFinishedInState();
             return;
         }
         ElementWorker usedTask = inputsToTasks.get(lastInputUsed);
-        usedTask.handleElement(newElement);
+        for (ContainsEvent element : newBatch) {
+            usedTask.handleElement(element);
+        }
     }
 
     @Override
@@ -327,19 +331,21 @@ public class BufferWorker implements Runnable {
     }
 
 
-    private ContainsEvent takeSecondaryInput() {
+    private List<ContainsEvent> takeSecondaryInput() {
 //        long time = System.nanoTime();
-        if (!primaryTakenOnce || secondaryInput.isEmpty()) {
+        if (secondaryInput.isEmpty()) {
 //            secondaryIdleTime += System.nanoTime() - time;
             return null;
         }
-//        System.out.println("Taking secondary input");
-        ContainsEvent ce = takeNextInput(secondaryInput, 50);
 //        secondaryIdleTime += System.nanoTime() - time;
-        return ce;
+        List<ContainsEvent> elementBatch = takeNextInput(secondaryInput, 0);
+        if (elementBatch != null) {
+            numberOfSecondaryHandledItems++;
+        }
+        return elementBatch;
     }
 
-    private ContainsEvent takePrimaryInput() {
+    private List<ContainsEvent> takePrimaryInput() {
 //        long time = System.nanoTime();
         if (primaryInput.isEmpty()) {
 //            primaryIdleTime += System.nanoTime() - time;
@@ -347,21 +353,29 @@ public class BufferWorker implements Runnable {
         }
         primaryTakenOnce = true; //keep and delete comment
 //        System.out.println("Taking primary input");
-        ContainsEvent ce  = takeNextInput(primaryInput, 0);
 //        primaryIdleTime += System.nanoTime() - time;
-        return ce;
+        List<ContainsEvent> elementBatch  = takeNextInput(primaryInput, 0);
+        if (elementBatch != null) {
+            numberOfPrimaryHandledItems++;
+        }
+        return elementBatch;
     }
 
 
-    protected ContainsEvent takeNextInput(ParallelQueue<? extends ContainsEvent> input, int timeoutInMilis)  {
+    protected List<ContainsEvent> takeNextInput(ParallelQueue<? extends ContainsEvent> input, int timeoutInMilis)  {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
-        return input.poll(timeoutInMilis, TimeUnit.MILLISECONDS);
+        return  (List<ContainsEvent>) input.poll(timeoutInMilis, TimeUnit.MILLISECONDS);
 //            return input.take();
     }
     private void finishRun() {
         System.out.println("Buffer Worker - " +threadName + " " + Thread.currentThread().getId() + " Handled " + numberOfPrimaryHandledItems + " primary items " +
                 + numberOfSecondaryHandledItems + " Handled secondary items " + numberOfOtherStateHandledItems +  " Handle other states items. Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000);
-        inputsToTasks.forEach((parallelQueue, elementWorker) -> elementWorker.finishRun());
+        inputsToTasks.forEach((parallelQueue, elementWorker) ->
+        {
+            elementWorker.forwardIncompleteBatch();
+            elementWorker.finishRun();
+        });
+
 //        primaryTask.finishRun();
 //        secondaryTask.finishRun();
     }
@@ -391,6 +405,10 @@ public class BufferWorker implements Runnable {
 
     public void resetGroupFinish() {
         isFinishedWithThisState = false;
+    }
+
+    public long size() {
+        return inputsToTasks.values().stream().mapToLong(ElementWorker::size).sum();
     }
 
 //    public void initializeOppositeWorkers(List<BufferWorker> primaryOppositeWorkers, List<BufferWorker> secondaryOppositeWorkers) {

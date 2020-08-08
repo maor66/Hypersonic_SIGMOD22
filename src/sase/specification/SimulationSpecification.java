@@ -72,7 +72,7 @@ public class SimulationSpecification {
 	public String getShortDescription() {
 		return String.format("%s;%s;%s;%s",
 				 			 evaluationSpecification.getShortDescription(),
-				 			 workloadCreationSpecification == null ? workloadSpecification.getShortDescription() : 
+				 			 workloadCreationSpecification == null ? workloadSpecification.toString() :
 				 				 									 workloadCreationSpecification.getShortDescription(),
 							 adaptationSpecification.getShortDescription(),
 							 inputSpecification.getShortDescription());

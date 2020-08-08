@@ -5,4 +5,5 @@ public enum Datatype {
 	LONG,
 	DOUBLE,
 	BOOLEAN,
+	LOCALDATETIME
 }
