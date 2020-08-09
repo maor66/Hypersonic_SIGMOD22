@@ -519,11 +519,10 @@ public class PatternConfig {
 	private static final PatternSpecification basicPatternSEQ6Correlation =
 			buildSequenceStockCorrelationSpecificationFromStocks(
 					"SEQ6",
-					0.5,
+					0.2,
 					new String[] {
 							StockEventTypesManager.googleEventTypeName,
 							StockEventTypesManager.ciscoEventTypeName,
-							StockEventTypesManager.appleEventTypeName,
 							StockEventTypesManager.yahooEventTypeName,
 							StockEventTypesManager.biduEventTypeName});
 
@@ -1416,8 +1415,8 @@ public class PatternConfig {
 //			basicPatternSEQ5.createIdenticalSpecificationWithDifferentWindow(80),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(95),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(190),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(30),
-			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(45),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(30),
+//			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(45),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(60),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(75),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(90),
@@ -1454,6 +1453,10 @@ public class PatternConfig {
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(140),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(160),
 //			basicPatternSEQ6.createIdenticalSpecificationWithDifferentWindow(180),
+			basicPatternSEQ6Correlation.createIdenticalSpecificationWithDifferentWindow(100),
+			basicPatternSEQ6Correlation.createIdenticalSpecificationWithDifferentWindow(120),
+			basicPatternSEQ6Correlation.createIdenticalSpecificationWithDifferentWindow(140),
+			basicPatternSEQ6Correlation.createIdenticalSpecificationWithDifferentWindow(160),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(40),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(40),
 //			basicPatternSEQ4.createIdenticalSpecificationWithDifferentWindow(50),

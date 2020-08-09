@@ -320,7 +320,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         allMatchQueues.remove(completeMatchOutputQueue);
         if (!MainConfig.latencyCalculation) {
             for (ParallelQueue<Match> outputQueue : allMatchQueues) {
-                outputQueue.setSizeLimit(1000);
+//                outputQueue.setSizeLimit(1000);
             }
         }
 //        allMatchQueues.get(0).setSizeLimit(500);

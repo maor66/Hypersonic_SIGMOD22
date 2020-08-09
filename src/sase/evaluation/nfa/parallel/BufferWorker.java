@@ -105,6 +105,7 @@ public class BufferWorker implements Runnable {
         this.barrier = barrier;
         this.eventType = eventState.getEventType();
         threadName = (group == EVENT_WORKER) ?  "InputBufferWorker " + eventState.getName() : "MatchBufferWorker "+ eventState.getName();
+        isInputBufferWorker = group == EVENT_WORKER;
 
     }
 
@@ -153,39 +154,58 @@ public class BufferWorker implements Runnable {
         secondaryInput = null;
         inputsToTasks = null;
     }
+    private boolean inputPriorityCriteria() {
+        return isInputBufferWorker;
+    }
 
-
-    private ElementWorker getTaskByEventTypeAndCategory(EventType eventType, boolean isEvent) {
-        return typeToWorker.get(eventType).get(isEvent);
+    private List<ContainsEvent> takeOwnStateInput() {
+        List<ContainsEvent> newBatch;
+        newBatch = (inputPriorityCriteria()) ? takePrimaryInput() : takeSecondaryInput();
+        if (newBatch == null) {
+            newBatch =  (inputPriorityCriteria()) ? takeSecondaryInput() : takePrimaryInput();
+        }
+        return newBatch;
     }
 
     private List<ContainsEvent> getElement()
     {
-        if (!primaryTakenOnce) { // Give a chance to the primary only
-            lastInputUsed = primaryInput;
-            return takePrimaryInput();
-        }
-        List<ContainsEvent> newElement;
         if (!isFinishedWithThisState) {
-            newElement = takePrimaryInput();
-            if (newElement != null) {
-                numberOfPrimaryHandledItems++;
-                lastInputUsed = primaryInput;
-                return newElement;
-            }
-
-            newElement = takeSecondaryInput();
-            if (newElement != null) {
-                numberOfSecondaryHandledItems++;
-                lastInputUsed = secondaryInput;
-                return newElement;
+            List<ContainsEvent> newBatch = takeOwnStateInput();
+            if (newBatch != null) {
+                return newBatch;
             }
             possibleNotifyWorkerFinishedInState();
         }
 
-        newElement = takeElementFromDifferentState();
-        return newElement;
+        return takeElementFromDifferentState();
+//return null;
+
+//        if (!primaryTakenOnce) { // Give a chance to the primary only
+//            lastInputUsed = primaryInput;
+//            return takePrimaryInput();
+//        }
+//        List<ContainsEvent> newElement;
+//        if (!isFinishedWithThisState) {
+//            newElement = takePrimaryInput();
+//            if (newElement != null) {
+//                numberOfPrimaryHandledItems++;
+//                lastInputUsed = primaryInput;
+//                return newElement;
+//            }
+//
+//            newElement = takeSecondaryInput();
+//            if (newElement != null) {
+//                numberOfSecondaryHandledItems++;
+//                lastInputUsed = secondaryInput;
+//                return newElement;
+//            }
+//            possibleNotifyWorkerFinishedInState();
+//        }
+//
+//        newElement = takeElementFromDifferentState();
+//        return newElement;
     }
+
 
     private void possibleNotifyWorkerFinishedInState() {
         if (barrier.hasFinishedWithAllPreviousStates(eventType) && primaryInput.isEmpty() && secondaryInput.isEmpty() && !isFinishedWithThisState) {
@@ -194,9 +214,23 @@ public class BufferWorker implements Runnable {
         }
     }
 
+    private  List<ParallelQueue<? extends ContainsEvent>> chooseOrderForTryingInputs(List<ParallelQueue<? extends ContainsEvent>> inputs,
+                                                                                     ParallelQueue<? extends ContainsEvent> failedInput)
+    {
+        //TODO: add random to this function
+        inputs.remove(failedInput);
+        List<ParallelQueue<? extends ContainsEvent>> orderedInputs = new ArrayList<>();
+        inputsToTasks.forEach((input, elementWorker) -> {
+            if (inputs.contains(input)) {
+                int insertionIndex = elementWorker.isBufferSorted()  ? 0 : orderedInputs.size(); // Hack to check if IBworker or MBworker
+                orderedInputs.add(insertionIndex, input);
+            }
+        });
+        return orderedInputs;
+    }
+
     private List<ContainsEvent> takeElementFromDifferentState() {
         List<ParallelQueue<? extends ContainsEvent>> inputs = getInputsOfOngoingStates();
-        Collections.shuffle(inputs, ThreadLocalRandom.current());
         List<ContainsEvent> newBatch;
 
         // Check that the last input is not primary/secondary or was already finished
@@ -208,8 +242,11 @@ public class BufferWorker implements Runnable {
             }
         }
 
+        List<ParallelQueue<? extends ContainsEvent>> orderedInputs = chooseOrderForTryingInputs(inputs, lastInputUsed);
+//        Collections.shuffle(inputs, ThreadLocalRandom.current());
+
         inputs.remove(lastInputUsed); // TODO: check that actually removed
-        for (ParallelQueue<? extends ContainsEvent> input : inputs){ // check all other inputs
+        for (ParallelQueue<? extends ContainsEvent> input : orderedInputs){ // check all other inputs
             newBatch = takeElementFromSpecificInput(input);
             if (newBatch != null) {
                 lastInputUsed = input;
@@ -340,6 +377,7 @@ public class BufferWorker implements Runnable {
 //        secondaryIdleTime += System.nanoTime() - time;
         List<ContainsEvent> elementBatch = takeNextInput(secondaryInput, 0);
         if (elementBatch != null) {
+            lastInputUsed = secondaryInput;
             numberOfSecondaryHandledItems++;
         }
         return elementBatch;
@@ -356,6 +394,7 @@ public class BufferWorker implements Runnable {
 //        primaryIdleTime += System.nanoTime() - time;
         List<ContainsEvent> elementBatch  = takeNextInput(primaryInput, 0);
         if (elementBatch != null) {
+            lastInputUsed = primaryInput;
             numberOfPrimaryHandledItems++;
         }
         return elementBatch;
