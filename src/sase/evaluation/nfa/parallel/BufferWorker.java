@@ -2,17 +2,24 @@ package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
+import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
 import sase.simulator.Environment;
 import sase.statistics.Statistics;
 
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BufferWorker implements Runnable {
 
+    private  boolean isInputBufferWorker;
+    private  long windowSize;
     String threadName;
     protected boolean canCreateMatches= true;
     public long actualCalcTime = 0;
@@ -44,6 +51,9 @@ private boolean primaryTakenOnce = false;
 private boolean addedToGroupFinish =  false;
 
 private int isPrimaryInputTakenLast = 1;
+    private long latestSecondary = 0;
+    private long latestPrimary = 0;
+    private ElementWorker taskUsed;
 
     public BufferWorker(TypedNFAState eventState,
                         ParallelQueue<? extends ContainsEvent> eventInput,
@@ -67,45 +77,90 @@ private int isPrimaryInputTakenLast = 1;
         this.primaryInput = isInputBufferWorker ? eventInput : partialMatchInput;
         this.secondaryInput = isInputBufferWorker ? partialMatchInput : eventInput;
         this.workersNeededToFinish = workersNeededToFinish;
+        windowSize = threadContainer.getTimeWindow();
         threadName = isInputBufferWorker ?  "InputBufferWorker" + eventState.getName() :"MatchBufferWorker "+ eventState.getName();
+        this.isInputBufferWorker = isInputBufferWorker;
     }
 
     public BufferWorker() //Creates dummy BufferWorker
     {}
+    private boolean inputPriorityCriteria() {
+        return isInputBufferWorker;
+    }
+    
+    private List<ContainsEvent> takeInput() {
+        List<ContainsEvent> newBatch;
+        newBatch = (inputPriorityCriteria()) ? takePrimaryInput() : takeSecondaryInput();
+        if (newBatch == null) {
+            newBatch =  (inputPriorityCriteria()) ? takeSecondaryInput() : takePrimaryInput();
+        }
+        return newBatch;
+    }
+
+    private void printBufferSnapShot(String threadName)
+    {
+        System.out.println(threadName  + " " +  new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
+                " latest primary timestamp " + latestPrimary +
+                " latest secondary timestamp " + latestSecondary +
+                " primary buffer size " + primaryTask.currentBufferSize +
+                " secondary buffer size " + secondaryTask.currentBufferSize +
+                " Handled primary items " + numberOfPrimaryHandledItems + " Secondary Items " + numberOfSecondaryHandledItems);
+    }
 
     @Override
     public void run() {
         thread = Thread.currentThread();
         thread.setName(threadName + " " + Thread.currentThread().getName());
+        primaryTask.updateOppositeWorkers(secondaryTask);
+        Timer printTimer = new Timer();
+//        printTimer.scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                printBufferSnapShot(threadName + " " + Thread.currentThread().getName());
+//            }
+//        }, 0, 5 * 1000);
         while (true) {
-            ContainsEvent newElement;
-            ElementWorker taskUsed = primaryTask;
-//            long time = System.nanoTime();
-            newElement = takePrimaryInput();
-//            sliceTime += System.nanoTime() - time;
-            if (newElement == null) {
-                newElement = takeSecondaryInput(); // Check if the secondaryTask queue has an item
-                if (newElement == null) {
+            long idletime = System.nanoTime();
+            List<ContainsEvent> newBatch = takeInput();
+            secondaryIdleTime += System.nanoTime() - idletime;
+//            ElementWorker taskUsed = primaryTask;
+////            long time = System.nanoTime();
+//            if (latestPrimary < latestSecondary + 500000) {
+//                newBatch = takePrimaryInput();
+//            }
+//            else {
+//                newBatch = null;
+//            }
+////            sliceTime += System.nanoTime() - time;
+//            if (newBatch == null) {
+//                newBatch = takeSecondaryInput(); // Check if the secondaryTask queue has an item
+                if (newBatch == null) {
                     if (isPreviousStateFinished(finishedWithGroup) && !addedToGroupFinish) {
+                        forwardIncompleteBatch();
                         finishedWithGroup.add(this);
                         addedToGroupFinish = true;
                     }
                     if (isPreviousStateFinished(finishedWorkers)) {
+                        forwardIncompleteBatch();
+                        printBufferSnapShot(threadName + " " + Thread.currentThread().getName());
+                        printTimer.cancel();
                         finishRun();
                         return;
                     } else {
                         continue;
                     }
                 }
-                numberOfSecondaryHandledItems++;
-                isPrimaryInputTakenLast = 0;
-                primaryTask.updateOppositeWorkers(secondaryTask);
-                taskUsed = secondaryTask; // The secondaryTask queue had an item so it is the task used for adding, iterating and removing
-            }
-            else {
-                isPrimaryInputTakenLast = 1;
-                numberOfPrimaryHandledItems++;
-            }
+//                latestSecondary = newElement.getEarliestTimestamp();
+//                numberOfSecondaryHandledItems++;
+//                isPrimaryInputTakenLast = 0;
+//                primaryTask.updateOppositeWorkers(secondaryTask);
+//                taskUsed = secondaryTask; // The secondaryTask queue had an item so it is the task used for adding, iterating and removing
+////            }
+//            else {
+////                latestPrimary = newElement.getEarliestTimestamp();
+//                isPrimaryInputTakenLast = 1;
+//                numberOfPrimaryHandledItems++;
+//            }
 //            else { //Primary is used
 //                secondaryTask.updateOppositeWorkers(primaryTask);
 //            }
@@ -118,7 +173,30 @@ private int isPrimaryInputTakenLast = 1;
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
-            taskUsed.handleElement(newElement, finishedWorkers, (isPrimaryInputTakenLast==1) ? secondaryInput : primaryInput );
+//            if ((numberOfPrimaryHandledItems + numberOfSecondaryHandledItems) % 100 ==0 ) {
+            long time = System.nanoTime();
+            long latestTimestamp = Long.MIN_VALUE;
+            for (ContainsEvent newElement : newBatch) {
+                if (newElement.getTimestamp() > latestTimestamp) {
+                    latestTimestamp = newElement.getTimestamp();
+                }
+                taskUsed.handleElement(newElement, finishedWorkers, (isPrimaryInputTakenLast == 1) ? secondaryInput : primaryInput);
+            }
+
+            if (primaryTask == taskUsed) {
+                if (latestPrimary < latestTimestamp) {
+                    latestPrimary = latestTimestamp;
+                }
+            }
+            else {
+                if (latestSecondary < latestTimestamp) {
+                    latestSecondary = latestTimestamp;
+                }
+            }
+            primaryIdleTime+= System.nanoTime() - time;
+//            }
+
+//            taskUsed.handleElement(newElement, finishedWorkers, (isPrimaryInputTakenLast==1) ? secondaryInput : primaryInput );
 //            ContainsEvent removingCriteria = null;
 //            long latestTimeStamp = Long.MIN_VALUE;
 //            for (BufferWorker worker : dataStorage.getOppositeBufferWorkers()) {
@@ -147,34 +225,46 @@ private int isPrimaryInputTakenLast = 1;
         }
     }
 
-    private ContainsEvent takeSecondaryInput() {
+    private void forwardIncompleteBatch() {
+        primaryTask.forwardIncompleteBatch();
+        secondaryTask.forwardIncompleteBatch();
+    }
+
+    private List<ContainsEvent> takeSecondaryInput() {
 //        long time = System.nanoTime();
-        if (!primaryTakenOnce || secondaryInput.isEmpty()) {
+        if (secondaryInput.isEmpty()) {
 //            secondaryIdleTime += System.nanoTime() - time;
             return null;
         }
-        ContainsEvent ce = takeNextInput(secondaryInput, 50);
+        taskUsed = secondaryTask;
+        List<ContainsEvent> elementBatch = takeNextInput(secondaryInput, 0);
 //        secondaryIdleTime += System.nanoTime() - time;
-        return ce;
+        if (elementBatch != null) {
+            numberOfSecondaryHandledItems++;
+        }
+        return elementBatch;
     }
 
-    private ContainsEvent takePrimaryInput() {
+    private List<ContainsEvent> takePrimaryInput() {
 //        long time = System.nanoTime();
         if (primaryInput.isEmpty()) {
 //            primaryIdleTime += System.nanoTime() - time;
             return null;
         }
         primaryTakenOnce = true;
-
-        ContainsEvent ce  = takeNextInput(primaryInput, 0);
+        taskUsed = primaryTask;
+        List<ContainsEvent> elementBatch  = takeNextInput(primaryInput, 0);
 //        primaryIdleTime += System.nanoTime() - time;
-        return ce;
+        if (elementBatch != null) {
+            numberOfPrimaryHandledItems++;
+        }
+        return elementBatch;
     }
 
 
-    protected ContainsEvent takeNextInput(ParallelQueue<? extends ContainsEvent> input, int timeoutInMilis)  {
+    protected List<ContainsEvent> takeNextInput(ParallelQueue<? extends ContainsEvent> input, int timeoutInMilis)  {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
-        return input.poll(timeoutInMilis, TimeUnit.MILLISECONDS);
+        return  (List<ContainsEvent>) input.poll(timeoutInMilis, TimeUnit.MILLISECONDS);
 //            return input.take();
     }
     private void finishRun() {
@@ -215,6 +305,10 @@ private int isPrimaryInputTakenLast = 1;
 
     public void resetGroupFinish() {
         addedToGroupFinish = false;
+    }
+
+    public long size() {
+        return primaryTask.size() + secondaryTask.size();
     }
 
 //    public void initializeOppositeWorkers(List<BufferWorker> primaryOppositeWorkers, List<BufferWorker> secondaryOppositeWorkers) {

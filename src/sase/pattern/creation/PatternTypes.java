@@ -14,4 +14,6 @@ public enum PatternTypes {
 	SYNTHETIC_PATTERN,
 	
 	TRAFFIC_PATTERN,
+
+	SENSOR_PATTERN,
 }

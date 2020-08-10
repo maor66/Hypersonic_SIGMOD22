@@ -4,6 +4,7 @@ import java.util.List;
 
 import sase.config.MainConfig;
 import sase.input.producers.FileBasedEventProducer;
+import sase.input.producers.SensorPreprocessedFileBasedEventProducer;
 import sase.input.producers.SyntheticEventProducer;
 import sase.pattern.Pattern;
 import sase.specification.SimulationSpecification;
@@ -15,6 +16,8 @@ public class EventProducerFactory {
 		switch (MainConfig.eventProducerType) {
 			case FILE_BASED:
 				return new FileBasedEventProducer(simulationSpecification);
+			case FILE_BASED_SENSOR:
+				return new SensorPreprocessedFileBasedEventProducer(simulationSpecification);
 			case SYNTHETIC:
 				//TODO: for now, will only work as intended for single-pattern workloads
 				return new SyntheticEventProducer(patterns.get(0), simulationSpecification);

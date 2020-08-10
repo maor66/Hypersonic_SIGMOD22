@@ -1,5 +1,6 @@
 package sase.base;
 
+import sase.config.MainConfig;
 import sase.pattern.EventTypesManager;
 
 import java.util.List;
@@ -8,10 +9,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static sase.config.MainConfig.DatasetInUse.STOCKS;
+
 public class Event implements Comparable<Event>, ContainsEvent {
 	
 	private static final int signatureSize = 2;
 	private static long eventCounter = 0;
+	private static SimpleDateFormat dateFormat = (MainConfig.datasetInUse == STOCKS) ?
+			new SimpleDateFormat("yyyyMMddkkmm") :
+			new SimpleDateFormat("yyyyMMddHHmmss");
 	
 	public static void resetCounter() {
 		eventCounter = 0;
@@ -110,9 +116,9 @@ public class Event implements Comparable<Event>, ContainsEvent {
 			return timestamp;
 		}
 		Long l = EventTypesManager.getInstance().getEventTimestamp(this);
-		SimpleDateFormat f = new SimpleDateFormat("yyyyMMddkkmm");
+
 		try {
-			Date d = f.parse(l.toString());
+			Date d = dateFormat.parse(l.toString());
 			timestamp = d.getTime()/1000/60;
 			return timestamp;
 		} catch (ParseException e) {

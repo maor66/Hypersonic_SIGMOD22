@@ -280,7 +280,7 @@ public class TreeEvaluationMechanism implements IEvaluationMechanism, IEvaluatio
 	}
 
 	@Override
-	public List<Match> validateTimeWindow(long currentTime) {
+	public List<Match> validateTimeWindow(long currentTime, Event event) {
 		List<Match> matches = storage.getMatches();
 		//storage.validateTimeWindow(currentTime);
 		return matches;

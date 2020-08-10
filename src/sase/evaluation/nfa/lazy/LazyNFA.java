@@ -85,8 +85,20 @@ public abstract class LazyNFA extends NFA {
 		return new LazyInstance(this, initialState);
 	}
 
+	public void validateTimeWindowForState(long currentTime, Event event) {
+		if (!(supportedEventTypes.contains(event.getType()))) {
+			// irrelevant event
+			return;
+		}
+		instances.validateTimeWindow(currentTime, false);
+	}
+
 	@Override
-	public List<Match> validateTimeWindow(long currentTime) {
+	public List<Match> validateTimeWindow(long currentTime, Event event) {
+		if (!(supportedEventTypes.contains(event.getType()))) {
+			// irrelevant event
+			return null;
+		}
 		lastKnownGlobalTime = currentTime;
 		instances.validateTimeWindow(currentTime, true);
 		inputBuffer.refresh(currentTime);
@@ -100,7 +112,7 @@ public abstract class LazyNFA extends NFA {
 			// irrelevant event
 			return null;
 		}
-
+		Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.events);
 		List<Instance> instancesToAdd = new ArrayList<Instance>();
 		List<Instance> instancesToRemove = new ArrayList<Instance>();
 		List<Match> matches = new LinkedList<Match>();

@@ -33,6 +33,8 @@ import sase.multi.calculator.local.neighborhood.NeighborhoodTypes;
 import sase.pattern.Pattern.PatternOperatorTypes;
 import sase.pattern.workload.WorkloadManagerTypes;
 
+import static sase.config.MainConfig.datasetInUse;
+
 @SuppressWarnings("unused")
 public class SimulationConfig {
 	
@@ -457,24 +459,81 @@ public class SimulationConfig {
 //		new ParallelBasicEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //				CostModelTypes.THROUGHPUT_LATENCY,
 //				0.0),
+//		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0, 23, 0.5),
+
+//		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0, 4, 0.5),
+//		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0, 6, 0.5),
 		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
-					CostModelTypes.THROUGHPUT_LATENCY,
-					0.0, 20, 0.5),
+				CostModelTypes.THROUGHPUT_LATENCY,
+				0.0, 8, 0.5),
+		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+				CostModelTypes.THROUGHPUT_LATENCY,
+				0.0, 10, 0.5),
+		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+				CostModelTypes.THROUGHPUT_LATENCY,
+				0.0, 12, 0.5),
+		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+				CostModelTypes.THROUGHPUT_LATENCY,
+				0.0, 16, 0.5),
+		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+				CostModelTypes.THROUGHPUT_LATENCY,
+				0.0, 20, 0.5),
+		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+				CostModelTypes.THROUGHPUT_LATENCY,
+				0.0, 24, 0.5),
+		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+				CostModelTypes.THROUGHPUT_LATENCY,
+				0.0, 28, 0.5),
+		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+				CostModelTypes.THROUGHPUT_LATENCY,
+				0.0, 32, 0.5),
+		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+				CostModelTypes.THROUGHPUT_LATENCY,
+				0.0, 36, 0.5),
+		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+				CostModelTypes.THROUGHPUT_LATENCY,
+				0.0, 40, 0.5),
+//		new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0), 23, 0.80, 50873),
+//		new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0), 4, 0),
+//		new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0), 8, 0),
+//		new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0), 12, 0),
+//		new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0), 16, 0),
+//		new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0), 20, 0),
+//		new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0), 24, 0),
+//		new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0),
 //		new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
 //				CostModelTypes.THROUGHPUT_LATENCY,
 //				0.0),
-		new EagerNFAEvaluationSpecification(),
-//		Maor: Lazy in the 2015 article
+
 //			new HirzelEvaluationSpecification(EvaluationMechanismTypes.HIRZEL_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //					CostModelTypes.THROUGHPUT_LATENCY,
 //					0.0), Runtime.getRuntime().availableProcessors(), StockEventTypesManager.labelAttributeName),
 //			new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //					CostModelTypes.THROUGHPUT_LATENCY,
-//					0.0), 23, 0.80, 5000),
-//		new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
-//					CostModelTypes.THROUGHPUT_LATENCY,
-//					0.0), 23, 0.6, 50873),
-		
+//					0.0), 23, 0.80, 50873),
+
 ////			new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.GREEDY_COST,
 //						CostModelTypes.THROUGHPUT_LATENCY,
 //						0.0),
@@ -516,7 +575,9 @@ public class SimulationConfig {
 //			new EvaluationSpecification(TopologyCreatorTypes.ADAPTIVE_ZSTREAM, TreeCostModelTypes.NONE, 0.0),
 	};
 		// Maor: what patterns are going to be matched, should start with a simple one
-	public static final PatternSpecification[] patternSpecifications = PatternConfig.stockByCompanyPatternSpecifications;
+//	public static final PatternSpecification[] patternSpecifications = PatternConfig.stockByCompanyPatternSpecifications;
+	public static final PatternSpecification[] patternSpecifications = (datasetInUse == MainConfig.DatasetInUse.STOCKS) ?
+				PatternConfig.stockByCompanyPatternSpecifications : PatternConfig.sensorPatternSpecifications;
 //	public static final AdaptationSpecification[] adaptationSpecifications = {
 //		new TrivialAdaptationSpecification(),
 //		new ConstantThresholdAdaptationSpecification(statisticsMonitoringWindowToTimeWindowRatio, 0.0001, 0.1),

@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public abstract class ElementWorker {
+    public long currentBufferSize = 0;
     ThreadContainers dataStorage;
     private LazyTransition transition;
     TypedNFAState eventState;
@@ -37,6 +38,7 @@ public abstract class ElementWorker {
     private int lastRemovedNumber= 0;
     private  int currentBackoff = 0;
     private  int backoffStep = 1;
+    private long maxElements = 0;
 
     public ElementWorker(TypedNFAState eventState,
                          List<ThreadContainers> oppositeBuffers)
@@ -49,13 +51,13 @@ public abstract class ElementWorker {
     public void handleElement(ContainsEvent newElement, List<BufferWorker> workersNeededToFinish, ParallelQueue<? extends  ContainsEvent> input) {
         ContainsEvent removingCriteria = null;
         long latestTimeStamp = Long.MIN_VALUE;
-        dataStorage.addEventToOwnBuffer(newElement);
+        recordMaxElements(dataStorage.addEventToOwnBuffer(newElement));
         Iterator<ThreadContainers> iterator = oppositeBuffers.iterator();
         while (iterator.hasNext()) {
             ThreadContainers buffer = iterator.next();
-//            long time = System.nanoTime();
+            long time = System.nanoTime();
             ContainsEvent ce = iterateOnSubList(newElement, buffer.getBufferSubListWithReadLock());
-//            iteratingBufferTime += System.nanoTime() - time;
+            iteratingBufferTime += System.nanoTime() - time;
             buffer.releaseReadLock();
             if (ce != null && latestTimeStamp < ce.getEarliestTimestamp()) {
                 latestTimeStamp = ce.getEarliestTimestamp();
@@ -64,12 +66,11 @@ public abstract class ElementWorker {
         }
         if (removingCriteria != null) {
             if ( currentBackoff <= 0)  {
-//            long time =  System.nanoTime();
                 lastCriteriaTimestamp = removingCriteria.getEarliestTimestamp();
+                long time =  System.nanoTime();
                 lastRemovedNumber = dataStorage.removeExpiredElements(lastCriteriaTimestamp, isBufferSorted(), removingCriteria);
-                backoffStep = lastRemovedNumber > 0 ? 1: backoffStep*2;
-                currentBackoff  = lastRemovedNumber > 0 ? 0: backoffStep ;
-//            innerCondTime += System.nanoTime() - time;
+                innerCondTime += System.nanoTime() - time;
+                currentBackoff = 1;
             }
             else {
                 currentBackoff--;
@@ -77,11 +78,18 @@ public abstract class ElementWorker {
         }
     }
 
+    private void recordMaxElements(long currentNumberOfElements) {
+        currentBufferSize = currentNumberOfElements;
+        if (currentNumberOfElements > maxElements) {
+            maxElements = currentNumberOfElements;
+        }
+    }
+
     protected abstract boolean oppositeTaskNotFinished(List<BufferWorker> workersNeededToFinish);
 
     public void finishRun() {
         System.out.println("Thread " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " has finished at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
-                " Compared to " + numberOfOppositeItems + " items Condition time " + conditionTime / 1000000 +
+                " Compared to " + numberOfOppositeItems + " Max Elements "+ maxElements +  " items Condition time " + conditionTime / 1000000 +
                 " Iterating buffer time " + iteratingBufferTime / 1000000 + " Slice time " + sliceTime / 1000000 + " Actual Slice time " + sliceTimeActual / 1000000 + " Send sync time " + sendMatchingTime / 1000000 +
                 " Calculation time " + actualCalcTime / 1000000 + " Window verify time " + windowverifyTime / 1000000 + " Cond 1 " + innerCondTime / 1000000 + " Cond 2 " + innerWindowTime / 1000000);
     }
@@ -103,13 +111,24 @@ public abstract class ElementWorker {
                 return false;
             }
         }
-        boolean b =  transition.verifyFirstStepCondition(partialMatchEvents);
-        actualCalcTime += System.nanoTime() - time;
+
+
+        boolean b;
+
+//        if (numberOfOppositeItems % 1000 == 0) {
+            time = System.nanoTime();
+             b =  transition.verifyFirstStepCondition(partialMatchEvents);
+            actualCalcTime += System.nanoTime() - time;
+//        }
+//        else {
+//            b =  transition.verifyFirstStepCondition(partialMatchEvents);
+//        }
+
         numberOfOppositeItems++;
         if (b) {
-            time = System.nanoTime();
+//            time = System.nanoTime();
             boolean s =  transition.verifySecondStepCondition(partialMatchEvents);
-            conditionTime += System.nanoTime() - time;
+//            conditionTime += System.nanoTime() - time;
             if (!s) return false;
             boolean w = verifyTimeWindowConstraint(partialMatch, event);
             return  w;
@@ -192,19 +211,41 @@ public abstract class ElementWorker {
         return false;
     }
 
+    private int batchSizeRegular = 0;
+    private int batchSizeAggregated = 0;
+    public static final int maxBatchSizeRegular = 1;
+    public static final int maxBatchSizeAggregated = 1;
+    private List<Match> partialMatchesBatchRegular = new ArrayList<>();
+    private List<Match> partialMatchesBatchAggregated = new ArrayList<>();
     protected void sendToNextState(Match newPartialMatchWithEvent, boolean isAggregatedEvent) {
 
         List<ParallelQueue<Match>> matchesQueue = dataStorage.getMatchOutputs();
-        long time = System.nanoTime();
-        for (ParallelQueue<Match> output : matchesQueue) {
-            if (isAggregatedEvent) {
-                output.putAtHead(newPartialMatchWithEvent);
-            }
-            else {
-                output.put(newPartialMatchWithEvent);
+
+        if (isAggregatedEvent) {
+            batchSizeAggregated++;
+            partialMatchesBatchAggregated.add(newPartialMatchWithEvent);
+
+            if (batchSizeAggregated == maxBatchSizeAggregated) {
+                for (ParallelQueue<Match> output : matchesQueue) {
+                    output.putAtHead(partialMatchesBatchAggregated);
+                }
+                partialMatchesBatchAggregated.clear();
+                batchSizeAggregated = 0;
             }
         }
-        windowverifyTime += System.nanoTime() - time;
+
+        else { // TODO: Possibly better to send also the aggregated in this case so the aggragated will be first
+            batchSizeRegular++;
+            partialMatchesBatchRegular.add(newPartialMatchWithEvent);
+
+            if (batchSizeRegular == maxBatchSizeRegular) {
+                for (ParallelQueue<Match> output : matchesQueue) {
+                    output.put(partialMatchesBatchRegular);
+                }
+                partialMatchesBatchRegular.clear();
+                batchSizeRegular = 0;
+            }
+        }
     }
 
     public void initializeDataStorage(ThreadContainers dataStorage) {
@@ -218,6 +259,20 @@ public abstract class ElementWorker {
         if (!isSecondaryAddToList) {
             oppositeBuffers.add(secondaryTask.dataStorage);
             isSecondaryAddToList = true;
+        }
+    }
+
+    protected abstract long sizeOfElement();
+
+    public long size() {
+        return sizeOfElement() * maxElements;
+    }
+
+    public void forwardIncompleteBatch() {
+        List<ParallelQueue<Match>> matchesQueue = dataStorage.getMatchOutputs();
+        for (ParallelQueue<Match> output : matchesQueue) {
+            output.putAtHead(partialMatchesBatchAggregated);
+            output.put(partialMatchesBatchRegular);
         }
     }
 }

@@ -15,6 +15,7 @@ import sase.adaptive.monitoring.IMultiPatternAdaptationNecessityDetector;
 import sase.base.AggregatedEvent;
 import sase.base.Event;
 import sase.base.EventSelectionStrategies;
+import sase.base.EventType;
 import sase.config.MainConfig;
 import sase.config.SimulationConfig;
 import sase.evaluation.EvaluationMechanismFactory;
@@ -23,6 +24,9 @@ import sase.evaluation.IEvaluationMechanismInfo;
 import sase.evaluation.IMultiPatternEvaluationMechanism;
 import sase.evaluation.common.Match;
 import sase.evaluation.data_parallel.DataParallelEvaluationMechanism;
+import sase.evaluation.data_parallel.RIPEvaluationMechanism;
+import sase.evaluation.nfa.NFA;
+import sase.evaluation.nfa.lazy.LazyNFA;
 import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
 import sase.input.EventProducer;
 import sase.input.EventProducerFactory;
@@ -70,6 +74,7 @@ public class Simulator {
 
 	private int currentStepNumber = 0;
 	private List<Match> foundMatches;
+	private List<EventType> supportedEventTypes;
 
 	private void processIncomingEvent(Event event) {
 		if (MainConfig.eventRateMeasurementMode) {
@@ -78,7 +83,8 @@ public class Simulator {
 		if (MainConfig.isArrivalRateMonitoringAllowed) {
 			Environment.getEnvironment().getEventRateEstimator().registerEventArrival(event.getType());
 		}
-		Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.events);
+
+		event.getTimestamp(); // Initializes the event's timestamp, otherwise can cause problems with the parallel algorithms setting the timestamp concurrently
 		List<Match> matches = actuallyProcessIncomingEvent(event);
 		Environment.getEnvironment().getPredicateResultsCache().clear();
 		recordNewMatches(matches);
@@ -86,17 +92,21 @@ public class Simulator {
 		tryModifyWorkload(event.getTimestamp());
 	}
 
-	private List<Match> actuallyProcessIncomingEvent(Event event) {
-		if (secondaryEvaluationMechanism == null) {
-			List<Match> matches = validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
+    private List<Match> actuallyProcessIncomingEvent(Event event) {
+        if (secondaryEvaluationMechanism == null) {
+            List<Match> matches = new ArrayList<>();
+			validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
 			addIfNotNull(processNewEventOnEvaluationMechanism(primaryEvaluationMechanism, event, true), matches);
+			if (primaryEvaluationMechanism instanceof  LazyNFA) {
+				((LazyNFA) (primaryEvaluationMechanism)).validateTimeWindowForState(event.getTimestamp(), event);
+			}
 			return matches;
-		}
-		List<Match> matches = validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
-		matches.addAll(validateTimeWindowOnEvaluationMechanism(secondaryEvaluationMechanism, event));
-		addIfNotNull(processNewEventOnEvaluationMechanism(primaryEvaluationMechanism, event, false), matches);
-		addIfNotNull(processNewEventOnEvaluationMechanism(secondaryEvaluationMechanism, event, true), matches);
-		return matches;
+        }
+        List<Match> matches = validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
+        matches.addAll(validateTimeWindowOnEvaluationMechanism(secondaryEvaluationMechanism, event));
+        addIfNotNull(processNewEventOnEvaluationMechanism(primaryEvaluationMechanism, event, false), matches);
+        addIfNotNull(processNewEventOnEvaluationMechanism(secondaryEvaluationMechanism, event, true), matches);
+        return matches;
 	}
 
 	private void addIfNotNull(List<Match> listToAdd, List<Match> listToAddTo) {
@@ -119,7 +129,7 @@ public class Simulator {
 	}
 
 	private List<Match> validateTimeWindowOnEvaluationMechanism(IEvaluationMechanism mechanism, Event event) {
-		List<Match> matches = mechanism.validateTimeWindow(event.getTimestamp());
+		List<Match> matches = mechanism.validateTimeWindow(event.getTimestamp(), event);
 		if (MainConfig.selectionStrategy != EventSelectionStrategies.SKIP_TILL_ANY) {
 			mechanism.removeConflictingInstances(matches);
 		}
@@ -257,6 +267,7 @@ public class Simulator {
 		eventProducer = EventProducerFactory.createEventProducer(workload.getCurrentWorkload(), currentSpecification);
 
 		primaryEvaluationMechanism = createNewEvaluationMechanism();
+		supportedEventTypes = workload.getCurrentWorkload().get(0).getEventTypes();
 		secondaryEvaluationMechanism = null;
 		lastAdaptCheckTimestamp = null;
 
@@ -265,17 +276,29 @@ public class Simulator {
 			attemptToRecoverExistingStatistics(currentSpecification);
 		}
 	}
-
+	private List<Event> allEvents = new ArrayList<>();
+	private int totalNumberOfEvents = 0;
 	private void runEvaluationStep() throws IOException {
 		if (oldStatisticsManager != null) {
 			oldStatisticsManager.reportStatistics();
 			return;
 		}
-		List<Event> allEvents = new ArrayList<>();
 		long time = System.nanoTime();
 
-		while (eventProducer.hasMoreEvents()) {
-			allEvents.add(eventProducer.getNextEvent()); // Maor: this is actually the event, each executions reads the next event from the file
+		if (allEvents.isEmpty()) { // Hack to read events only for the first time instead of throwing them away at the end
+			while (eventProducer.hasMoreEvents()) {
+				Event newEvent = eventProducer.getNextEvent(); // Maor: this is actually the event, each executions reads the next event from the file
+				if (newEvent == null) {
+					continue;
+				}
+				if (supportedEventTypes.contains(newEvent.getType())) {
+					totalNumberOfEvents++;
+				}
+				allEvents.add(newEvent);
+			}
+		}
+		if (primaryEvaluationMechanism instanceof RIPEvaluationMechanism) {
+			((RIPEvaluationMechanism)(primaryEvaluationMechanism)).setUpRIPThreads(totalNumberOfEvents ,supportedEventTypes.size());
 		}
 		long processTime = System.nanoTime() - time;
 
@@ -305,10 +328,13 @@ public class Simulator {
 					}
 					event.updateSystemTime(groupTime);
 					processIncomingEvent(event);
-					long memoryUsage = secondaryEvaluationMechanism == null ?
-							primaryEvaluationMechanism.size() :
-							primaryEvaluationMechanism.size() + secondaryEvaluationMechanism.size();
-					Environment.getEnvironment().getStatisticsManager().recordPeakMemoryUsage(memoryUsage);
+					if (!(primaryEvaluationMechanism instanceof ParallelLazyChainNFA ||
+					primaryEvaluationMechanism instanceof RIPEvaluationMechanism)) {
+						long memoryUsage = secondaryEvaluationMechanism == null ?
+								primaryEvaluationMechanism.size() :
+								primaryEvaluationMechanism.size() + secondaryEvaluationMechanism.size();
+						Environment.getEnvironment().getStatisticsManager().recordPeakMemoryUsage(memoryUsage);
+					}
 					if (MainConfig.periodicallyReportStatistics) {
 						StatisticsManager.attemptPeriodicUpdate();
 					}
@@ -323,6 +349,10 @@ public class Simulator {
 			//get last matches
 //			Environment.getEnvironment().getStatisticsManager().startMeasuringTime(Statistics.processingTime);
 			recordNewMatches(primaryEvaluationMechanism.getLastMatches());
+			long memoryUsage = secondaryEvaluationMechanism == null ?
+					primaryEvaluationMechanism.size() :
+					primaryEvaluationMechanism.size() + secondaryEvaluationMechanism.size();
+			Environment.getEnvironment().getStatisticsManager().recordPeakMemoryUsage(memoryUsage);
 //			Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.processingTime);
 			if (secondaryEvaluationMechanism != null) {
 				recordNewMatches(secondaryEvaluationMechanism.getLastMatches());

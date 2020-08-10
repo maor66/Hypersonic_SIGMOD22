@@ -63,7 +63,8 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 		public IEvaluationMechanism machine;
 		protected BlockingQueue<EvaluationInput> threadInput = new LinkedTransferQueue<>();
 //		volatile long maxSize = 0;
-		long machineTime = 0;
+		long maxSize = 0;
+		public long machineTime = 0;
 		private int handledEvents= 0;
 		boolean isFinishedWithOwnGroupInput = false;
 
@@ -102,7 +103,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 			// if yes, run processNewEvent of nfa
 			List<Match> result = null;
 //			synchronized(machine) {
-				result = machine.validateTimeWindow(event.getTimestamp());
+				result = machine.validateTimeWindow(event.getTimestamp(), event);
 				if (result == null) {
 					result = machine.processNewEvent(event, canStartInstance);
 					System.out.println("wrong");
@@ -115,6 +116,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 //					}
 					long time = System.nanoTime();
 					List<Match> resProcessNewEvent = machine.processNewEvent(event, canStartInstance);
+					maxSize = Math.max(maxSize, machine.size());
 					machineTime += System.nanoTime() -time;
 					if (resProcessNewEvent != null)
 						result.addAll(resProcessNewEvent);
@@ -125,7 +127,6 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 				Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.numberOfSynchronizationActions);
 				threadOutput.addAll(result);
 			}
-//			maxSize = Math.max(maxSize, machine.size());
 		}
 		
 		public void cancel() {
@@ -187,7 +188,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	}
 	
 	@Override
-	public List<Match> validateTimeWindow(long currentTime) {
+	public List<Match> validateTimeWindow(long currentTime, Event event) {
 		return new ArrayList<Match>();
 	}
 
@@ -209,13 +210,16 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 //		}
 		isInputFinished.set(true);
 		System.out.println("Waiting for threads" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
-		for (Thread t : threads) {
+		long totalTime = 0;
+		for (ParallelThread t : threads) {
 			try {
 				t.join();
+				totalTime += t.machineTime;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+		System.out.println("Average running time is " + totalTime/1000000 / threads.length);
 		System.out.println("Threads finished at" + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()));
 		//need to receive and process matches that were created while we waited
 		List<Match> matches = new ArrayList<Match>();
@@ -248,7 +252,7 @@ public abstract class DataParallelEvaluationMechanism implements IEvaluationMech
 	public long size() {
 		long size = 0;
 		for (ParallelThread parallelThread : threads) {
-//			size += parallelThread.maxSize;
+			size += parallelThread.maxSize;
 		}
 		return size;
 	}

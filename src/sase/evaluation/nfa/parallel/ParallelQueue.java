@@ -7,8 +7,11 @@ import java.sql.Time;
 import java.util.AbstractQueue;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -43,20 +46,53 @@ public class ParallelQueue<CE> {
         return queue.isEmpty();
     }
 
-    public void put(CE ce) {
-        queue.add(ce);
-    }
-    private ConcurrentLinkedDeque<CE> queue = new ConcurrentLinkedDeque<CE>();
-    public CE poll(long time, TimeUnit tu) {
-        return queue.poll();
-    }
 
-    public CE take() {
-        return  poll(0, TimeUnit.SECONDS);
-
+    public ParallelQueue (int sizeLimit) {
+        likelyBatchSize = ElementWorker.maxBatchSizeRegular;
+        if (sizeLimit < likelyBatchSize) {
+            throw new RuntimeException("Batch size too large for queue limit");
+        }
+        this.sizeLimit = sizeLimit / likelyBatchSize;
     }
 
-    public void putAtHead(CE newPartialMatchWithEvent) {
+    public ParallelQueue () {
+        this(Integer.MAX_VALUE);
+    }
+
+
+    private int sizeLimit;
+    private int likelyBatchSize;
+    private AtomicLong currentSize = new AtomicLong(0);
+    private AtomicLong maxSize = new AtomicLong(0);
+    private ConcurrentLinkedDeque<List<CE>> queue = new ConcurrentLinkedDeque<>();
+
+    public void put(List<CE> ce) {
+        List<CE> copyiedBatch = new ArrayList<>(ce);
+        while (currentSize.get() >= sizeLimit) {}
+        queue.add(copyiedBatch);
+        long curSize = currentSize.incrementAndGet();
+        if (maxSize.get() < curSize) {
+            maxSize.set(curSize);
+        }
+    }
+
+    public List<CE> poll(long time, TimeUnit tu) {
+        List<CE> element = queue.poll();
+        if (element != null) {
+            currentSize.getAndDecrement();
+        }
+        return element;
+    }
+
+    public long getMaxSize() {
+        return maxSize.get();
+    }
+
+    public void setSizeLimit(int maxValue) {
+        sizeLimit = maxValue;
+    }
+    
+    public void putAtHead(List<CE> newPartialMatchWithEvent) {
         queue.addFirst(newPartialMatchWithEvent);
     }
 }

@@ -2,16 +2,20 @@ package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
 import sase.base.Event;
+import sase.config.MainConfig;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.Transition;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
+import sase.pattern.EventTypesManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PartialMatchWorker extends ElementWorker {
+    private int eventsInMatch = 0;
+
     public PartialMatchWorker(TypedNFAState eventState, List<ThreadContainers> eventOppositeBuffers) {
         super(eventState, eventOppositeBuffers);
     }
@@ -29,8 +33,8 @@ public class PartialMatchWorker extends ElementWorker {
 
     @Override
     protected ContainsEvent iterateOnSubList(ContainsEvent newElement, List<ContainsEvent> bufferSubList) {
-//        long time = System.nanoTime();
         Match match = (Match) newElement;
+        recordMatchSize(match);
         List<Event> partialMatchEvents = new ArrayList<>(match.getPrimitiveEvents());
         List<Event> actualEvents = (List<Event>) (List<?>) bufferSubList;
         if (actualEvents.isEmpty()) {
@@ -38,15 +42,43 @@ public class PartialMatchWorker extends ElementWorker {
             return null;
         }
         Event latestEventInSubList = actualEvents.get(actualEvents.size() - 1);
-        actualEvents = getSlice(actualEvents, (Match) newElement, eventState);
-//        sliceTime += System.nanoTime() - time;
-        for (Event event : actualEvents) {
-//            time = System.nanoTime();
-            checkAndSendToNextState(event, partialMatchEvents, match);
-//            sliceTimeActual += System.nanoTime() - time;
+
+        long time = System.nanoTime();
+        if (MainConfig.isLazyEvaluation) { // Have to use the actual getSlice
+            actualEvents = getSlice(actualEvents, (Match) newElement, eventState);
+            sliceTimeActual += System.nanoTime() - time;
+
+            for (Event event : actualEvents) {
+                checkAndSendToNextState(event, partialMatchEvents, match);
+            }
+        }
+        else { //Eager ordering so can use just the upper limit and break when events in the IB are old enough
+            int upperIndex = getIndexWithClosestValue(actualEvents, match.getEarliestTimestamp() + dataStorage.getTimeWindow(), false, false);
+            sliceTimeActual += System.nanoTime() - time;
+
+            for (int i = upperIndex; i-- > 0 ;) {
+                Event event = actualEvents.get(i);
+                if (event.getSequenceNumber() < match.getLatestEvent().getSequenceNumber()) {
+                    return latestEventInSubList;
+                }
+                checkAndSendToNextState(event, partialMatchEvents, match);
+            }
         }
         return latestEventInSubList;
     }
+
+    private void recordMatchSize(Match match) {
+        if (eventsInMatch != 0) {
+            return;
+        }
+        eventsInMatch = match.getEventsInMatch();
+    }
+
+    @Override
+    protected long sizeOfElement() {
+        return eventsInMatch * EventTypesManager.getInstance().getAverageEventSize();
+    }
+
     public int getIndexWithClosestValue(List<Event> events, long desiredValue, boolean getLower, boolean compareBySequence) {
         int minIndex = 0, maxIndex = events.size() - 1;
         int midIndex;

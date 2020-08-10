@@ -8,7 +8,7 @@ public final class RIPEvaluationSpecification extends ParallelEvaluationSpecific
 	public long totalNumberOfEvents;
 	
 	public RIPEvaluationSpecification(EvaluationMechanismTypes type, EvaluationSpecification specification,
-			int numOfThreads, double batchesRatio, long totalNumberOfEvents) {
+									  int numOfThreads, double batchesRatio) {
 		super(type, specification, numOfThreads);
 		this.batchesRatio = batchesRatio;
 		this.totalNumberOfEvents = totalNumberOfEvents;

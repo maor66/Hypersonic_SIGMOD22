@@ -2,6 +2,7 @@ package sase.config;
 
 import java.util.HashMap;
 
+import sase.user.sensors.SensorEventTypeManager;
 import sase.user.stocks.StockEventTypesManager;
 import sase.user.trams.TramEventTypesManager;
 
@@ -78,6 +79,11 @@ public class EventRateConfig {
 		eventRateHashMap.put(StockEventTypesManager.ptekEventTypeName, 0.251 * tempHack);
 		eventRateHashMap.put(StockEventTypesManager.kirkEventTypeName, 0.252 * tempHack);
 		eventRateHashMap.put(StockEventTypesManager.nathEventTypeName, 0.254 * tempHack);
+
+		((StockEventTypesManager) StockEventTypesManager.getInstance()).getAllFusedTypeNames().forEach(fusedEventTypeName ->
+				eventRateHashMap.put(fusedEventTypeName,
+						eventRateHashMap.get(fusedEventTypeName.substring(0,4)) * eventRateHashMap.get(fusedEventTypeName.substring(4))));
+		//Works only if both names are 4 chars long - somewhat lazy but event rate will probably won't be used as simulating fusion will be done only with eager
 		
 		//stocks - regions
 		eventRateHashMap.put(StockEventTypesManager.africanCompanyEventTypeName, 20.0);
@@ -95,6 +101,28 @@ public class EventRateConfig {
 		eventRateHashMap.put(TramEventTypesManager.mediumCongestionEventTypeName, 100.0);
 		eventRateHashMap.put(TramEventTypesManager.severeCongestionEventTypeName, 100.0);
 		eventRateHashMap.put(TramEventTypesManager.heavyCongestionEventTypeName, 100.0);
+
+		// Sensors
+		eventRateHashMap.put(SensorEventTypeManager.sleepEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.otherActivityEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.toiletEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.bedToiletTransitionEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.personalHygieneEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.entertainGuestsEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.leaveHomeEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.enterHomeEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.stepOutEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.phoneEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.sleepOutOfBedEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.workEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.workAtTableEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.cookDinnerEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.eatDinnerEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.watchTVEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.groomEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.dressEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.readEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.workOnComputerEventTypeName, 100.0);
 		
 		return eventRateHashMap;
 	};

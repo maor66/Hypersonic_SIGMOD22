@@ -71,10 +71,10 @@ public class DisjunctionTreeEvaluationMechanism implements IEvaluationMechanism,
 	}
 
 	@Override
-	public List<Match> validateTimeWindow(long currentTime) {
+	public List<Match> validateTimeWindow(long currentTime, Event event) {
 		List<Match> matches = new ArrayList<Match>();
 		for (TreeEvaluationMechanism tree : trees) {
-			matches.addAll(tree.validateTimeWindow(currentTime));
+			matches.addAll(tree.validateTimeWindow(currentTime, event));
 		}
 		return matches;
 	}

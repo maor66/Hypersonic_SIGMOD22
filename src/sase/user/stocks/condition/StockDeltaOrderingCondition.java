@@ -17,12 +17,12 @@ public class StockDeltaOrderingCondition extends DoubleEventCondition {
 		super(firstType, secondType);
 	}
 	
-	private Double calculateDelta(Event event) {
+	protected Double calculateDelta(Event event) {
 		Double firstValue = (Double)event.getAttributeValue(StockEventTypesManager.firstStockMeasurementIndex);
 		Double secondValue = (Double)event.getAttributeValue(StockEventTypesManager.firstStockMeasurementIndex + 1);
-//		int val = 0;
-//		for (int i=0; i < 10; i++) {for (int j=0; j < 83; j++) {val += i+j;}}
-//		int Double val = Math.abs(Math.pow(firstValue, 102377065) - Math.pow(secondValue,100773465));
+//		double val = 0;
+//		for (long i=0; i < 2L; i++) {for (int j=0; j < 853; j++) {val *= i+j;}}
+//		 Double val = Math.abs(Math.pow(firstValue, 102377065) - Math.pow(secondValue,100773465));
 //		Double val = firstValue - secondValue;
 //		if (val < 0.0D) {
 //			val = 0.0D -val;

@@ -105,8 +105,9 @@ public class ThreadContainers {
         return listView;
     }
 
-    public void addEventToOwnBuffer(ContainsEvent event) {
+    public long addEventToOwnBuffer(ContainsEvent event) {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
+        int bufferSize;
         long stamp = lock.writeLock();
         try {
             if (!bufferSubList.isEmpty()&& event instanceof Event && bufferSubList.get(bufferSubList.size() - 1).getTimestamp() > event.getTimestamp()) {
@@ -114,8 +115,10 @@ public class ThreadContainers {
             }
             bufferSubList.add(event);
         } finally {
+            bufferSize = bufferSubList.size();
             lock.unlockWrite(stamp);
         }
+        return bufferSize;
     }
 
 

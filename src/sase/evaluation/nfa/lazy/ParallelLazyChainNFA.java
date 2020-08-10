@@ -5,6 +5,7 @@ import sase.base.Event;
 import sase.base.EventType;
 import sase.config.MainConfig;
 import sase.evaluation.common.Match;
+import sase.evaluation.nfa.eager.elements.InstanceStorage;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.order.cost.CostModelFactory;
@@ -12,6 +13,7 @@ import sase.evaluation.nfa.lazy.order.cost.CostModelTypes;
 import sase.evaluation.nfa.lazy.order.cost.ThroughputCostModel;
 import sase.evaluation.nfa.parallel.*;
 import sase.evaluation.plan.EvaluationPlan;
+import sase.pattern.EventTypesManager;
 import sase.pattern.Pattern;
 import sase.pattern.condition.base.CNFCondition;
 import sase.simulator.Environment;
@@ -59,6 +61,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private CopyOnWriteArrayList<BufferWorker> finishedThreads = new CopyOnWriteArrayList<>();
     private CopyOnWriteArrayList<BufferWorker> finishedWithGroup = new CopyOnWriteArrayList<>();
     private AtomicBoolean isFinishedWithInput = new AtomicBoolean(false);
+    private List<ParallelQueue<Match>>  allMatchQueues = new ArrayList<>();
 
     private class PrintMatchTimerTask extends TimerTask {
 
@@ -105,6 +108,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             // The event has irrelevent type (not in the query)
             return null;
         }
+        Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.events);
 
         if (isIteratedEventType(eventState.getEventType())) {
             event = new AggregatedEvent(List.of(event));
@@ -112,11 +116,11 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         try {
             if (eventState.isInitial()) {
                 ParallelQueue<Match> transferQueue = (ParallelQueue<Match>) secondStateInputQueue;
-                transferQueue.put(new Match(Event.asList(event)));
+                transferQueue.put(List.of(new Match(Event.asList(event))));
             }
             else {
                 ParallelQueue<Event> transferQueue = (ParallelQueue<Event>) eventInputQueues.get(eventState);
-                transferQueue.put(event);
+                transferQueue.put(List.of(event));
                 Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.parallelBufferInsertions);
             }
         } catch (Exception e) {
@@ -140,14 +144,15 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             printTimer.scheduleAtFixedRate(new PrintMatchTimerTask(matches), 0, 20 * 1000);
         }
         while (true) {
-            Match m = completeMatchOutputQueue.poll(1, TimeUnit.MILLISECONDS);
+            List<Match> m = completeMatchOutputQueue.poll(1, TimeUnit.MILLISECONDS);
             if (m == null) {
                 if (finishedWithGroup.size() - 1 == this.getAllWorkers().size()) {
                     break;
                 }
             }
             else {
-                matches.add(m);
+                for (Match match : m)
+                matches.add(match);
             }
         }
         finishedWithGroup.clear();
@@ -179,7 +184,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         boolean flag = true;
         while (true) {
-            Match m = null;
+            List<Match> m = null;
             if (flag&& finishedThreads.size() - 1 ==this.getAllWorkers().size()) {
                 System.out.println("So far got matches - " + matches.size());
                 flag = false;
@@ -192,8 +197,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 }
             }
             else {
-                matches.add(m);
-//                System.out.println(m);
+                for (Match match : m)
+                matches.add(match);
             }
         }
 
@@ -209,7 +214,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
         return new ArrayList<>(matches);
     }
-
+    @Override
+    public List<Match> validateTimeWindow(long currentTime, Event event) {return null; }
     private List<? extends BufferWorker> getAllWorkers()
     {
         List <BufferWorker> allWorkers = MBWorkers.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
@@ -230,6 +236,21 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 //                executor.submit(worker);
             }
         }
+    }
+
+    @Override
+    public long size() {
+        int queuesSize = 0;
+        int partialMatchSize = 2;
+        for (ParallelQueue<Match>  q : allMatchQueues) {
+            long individualQueueSize = q.getMaxSize();
+            queuesSize += individualQueueSize * partialMatchSize * EventTypesManager.getInstance().getAverageEventSize();
+
+            System.out.println("Max elements in queue is " +q.getMaxSize());
+            partialMatchSize++;
+        }
+
+        return queuesSize + getAllWorkers().stream().mapToLong(BufferWorker::size).sum();
     }
 
     @Override
@@ -260,6 +281,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             List<ThreadContainers> eventThreadContainers = new CopyOnWriteArrayList<>();
             List<ThreadContainers> partialMatchThreadContainers = new CopyOnWriteArrayList<>();
             ParallelQueue<Match> matchesOutput = new ParallelQueue<Match>();
+            allMatchQueues.add(matchesOutput);
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
                 eventThreadContainers.add(createThreadContainerByState(state,matchesOutput, partialMatchInput));
             }
@@ -291,6 +313,17 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             partialMatchInput = matchesOutput;
         }
         completeMatchOutputQueue = partialMatchInput; // The final output queue is that of the final state and the main thread should get the matches from it
+        allMatchQueues.remove(completeMatchOutputQueue);
+//        if (!MainConfig.latencyCalculation) {
+//            for (ParallelQueue<Match> outputQueue : allMatchQueues) {
+//                outputQueue.setSizeLimit(1000);
+//            }
+//        }
+//        allMatchQueues.get(0).setSizeLimit(500);
+//        allMatchQueues.get(1).setSizeLimit(500);
+//        allMatchQueues.get(2).setSizeLimit(500);
+//        allMatchQueues.get(3).setSizeLimit(500);
+//        completeMatchOutputQueue.setSizeLimit(Integer.MAX_VALUE);
 //        for (TypedNFAState state : getWorkerStates()) {
 //            for (int i = 0; i < stateToIBThreads.get(state); i++) {
 //                IBWorkers.get(state).get(i).initializeOppositeWorkers(MBWorkers.get(state), IBWorkers.get(state));
@@ -363,27 +396,40 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         final int MIN_THREADS_PER_STATE = 2;
         int threadsToAdd = 0;
         double costLeft = totalCost;
-        for (Double costOfState : costOfStates) {
+        List<Boolean> isMinThreadStates = new ArrayList<>();
+        for (int i =0; i < costOfStates.size(); i++) {
+            Double costOfState = costOfStates.get(i);
             int numOfThreadsForState = (int)(costOfState/ totalCost * threadsLeft);
             if (numOfThreadsForState < MIN_THREADS_PER_STATE) {
-                threadsToAdd += MIN_THREADS_PER_STATE - numOfThreadsForState;
+                threadsToAdd += MIN_THREADS_PER_STATE;
                 costLeft -= costOfState;
+                isMinThreadStates.add(true);
+            }
+            else {
+                isMinThreadStates.add(false);
             }
         }
         threadsLeft -= threadsToAdd;
         int threadToAllocate = threadsLeft;
         threadsLeft = numOfThreads;
-        for (Double costOfState : costOfStates) {
+        for (int i =0; i < costOfStates.size(); i++) {
+            Double costOfState = costOfStates.get(i);
+            if (isMinThreadStates.get(i)) {
+                inputBufferThreadsPerState.add(MIN_THREADS_PER_STATE / 2);
+                matchBufferThreadsPerState.add(MIN_THREADS_PER_STATE / 2);
+                threadsLeft -= MIN_THREADS_PER_STATE;
+                continue;
+            }
             int numOfThreadsForState = (int) (costOfState / costLeft * threadToAllocate);
             numOfThreadsForState = Math.max(numOfThreadsForState, MIN_THREADS_PER_STATE);
             threadNumCalculation(MIN_THREADS_PER_STATE, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
             threadsLeft -= numOfThreadsForState;
         }
+//        threadsLeft = -1;
 
         if (threadsLeft == 0) {
             return;
         }
-
         if (threadsLeft < 0) {
             // Impossible. Do stupid thread balancing
             System.out.println("Not enough threads for smart balancing. Dividing equally");
@@ -416,7 +462,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         while (threadsLeft > 0) {
             int numOfThreadsForState = (int)(Math.ceil(costOfStates.get(--count) / totalCost * threadsLeft));
             if (numOfThreadsForState == 1) {
-                inputBufferThreadsPerState.add(numOfThreadsForState);
+                inputBufferThreadsPerState.add(inputBufferThreadsPerState.remove(count) + numOfThreadsForState);
             } else {
                 threadNumCalculation(MIN_THREADS_PER_STATE, inputBufferThreadsPerState, matchBufferThreadsPerState, numOfThreadsForState);
             }
@@ -437,14 +483,15 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         Double sumOfLastState = null;
         List<EventType> eventTypesSoFar = new ArrayList<>();
         List<Double> costOfStates = new ArrayList<>();
-        costOfStates.add(evaluationOrder.getFullEvaluationOrder().get(0).getRate());
-        for (TypedNFAState state : nfaStates) {
+        if (!MainConfig.conditionSelectivityMeasurementMode) {
+            costOfStates.add(evaluationOrder.getFullEvaluationOrder().get(0).getRate());
+            for (TypedNFAState state : nfaStates) {
 //            CNFCondition filteredCondition = ((CNFCondition) pattern.getCondition()).getConditionForTypes(new ArrayList<>(eventTypesSoFar), true);
-            CNFCondition filteredCondition = (CNFCondition) state.getActualIncomingTransition().getCondition();
-            costOfStates.add(costModel.getCostOfSingleState(filteredCondition,
-                                                            state.getEventType(),
-                                                            costOfStates.get(costOfStates.size() - 1)));
-            eventTypesSoFar.add(state.getEventType());
+                CNFCondition filteredCondition = (CNFCondition) state.getActualIncomingTransition().getCondition();
+                costOfStates.add(costModel.getCostOfSingleState(filteredCondition,
+                        state.getEventType(),
+                        costOfStates.get(costOfStates.size() - 1)));
+                eventTypesSoFar.add(state.getEventType());
             /*
             eventTypesSoFar.add(state.getEventType());
             if (costOfStates.isEmpty()) {
@@ -459,8 +506,14 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             costOfStates.add(sumCosts - sumOfLastState);
             sumOfLastState = sumCosts;
             */
+            }
+            costOfStates.remove(0);
         }
-        costOfStates.remove(0);
+        else  {
+            for (TypedNFAState state : nfaStates) {
+                costOfStates.add(1.0);
+            }
+        }
         double totalCost = 0;
         for (int i = 0; i < costOfStates.size(); ++i) {
             totalCost += costOfStates.get(i);
@@ -469,10 +522,34 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         List<Integer> inputBufferThreadsPerState = new ArrayList<>();
         List<Integer> matchBufferThreadsPerState = new ArrayList<>();
 
-        balanceThreads(nfaStates, costOfStates, totalCost, inputBufferThreadsPerState, matchBufferThreadsPerState);
+//        costOfStates.clear();
+//        costOfStates.add(1.0);
+//        costOfStates.add(10.0);
+//        costOfStates.add(1.0);
+//        costOfStates.add(1.0);
+//        costOfStates.add(1.0);
 
-        inputBufferThreadsPerState.clear();
-        matchBufferThreadsPerState.clear();
+        balanceThreads(nfaStates, costOfStates, totalCost, inputBufferThreadsPerState, matchBufferThreadsPerState);
+        if (!MainConfig.conditionSelectivityMeasurementMode) {
+            if (inputBufferThreadsPerState.subList(0, nfaStates.size()).stream().mapToInt(integer -> integer).sum() +
+                matchBufferThreadsPerState.subList(0, nfaStates.size()).stream().mapToInt(integer -> integer).sum() != numOfThreads) {
+                throw new RuntimeException("Not using all possible threads");
+            }
+        }
+
+//        inputBufferThreadsPerState.clear();
+//        matchBufferThreadsPerState.clear();
+//                inputBufferThreadsPerState.add(1);
+//                matchBufferThreadsPerState.add(1);
+//                inputBufferThreadsPerState.add(1);
+//                matchBufferThreadsPerState.add(1);
+//                inputBufferThreadsPerState.add(1);
+//                matchBufferThreadsPerState.add(1);
+//                inputBufferThreadsPerState.add(1);
+//                matchBufferThreadsPerState.add(1);
+//                inputBufferThreadsPerState.add(8);
+//                matchBufferThreadsPerState.add(8);
+
         //SEQ 4
 //        inputBufferThreadsPerState.add(1);
 //        inputBufferThreadsPerState.add(3);
@@ -486,30 +563,73 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 //        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(10);
-        //SEQ 5
+        //SEQ 4
+//        inputBufferThreadsPerState.add(5);
+//        inputBufferThreadsPerState.add(4);
+//        inputBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(5);
+//        matchBufferThreadsPerState.add(5);
+//        matchBufferThreadsPerState.add(1);
+// SEQ 5
+//        inputBufferThreadsPerState.add(1);
 //        inputBufferThreadsPerState.add(1);
 //        inputBufferThreadsPerState.add(3);
 //        inputBufferThreadsPerState.add(5);
-//        inputBufferThreadsPerState.add(2);
-//        matchBufferThreadsPerState.add(2);
+//        inputBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(3);
+//        matchBufferThreadsPerState.add(6);
+//        matchBufferThreadsPerState.add(1);
+        //SEQ 8
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(2);
+//        inputBufferThreadsPerState.add(3);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(3);
+//        matchBufferThreadsPerState.add(3);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+        //SEQ 7
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(4);
+//        inputBufferThreadsPerState.add(3);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
 //        matchBufferThreadsPerState.add(5);
-//        matchBufferThreadsPerState.add(2);
-        //SEQ 6
-        inputBufferThreadsPerState.add(1);
-        inputBufferThreadsPerState.add(4);
-        inputBufferThreadsPerState.add(1);
-        inputBufferThreadsPerState.add(4);
-        inputBufferThreadsPerState.add(1);
-        matchBufferThreadsPerState.add(1);
-        matchBufferThreadsPerState.add(5);
-        matchBufferThreadsPerState.add(1);
-        matchBufferThreadsPerState.add(4);
-        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(3);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+        //SEQ 8
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(3);
+//        inputBufferThreadsPerState.add(3);
+//        inputBufferThreadsPerState.add(1);
+//        inputBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(4);
+//        matchBufferThreadsPerState.add(3);
+//        matchBufferThreadsPerState.add(1);
+//        matchBufferThreadsPerState.add(1);
         int listIndex = 0;
+        System.out.println("Computed thread allocation:");
         for (TypedNFAState state : nfaStates) {
             stateToIBThreads.put(state, inputBufferThreadsPerState.get(listIndex));
             stateToMBThreads.put(state, matchBufferThreadsPerState.get(listIndex++));
+            System.out.print(state.getEventType() + " - [" + inputBufferThreadsPerState.get(listIndex-1) + ","+ matchBufferThreadsPerState.get(listIndex-1) +"]    " );
         }
         initializeThreads();
     }

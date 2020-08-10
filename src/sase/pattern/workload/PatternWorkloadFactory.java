@@ -20,6 +20,7 @@ import sase.user.stocks.StockEventTypesManager;
 import sase.user.synthetic.SyntheticEventTypesManager;
 import sase.user.traffic.AarhusTrafficEventTypesManager;
 import sase.user.trams.TramEventTypesManager;
+import sase.user.sensors.SensorEventTypeManager;
 
 /**
  * This class is responsible for pattern creation.
@@ -54,6 +55,9 @@ public class PatternWorkloadFactory {
 				break;
 			case TRAFFIC_PATTERN:
 				EventTypesManager.setInstance(new AarhusTrafficEventTypesManager());
+				break;
+			case SENSOR_PATTERN:
+				EventTypesManager.setInstance(new SensorEventTypeManager());
 				break;
 			default:
 				throw new RuntimeException(String.format("Unexpected pattern type: %s", patternSpecification.getType()));
@@ -98,6 +102,7 @@ public class PatternWorkloadFactory {
 			case SPEEDD_CREDIT_CARD_FRAUD_PATTERN:
 			case SPEEDD_TRAFFIC_PATTERN:
 			case SYNTHETIC_PATTERN:
+			case SENSOR_PATTERN:
 				return new CompositePatternCreator(patternSpecification.getStructure(), 
 												   patternSpecification.getConditions(),
 												   patternSpecification.getNegatedEventNames(),
