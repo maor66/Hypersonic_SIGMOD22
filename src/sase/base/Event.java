@@ -49,6 +49,9 @@ public class Event implements Comparable<Event>, ContainsEvent {
 		this.type = type;
 		this.payload = payload == null ? null :
 										 EventTypesManager.getInstance().convertStringPayloadToObjectPayload(payload);
+		if (payload != null) {
+			getTimestamp();
+		}
 	}
 
 	public Event()

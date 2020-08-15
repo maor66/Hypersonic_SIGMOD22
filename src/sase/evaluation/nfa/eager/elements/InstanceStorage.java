@@ -38,10 +38,10 @@ public class InstanceStorage {
 			if (state.isAccepting()) {
 				acceptingStates.add(state);
 			}
-			if (!state.isRejecting()) {
-				TypedNFAState typedNFAState = (TypedNFAState) state;
-				typesToStates.put(typedNFAState.getEventType(), state);
-			}
+//			if (!state.isRejecting()) {
+//				TypedNFAState typedNFAState = (TypedNFAState) state;
+//				typesToStates.put(typedNFAState.getEventType(), state);
+//			}
 		}
 	}
 	

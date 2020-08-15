@@ -26,6 +26,7 @@ import sase.evaluation.common.Match;
 import sase.evaluation.data_parallel.DataParallelEvaluationMechanism;
 import sase.evaluation.data_parallel.RIPEvaluationMechanism;
 import sase.evaluation.nfa.NFA;
+import sase.evaluation.nfa.eager.AND_SEQ_NFA;
 import sase.evaluation.nfa.lazy.LazyNFA;
 import sase.evaluation.nfa.lazy.ParallelLazyChainNFA;
 import sase.input.EventProducer;
@@ -95,7 +96,10 @@ public class Simulator {
     private List<Match> actuallyProcessIncomingEvent(Event event) {
         if (secondaryEvaluationMechanism == null) {
             List<Match> matches = new ArrayList<>();
-			validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
+			List<Match> matchesThatWereRemoved = validateTimeWindowOnEvaluationMechanism(primaryEvaluationMechanism, event);
+			if (primaryEvaluationMechanism instanceof AND_SEQ_NFA) {
+				matches.addAll(matchesThatWereRemoved);
+			}
 			addIfNotNull(processNewEventOnEvaluationMechanism(primaryEvaluationMechanism, event, true), matches);
 			if (primaryEvaluationMechanism instanceof  LazyNFA) {
 				((LazyNFA) (primaryEvaluationMechanism)).validateTimeWindowForState(event.getTimestamp(), event);

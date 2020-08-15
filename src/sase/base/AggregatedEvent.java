@@ -31,6 +31,15 @@ public class AggregatedEvent extends Event {
 			}
 			this.sequenceNumber = lowestSEQnumber;
 		}
+		for (Event e : this.events) {
+			e.getTimestamp();
+		}
+
+	}
+
+	@Override
+	public long getTimestamp() {
+		return events.get(0).getTimestamp();
 	}
 	
 	public void addPrimitiveEvent(Event event) {

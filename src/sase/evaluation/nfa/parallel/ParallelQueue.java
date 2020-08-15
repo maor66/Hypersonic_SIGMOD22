@@ -67,9 +67,18 @@ public class ParallelQueue<CE> {
     private ConcurrentLinkedDeque<List<CE>> queue = new ConcurrentLinkedDeque<>();
 
     public void put(List<CE> ce) {
+        put(ce, false);
+    }
+
+        public void put(List<CE> ce, boolean isAddFirst) {
         List<CE> copyiedBatch = new ArrayList<>(ce);
         while (currentSize.get() >= sizeLimit) {}
-        queue.add(copyiedBatch);
+        if (isAddFirst) {
+            queue.addFirst(copyiedBatch);
+        }
+        else {
+            queue.add(copyiedBatch);
+        }
         long curSize = currentSize.incrementAndGet();
         if (maxSize.get() < curSize) {
             maxSize.set(curSize);
@@ -93,6 +102,6 @@ public class ParallelQueue<CE> {
     }
     
     public void putAtHead(List<CE> newPartialMatchWithEvent) {
-        queue.addFirst(newPartialMatchWithEvent);
+       put(newPartialMatchWithEvent, true);
     }
 }

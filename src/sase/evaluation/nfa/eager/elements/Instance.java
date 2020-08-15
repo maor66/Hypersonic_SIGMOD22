@@ -29,29 +29,29 @@ public class Instance {
 		shouldInvalidate = false;
 		Environment.getEnvironment().getStatisticsManager().incrementDiscreteMemoryStatistic(Statistics.instanceCreations);
 	}
-	
+
 	public NFAState getCurrentState() {
 		return currentState;
 	}
-	
+
 	public void setCurrentState(NFAState currentState) {
 		this.currentState = currentState;
 	}
-	
+
 	public List<Event> getEventsFromMatchBuffer() {
 		return matchBuffer.getEvents();
 	}
-	
+
 	public Event getMatchBufferEventByType(EventType type) {
 		return matchBuffer.getEventByType(type);
 	}
-	
+
 	public Match getMatch() {
 		if (!currentState.isAccepting())
 			return null;
 		return new Match(getEventsFromMatchBuffer());
 	}
-	
+
 	public boolean shouldInvalidate() {
 		return shouldInvalidate;
 	}
@@ -59,11 +59,11 @@ public class Instance {
 	public void markAsInvalid() {
 		shouldInvalidate = true;
 	}
-	
+
 	protected Long getInstanceTimeWindow() {
 		return automaton.getTimeWindow();
 	}
-	
+
 	public boolean isExpired(long currentTime) {
 		long actualCurrentTime = (currentTime > 0) ? currentTime : automaton.getLastKnownGlobalTime();
 		List<Event> events = getEventsFromMatchBuffer();
@@ -74,11 +74,11 @@ public class Instance {
 		}
 		return false;
 	}
-	
+
 	public boolean isExpired() {
 		return isExpired(0);
 	}
-	
+
 	public boolean isTransitionPossible(Event event, Transition transition) {
 		if (event.getType() != transition.getEventType())
 			return false;
@@ -86,42 +86,46 @@ public class Instance {
 		bufferOfEventsToVerify.addEvent(event);
 		return transition.verifyCondition(bufferOfEventsToVerify.getEvents());
 	}
-	
+
 	protected void executeMatchBufferTransition(Event event) {
 		matchBuffer.addEvent(event);
 		Environment.getEnvironment().getStatisticsManager().incrementDiscreteMemoryStatistic(Statistics.bufferInsertions);
 	}
-	
+
 	public void executeTransition(Event event, Transition transition) {
 		currentState = transition.getDestination();
 		switch (transition.getAction()) {
 			case TAKE:
-				if (event == null) {
-					throw new RuntimeException("event can be null only when using eager NFA (should be used in ITERATE only)");
+				if (event != null) {
+					executeMatchBufferTransition(event);
 				}
-				executeMatchBufferTransition(event);
+				else {
+					if (matchBuffer.getEvents().size() + 2 != automaton.getStates().size()) {
+						throw new RuntimeException("event can be null only when using eager NFA (should be used in ITERATE only)");
+					}
+				}
 				break;
 			case IGNORE:
 			default:
 				break;
 		}
 	}
-	
+
 	public boolean shouldGenerateInputBufferReadyEvent() {
 		boolean retval = shouldGenerateInputBufferReadyEvent;
 		shouldGenerateInputBufferReadyEvent = false;
 		return retval;
 	}
-	
+
 	public long size() {
 		return 4 + matchBuffer.size();
 	}
-	
+
 	@Override
 	public Instance clone() {
 		return new Instance(automaton, currentState, matchBuffer);
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.format("Instance in state %s", currentState);
@@ -130,7 +134,7 @@ public class Instance {
 	public boolean shouldDiscardWithMatch() {
 		return true;
 	}
-	
+
 	public boolean shouldReportMatch() {
 		return true;
 	}
