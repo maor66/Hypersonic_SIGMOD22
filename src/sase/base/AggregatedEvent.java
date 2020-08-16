@@ -25,7 +25,7 @@ public class AggregatedEvent extends Event {
 			payload = this.events.get(0).getSignature();
 		}
 		if (events != null) {
-			long lowestSEQnumber = this.sequenceNumber;
+			long lowestSEQnumber = Long.MAX_VALUE;
 			for (Event e : events) {
 				lowestSEQnumber = Math.min(e.sequenceNumber, lowestSEQnumber);
 			}

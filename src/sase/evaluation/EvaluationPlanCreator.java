@@ -73,6 +73,8 @@ public class EvaluationPlanCreator {
 				switch (((ParallelEvaluationSpecification)specification).internalSpecification.type) {
 					case TREE:
 						return createTreeBasedPlan(pattern);
+					case EAGER:
+						return null;
 					default:
 						return createOrderBasedPlan(pattern);
 				}
