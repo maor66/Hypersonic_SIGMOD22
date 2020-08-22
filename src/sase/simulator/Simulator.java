@@ -284,7 +284,8 @@ public class Simulator {
 		}
 		long time = System.nanoTime();
 
-		if (allEvents.isEmpty()) { // Hack to read events only for the first time instead of throwing them away at the end
+		if (allEvents.isEmpty() || MainConfig.isFusionSupported) { // Hack to read events only for the first time instead of throwing them away at the end
+			allEvents.clear();
 			while (eventProducer.hasMoreEvents()) {
 				Event newEvent = eventProducer.getNextEvent(); // Maor: this is actually the event, each executions reads the next event from the file
 				if (newEvent == null) {
@@ -371,8 +372,7 @@ public class Simulator {
 //			DoubleEventCondition.condPrint ="";
 //			BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Maor\\Documents\\"+this.currentStepNumber+".txt"));
 //			for (Match match : foundMatches){
-//				writer.write(match.toString()+"\n");
-//			}
+//System.out.println(match);			}
 //			writer.close();
 		System.out.println("Found " + foundMatches.size() + " matches");
 //		} catch (IOException e) {

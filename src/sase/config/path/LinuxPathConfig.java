@@ -14,10 +14,10 @@ public class LinuxPathConfig extends PathConfig {
 		outputFilePath = "/home/yankovitch/parallelCEP/lazyCEPlogs/NASDAQ_20080201_1out"+System.currentTimeMillis() + MainConfig.experimentName +".csv";
 //		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1sel.ser";
 //		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1selSEQ6.ser";
-		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1selSEQ6ExpMGA.ser";
+		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1selSEQ6ExpFusionWithCor.ser";
 //		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1selSEQ4actual.ser";
 //		selectivityEstimatorsFilePath = "/home/yankovitch/parallelCEP/NASDAQ_20080201_1selSEQ4.ser";
-		systemPythonPath = "/usr/bin/python3.8";
+		systemPythonPath = "/usr/bin/python3.7";
 
 	}
 }

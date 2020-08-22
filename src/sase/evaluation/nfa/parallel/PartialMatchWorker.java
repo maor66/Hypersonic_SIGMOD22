@@ -102,13 +102,16 @@ public class PartialMatchWorker extends ElementWorker {
         if (midIndex == 0 || midIndex == events.size() - 1) {
             return midIndex + ((getLower) ? 0 : 1);
         }
-        while (desiredTimestamp == events.get(midIndex).getTimestamp()) {
+        while (midIndex < events.size() && desiredTimestamp == events.get(midIndex).getTimestamp()) {
             if (getLower) {
                 midIndex--;
             }
             else {
                 midIndex++;
             }
+        }
+        if (midIndex == events.size()) { // The desired value is last in the buffer so we return the last element
+            return midIndex - 1;
         }
         return midIndex +  ((getLower) ? 1 : 0);
     }

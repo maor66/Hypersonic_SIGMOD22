@@ -16,7 +16,8 @@ public class FileEventStreamReader {
 
 	public final String[] inputFilesPaths;
 	private final int eventsPerRead;
-	
+	private final String[] backupInputFilesPath;
+
 	private int currentFileIndex;
 	private boolean hasMoreEvents;
 	private BufferedReader reader;
@@ -33,8 +34,9 @@ public class FileEventStreamReader {
 			this.inputFilesPaths = enumerateDirectories(inputDirsPaths);
 		}
 		else {
-			this.inputFilesPaths = inputFilesPaths;
+			this.inputFilesPaths = inputFilesPaths.clone();
 		}
+		this.backupInputFilesPath = this.inputFilesPaths.clone();
 		this.eventsPerRead = eventsPerRead;
 		currentFileIndex = 0;
 		hasMoreEvents = true;
@@ -158,4 +160,7 @@ public class FileEventStreamReader {
 		}
 	}
 
+    public String getBackup(int index) {
+		return backupInputFilesPath[index];
+    }
 }
