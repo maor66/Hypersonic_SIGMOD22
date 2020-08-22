@@ -431,7 +431,8 @@ public class PatternConfig {
 					new String[][][]{new String[][] {new String[]{
 							SensorEventTypeManager.phoneEventTypeName,
 							SensorEventTypeManager.sleepEventTypeName,
-							SensorEventTypeManager.workOnComputerEventTypeName
+							SensorEventTypeManager.entertainGuestsEventTypeName,
+							SensorEventTypeManager.sleepOutOfBedEventTypeName
 					}}},
 					new ConditionSpecification[]{
 							new SensorActivityChangeConditionSpecification(
@@ -2068,6 +2069,6 @@ public class PatternConfig {
 					}, SlaVerifierTypes.NONE),
 	};
 	public static PatternSpecification[] sensorPatternSpecifications = {
-			basicPatternSensorSEQ3.createIdenticalSpecificationWithDifferentWindow(90),
+			basicPatternSensorSEQ3.createIdenticalSpecificationWithDifferentWindow(150),
 	};
 }

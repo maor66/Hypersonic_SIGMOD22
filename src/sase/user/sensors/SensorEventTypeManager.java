@@ -270,4 +270,10 @@ public class SensorEventTypeManager extends EventTypesManager {
         }
         return sameNameMap;
     }
+
+    @Override
+    public List<String> getAllFusedTypeNames() {
+        System.out.println("Not handled fusion yet");
+        return new ArrayList<>();
+    }
 }

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 public class SensorPreprocessedFileBasedEventProducer extends FileBasedEventProducer {
-    private final LocalDateTime initialDateTime = LocalDateTime.now();
+    private final LocalDateTime initialDateTime = LocalDateTime.of(2020, 8, 22, 0 , 0, 0);
     private LocalDateTime lastDateTimeObserved = initialDateTime;
     private int weeksPassed = 0;
     private boolean isFirstLine = true;
@@ -37,7 +37,7 @@ public class SensorPreprocessedFileBasedEventProducer extends FileBasedEventProd
     }
 
     private LocalDateTime convertToTimestamp(int hours, int seconds, int dayOfWeek) {
-        LocalDateTime currentDateTime = initialDateTime.plusHours(hours).plusSeconds(seconds).plusDays(dayOfWeek).plusWeeks(weeksPassed);
+        LocalDateTime currentDateTime = initialDateTime.plusSeconds(seconds).plusDays(dayOfWeek).plusWeeks(weeksPassed);
         if (currentDateTime.isBefore(lastDateTimeObserved)) {
             currentDateTime = currentDateTime.plusWeeks(1);
             weeksPassed++;

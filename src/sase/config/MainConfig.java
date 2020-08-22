@@ -11,13 +11,13 @@ import sase.user.stocks.StockEventTypesManager;
 
 @SuppressWarnings("unused")
 public class MainConfig {
-	    public static DatasetInUse datasetInUse = DatasetInUse.STOCKS;
-//	public static DatasetInUse datasetInUse = DatasetInUse.SENSORS;
+//	    public static DatasetInUse datasetInUse = DatasetInUse.STOCKS;
+	public static DatasetInUse datasetInUse = DatasetInUse.SENSORS;
 
 	/* An OS-dependent module for accessing local paths. */
 	public static String experimentName = "SEQ6WindowHybrid";
 
-	private static final PathConfig pathConfig = new LinuxPathConfig();
+	private static final PathConfig pathConfig = new WindowsPathConfig();
 	
 	/* A flag indicating whether code testing is currently in process. */
 	public static final boolean debugMode = false;
@@ -48,10 +48,10 @@ public class MainConfig {
 
 
 	public static String[] inputDirsPaths = {
-		pathConfig.firstInputDirectoryPath,
+//		pathConfig.firstInputDirectoryPath,
 	};
 	public static String[] inputFilesPaths = {
-//		pathConfig.firstInputFilePath,
+		pathConfig.firstInputFilePath,
 	};
 	public static final int eventsPerRead = 0;
 

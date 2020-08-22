@@ -169,4 +169,9 @@ public class CreditCardFraudEventTypesManager extends EventTypesManager {
 		return result;
 	}
 
+	@Override
+	public List<String> getAllFusedTypeNames() {
+		throw new RuntimeException("Unimplemented");
+	}
+
 }
