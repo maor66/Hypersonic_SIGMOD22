@@ -45,6 +45,21 @@ public class SensorEventTypeManager extends EventTypesManager {
     public static final String dressEventTypeName = "Dress";
     public static final String readEventTypeName = "Read";
     public static final String workOnComputerEventTypeName = "Work_On_Computer";
+    public static final String washDinnerDishesEventTypeName = "Wash_Dinner_Dishes";
+    public static final String washDishesEventTypeName = "Wash_Dishes";
+    public static final String cookBreakfastEventTypeName = "Cook_Breakfast";
+    public static final String drinkEventTypeName = "Drink";
+    public static final String eatBreakfastEventTypeName = "Eat_Breakfast";
+    public static final String cookLunchEventTypeName = "Cook_Lunch";
+    public static final String batheEventTypeName = "Bathe";
+    public static final String washBreakfastDishedEventTypeName = "Wash_Breakfast_Dishes";
+    public static final String RelaxEventTypeName = "Relax";
+    public static final String eveningMedsEventTypeName = "Evening_Meds";
+    public static final String morningMedsEventTypeName = "Morning_Meds";
+    public static final String washLunchDishesEventTypeName = "Wash_Lunch_Dishes";
+    public static final String cookEventTypeName = "Cook";
+    public static final String eatLunchEventTypeName = "Eat_Lunch";
+    public static final String eatEventTypeName = "Eat";
 
     public static EventType sleepEventType;
     public static EventType otherActivityEventType;
@@ -66,6 +81,21 @@ public class SensorEventTypeManager extends EventTypesManager {
     public static EventType dressEventType;
     public static EventType readEventType;
     public static EventType workOnComputerEventType;
+    public static EventType washDinnerDishesEventType;
+    public static EventType washDishesEventType;
+    public static EventType cookBreakfastEventType;
+    public static EventType drinkEventType;
+    public static EventType eatBreakfastEventType;
+    public static EventType cookLunchEventType;
+    public static EventType batheEventType;
+    public static EventType washBreakfastDishedEventType;
+    public static EventType RelaxEventType;
+    public static EventType eveningMedsEventType;
+    public static EventType morningMedsEventType;
+    public static EventType washLunchDishesEventType;
+    public static EventType cookEventType;
+    public static EventType eatLunchEventType;
+    public static EventType eatEventType;
 
 
     public List<String> getAttributeNames() {
@@ -193,6 +223,21 @@ public class SensorEventTypeManager extends EventTypesManager {
         knownEventTypes.add(dressEventType);
         knownEventTypes.add(readEventType);
         knownEventTypes.add(workOnComputerEventType);
+        knownEventTypes.add(washDinnerDishesEventType);
+        knownEventTypes.add(washDishesEventType);
+        knownEventTypes.add(cookBreakfastEventType);
+        knownEventTypes.add(drinkEventType);
+        knownEventTypes.add(eatBreakfastEventType);
+        knownEventTypes.add(cookLunchEventType);
+        knownEventTypes.add(batheEventType);
+        knownEventTypes.add(washBreakfastDishedEventType);
+        knownEventTypes.add(RelaxEventType);
+        knownEventTypes.add(eveningMedsEventType);
+        knownEventTypes.add(morningMedsEventType);
+        knownEventTypes.add(washLunchDishesEventType);
+        knownEventTypes.add(cookEventType);
+        knownEventTypes.add(eatLunchEventType);
+        knownEventTypes.add(eatEventType);
         return knownEventTypes;
     }
 
@@ -251,6 +296,22 @@ public class SensorEventTypeManager extends EventTypesManager {
         dressEventType = new EventType(dressEventTypeName, attributes);
         readEventType = new EventType(readEventTypeName, attributes);
         workOnComputerEventType = new EventType(workOnComputerEventTypeName, attributes);
+        washDinnerDishesEventType = new EventType(washDinnerDishesEventTypeName, attributes);
+        washDishesEventType = new EventType(washDishesEventTypeName, attributes);
+        cookBreakfastEventType = new EventType(cookBreakfastEventTypeName, attributes);
+        drinkEventType = new EventType(drinkEventTypeName, attributes);
+        eatBreakfastEventType = new EventType(eatBreakfastEventTypeName, attributes);
+        cookLunchEventType = new EventType(cookLunchEventTypeName, attributes);
+        batheEventType = new EventType(batheEventTypeName, attributes);
+        washBreakfastDishedEventType = new EventType(washBreakfastDishedEventTypeName, attributes);
+        RelaxEventType = new EventType(RelaxEventTypeName, attributes);
+        eveningMedsEventType = new EventType(eveningMedsEventTypeName, attributes);
+        morningMedsEventType = new EventType(morningMedsEventTypeName, attributes);
+        washLunchDishesEventType = new EventType(washLunchDishesEventTypeName, attributes);
+        cookEventType = new EventType(cookEventTypeName, attributes);
+        eatLunchEventType = new EventType(eatLunchEventTypeName, attributes);
+        stepOutEventType = new EventType(stepOutEventTypeName, attributes);
+        eatEventType = new EventType(eatEventTypeName, attributes);
     }
 
     @Override

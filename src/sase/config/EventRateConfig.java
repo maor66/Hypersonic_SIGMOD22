@@ -123,7 +123,22 @@ public class EventRateConfig {
 		eventRateHashMap.put(SensorEventTypeManager.dressEventTypeName, 100.0);
 		eventRateHashMap.put(SensorEventTypeManager.readEventTypeName, 100.0);
 		eventRateHashMap.put(SensorEventTypeManager.workOnComputerEventTypeName, 100.0);
-		
+		eventRateHashMap.put(SensorEventTypeManager.washDinnerDishesEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.washDishesEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.cookBreakfastEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.drinkEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.eatBreakfastEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.cookLunchEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.batheEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.washBreakfastDishedEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.RelaxEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.eveningMedsEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.morningMedsEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.washLunchDishesEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.cookEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.eatLunchEventTypeName, 100.0);
+		eventRateHashMap.put(SensorEventTypeManager.eatEventTypeName, 100.0);
+
 		return eventRateHashMap;
 	};
 }
