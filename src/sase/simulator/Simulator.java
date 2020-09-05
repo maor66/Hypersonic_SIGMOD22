@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import com.sun.tools.javac.Main;
 import sase.adaptive.monitoring.IAdaptationNecessityDetector;
 import sase.adaptive.monitoring.IMultiPatternAdaptationNecessityDetector;
 import sase.base.Event;
@@ -298,7 +299,13 @@ public class Simulator {
 			}
 		}
 		if (primaryEvaluationMechanism instanceof RIPEvaluationMechanism) {
-			((RIPEvaluationMechanism)(primaryEvaluationMechanism)).setUpRIPThreads(totalNumberOfEvents ,supportedEventTypes.size());
+			RIPEvaluationMechanism ripEvaluationMechanism = ((RIPEvaluationMechanism)(primaryEvaluationMechanism));
+			if (MainConfig.datasetInUse == MainConfig.DatasetInUse.SENSORS) {
+				ripEvaluationMechanism.setUpRIPThreadsSensors(totalNumberOfEvents, getMaxEventsInWindow(allEvents, timeWindow, supportedEventTypes));
+			}
+			else if (MainConfig.datasetInUse == MainConfig.DatasetInUse.STOCKS){
+				ripEvaluationMechanism.setUpRIPThreadsStocks(totalNumberOfEvents ,supportedEventTypes.size());
+			}
 		}
 		long processTime = System.nanoTime() - time;
 
@@ -378,6 +385,22 @@ public class Simulator {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
+	}
+
+	private int getMaxEventsInWindow(List<Event> allEvents, Long timeWindow, List<EventType> supportedEventTypes) {
+		List<Event> eventsInWindow = new ArrayList<>();
+		int maxEventsInWindow = 0;
+		for (Event event : allEvents) {
+			if (!supportedEventTypes.contains(event.getType())) {
+				continue;
+			}
+			long latestTimestampInWindow = event.getTimestamp();
+			eventsInWindow.removeIf(windowEvent -> windowEvent.getTimestamp() + timeWindow < latestTimestampInWindow);
+			eventsInWindow.add(event);
+			maxEventsInWindow = Math.max(maxEventsInWindow, eventsInWindow.size());
+		}
+		System.out.println("Max events in sensor window - " + maxEventsInWindow);
+		return maxEventsInWindow;
 	}
 
 	private List<List<Event>> getEventGroupsBySize(List<Event> allEvents, long eventsInGroup) {
