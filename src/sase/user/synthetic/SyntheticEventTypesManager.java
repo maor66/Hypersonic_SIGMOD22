@@ -86,6 +86,11 @@ public class SyntheticEventTypesManager extends EventTypesManager {
 		return result;
 	}
 
+	@Override
+	public List<String> getAllFusedTypeNames() {
+		throw new RuntimeException("Unimplemented");
+	}
+
 	public static EventType[] getEventTypes() {
 		return eventTypes;
 	}

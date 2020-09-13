@@ -61,7 +61,12 @@ public class TramEventTypesManager extends EventTypesManager {
 		result.put(heavyCongestionEventTypeName, "HEAVY");	
 		return result;
 	}
-	
+
+	@Override
+	public List<String> getAllFusedTypeNames() {
+		throw new RuntimeException("Unimplemented");
+	}
+
 	@Override
 	protected void actuallyInitializeTypes() {
 		Attribute[] attributes = new Attribute[2];

@@ -113,6 +113,11 @@ public class AarhusTrafficEventTypesManager extends EventTypesManager {
 	}
 
 	@Override
+	public List<String> getAllFusedTypeNames() {
+		throw new RuntimeException("Unimplemented");
+	}
+
+	@Override
 	public List<String> getKnownEventTypeNames() {
 		return Arrays.asList(getEventTypeNames());
 	}

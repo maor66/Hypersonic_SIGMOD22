@@ -651,6 +651,7 @@ public class StockEventTypesManager extends EventTypesManager {
 		return regularNames;
 	}
 
+	@Override
 	public List<String> getAllFusedTypeNames() {
 		if (!MainConfig.isFusionSupported) {
 			return new ArrayList<>();

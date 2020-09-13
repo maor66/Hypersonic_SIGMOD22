@@ -13,9 +13,11 @@ public class FileBasedEventProducer extends EventProducer {
 	private FileEventStreamReader fileEventStreamReader;
 	public static long ReadTime = 0;
 	public static final int STOCK_TYPE_NAME_LENGTH = 4;
+	public static String[]  backupInputFilesPaths;
 
 	public FileBasedEventProducer(SimulationSpecification simulationSpecification) {
 		super(simulationSpecification);
+		backupInputFilesPaths = MainConfig.inputFilesPaths.clone();
 		fileEventStreamReader = new FileEventStreamReader(MainConfig.inputDirsPaths,
 														  MainConfig.inputFilesPaths,
 														  MainConfig.eventsPerRead);
@@ -27,7 +29,8 @@ public class FileBasedEventProducer extends EventProducer {
 
 	private void preprocessFileToFused(FileEventStreamReader fileEventStreamReader, SimulationSpecification simulationSpecification) {
 		for (int i = 0; i < fileEventStreamReader.inputFilesPaths.length; i++) {
-			String file_path = fileEventStreamReader.inputFilesPaths[i];
+//			fileEventStreamReader.inputFilesPaths[i] = fileEventStreamReader.getBackup(i);
+			String file_path = backupInputFilesPaths[i];
 			String fused_file_path = file_path.substring(0, file_path.length() - 4) + "_fused.txt";
 			runPreprocessorScript(file_path, fused_file_path, simulationSpecification);
 			fileEventStreamReader.inputFilesPaths[i] = fused_file_path;

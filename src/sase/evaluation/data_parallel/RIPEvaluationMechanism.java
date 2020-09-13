@@ -37,13 +37,18 @@ public final class RIPEvaluationMechanism extends DataParallelEvaluationMechanis
 		batchesRatio = specification.batchesRatio;
 	}
 
-	public void setUpRIPThreads(int numberOfEvents, int numberOfEventTypes) {
-		eventsPerThread = calculateEventsPerThread(numberOfEvents, numberOfEventTypes);
-		System.out.println("Using " + eventsPerThread + " events per thread");
+	public void setUpRIPThreadsStocks(int numberOfEvents, int numberOfEventTypes) {
+		long duplicatedEPT = timeWindow * EVENTS_RATE * numberOfEventTypes;
+		eventsPerThread = calculateEventsPerThread(numberOfEvents, duplicatedEPT);
+		System.out.println("Using " + eventsPerThread + " stock events per thread");
 	}
 
-	private long calculateEventsPerThread(int numberOfEvents, int numberOfEventTypes) {
-		long duplicatedEPT = timeWindow * EVENTS_RATE * numberOfEventTypes;
+	public void setUpRIPThreadsSensors(int numberOfEvents, int maxEventsInWindow) {
+		eventsPerThread = calculateEventsPerThread(numberOfEvents, maxEventsInWindow);
+		System.out.println("Using " + eventsPerThread + " sensor events per thread");
+	}
+
+	private long calculateEventsPerThread(int numberOfEvents, long duplicatedEPT){
 		long minEPT = 1 + duplicatedEPT * 2;
 		long maxEPT = (numberOfEvents + duplicatedEPT * numOfThreads)  / numOfThreads;
 		return (long) ((maxEPT - minEPT)* batchesRatio) + minEPT;
