@@ -34,4 +34,8 @@ public class SensorActivityChangeCondition extends DoubleEventCondition {
     protected boolean verifyDoubleEvent(Event firstEvent, Event secondEvent) {
         return (Double) firstEvent.getAttributeValue(activityChangeIndex) < (Double) secondEvent.getAttributeValue(activityChangeIndex);
     }
+
+    public boolean verifySpecificCondition(Event firstEvent, Event secondEvent) {
+        return verifyDoubleEvent(firstEvent, secondEvent);
+    }
 }
