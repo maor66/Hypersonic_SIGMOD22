@@ -338,7 +338,13 @@ public class Simulator {
 					if (event == null) {
 						break;
 					}
-					event.updateSystemTime(groupTime);
+					if (primaryEvaluationMechanism instanceof  RIPEvaluationMechanism ||
+							primaryEvaluationMechanism instanceof ParallelLazyChainNFA) {
+						event.updateSystemTime(groupTime);
+					}
+					else {
+						event.updateSystemTime(System.currentTimeMillis());
+					}
 					processIncomingEvent(event);
 					if (!(primaryEvaluationMechanism instanceof ParallelLazyChainNFA ||
 					primaryEvaluationMechanism instanceof RIPEvaluationMechanism)) {

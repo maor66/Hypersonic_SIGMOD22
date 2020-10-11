@@ -179,7 +179,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             System.out.println(("Actual thread used " + getAllWorkers().size()));
         }
 
-        Set<Match> matches = new HashSet<>();
+        List<Match> matches = new ArrayList<>();
 
 
         boolean flag = true;
