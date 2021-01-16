@@ -44,7 +44,7 @@ public abstract class ElementWorker {
         transition = (LazyTransition) eventState.getActualNextTransition();
     }
 
-    public void handleElement(ContainsEvent newElement, List<BufferWorker> workersNeededToFinish, ParallelQueue<? extends  ContainsEvent> input) {
+    public void handleElement(ContainsEvent newElement, List<Worker> workersNeededToFinish, ParallelQueue<? extends  ContainsEvent> input) {
         ContainsEvent removingCriteria = null;
         long latestTimeStamp = Long.MIN_VALUE;
         recordMaxElements(dataStorage.addEventToOwnBuffer(newElement));
@@ -149,9 +149,11 @@ public abstract class ElementWorker {
 
         if (batchSize == maxBatchSize) {
             batchSize = 0;
-            ParallelQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
+            List<ParallelQueue<Match>> matchesQueues = dataStorage.getNextStateOutput();
 //            long time = System.nanoTime();
-            matchesQueue.put(partialMatchesBatch);
+            for (ParallelQueue<Match> queue : matchesQueues) {
+                queue.put(partialMatchesBatch);
+            }
 //            sendMatchingTime += System.nanoTime() - time;
             partialMatchesBatch.clear();
         }
@@ -178,7 +180,9 @@ public abstract class ElementWorker {
     }
 
     public void forwardIncompleteBatch() {
-        ParallelQueue<Match> matchesQueue = dataStorage.getNextStateOutput();
-        matchesQueue.put(partialMatchesBatch);
+        List<ParallelQueue<Match>> matchesQueues = dataStorage.getNextStateOutput();
+        for (ParallelQueue<Match> queue : matchesQueues) {
+            queue.put(partialMatchesBatch);
+        }
     }
 }

@@ -14,7 +14,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.StampedLock;
 
 public class ThreadContainers {
-    private final ParallelQueue<Match> nextStateOutput;
+    private final List<ParallelQueue<Match>> nextStateOutput;
     private List<ContainsEvent> bufferSubList;
     private StampedLock lock;
     private EventType eventType;
@@ -66,11 +66,11 @@ public class ThreadContainers {
         return timeWindow;
     }
 
-    public ParallelQueue<Match> getNextStateOutput() {
+    public List<ParallelQueue<Match>> getNextStateOutput() {
         return nextStateOutput;
     }
 
-    public ThreadContainers(ParallelQueue<Match> nextStateOutput, EventType state, long timeWindow) {
+    public ThreadContainers(List<ParallelQueue<Match>> nextStateOutput, EventType state, long timeWindow) {
         this.eventType = state;
         bufferSubList = new ArrayList<>();
 //        this.oppositeBufferWorkers = oppositeBufferWorkers;

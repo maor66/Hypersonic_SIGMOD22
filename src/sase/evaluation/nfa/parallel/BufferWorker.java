@@ -16,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class BufferWorker implements Runnable {
+public class BufferWorker implements Worker {
 
     private  boolean isInputBufferWorker;
     private  long windowSize;
@@ -24,15 +24,14 @@ public class BufferWorker implements Runnable {
     protected boolean canCreateMatches= true;
     public long actualCalcTime = 0;
     public long windowverifyTime = 0;
-    public Thread thread;
-    protected CopyOnWriteArrayList<BufferWorker> finishedWorkers;
-    private CopyOnWriteArrayList<BufferWorker> finishedWithGroup;
+    protected CopyOnWriteArrayList<Worker> finishedWorkers;
+    private CopyOnWriteArrayList<Worker> finishedWithGroup;
     protected AtomicBoolean isMainFinished;
     protected ElementWorker primaryTask;
     protected ElementWorker secondaryTask;
     private ParallelQueue<? extends ContainsEvent> primaryInput;
     private ParallelQueue<? extends ContainsEvent> secondaryInput;
-    private List<BufferWorker> workersNeededToFinish;
+    private List<Worker> workersNeededToFinish;
 
     public long numberOfPrimaryHandledItems = 0;
     public long numberOfSecondaryHandledItems = 0;
@@ -61,9 +60,9 @@ private int isPrimaryInputTakenLast = 1;
                         ThreadContainers threadContainer,
                         List<ThreadContainers> eventOppositeBuffers,
                         List<ThreadContainers> partialMatchOppositeBuffers,
-                        CopyOnWriteArrayList<BufferWorker> finishedWorkers,
-                        CopyOnWriteArrayList<BufferWorker> finishedWithGroup,
-                        List<BufferWorker> workersNeededToFinish,
+                        CopyOnWriteArrayList<Worker> finishedWorkers,
+                        CopyOnWriteArrayList<Worker> finishedWithGroup,
+                        List<Worker> workersNeededToFinish,
                         boolean isInputBufferWorker)
     {
         ElementWorker EventWorker = new EventWorker(eventState, partialMatchOppositeBuffers);
@@ -109,7 +108,6 @@ private int isPrimaryInputTakenLast = 1;
 
     @Override
     public void run() {
-        thread = Thread.currentThread();
         thread.setName(threadName + " " + Thread.currentThread().getName());
         primaryTask.updateOppositeWorkers(secondaryTask);
         Timer printTimer = new Timer();
@@ -275,8 +273,8 @@ private int isPrimaryInputTakenLast = 1;
         secondaryTask.finishRun();
     }
 
-    protected boolean isPreviousStateFinished(CopyOnWriteArrayList<BufferWorker> finished) {
-        for (BufferWorker worker: workersNeededToFinish) {
+    protected boolean isPreviousStateFinished(CopyOnWriteArrayList<Worker> finished) {
+        for (Worker worker: workersNeededToFinish) {
             if (finished.indexOf(worker) == -1) {
                 return false;
             }
@@ -298,10 +296,12 @@ private int isPrimaryInputTakenLast = 1;
         return element;
     }
 
+    @Override
     public void resetGroupFinish() {
         addedToGroupFinish = false;
     }
 
+    @Override
     public long size() {
         return primaryTask.size() + secondaryTask.size();
     }

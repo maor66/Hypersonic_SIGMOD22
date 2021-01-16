@@ -10,7 +10,8 @@ public enum EvaluationMechanismTypes {
 	LAZY_CHAIN_PARALLEL,
 	LAZY_CHAIN_PARALLEL_DUMMY,
 	HIRZEL_CHAIN_NFA,
-	RIP_CHAIN_NFA;
+	RIP_CHAIN_NFA,
+	LAZY_CHAIN_PARALLEL_WITH_SPLIT_AND_DUPLICATE;
 
     @Override
 	public String toString() {
@@ -35,6 +36,8 @@ public enum EvaluationMechanismTypes {
 				return "Hirzel Parallel chain NFA";
 			case RIP_CHAIN_NFA:
 				return "RIP Parallel chain NFA";
+			case LAZY_CHAIN_PARALLEL_WITH_SPLIT_AND_DUPLICATE:
+				return "Parallel split-duplicate chain (chinese algorithm)";
 			default: 
 				return "";
 		}

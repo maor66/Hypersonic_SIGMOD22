@@ -70,7 +70,9 @@ public class EvaluationMechanismFactory {
 						return new LazyChainNFA(pattern, evaluationPlan, 
 												((LazyNFAEvaluationSpecification)specification).negationType);
 					case LAZY_CHAIN_PARALLEL:
-						return new ParallelLazyChainNFA(pattern, evaluationPlan, (ParallelLazyNFAEvaluationSpecification)specification);
+						return new ParallelLazyChainNFA(pattern, evaluationPlan, true, (ParallelLazyNFAEvaluationSpecification)specification);
+					case LAZY_CHAIN_PARALLEL_WITH_SPLIT_AND_DUPLICATE:
+						return new ParallelLazyChainNFA(pattern, evaluationPlan, false, (ParallelLazyNFAEvaluationSpecification)specification);
 					case LAZY_CHAIN_PARALLEL_DUMMY:
 						return new ParallelBasicEvaluationMechanism(pattern, evaluationPlan, (ParallelBasicEvaluationSpecification)specification);
 					case HIRZEL_CHAIN_NFA:
