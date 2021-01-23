@@ -21,7 +21,7 @@ public class ParallelBasicEvaluationMechanism extends ParallelLazyChainNFA {
 
 	public ParallelBasicEvaluationMechanism(Pattern pattern, EvaluationPlan evaluationPlan,
 			ParallelBasicEvaluationSpecification specification) {
-		super(pattern, evaluationPlan, new ParallelLazyNFAEvaluationSpecification(specification.orderingAlgorithmType,
+		super(pattern, evaluationPlan, true, new ParallelLazyNFAEvaluationSpecification(specification.orderingAlgorithmType,
 				specification.costModelType,
 				specification.throughputToLatencyRatio, 0, 0));
 	}

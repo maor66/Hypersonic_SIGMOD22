@@ -1,5 +1,6 @@
 package sase.evaluation.nfa.lazy;
 
+import sase.base.ContainsEvent;
 import sase.base.Event;
 import sase.base.EventType;
 import sase.config.MainConfig;
@@ -46,7 +47,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private Map<TypedNFAState, List<ParallelQueue<Event>>> eventInputQueues;
     protected Map<TypedNFAState, Integer> stateToIBThreads = new HashMap<>();
     protected Map<TypedNFAState, Integer> stateToMBThreads = new HashMap<>();
-    private List<ParallelQueue<Match>> secondStateInputQueue = new ArrayList<>();
+    private List<ParallelQueue<Match>> secondStateInputQueue = Collections.singletonList(new ParallelQueue<>());
     private List<ParallelQueue<Match>> completeMatchOutputQueue;
     protected int numOfThreads;
     private BufferWorker dummyWorkerNeededForFinish = new BufferWorker();
@@ -111,6 +112,17 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         }
         Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.events);
         try {
+            if (!isMyAlgorithm) {
+                if (eventState.isInitial()) {
+                    ParallelQueue<ContainsEvent> chosenQueue = chooseEventQueue((List<ParallelQueue<ContainsEvent>>) (List<?>) secondStateInputQueue);
+                    chosenQueue.put(List.of(new Match(Event.asList(event))));
+                }
+                else {
+                    ParallelQueue<ContainsEvent> chosenQueue = chooseEventQueue((List<ParallelQueue<ContainsEvent>>) (List<?>) eventInputQueues.get(eventState));
+                    chosenQueue.put(List.of(event));
+                }
+                return null;
+            }
             if (eventState.isInitial()) {
                 for (ParallelQueue<Match> transferQueue : secondStateInputQueue) {
                     transferQueue.put(List.of(new Match(Event.asList(event))));
@@ -126,6 +138,21 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private ParallelQueue<ContainsEvent> chooseEventQueue(List<ParallelQueue<ContainsEvent>> queueList)
+    {
+        //TODO: Using JSQ (shortest queue) instead of LLSF (the least loaded thread in terms of memory)
+        long shortestSize = Integer.MAX_VALUE;
+        ParallelQueue<ContainsEvent> shortestQueue = null;
+        for (ParallelQueue<ContainsEvent> inputQueue : queueList) {
+            long queueSize = inputQueue.size();
+            if (queueSize < shortestSize) {
+                shortestSize = queueSize;
+                shortestQueue = inputQueue;
+            }
+        }
+        return shortestQueue;
     }
 
     @Override
@@ -191,7 +218,9 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 if (m == null) {
                     m = batch;
                 }
-                m.addAll(batch);
+                else if (batch != null) {
+                    m.addAll(batch);
+                }
             }
 
             if (m == null) {
@@ -235,10 +264,12 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 t.start();
 //                executor.submit(worker);
             }
-            for (Worker worker: MBWorkers.get(state)) {
-                Thread t = new Thread(worker);
-                t.start();
+            if (isMyAlgorithm) {
+                for (Worker worker : MBWorkers.get(state)) {
+                    Thread t = new Thread(worker);
+                    t.start();
 //                executor.submit(worker);
+                }
             }
         }
     }
@@ -348,6 +379,10 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
     private void createWorkersForSplitDuplicateAlgorithm()
     {
         TypedNFAState previousState = null;
+        secondStateInputQueue = new LinkedList<>();
+        for (int i = 0; i < stateToIBThreads.get(getWorkerStates().get(0)); i++) {
+            secondStateInputQueue.add(new ParallelQueue<>());
+        }
         List<ParallelQueue<Match>> partialMatchInput = secondStateInputQueue;
 
         for (TypedNFAState state : getWorkerStates()) {
@@ -689,9 +724,9 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             int numberOfWorkersPerState = numOfThreads / nfaStates.size();
             int extraThreads = numOfThreads % nfaStates.size();
             for (int i = 0; i < nfaStates.size(); i++) {
-                int shouldAddExtraThread = (extraThreads < i) ? 1 : 0;
+                int shouldAddExtraThread = (extraThreads > i) ? 1 : 0;
                 stateToIBThreads.put(nfaStates.get(i), numberOfWorkersPerState + shouldAddExtraThread);
-                System.out.print(nfaStates.get(i).getEventType() + " - [" + inputBufferThreadsPerState.get(listIndex - 1) + "] ");
+                System.out.print(nfaStates.get(i).getEventType() + " - [" + (numberOfWorkersPerState + shouldAddExtraThread) + "] ");
             }
         }
         initializeThreads();

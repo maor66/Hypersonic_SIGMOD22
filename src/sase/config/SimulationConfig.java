@@ -484,7 +484,7 @@ public class SimulationConfig {
 //		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
 //				CostModelTypes.THROUGHPUT_LATENCY,
 //				0.0, 20, 0.5),
-		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+		new ParallelSplitDuplicateNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
 				CostModelTypes.THROUGHPUT_LATENCY,
 				0.0, 24, 0.5),
 //		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,

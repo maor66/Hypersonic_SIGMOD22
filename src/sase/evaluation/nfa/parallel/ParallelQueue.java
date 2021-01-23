@@ -88,4 +88,8 @@ public class ParallelQueue<CE> {
     public void setSizeLimit(int maxValue) {
         sizeLimit = maxValue;
     }
+
+    public long size() {
+        return currentSize.get();
+    }
 }
