@@ -114,8 +114,10 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         try {
             if (!isMyAlgorithm) {
                 if (eventState.isInitial()) {
-                    ParallelQueue<ContainsEvent> chosenQueue = chooseEventQueue((List<ParallelQueue<ContainsEvent>>) (List<?>) secondStateInputQueue);
-                    chosenQueue.put(List.of(new Match(Event.asList(event))));
+                    /// This is actually a match queue so need to duplicate it
+                    for (ParallelQueue<Match> queue : secondStateInputQueue) {
+                        queue.put(List.of(new Match(Event.asList(event))));
+                    }
                 }
                 else {
                     ParallelQueue<ContainsEvent> chosenQueue = chooseEventQueue((List<ParallelQueue<ContainsEvent>>) (List<?>) eventInputQueues.get(eventState));

@@ -56,7 +56,20 @@ public class PartialMatchWorker extends ElementWorker {
             int upperIndex = getIndexWithClosestValue(actualEvents, match.getEarliestTimestamp() + dataStorage.getTimeWindow(), false, false);
             sliceTimeActual += System.nanoTime() - time;
 
+            if (upperIndex < actualEvents.size()) {
+                for (; upperIndex < actualEvents.size(); upperIndex++) {
+                    long current_timestamp = actualEvents.get(upperIndex).getEarliestTimestamp();
+                    if (current_timestamp > match.getEarliestTimestamp() + dataStorage.getTimeWindow()) {
+                        break;
+                    }
+                }
+            }
+//            if (upperIndex+1 < actualEvents.size()) {
+//                upperIndex++;
+//            }
+//            upperIndex = actualEvents.size();
             for (int i = upperIndex; i-- > 0 ;) {
+//            for (int i = actualEvents.size() - 1 ; i >= 0 ;i--) {
                 Event event = actualEvents.get(i);
                 if (event.getSequenceNumber() < match.getLatestEvent().getSequenceNumber()) {
                     return latestEventInSubList;
