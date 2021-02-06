@@ -5,7 +5,6 @@ import sase.base.Event;
 import sase.base.EventType;
 import sase.config.MainConfig;
 import sase.evaluation.common.Match;
-import sase.evaluation.nfa.eager.elements.InstanceStorage;
 import sase.evaluation.nfa.eager.elements.NFAState;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.order.cost.CostModelFactory;
@@ -20,7 +19,6 @@ import sase.simulator.Environment;
 import sase.specification.evaluation.ParallelLazyNFAEvaluationSpecification;
 import sase.statistics.Statistics;
 
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
@@ -116,23 +114,23 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 if (eventState.isInitial()) {
                     /// This is actually a match queue so need to duplicate it
                     for (ParallelQueue<Match> queue : secondStateInputQueue) {
-                        queue.put(List.of(new Match(Event.asList(event))));
+                        queue.put(List.of(new Match(Event.asList(event))), 0);
                     }
                 }
                 else {
                     ParallelQueue<ContainsEvent> chosenQueue = chooseEventQueue((List<ParallelQueue<ContainsEvent>>) (List<?>) eventInputQueues.get(eventState));
-                    chosenQueue.put(List.of(event));
+                    chosenQueue.put(List.of(event), 0);
                 }
                 return null;
             }
             if (eventState.isInitial()) {
                 for (ParallelQueue<Match> transferQueue : secondStateInputQueue) {
-                    transferQueue.put(List.of(new Match(Event.asList(event))));
+                    transferQueue.put(List.of(new Match(Event.asList(event))), 0);
                 }
             }
             else {
                 for (ParallelQueue<Event> transferQueue : eventInputQueues.get(eventState)) {
-                    transferQueue.put(List.of(event));
+                    transferQueue.put(List.of(event), 0);
                     Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.parallelBufferInsertions);
                 }
             }
@@ -401,7 +399,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             List<ParallelQueue<Match>> duplicatesOutputs = new ArrayList<>();
             for (int i = 0; i < stateToIBThreads.get(state); i++) {
                 //Actually creates a number based on the number of threads in this state instead of the next. Allocation is uniform so it is fine
-                duplicatesOutputs.add(new ParallelQueue<>());
+                duplicatesOutputs.add(new TimestampBlockedParallelQueue(stateToIBThreads.get(state), timeWindow));
             }
             //Create ThreadContainers with multiple outputs
             List<ThreadContainers> eventThreadContainers = new CopyOnWriteArrayList<>();
@@ -728,6 +726,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             for (int i = 0; i < nfaStates.size(); i++) {
                 int shouldAddExtraThread = (extraThreads > i) ? 1 : 0;
                 stateToIBThreads.put(nfaStates.get(i), numberOfWorkersPerState + shouldAddExtraThread);
+//                stateToIBThreads.put(nfaStates.get(i), 2);
                 System.out.print(nfaStates.get(i).getEventType() + " - [" + (numberOfWorkersPerState + shouldAddExtraThread) + "] ");
             }
         }

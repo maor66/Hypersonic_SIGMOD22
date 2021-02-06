@@ -2,6 +2,7 @@ package sase.evaluation.nfa.parallel;
 
 import sase.base.ContainsEvent;
 import sase.base.Event;
+import sase.evaluation.common.FinisherMatch;
 import sase.evaluation.common.Match;
 import sase.evaluation.nfa.eager.elements.TypedNFAState;
 import sase.evaluation.nfa.lazy.elements.LazyTransition;
@@ -35,6 +36,8 @@ public abstract class ElementWorker {
     private  int currentBackoff = 0;
     private  int backoffStep = 1;
     private long maxElements = 0;
+    private static int id_global = 0;
+    private int id = 0;
 
     public ElementWorker(TypedNFAState eventState,
                          List<ThreadContainers> oppositeBuffers)
@@ -42,6 +45,7 @@ public abstract class ElementWorker {
         this.eventState = eventState;
         this.oppositeBuffers = oppositeBuffers;
         transition = (LazyTransition) eventState.getActualNextTransition();
+        id = id_global++;
     }
 
     public void handleElement(ContainsEvent newElement, List<Worker> workersNeededToFinish, ParallelQueue<? extends  ContainsEvent> input) {
@@ -84,9 +88,10 @@ public abstract class ElementWorker {
     protected abstract boolean oppositeTaskNotFinished(List<BufferWorker> workersNeededToFinish);
 
     public void finishRun() {
+        sendToNextState(new FinisherMatch());
         System.out.println("Thread " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " has finished at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
-                " Compared to " + numberOfOppositeItems + " Max Elements "+ maxElements +  " items Condition time " + conditionTime / 1000000 +
-                " Iterating buffer time " + iteratingBufferTime / 1000000 + " Slice time " + sliceTime / 1000000 + " Actual Slice time " + sliceTimeActual / 1000000 + " Send sync time " + sendMatchingTime / 1000000 +
+                " Compared to " + numberOfOppositeItems + " Max Elements "+ maxElements +  " items Condition time " + conditionTime / 1 +
+                " Iterating buffer time " + iteratingBufferTime / 1000000 + " Slice time " + sliceTime / 1 + " Actual Slice time " + sliceTimeActual / 1000000 + " Send sync time " + sendMatchingTime / 1000000 +
                 " Calculation time " + actualCalcTime / 1000000 + " Window verify time " + windowverifyTime / 1000000 + " Cond 1 " + innerCondTime / 1000000 + " Cond 2 " + innerWindowTime / 1000000);
     }
     protected abstract boolean isBufferSorted();
@@ -146,13 +151,14 @@ public abstract class ElementWorker {
     protected void sendToNextState(Match newPartialMatchWithEvent) {
         batchSize++;
         partialMatchesBatch.add(newPartialMatchWithEvent);
-
+        sliceTime++;
         if (batchSize == maxBatchSize) {
+            conditionTime++;
             batchSize = 0;
             List<ParallelQueue<Match>> matchesQueues = dataStorage.getNextStateOutput();
 //            long time = System.nanoTime();
             for (ParallelQueue<Match> queue : matchesQueues) {
-                queue.put(partialMatchesBatch);
+                queue.put(partialMatchesBatch, id);
             }
 //            sendMatchingTime += System.nanoTime() - time;
             partialMatchesBatch.clear();
@@ -182,7 +188,7 @@ public abstract class ElementWorker {
     public void forwardIncompleteBatch() {
         List<ParallelQueue<Match>> matchesQueues = dataStorage.getNextStateOutput();
         for (ParallelQueue<Match> queue : matchesQueues) {
-            queue.put(partialMatchesBatch);
+            queue.put(partialMatchesBatch, id);
         }
     }
 }

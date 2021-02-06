@@ -1,17 +1,13 @@
 package sase.evaluation.nfa.parallel;
 
-import sase.base.ContainsEvent;
-
-import java.sql.Time;
 import java.util.AbstractQueue;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ParallelQueue<CE> {
     //    private LinkedList<CE> queue = new LinkedList<>();
@@ -63,7 +59,7 @@ public class ParallelQueue<CE> {
     private AtomicLong maxSize = new AtomicLong(0);
     private AbstractQueue<List<CE>> queue = new ConcurrentLinkedQueue<>();
 
-    public void put(List<CE> ce) {
+    public void put(List<CE> ce, long id) {
         List<CE> copyiedBatch = new ArrayList<>(ce);
         while (currentSize.get() >= sizeLimit) {}
         queue.add(copyiedBatch);

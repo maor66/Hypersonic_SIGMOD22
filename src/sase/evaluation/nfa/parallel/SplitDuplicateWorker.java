@@ -37,6 +37,7 @@ public class SplitDuplicateWorker implements Worker {
     private long latestSecondary = 0;
     private long latestPrimary = 0;
 
+    TypedNFAState eventState;
 
 
     public SplitDuplicateWorker(TypedNFAState eventState,
@@ -58,6 +59,7 @@ public class SplitDuplicateWorker implements Worker {
         this.workersNeededToFinish = workersNeededToFinish;
         threadName = "SplitDuplicateWorker" + eventState.getName();
         taskUsed = secondaryTask;
+        this.eventState = eventState;
     }
 
     @Override
@@ -77,6 +79,9 @@ public class SplitDuplicateWorker implements Worker {
         while(true) {
             List<ContainsEvent> newBatch = takeInput();
             if (newBatch == null) {
+                if (numberOfSecondaryHandledItems == 0 || numberOfPrimaryHandledItems == 0) {
+                    continue;
+                }
                 if (isPreviousStateFinished(finishedWithGroup) && !addedToGroupFinish) {
                     forwardIncompleteBatch();
                     finishedWithGroup.add(this);
@@ -84,7 +89,7 @@ public class SplitDuplicateWorker implements Worker {
                 }
                 if (isPreviousStateFinished(finishedWorkers)) {
                     forwardIncompleteBatch();
-                    printBufferSnapShot(threadName + " " + Thread.currentThread().getName());
+                    printBufferSnapShot(Thread.currentThread().getName());
                     finishRun();
                     return;
                 } else {
@@ -168,11 +173,12 @@ public class SplitDuplicateWorker implements Worker {
     }
 
     private void finishRun() {
-        finishedWorkers.add(this);
+                BufferedWriter writercond = null;
         System.out.println("Buffer Worker - " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " Handled " + numberOfPrimaryHandledItems + " primary items " +
                 + numberOfSecondaryHandledItems + " Handled secondary items.  Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000);
         primaryTask.finishRun();
         secondaryTask.finishRun();
+        finishedWorkers.add(this);
     }
 
     private void printBufferSnapShot(String threadName)
