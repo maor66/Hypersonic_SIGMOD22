@@ -57,7 +57,11 @@ public Map<Long, Long>  removedBlocks = new ConcurrentHashMap<>();
             }
             removedBlocks.putIfAbsent(currentBlockSerial, 0L);
             wLock.lock();
-            List<Match> earliestBlockMatches = windowBlocks.remove(currentBlockSerial);
+            List<Match> earliestBlockMatches = windowBlocks.remove(earliestBlock);
+            if (earliestBlockMatches == null) {
+                wLock.unlock();
+                return new ArrayList<>();
+            }
             try {
                 currentBlockSerial = Collections.min(windowBlocks.keySet());
             }

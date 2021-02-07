@@ -186,6 +186,9 @@ public abstract class ElementWorker {
     }
 
     public void forwardIncompleteBatch() {
+        if (partialMatchesBatch.isEmpty()) {
+            return;
+        }
         List<ParallelQueue<Match>> matchesQueues = dataStorage.getNextStateOutput();
         for (ParallelQueue<Match> queue : matchesQueues) {
             queue.put(partialMatchesBatch, id);

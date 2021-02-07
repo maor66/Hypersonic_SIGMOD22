@@ -175,7 +175,10 @@ private int isPrimaryInputTakenLast = 1;
             long time = System.nanoTime();
             long latestTimestamp = Long.MIN_VALUE;
             for (ContainsEvent newElement : newBatch) {
-                if (newElement.getTimestamp() > latestTimestamp) {
+                if (newElement.getEarliestTimestamp() == Long.MAX_VALUE) {
+                    continue;
+                }
+                    if (newElement.getTimestamp() > latestTimestamp) {
                     latestTimestamp = newElement.getTimestamp();
                 }
                 taskUsed.handleElement(newElement, finishedWorkers, (isPrimaryInputTakenLast == 1) ? secondaryInput : primaryInput);

@@ -98,7 +98,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         this.isMyAlgorithm = isMyAlgorithm;
         System.out.println("Processors: " + Runtime.getRuntime().availableProcessors());
     }
-    
+
     @Override
     public List<Match> processNewEvent(Event event, boolean canStartInstance) {
 
@@ -109,6 +109,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             return null;
         }
         Environment.getEnvironment().getStatisticsManager().incrementDiscreteStatistic(Statistics.events);
+        long eventId = Environment.getEnvironment().getStatisticsManager().getDiscreteStatistic(Statistics.events);
         try {
             if (!isMyAlgorithm) {
                 if (eventState.isInitial()) {
@@ -118,7 +119,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                     }
                 }
                 else {
-                    ParallelQueue<ContainsEvent> chosenQueue = chooseEventQueue((List<ParallelQueue<ContainsEvent>>) (List<?>) eventInputQueues.get(eventState));
+                    ParallelQueue<ContainsEvent> chosenQueue = chooseEventQueue((List<ParallelQueue<ContainsEvent>>) (List<?>) eventInputQueues.get(eventState), eventId);
                     chosenQueue.put(List.of(event), 0);
                 }
                 return null;
@@ -140,19 +141,20 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         return null;
     }
 
-    private ParallelQueue<ContainsEvent> chooseEventQueue(List<ParallelQueue<ContainsEvent>> queueList)
+    private ParallelQueue<ContainsEvent> chooseEventQueue(List<ParallelQueue<ContainsEvent>> queueList, long eventId)
     {
+        return queueList.get((int) (eventId % queueList.size()));
         //TODO: Using JSQ (shortest queue) instead of LLSF (the least loaded thread in terms of memory)
-        long shortestSize = Integer.MAX_VALUE;
-        ParallelQueue<ContainsEvent> shortestQueue = null;
-        for (ParallelQueue<ContainsEvent> inputQueue : queueList) {
-            long queueSize = inputQueue.size();
-            if (queueSize < shortestSize) {
-                shortestSize = queueSize;
-                shortestQueue = inputQueue;
-            }
-        }
-        return shortestQueue;
+//        long shortestSize = Integer.MAX_VALUE;
+//        ParallelQueue<ContainsEvent> shortestQueue = null;
+//        for (ParallelQueue<ContainsEvent> inputQueue : queueList) {
+//            long queueSize = inputQueue.size();
+//            if (queueSize < shortestSize) {
+//                shortestSize = queueSize;
+//                shortestQueue = inputQueue;
+//            }
+//        }
+//        return shortestQueue;
     }
 
     @Override
@@ -229,8 +231,11 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                 }
             }
             else {
-                for (Match match : m)
-                matches.add(match);
+                for (Match match : m) {
+                    if (match.getEarliestTimestamp() != Long.MAX_VALUE) {
+                        matches.add(match);
+                    }
+                }
             }
         }
 

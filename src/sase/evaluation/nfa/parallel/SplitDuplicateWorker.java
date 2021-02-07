@@ -173,7 +173,6 @@ public class SplitDuplicateWorker implements Worker {
     }
 
     private void finishRun() {
-                BufferedWriter writercond = null;
         System.out.println("Buffer Worker - " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " Handled " + numberOfPrimaryHandledItems + " primary items " +
                 + numberOfSecondaryHandledItems + " Handled secondary items.  Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000);
         primaryTask.finishRun();
