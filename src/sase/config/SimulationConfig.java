@@ -526,9 +526,9 @@ public class SimulationConfig {
 //		new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //				CostModelTypes.THROUGHPUT_LATENCY,
 //				0.0),
-		new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
-				CostModelTypes.THROUGHPUT_LATENCY,
-				0.0),
+//		new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
+//				CostModelTypes.THROUGHPUT_LATENCY,
+//				0.0),
 
 //			new HirzelEvaluationSpecification(EvaluationMechanismTypes.HIRZEL_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.EVENT_FREQUENCY,
 //					CostModelTypes.THROUGHPUT_LATENCY,

@@ -119,7 +119,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
                     }
                 }
                 else {
-                    ParallelQueue<ContainsEvent> chosenQueue = chooseEventQueue((List<ParallelQueue<ContainsEvent>>) (List<?>) eventInputQueues.get(eventState), eventId);
+                    ParallelQueue<ContainsEvent> chosenQueue = chooseEventQueue((List<ParallelQueue<ContainsEvent>>) (List<?>) eventInputQueues.get(eventState), eventId,
+                            IBWorkers.get(eventState));
                     chosenQueue.put(List.of(event), 0);
                 }
                 return null;
@@ -141,9 +142,33 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
         return null;
     }
 
-    private ParallelQueue<ContainsEvent> chooseEventQueue(List<ParallelQueue<ContainsEvent>> queueList, long eventId)
+//    private Map<Integer, Integer> hist = new HashMap<>();
+    private ParallelQueue<ContainsEvent> chooseEventQueue(List<ParallelQueue<ContainsEvent>> queueList, long eventId, List<Worker> workers)
     {
+//        boolean isAnyQueueEmpty = false;
+//        do {
+//            for (ParallelQueue<ContainsEvent> queue : queueList) {
+//                if (queue.isEmpty()) {
+//                    isAnyQueueEmpty = true;
+//                    break;
+//                }
+//            }
+//        } while (!isAnyQueueEmpty);
+//        long minSize = Long.MAX_VALUE;
+//        int minIndex = -1;
+//        for (int i = 0; i < workers.size(); i++) {
+//            long workerSize = workers.get(i).size();
+//            if (workerSize < minSize){
+//                minIndex = i;
+//                minSize = workerSize;
+//            }
+//        }
+//        hist.putIfAbsent(minIndex, 0);
+//        hist.compute(minIndex, (integer, integer2) -> integer2+1);
+//        return queueList.get(minIndex);
+
         return queueList.get((int) (eventId % queueList.size()));
+
         //TODO: Using JSQ (shortest queue) instead of LLSF (the least loaded thread in terms of memory)
 //        long shortestSize = Integer.MAX_VALUE;
 //        ParallelQueue<ContainsEvent> shortestQueue = null;
@@ -192,7 +217,10 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
     @Override
     public List<Match> getLastMatches() {
-
+//System.out.println("Hist is ");
+//for (int val : hist.keySet()) {
+//    System.out.println("For queue " + val + " sent " + hist.get(val));
+//}
         isFinishedWithInput.set(true);
         finishedThreads.add(dummyWorkerNeededForFinish);
         if (MainConfig.parallelDebugMode) {
@@ -281,8 +309,8 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
 
     @Override
     public long size() {
-        int queuesSize = 0;
-        int partialMatchSize = 2;
+        long queuesSize = 0;
+        long partialMatchSize = 2;
         for (ParallelQueue<Match>  q : allMatchQueues) {
             long individualQueueSize = q.getMaxSize();
             queuesSize += individualQueueSize * partialMatchSize * EventTypesManager.getInstance().getAverageEventSize();
@@ -426,8 +454,10 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             }
             IBWorkers.put(state, stateIBworkers);
             partialMatchInput = duplicatesOutputs;
+            allMatchQueues.addAll(duplicatesOutputs);
             previousState = state;
         }
+//        allMatchQueues.remove(partialMatchInput);
         completeMatchOutputQueue = partialMatchInput;
     }
 

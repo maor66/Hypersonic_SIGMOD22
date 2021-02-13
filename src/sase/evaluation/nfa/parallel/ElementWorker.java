@@ -146,7 +146,7 @@ public abstract class ElementWorker {
 //        actualCalcTime += System.nanoTime() - time;
     }
     private int batchSize = 0;
-    public static final int maxBatchSize = 1;
+    public static final int maxBatchSize = 100;
     private List<Match> partialMatchesBatch = new ArrayList<>();
     protected void sendToNextState(Match newPartialMatchWithEvent) {
         batchSize++;

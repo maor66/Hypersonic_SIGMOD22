@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -112,6 +113,8 @@ public Map<Long, Long>  removedBlocks = new ConcurrentHashMap<>();
     private AtomicInteger currentThreadsThatFinishedWithBlock = new AtomicInteger(0);
     private Map<Long, WindowToPartialMatches> threadStorageMapping = new ConcurrentHashMap<>();
     private Map<Long, Map<Long, Integer>> finishedThreadsByBlock = new ConcurrentHashMap<>();
+    private AtomicLong maxSize = new AtomicLong(0);
+    private AtomicLong currentSize = new AtomicLong(0);
     List<Integer> finishedThreads = new ArrayList<>();
     private final long timeWindow;
 
@@ -127,12 +130,19 @@ public Map<Long, Long>  removedBlocks = new ConcurrentHashMap<>();
 //        return Thread.currentThread().getId();
 //    }
 
+
+    @Override
+    public long getMaxSize() {
+        return maxSize.get();
+    }
+
     private int received = 0;
     @Override
     public void put(List<Match> oneMatch, long id) {
 //                l.lock();
 
         received++;
+
         if (oneMatch.size() > 1)
         {
             throw new RuntimeException();
@@ -141,6 +151,10 @@ public Map<Long, Long>  removedBlocks = new ConcurrentHashMap<>();
 
         WindowToPartialMatches mapping = threadStorageMapping.computeIfAbsent(id,integer ->  new WindowToPartialMatches(timeWindow));
         long block = mapping.insertNewPartialMatch(match);
+        long curSize = currentSize.incrementAndGet();
+        if (maxSize.get() < curSize) {
+            maxSize.set(curSize);
+        }
         Map<Long, Integer> finishedThreads = finishedThreadsByBlock.computeIfAbsent(block, aLong -> new ConcurrentHashMap<>());
         if (match.getEarliestTimestamp() == Long.MAX_VALUE) {
             currentThreadsThatFinishedWithBlock.incrementAndGet();
@@ -180,7 +194,7 @@ public Map<Long, Long>  removedBlocks = new ConcurrentHashMap<>();
         {
             sendToActualQueue(map.popAllBlocks());
         }
-        System.out.println("Queue received " + received + " sent " + sent);
+        System.out.println("Queue received " + received + " sent " + sent + " diff " + maxdiff);
     }
 
     Lock l = new ReentrantLock();
@@ -197,12 +211,16 @@ public Map<Long, Long>  removedBlocks = new ConcurrentHashMap<>();
             sendToActualQueue(matches);
         }
     }
-
+    private int maxdiff = 0;
     private int sent = 0;
     private void sendToActualQueue(List<Match> matches) {
+        if (maxdiff < received - sent) {
+            maxdiff = received - sent;
+        }
         for (Match earlyMatch : matches) {
             sent++;
             super.put(Collections.singletonList(earlyMatch), 0);
+            currentSize.decrementAndGet();
         }
     }
 }
