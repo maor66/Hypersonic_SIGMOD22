@@ -33,7 +33,7 @@ The simulation can accept any number of patterns to be detected and runs a diffe
 Set `stockByCompanyPatternSpecifications` in `src/sase/config/PatternConfig.java` with the patterns that you wish to detect.
 The simplest way to build a pattern is to use one of the many patterns already defined in this file (`basicPatternSEQ6Correlation` for example) and simply change the types of the pattern (all supported types are in `sase/user/stocks/StockEventTypesManager.java`)
 The current configuration is:
-```java
+```
 	public static final PatternSpecification[] stockByCompanyPatternSpecifications = {
 
 						basicPatternSEQ6Correlation.createIdenticalSpecificationWithDifferentWindow(65),
@@ -44,7 +44,7 @@ The current configuration is:
 	};
 ```
 It would run 4 patterns that are of the same structure, but with a different time window. To run different patterns a possible configuration would be:
-```java
+```
 	public static final PatternSpecification[] stockByCompanyPatternSpecifications = {
 
 			basicPatternSEQ5.createIdenticalSpecificationWithDifferentWindow(1000),
@@ -65,7 +65,7 @@ To set which simulations are going to be run, set the `evaluationSpecifications`
 Each array entry is one simulation that would run on all patterns configured in the previous section. These runs are independent and does not occur simultaneously.
 ##### HYPERSONIC
 To run HYPERSONIC, add:
-```java
+```
  		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
 				CostModelTypes.THROUGHPUT_LATENCY,
 				0.0, 24, 0.5),
@@ -73,7 +73,7 @@ To run HYPERSONIC, add:
 Only change the 4th parameter which is the number of execution units (threads) used for this run. Other parameters are used for future work and should are not relevant for this paper.
 ##### RIP
 To run RIP:
-```java
+```
 		new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
 				CostModelTypes.THROUGHPUT_LATENCY,
 				0.0), 24, 0)
@@ -81,14 +81,14 @@ To run RIP:
 Only change the 4th parameter which is the number of execution units (threads) used for this run .Other parameters are used for future work and should are not relevant for this paper.
 ##### LLSF
 To run LLSF:
-```java
+```
 		new ParallelSplitDuplicateNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
 				CostModelTypes.THROUGHPUT_LATENCY,
 				0.0, 24, 0.5),
 ```
 Only change the 4th parameter which is the number of execution units (threads) used for this run. Other parameters are used for future work and should are not relevant for this paper.
 ##### Sequential
-```java
+```
 		new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
 				CostModelTypes.THROUGHPUT_LATENCY,
 				0.0),
