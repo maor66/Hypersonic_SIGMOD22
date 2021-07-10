@@ -89,7 +89,7 @@ public class ThreadContainers {
         Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.numberOfSynchronizationActions);
         List<ContainsEvent> listView = new ArrayList<>();
         long stamp = lock.tryOptimisticRead();
-        listView.addAll(bufferSubList); //TODO: copies the list, which can hit performance. A different solution could be to read from the start of the list, this can be done without locking (up to a point)
+        listView.addAll(bufferSubList);
         if (!lock.validate(stamp)) {
             Environment.getEnvironment().getStatisticsManager().incrementParallelStatistic(Statistics.failedOptimisticReads);
             stamp = lock.readLock();

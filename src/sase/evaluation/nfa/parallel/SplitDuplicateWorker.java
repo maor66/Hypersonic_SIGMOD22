@@ -173,8 +173,8 @@ public class SplitDuplicateWorker implements Worker {
     }
 
     private void finishRun() {
-        System.out.println("Buffer Worker - " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " Handled " + numberOfPrimaryHandledItems + " primary items " +
-                + numberOfSecondaryHandledItems + " Handled secondary items.  Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000);
+//        System.out.println("Buffer Worker - " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " Handled " + numberOfPrimaryHandledItems + " primary items " +
+//                + numberOfSecondaryHandledItems + " Handled secondary items.  Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000);
         primaryTask.finishRun();
         secondaryTask.finishRun();
         finishedWorkers.add(this);
@@ -182,12 +182,12 @@ public class SplitDuplicateWorker implements Worker {
 
     private void printBufferSnapShot(String threadName)
     {
-        System.out.println(threadName  + " " +  new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
-                " latest primary timestamp " + latestPrimary +
-                " latest secondary timestamp " + latestSecondary +
-                " primary buffer size " + primaryTask.currentBufferSize +
-                " secondary buffer size " + secondaryTask.currentBufferSize +
-                " Handled primary items " + numberOfPrimaryHandledItems + " Secondary Items " + numberOfSecondaryHandledItems);
+//        System.out.println(threadName  + " " +  new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
+//                " latest primary timestamp " + latestPrimary +
+//                " latest secondary timestamp " + latestSecondary +
+//                " primary buffer size " + primaryTask.currentBufferSize +
+//                " secondary buffer size " + secondaryTask.currentBufferSize +
+//                " Handled primary items " + numberOfPrimaryHandledItems + " Secondary Items " + numberOfSecondaryHandledItems);
     }
 
     protected boolean isPreviousStateFinished(CopyOnWriteArrayList<Worker> finished) {

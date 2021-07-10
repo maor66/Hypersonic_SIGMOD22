@@ -98,12 +98,12 @@ private int isPrimaryInputTakenLast = 1;
 
     private void printBufferSnapShot(String threadName)
     {
-        System.out.println(threadName  + " " +  new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
-                " latest primary timestamp " + latestPrimary +
-                " latest secondary timestamp " + latestSecondary +
-                " primary buffer size " + primaryTask.currentBufferSize +
-                " secondary buffer size " + secondaryTask.currentBufferSize +
-                " Handled primary items " + numberOfPrimaryHandledItems + " Secondary Items " + numberOfSecondaryHandledItems);
+//        System.out.println(threadName  + " " +  new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
+//                " latest primary timestamp " + latestPrimary +
+//                " latest secondary timestamp " + latestSecondary +
+//                " primary buffer size " + primaryTask.currentBufferSize +
+//                " secondary buffer size " + secondaryTask.currentBufferSize +
+//                " Handled primary items " + numberOfPrimaryHandledItems + " Secondary Items " + numberOfSecondaryHandledItems);
     }
 
     @Override
@@ -270,8 +270,8 @@ private int isPrimaryInputTakenLast = 1;
     }
     private void finishRun() {
         finishedWorkers.add(this);
-        System.out.println("Buffer Worker - " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " Handled " + numberOfPrimaryHandledItems + " primary items " +
-                + numberOfSecondaryHandledItems + " Handled secondary items.  Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000);
+//        System.out.println("Buffer Worker - " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " Handled " + numberOfPrimaryHandledItems + " primary items " +
+//                + numberOfSecondaryHandledItems + " Handled secondary items.  Primary idle time " + primaryIdleTime/1000000 + " Secondary Idle time "+ secondaryIdleTime/ 1000000);
         primaryTask.finishRun();
         secondaryTask.finishRun();
     }
@@ -287,7 +287,6 @@ private int isPrimaryInputTakenLast = 1;
 
     private ContainsEvent getReleventRemovingCriteria(List<ContainsEvent> oppositeBufferList)
     {
-        //TODO: can be optimized because we already go over the MB when looking for matches, so its possible to calculate latest match at that stage
         long latestEarliestTimeStamp = Long.MIN_VALUE;
         ContainsEvent element = null;
         for (ContainsEvent ce : oppositeBufferList) {

@@ -90,8 +90,6 @@ private long earliestEvent = 0;
 	}
 
 	public Match createNewPartialMatchWithEvent(Event event) {
-		//TODO: latency measurement is probably wrong
-		//TODO: creates partial match by evaluation/frequency order and not by sequence order. not sure if ok
 		List<Event> list = new ArrayList(primitiveEvents);
 		list.add(event);
 		return new Match(list);

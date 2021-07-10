@@ -14,7 +14,6 @@ import sase.pattern.Pattern;
 public class EventFrequencyOrderingAlgorithm implements IOrderingAlgorithm {
 	
 	private class EventTypeComparator implements Comparator<EventType> {
-//Maor: This is the frequency comparator
 		@Override
 		public int compare(EventType firstEventType, EventType secondEventType) {
 			Double firstFrequency = EventRateConfig.eventRate.get(firstEventType.getName());

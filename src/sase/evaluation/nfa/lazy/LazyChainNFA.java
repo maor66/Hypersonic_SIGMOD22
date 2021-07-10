@@ -185,8 +185,7 @@ public class LazyChainNFA extends LazyNFA {
 		EventTemporalPositionCondition prevTemporalConstraint = null;
 		for (int i = 0; i < evaluationOrderForChain.size(); ++i) {
 			EventType currentType = evaluationOrderForChain.get(i);
-			//Maor: this is probably where creating the states (should override for TypedNFAState)
-			NFAState currentState = (i == 0 || prevState == null) ? firstState : 
+			NFAState currentState = (i == 0 || prevState == null) ? firstState :
 										  new TypedNFAState(currentType, String.format("State for %s", prevType.getName()));
 			if (!states.contains(currentState)) {
 				states.add(currentState);

@@ -12,7 +12,7 @@
 	4. The rest of the configuration will now relate to `src/sase/config/path/WindowsPathConfig.java` or to` src/sase/config/path/LinuxPathConfig.java`, based on your selection in the previous section.
 	4.  Set input file path in `firstInputFilePath` or `firstInputDirectoryPath` for a directory full of input files (without additional files that are not intended as input)
 		4. If using a directory -  uncomment `inputDirsPaths` in `src/sase/config/MainConfig.java` (line 51) and comment value of `inputFilesPaths` (line 54)
-	4. Set the output file path in the `outputFilePath`  field
+	4. Set the output file path in the `outputFilePath`  field.
 
 
 
@@ -67,6 +67,9 @@ An example for a pattern is found at `basicPatternSensorSEQ3`.
 
 
 ## Simulations
+After running the simulations, an output file with the results will be created at the defined location (see Setup Instructions)
+Most of the fields in the created .CSV are irrelevant and used for debugging, but "Processing Time (ms)", "Peak Memory Consumption" and "Average Latency" are the metrics that we are interested in.
+
 To set which simulations are going to be run, set the `evaluationSpecifications` array in `sase/config/SimulationConfig.java` .
 
 Each array entry is one simulation that would run on all patterns configured in the previous section. These runs are independent and does not occur simultaneously.
@@ -76,7 +79,7 @@ To run HYPERSONIC, add:
  		new ParallelLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
 				CostModelTypes.THROUGHPUT_LATENCY,
 				0.0, 24, 0.5),
-				```
+```
 Only change the 4th parameter which is the number of execution units (threads) used for this run. Other parameters are used for future work and should are not relevant for this paper.
 
 ##### RIP

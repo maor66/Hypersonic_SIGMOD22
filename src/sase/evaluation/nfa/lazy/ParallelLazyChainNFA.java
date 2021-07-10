@@ -28,17 +28,6 @@ import java.util.stream.Collectors;
 
 public class ParallelLazyChainNFA extends LazyChainNFA {
 
-    //TODO: Features - (2) Add support for different types of patterns (AND/OR/NEG)
-    //TODO: Features - (3) Think if there are useless IB/MB workers, maybe in each state only new events or only new rPM can create matches due to timing constraints.
-    //TODO: Features - (4) send events/rPM as batches to decrease synchronization actions
-    //TODO: Features - (5) calculate number of events/rPM sent between states(and main thread) as a statistic
-    //TODO: Features - (6) Use actual getSlice in MBW -  Implemented but it is possible that this affects the performance negatively, should consider removing
-    //TODO: Features - (7) Remove commented-out code
-    //TODO: Article - (1) Add scoping parameters use
-    //TODO: Article - (2) Write about removing technique
-    //TODO: Article - (3) Add optimization of first state (forward only)
-    //TODO: Article - (4) Add implementation detail about finishing input with different amount of threads ("poison pill")
-    //TODO: Article - (5) Should add something about minimum required threads?
     private ExecutorService executor;
     private Map<NFAState, List<Worker>> IBWorkers;
     private Map<NFAState, List<Worker>> MBWorkers;
@@ -315,7 +304,7 @@ public class ParallelLazyChainNFA extends LazyChainNFA {
             long individualQueueSize = q.getMaxSize();
             queuesSize += individualQueueSize * partialMatchSize * EventTypesManager.getInstance().getAverageEventSize();
 
-            System.out.println("Max elements in queue is " +q.getMaxSize());
+//            System.out.println("Max elements in queue is " +q.getMaxSize());
             partialMatchSize++;
         }
 

@@ -110,7 +110,6 @@ public class EvaluationPlanCreator {
 		// Max: Fix for parallel specifications (Hirzel and RIP)
 		EvaluationSpecification currSpecification = getRealSpecification();
 		
-		// Maor: Here is where the order of the chain is determined
 		if (currSpecification instanceof FixedLazyNFAEvaluationSpecification) {
 			return createFixedOrderBasedPlan(pattern);
 		}

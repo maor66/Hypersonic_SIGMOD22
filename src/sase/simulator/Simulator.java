@@ -216,7 +216,7 @@ public class Simulator {
 				EvaluationMechanismFactory.createEvaluationMechanism(workload.getCurrentWorkload(), currentEvaluationMechanism);
 		Environment.getEnvironment().getStatisticsManager().stopMeasuringTime(Statistics.evaluationMechanismCreationTime);
 		IEvaluationMechanism evaluationMechanism = (IEvaluationMechanism)evaluationMechanismObject;
-		evaluationMechanism.completeCreation(workload.getCurrentWorkload()); //Maor: States are created here, this fixes the problem when states are not initialize when trying to createStateMappings
+		evaluationMechanism.completeCreation(workload.getCurrentWorkload());
 		if (MainConfig.printStructureSummary) {
 			System.out.println(evaluationMechanism.getStructureSummary());
 		}
@@ -288,7 +288,7 @@ public class Simulator {
 		if (allEvents.isEmpty() || MainConfig.isFusionSupported) { // Hack to read events only for the first time instead of throwing them away at the end
 			allEvents.clear();
 			while (eventProducer.hasMoreEvents()) {
-				Event newEvent = eventProducer.getNextEvent(); // Maor: this is actually the event, each executions reads the next event from the file
+				Event newEvent = eventProducer.getNextEvent(); //  this is actually the event, each executions reads the next event from the file
 				if (newEvent == null) {
 					continue;
 				}

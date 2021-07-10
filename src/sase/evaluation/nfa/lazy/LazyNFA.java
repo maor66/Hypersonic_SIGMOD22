@@ -52,7 +52,6 @@ public abstract class LazyNFA extends NFA {
 	}
 	
 	public boolean verifyContiguityConditions(Event firstEvent, Event secondEvent) {
-		//Maor: probably checks if the event that trying to add fits in the correct order. Maybe should call this when a event arrives and is compared to all partial matches.
 		if (contiguityVerifier == null) {
 			return true;
 		}

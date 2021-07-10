@@ -89,17 +89,15 @@ public abstract class ElementWorker {
 
     public void finishRun() {
         sendToNextState(new FinisherMatch());
-        System.out.println("Thread " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " has finished at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
-                " Compared to " + numberOfOppositeItems + " Max Elements "+ maxElements +  " items Condition time " + conditionTime / 1 +
-                " Iterating buffer time " + iteratingBufferTime / 1000000 + " Slice time " + sliceTime / 1 + " Actual Slice time " + sliceTimeActual / 1000000 + " Send sync time " + sendMatchingTime / 1000000 +
-                " Calculation time " + actualCalcTime / 1000000 + " Window verify time " + windowverifyTime / 1000000 + " Cond 1 " + innerCondTime / 1000000 + " Cond 2 " + innerWindowTime / 1000000);
+//        System.out.println("Thread " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + " has finished at " + new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) +
+//                " Compared to " + numberOfOppositeItems + " Max Elements "+ maxElements +  " items Condition time " + conditionTime / 1 +
+//                " Iterating buffer time " + iteratingBufferTime / 1000000 + " Slice time " + sliceTime / 1 + " Actual Slice time " + sliceTimeActual / 1000000 + " Send sync time " + sendMatchingTime / 1000000 +
+//                " Calculation time " + actualCalcTime / 1000000 + " Window verify time " + windowverifyTime / 1000000 + " Cond 1 " + innerCondTime / 1000000 + " Cond 2 " + innerWindowTime / 1000000);
     }
     protected abstract boolean isBufferSorted();
 
 
     protected boolean isEventCompatibleWithPartialMatch(Match partialMatch, List<Event> partialMatchEvents, Event event) {
-        //TODO: only checking temporal conditions here, I have to check the extra conditions somehow (stock prices)
-        //TODO: doesn't have to verify temporal condition first anymore - check if removing doesn't hurt correctness
         boolean b;
         long time;
 //        if (numberOfOppositeItems % 1000 == 0) {

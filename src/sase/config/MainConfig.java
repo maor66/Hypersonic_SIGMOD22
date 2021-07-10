@@ -11,13 +11,13 @@ import sase.user.stocks.StockEventTypesManager;
 
 @SuppressWarnings("unused")
 public class MainConfig {
-//	    public static DatasetInUse datasetInUse = DatasetInUse.STOCKS;
-	public static DatasetInUse datasetInUse = DatasetInUse.SENSORS;
+	    public static DatasetInUse datasetInUse = DatasetInUse.STOCKS;
+//	public static DatasetInUse datasetInUse = DatasetInUse.SENSORS;
 
 	/* An OS-dependent module for accessing local paths. */
 	public static String experimentName = "SEQ6WindowHybrid";
 
-	private static final PathConfig pathConfig = new LinuxPathConfig();
+	private static final PathConfig pathConfig = new WindowsPathConfig();
 	
 	/* A flag indicating whether code testing is currently in process. */
 	public static final boolean debugMode = false;
@@ -44,7 +44,7 @@ public class MainConfig {
 		EventTypesConverterTypes.SENSOR_BY_ACTIVITY;
 
 	/* Settings for receiving events from the input stream. */
-	// Maor: This two settings determine if the input is taken from a directory or a file
+	// This two settings determine if the input is taken from a directory or a file
 
 
 	public static String[] inputDirsPaths = {
@@ -86,7 +86,7 @@ public class MainConfig {
 	public static final boolean eventRateMeasurementMode = false;
 
 	/* Condition selectivity measurement settings. */
-	public static final boolean conditionSelectivityMeasurementMode = false; //Maor: indicates whether to use selectivity file or calculate them
+	public static final boolean conditionSelectivityMeasurementMode = false;
 	public static final String selectivityEstimatorsFilePath = pathConfig.selectivityEstimatorsFilePath;
 
 	/* Maximal allowed execution time for a single simulation. */
