@@ -22,15 +22,20 @@
 We used two datasets for testing HYPERSONIC performance, a sample of an input file  (.CSV) for each data set is included in this repository.
 #### Stocks
 As stated in the paper, this dataset represents information about NASDAQ stocks.
-We included a single file in the root of the repository (NASDAQ_20080204_1.txt), which contains a minute-by-minute updates on stocks in a single day, augmented with pre-processing that adds an array of 20 last recorded stock prices. We used a full month as a dataset, which is downloadable from https://eoddata.com
+
+We included a single file in the root of the repository (NASDAQ_20080204_1.txt), which contains a minute-by-minute updates on stocks in a single day, augmented with pre-processing that adds an array of 20 last recorded stock prices.
+ We used a full month as a dataset, which is downloadable from https://eoddata.com
 
 #### Sensors
-This dataset represents information collected from sensors in smart homes, the sample file is (csh114.ann.features.csv). The dataset was used without any augmentation. The full dataset is downloadable from https://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+from+Continuous+Ambient+Sensor+Data
+This dataset represents information collected from sensors in smart homes, the sample file is (csh114.ann.features.csv).
+ The dataset was used without any augmentation.
+  The full dataset is downloadable from https://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+from+Continuous+Ambient+Sensor+Data
 
 ## Patterns
 The simulation can accept any number of patterns to be detected and runs a different simulation run (which can contain more than one system/algorithm, see below) for each pattern separately.
 #### Stocks
 Set `stockByCompanyPatternSpecifications` in `src/sase/config/PatternConfig.java` with the patterns that you wish to detect.
+
 The simplest way to build a pattern is to use one of the many patterns already defined in this file (`basicPatternSEQ6Correlation` for example) and simply change the types of the pattern (all supported types are in `sase/user/stocks/StockEventTypesManager.java`)
 The current configuration is:
 ```
@@ -57,11 +62,13 @@ Which runs 3 different patterns (with the same time window - 100)
 
 #### Sensors
 Set `sensorPatternSpecifications` in `src/sase/config/PatternConfig.java` and it works the same as the sensor patterns, with a different build.
+
 An example for a pattern is found at `basicPatternSensorSEQ3`.
 
 
 ## Simulations
 To set which simulations are going to be run, set the `evaluationSpecifications` array in `sase/config/SimulationConfig.java` .
+
 Each array entry is one simulation that would run on all patterns configured in the previous section. These runs are independent and does not occur simultaneously.
 ##### HYPERSONIC
 To run HYPERSONIC, add:
