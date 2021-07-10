@@ -88,7 +88,7 @@ To run RIP:
 		new RIPEvaluationSpecification(EvaluationMechanismTypes.RIP_CHAIN_NFA, new CostBasedLazyNFAEvaluationSpecification(OrderingAlgorithmTypes.TRIVIAL,
 				CostModelTypes.THROUGHPUT_LATENCY,
 				0.0), 24, 0)
-				```
+```
 Only change the 4th parameter which is the number of execution units (threads) used for this run .Other parameters are used for future work and should are not relevant for this paper.
 
 ##### LLSF
