@@ -3,7 +3,7 @@
 ## Setup Instructions
 
 1. Set main class as `sase.simulator.Simulator`
-2. Add the library dependencies in the `dependencies` folder
+2. Add library dependencies to the project from the `dependencies` folder
 3. Choose which data set to run in `src/sase/config/MainConfig.java`
 	3. Set the `dataInUse` field to `DatasetInUse.STOCKS` or `DatasetInUse.SENSORS` (lines 14-15)
 4. Set configuration to Windows or Linux based on your system in  `src/sase/config/MainConfig.java`
